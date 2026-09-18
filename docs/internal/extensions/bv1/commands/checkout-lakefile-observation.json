@@ -1,0 +1,23 @@
+{
+  "stage": "checkout-lakefile-observation",
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "path": "lakefile.toml",
+  "sourceBytes": 691,
+  "sourceSHA256": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A",
+  "freshIndexCheckoutBytes": 696,
+  "freshIndexCheckoutSHA256": "5CFC20B6F1A9BED1EEF7CD96DADAFED6286C1147F22EA4F42DC19915AD4E2298",
+  "identical": false,
+  "expectedExistingEOL": "index LF, working mixed",
+  "outsidePublicDependencyCount": 230,
+  "observedOtherOutsideDependencies": "all CRLF",
+  "command": [
+    "git",
+    "-c",
+    "core.autocrlf=true",
+    "checkout-index",
+    "--prefix=C:/Users/poin/.codex/worktrees/c974/RMQ/.lake/bv1-lakefile-eol-probe/",
+    "--",
+    "lakefile.toml"
+  ],
+  "scope": "Read-only index, one isolated prospective checkout file; no byte rewrite or cleanup"
+}

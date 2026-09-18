@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "generatedAtUtc": "2026-09-12T13:02:31.170134Z",
+  "forbiddenScan": {
+    "command": "rg -n \"\\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\\b|import Mathlib\" RMQ lakefile.toml",
+    "exitCode": 1,
+    "output": []
+  },
+  "nativeScan": {
+    "command": "rg -n \"native_decide|Lean\\.ofReduceBool\" RMQ",
+    "exitCode": 1,
+    "output": []
+  },
+  "ownedDiffCheck": {
+    "exitCode": 0,
+    "output": [],
+    "paths": [
+      "RMQ/Validation/PackedBitvector.lean",
+      "scripts/packed_bitvector_probe.ps1",
+      "scripts/packed_bitvector_selector_controls.ps1",
+      "scripts/packed_bitvector_crossing.lean",
+      "scripts/packed_bitvector_validation_controls.ps1",
+      "docs/internal/extensions/bv1/VALIDATION_CONTROLS.md",
+      "docs/internal/extensions/bv1/controls/validation_v2/registry.json",
+      "docs/internal/extensions/bv1/controls/validation_v2/baseline.lean",
+      "docs/internal/extensions/bv1/controls/validation_v2/wrong_packet.lean",
+      "docs/internal/extensions/bv1/controls/validation_v2/removed_fixture.lean",
+      "docs/internal/extensions/bv1/controls/validation_v2/wrong_crossing.lean",
+      "docs/internal/extensions/bv1/controls/validation_v2/restored.lean"
+    ]
+  },
+  "untrackedAndTrackedWhitespaceOrConflictHits": [],
+  "productionCaseCount": 46,
+  "primitiveCaseCount": 43,
+  "guardedApiCaseCount": 3,
+  "mainSelectorsPassed": true,
+  "mutationSelectorsPassed": true,
+  "mutationCasesPassed": true,
+  "mutationByteRestoration": true,
+  "mutationScopedStatusUnchanged": true,
+  "mutationResourceFailures": 0,
+  "mutationPinsPassed": 17,
+  "sourceHashes": [
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Validation\\PackedBitvector.lean",
+      "Hash": "333B0A6BD8FB3082051845D2F1BD333668B9D33758A9030A68B25695CFEE068E"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_probe.ps1",
+      "Hash": "FE126C3906CD65BA3AE65EE773EE1B818CD86564CB7190DB837151BD0D10A06D"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_selector_controls.ps1",
+      "Hash": "601BD8289E805E9ABB2B09607C02FD2AA36428F7EA7FB5767B812BC3B578739D"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_crossing.lean",
+      "Hash": "33FFD328EBC0F80EEBEA279B4904F804D5A54E1FE5CBC2C4A017A75807FE279D"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_validation_controls.ps1",
+      "Hash": "FA3E2C3A7F6E329417CB854F8B2B841B543479478B2FB346314F71E84F0818F0"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\VALIDATION_CONTROLS.md",
+      "Hash": "DF1268C6147D15D9C2A72AEF90A2C2C169544E3E9CB24FE609B609E6AF9F9FFC"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\registry.json",
+      "Hash": "BA82633FC1D6647A294C150DC20A21159C64635A08FFD5CBA5B3C16464B64CDF"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\baseline.lean",
+      "Hash": "333B0A6BD8FB3082051845D2F1BD333668B9D33758A9030A68B25695CFEE068E"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\wrong_packet.lean",
+      "Hash": "4895B39F548A5C434D173288346A59D812D996F5A2A1D31D1CC0E7FBACF478A1"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\removed_fixture.lean",
+      "Hash": "1F2241088DD172B38673AA376F291400C5B68DB319545A3C465B78E971875BB2"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\wrong_crossing.lean",
+      "Hash": "6B9484013683BFA4E6C0F46800582BFEDE057BA8661273DCACA5BB8453D06D14"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\validation_v2\\restored.lean",
+      "Hash": "333B0A6BD8FB3082051845D2F1BD333668B9D33758A9030A68B25695CFEE068E"
+    }
+  ],
+  "status": "CANDIDATE_COMPLETE",
+  "finalCommitOwner": "root",
+  "broadGateOwner": "root",
+  "passed": true
+}

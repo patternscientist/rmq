@@ -1,0 +1,193 @@
+{
+  "version": 1,
+  "createdUtc": "2026-09-12T12:02:32.0640193Z",
+  "expectedCount": 8,
+  "registry": [
+    "regular-layout-types",
+    "regular-layout-axioms",
+    "select-semantics",
+    "rank-semantics",
+    "rank-layout",
+    "generic-select-safety",
+    "canonical-select-safety",
+    "scratch-frame"
+  ],
+  "consumerBytePolicy": "Exact current temporary bytes copied, no encoding/newline normalization",
+  "commandExecutable": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+  "commandPrefix": [
+    "env",
+    "lean"
+  ],
+  "leanNumThreads": 1,
+  "deadlineSeconds": 180,
+  "cases": [
+    {
+      "id": "regular-layout-types",
+      "oldPath": "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-regular-layout-exact-types.lean",
+      "path": "docs/internal/extensions/bv1/controls/leaf_consumers/bv1-regular-layout-exact-types.lean",
+      "bytes": 3415,
+      "sha256": "F59CCBB23FD0074B8E769D98DC16ED263C16A7DBC3939E6F76FF20CC1586E337",
+      "currentTemporaryBytesIdentical": true,
+      "historicalEvidence": "docs/internal/extensions/bv1/commands/regular-layout-axioms.json",
+      "historicalEvidenceSha256": "B59C60E80DCBCE5A41CDA7CFF5D87633E883E48A59AAFDD41F26E9D9DE97E079",
+      "historicalExitCode": 0,
+      "historicalArguments": [
+        "env",
+        "lean",
+        "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-regular-layout-exact-types.lean"
+      ],
+      "historicalConsumerHashRecorded": false,
+      "historicalByteIdentity": "PROVENANCE_UNCERTAIN: successful record names the temp path but does not hash that consumer",
+      "document": "docs/internal/extensions/bv1/REGULAR_LAYOUT.md",
+      "completeTextMatchesDocumentIgnoringLineEndings": false,
+      "freshReplay": "REQUIRED; not run; exclusive slot pending"
+    },
+    {
+      "id": "regular-layout-axioms",
+      "oldPath": "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-regular-layout-axiom-source.lean",
+      "path": "docs/internal/extensions/bv1/controls/leaf_consumers/bv1-regular-layout-axiom-source.lean",
+      "bytes": 363,
+      "sha256": "67012CCC16E31764979ADED20BA08C462E1CC207DA389839737219CD98E7627D",
+      "currentTemporaryBytesIdentical": true,
+      "historicalEvidence": "docs/internal/extensions/bv1/commands/regular-layout-axiom-source.json",
+      "historicalEvidenceSha256": "DE8754EDCA0C6E67DF9E74BECF74160100FCA5E9DED29E7288800CB05B95C209",
+      "historicalExitCode": 0,
+      "historicalArguments": [
+        "env",
+        "lean",
+        "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-regular-layout-axiom-source.lean"
+      ],
+      "historicalConsumerHashRecorded": false,
+      "historicalByteIdentity": "PROVENANCE_UNCERTAIN: successful record names the temp path but does not hash that consumer",
+      "document": "docs/internal/extensions/bv1/REGULAR_LAYOUT.md",
+      "completeTextMatchesDocumentIgnoringLineEndings": false,
+      "freshReplay": "REQUIRED; not run; exclusive slot pending"
+    },
+    {
+      "id": "select-semantics",
+      "oldPath": "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-select-semantics-consumer.lean",
+      "path": "docs/internal/extensions/bv1/controls/leaf_consumers/bv1-select-semantics-consumer.lean",
+      "bytes": 2874,
+      "sha256": "35A9FEB285AA5CD883F9AB0FBECC693EE7DE9271242EB63E8F45EA07B27026A0",
+      "currentTemporaryBytesIdentical": true,
+      "historicalEvidence": "docs/internal/extensions/bv1/commands/select-semantics-consumer.json",
+      "historicalEvidenceSha256": "65D2D19B62700511D7953A7250759B85B4F0D9D63486DB7BF4486C920F20471F",
+      "historicalExitCode": 0,
+      "historicalArguments": [
+        "env",
+        "lean",
+        "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-select-semantics-consumer.lean"
+      ],
+      "historicalConsumerHashRecorded": false,
+      "historicalByteIdentity": "PROVENANCE_UNCERTAIN: successful record names the temp path but does not hash that consumer",
+      "document": "docs/internal/extensions/bv1/SELECT_SEMANTICS.md",
+      "completeTextMatchesDocumentIgnoringLineEndings": true,
+      "freshReplay": "REQUIRED; not run; exclusive slot pending"
+    },
+    {
+      "id": "rank-semantics",
+      "oldPath": "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-rank-semantics-consumer.lean",
+      "path": "docs/internal/extensions/bv1/controls/leaf_consumers/bv1-rank-semantics-consumer.lean",
+      "bytes": 3117,
+      "sha256": "2F4D7A5B4FF532C80CCD162519C8A989F5B78B44B249CD9A159F122E7EEEA2C0",
+      "currentTemporaryBytesIdentical": true,
+      "historicalEvidence": "docs/internal/extensions/bv1/commands/rank-semantics-consumer-2.json",
+      "historicalEvidenceSha256": "2F6566E97767D9BD2EC7D3748592EFA0C668DF2A1BF75291A2BACBABC4C5D301",
+      "historicalExitCode": 0,
+      "historicalArguments": [
+        "env",
+        "lean",
+        "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-rank-semantics-consumer.lean"
+      ],
+      "historicalConsumerHashRecorded": false,
+      "historicalByteIdentity": "PROVENANCE_UNCERTAIN: successful record names the temp path but does not hash that consumer",
+      "document": "docs/internal/extensions/bv1/RANK_SEMANTICS.md",
+      "completeTextMatchesDocumentIgnoringLineEndings": true,
+      "freshReplay": "REQUIRED; not run; exclusive slot pending"
+    },
+    {
+      "id": "rank-layout",
+      "oldPath": "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-rank-layout-consumer.lean",
+      "path": "docs/internal/extensions/bv1/controls/leaf_consumers/bv1-rank-layout-consumer.lean",
+      "bytes": 2044,
+      "sha256": "283CE0B7E52E49F63108BBDBCBB66E916C6086C0E821F49C1F6B8B5D6A071E7F",
+      "currentTemporaryBytesIdentical": true,
+      "historicalEvidence": "docs/internal/extensions/bv1/commands/rank-layout-consumer.json",
+      "historicalEvidenceSha256": "60056965796ACF009363DAB4F86CF5B08FFEBEF98960673FE8C2941AFE155256",
+      "historicalExitCode": 0,
+      "historicalArguments": [
+        "env",
+        "lean",
+        "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-rank-layout-consumer.lean"
+      ],
+      "historicalConsumerHashRecorded": false,
+      "historicalByteIdentity": "PROVENANCE_UNCERTAIN: successful record names the temp path but does not hash that consumer",
+      "document": "docs/internal/extensions/bv1/RANK_LAYOUT.md",
+      "completeTextMatchesDocumentIgnoringLineEndings": true,
+      "freshReplay": "REQUIRED; not run; exclusive slot pending"
+    },
+    {
+      "id": "generic-select-safety",
+      "oldPath": "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-generic-select-safety-consumer.lean",
+      "path": "docs/internal/extensions/bv1/controls/leaf_consumers/bv1-generic-select-safety-consumer.lean",
+      "bytes": 4382,
+      "sha256": "297C96DB48830938A8236C5D02CDA3DE35E87AFD4CCD75E17785814B5F53D8B7",
+      "currentTemporaryBytesIdentical": true,
+      "historicalEvidence": "docs/internal/extensions/bv1/commands/generic-select-safety-consumer-1.json",
+      "historicalEvidenceSha256": "072F87ECCAC657BBDF46083797677B22E57D6BC10A7BB32996E8FE772069962D",
+      "historicalExitCode": 0,
+      "historicalArguments": [
+        "env",
+        "lean",
+        "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-generic-select-safety-consumer.lean"
+      ],
+      "historicalConsumerHashRecorded": false,
+      "historicalByteIdentity": "PROVENANCE_UNCERTAIN: successful record names the temp path but does not hash that consumer",
+      "document": "docs/internal/extensions/bv1/GENERIC_SELECT_SAFETY.md",
+      "completeTextMatchesDocumentIgnoringLineEndings": true,
+      "freshReplay": "REQUIRED; not run; exclusive slot pending"
+    },
+    {
+      "id": "canonical-select-safety",
+      "oldPath": "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-canonical-select-safety-consumer.lean",
+      "path": "docs/internal/extensions/bv1/controls/leaf_consumers/bv1-canonical-select-safety-consumer.lean",
+      "bytes": 3741,
+      "sha256": "6EB1741EC157B37904DCE556CDBC16BA9730DFD28269217C16FEEA0EE9B44C50",
+      "currentTemporaryBytesIdentical": true,
+      "historicalEvidence": "docs/internal/extensions/bv1/commands/canonical-select-safety-consumer-2.json",
+      "historicalEvidenceSha256": "61CFEC7DF405152D480E58D10CE1FD1384EB162A7FC26027E5290E121FE27785",
+      "historicalExitCode": 0,
+      "historicalArguments": [
+        "env",
+        "lean",
+        "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-canonical-select-safety-consumer.lean"
+      ],
+      "historicalConsumerHashRecorded": false,
+      "historicalByteIdentity": "PROVENANCE_UNCERTAIN: successful record names the temp path but does not hash that consumer",
+      "document": "docs/internal/extensions/bv1/CANONICAL_SELECT_SAFETY.md",
+      "completeTextMatchesDocumentIgnoringLineEndings": true,
+      "freshReplay": "REQUIRED; not run; exclusive slot pending"
+    },
+    {
+      "id": "scratch-frame",
+      "oldPath": "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-scratch-frame-consumer.lean",
+      "path": "docs/internal/extensions/bv1/controls/leaf_consumers/bv1-scratch-frame-consumer.lean",
+      "bytes": 1684,
+      "sha256": "C40D8F1B3D776C84E2594FFC6605E51AD347F9ABBA1B5A83E1788CB214AC6712",
+      "currentTemporaryBytesIdentical": true,
+      "historicalEvidence": "docs/internal/extensions/bv1/commands/scratch-frame-consumer-1.json",
+      "historicalEvidenceSha256": "8E5DB3407733F593D9B5D027908BE4F49A9E18482FC822B13486BE0C7787D8FC",
+      "historicalExitCode": 0,
+      "historicalArguments": [
+        "env",
+        "lean",
+        "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-scratch-frame-consumer.lean"
+      ],
+      "historicalConsumerHashRecorded": false,
+      "historicalByteIdentity": "PROVENANCE_UNCERTAIN: successful record names the temp path but does not hash that consumer",
+      "document": "docs/internal/extensions/bv1/SCRATCH_FRAME.md",
+      "completeTextMatchesDocumentIgnoringLineEndings": true,
+      "freshReplay": "REQUIRED; not run; exclusive slot pending"
+    }
+  ]
+}

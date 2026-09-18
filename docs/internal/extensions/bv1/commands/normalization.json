@@ -1,0 +1,55 @@
+{
+  "stage": "normalization",
+  "platform": "Windows",
+  "head": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "dirty": [
+    "?? RMQ/Core/WordRAM/Bitvector/",
+    "?? docs/internal/extensions/"
+  ],
+  "executable": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+  "arguments": [
+    "build",
+    "RMQ.Core.WordRAM.Bitvector.Normalization"
+  ],
+  "deadlineSeconds": 120,
+  "leanNumThreads": 1,
+  "result": {
+    "Stage": "normalization",
+    "ExitCode": 0,
+    "Output": [
+      "⚠ [20/20] Built RMQ.Core.WordRAM.Bitvector.Normalization",
+      "warning: RMQ/Core/WordRAM/Bitvector/Normalization.lean:44:26: This simp argument is unused:",
+      "  normalize_cons",
+      "Hint: Omit it from the simp argument list.",
+      "  simp [̵n̵o̵r̵m̵a̵l̵i̵z̵e̵_̵c̵o̵n̵s̵,̵ ̵i̵h̵]̵[̲i̲h̲]̲",
+      "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+      "warning: RMQ/Core/WordRAM/Bitvector/Normalization.lean:44:42: This simp argument is unused:",
+      "  ih",
+      "Hint: Omit it from the simp argument list.",
+      "  simp [normalize_cons,̵ ̵i̵h̵]",
+      "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+      "Build completed successfully."
+    ],
+    "StandardOutput": [
+      "⚠ [20/20] Built RMQ.Core.WordRAM.Bitvector.Normalization",
+      "warning: RMQ/Core/WordRAM/Bitvector/Normalization.lean:44:26: This simp argument is unused:",
+      "  normalize_cons",
+      "Hint: Omit it from the simp argument list.",
+      "  simp [̵n̵o̵r̵m̵a̵l̵i̵z̵e̵_̵c̵o̵n̵s̵,̵ ̵i̵h̵]̵[̲i̲h̲]̲",
+      "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+      "warning: RMQ/Core/WordRAM/Bitvector/Normalization.lean:44:42: This simp argument is unused:",
+      "  ih",
+      "Hint: Omit it from the simp argument list.",
+      "  simp [normalize_cons,̵ ̵i̵h̵]",
+      "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+      "Build completed successfully."
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 9.87,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  }
+}

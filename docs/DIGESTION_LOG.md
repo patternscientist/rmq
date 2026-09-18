@@ -1732,3 +1732,41 @@ same machine.
 The packed primitive query is accepted on the source and evidence identified in `internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md`. Both full host gates and the independent audit passed. The one gate-blocking runtime-selector defect was repaired; current descriptions now say “loop-free” because the fixed program contains forward conditional branches. The earlier dated entries remain historical accounts.
 
 Conceptually, the query obtains its answer from a counted numeric allocation and charges every executed primitive instruction, including metadata reads, decoding and branches. In plain English, the modeled machine answers every valid half-open list query with the leftmost minimum under one uniform budget. The unit-cost scalar arithmetic model, unbounded preprocessing, uncharged outer Nat encoding check and asymptotic-only code/scratch absorption remain live assumptions. The next skeptical question concerns useful finite-size or preprocessing bounds in the same model. S1 serialization, extraction and release-wide V1 verification are separate work; this acceptance changes no theorem.
+
+## 2026-09-12 UTC: BV-1 generic bitvector theorem check
+
+The kernel-checked
+`RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds` joins the complete
+allocation, actual source evaluations, shared compiler, all-natural APIs,
+numeric safety, fixed costs and finite scratch. Its 23 fields refer to the same
+arbitrary input list, numeric memory and three programs. Independent consumers,
+replay and coordinator acceptance are separate obligations; this entry records
+the mathematical composition milestone, not a coordinator disposition.
+
+The conceptual change is to make the existing generic directory semantics a
+client of the actual numeric reader. Canonical regularity and exact bit spans
+connect each logical word to the densely packed body. Charged setup loads every
+geometry field used by the controllers. Empty logical words have zero spans
+and need no body load even when their nominal descriptor position lies beyond
+the body; the position still fits the common width. The reader normalizes only
+raw true-select replies, so both directories share one retained input. Rank
+uses four additional sample arrays and an alias to the same raw input, all
+included in the complete capacity theorem.
+
+In plain English, the modeled programs read their data and return the selected
+bit, prefix count or occurrence position for every input size. Invalid indices
+return the explicit absent packet. Every primitive setup/read/decode/branch
+contributes to the actual execution; the instruction bounds are 132/1450/10030.
+One width bounds the counted words, nominal positions, instruction fields,
+arithmetic and every execution prefix. The retained data, encoded code and
+finite register bank occupy at most `n + o(n)` bits under that same width.
+
+The live assumptions are unit-cost scalar arithmetic including division and
+shifts, unbounded preprocessing, an uncharged outer Nat-to-word-domain check,
+and asymptotic absorption of fixed code and scratch. The theorem is about the
+explicit word-RAM model; Lean's List-based interpreter runtime is separate.
+A skeptical graduate student should next ask whether the public consumer
+rejects every weakened field, whether valid small components exercise the rare
+exception branches, what finite input sizes make the overhead useful, and
+whether preprocessing or tighter path-sensitive bounds can be proved in the
+same machine.

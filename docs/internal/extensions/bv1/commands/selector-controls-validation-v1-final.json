@@ -1,0 +1,289 @@
+{
+  "version": 2,
+  "runner": "ValidationControls",
+  "evidenceTag": "validation-v1-final",
+  "expected": [
+    "omitted",
+    "valid",
+    "empty",
+    "whitespace",
+    "malformed",
+    "unknown",
+    "padded",
+    "incompatible"
+  ],
+  "executed": [
+    "omitted",
+    "valid",
+    "empty",
+    "whitespace",
+    "malformed",
+    "unknown",
+    "padded",
+    "incompatible"
+  ],
+  "passed": true,
+  "sourceHashesBefore": [
+    {
+      "Algorithm": "SHA256",
+      "Hash": "FA3E2C3A7F6E329417CB854F8B2B841B543479478B2FB346314F71E84F0818F0",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_validation_controls.ps1"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "601BD8289E805E9ABB2B09607C02FD2AA36428F7EA7FB5767B812BC3B578739D",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_selector_controls.ps1"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "333B0A6BD8FB3082051845D2F1BD333668B9D33758A9030A68B25695CFEE068E",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Validation\\PackedBitvector.lean"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "FA3E2C3A7F6E329417CB854F8B2B841B543479478B2FB346314F71E84F0818F0",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_validation_controls.ps1"
+    }
+  ],
+  "sourceHashesAfter": [
+    {
+      "Algorithm": "SHA256",
+      "Hash": "FA3E2C3A7F6E329417CB854F8B2B841B543479478B2FB346314F71E84F0818F0",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_validation_controls.ps1"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "601BD8289E805E9ABB2B09607C02FD2AA36428F7EA7FB5767B812BC3B578739D",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_selector_controls.ps1"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "333B0A6BD8FB3082051845D2F1BD333668B9D33758A9030A68B25695CFEE068E",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Validation\\PackedBitvector.lean"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "FA3E2C3A7F6E329417CB854F8B2B841B543479478B2FB346314F71E84F0818F0",
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_validation_controls.ps1"
+    }
+  ],
+  "exactRestoration": true,
+  "results": [
+    {
+      "id": "omitted",
+      "expectedExit": 0,
+      "expectedSurface": "executed=5 expected=5 passed=True total=5",
+      "passed": true,
+      "result": {
+        "Stage": "bv1-selector-omitted",
+        "ExitCode": 0,
+        "Output": [
+          "BV1-VALIDATION-CONTROL baseline passed=True expected-exit=0 actual-exit=0",
+          "BV1-VALIDATION-CONTROL wrong-packet passed=True expected-exit=1 actual-exit=1",
+          "BV1-VALIDATION-CONTROL removed-fixture passed=True expected-exit=2 actual-exit=2",
+          "BV1-VALIDATION-CONTROL wrong-crossing passed=True expected-exit=1 actual-exit=1",
+          "BV1-VALIDATION-CONTROL restored passed=True expected-exit=0 actual-exit=0",
+          "BV1-VALIDATION-CONTROL-REGISTRY executed=5 expected=5 passed=True total=5 unchanged=True status-unchanged=True",
+          "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+          "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+          "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+          "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied"
+        ],
+        "StandardOutput": [
+          "BV1-VALIDATION-CONTROL baseline passed=True expected-exit=0 actual-exit=0",
+          "BV1-VALIDATION-CONTROL wrong-packet passed=True expected-exit=1 actual-exit=1",
+          "BV1-VALIDATION-CONTROL removed-fixture passed=True expected-exit=2 actual-exit=2",
+          "BV1-VALIDATION-CONTROL wrong-crossing passed=True expected-exit=1 actual-exit=1",
+          "BV1-VALIDATION-CONTROL restored passed=True expected-exit=0 actual-exit=0",
+          "BV1-VALIDATION-CONTROL-REGISTRY executed=5 expected=5 passed=True total=5 unchanged=True status-unchanged=True"
+        ],
+        "StandardError": [
+          "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+          "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+          "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+          "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 361.06,
+        "DeadlineSeconds": 660,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "id": "valid",
+      "expectedExit": 0,
+      "expectedSurface": "executed=1 expected=1 passed=True total=5",
+      "passed": true,
+      "result": {
+        "Stage": "bv1-selector-valid",
+        "ExitCode": 0,
+        "Output": [
+          "BV1-VALIDATION-CONTROL baseline passed=True expected-exit=0 actual-exit=0",
+          "BV1-VALIDATION-CONTROL-REGISTRY executed=1 expected=1 passed=True total=5 unchanged=True status-unchanged=True",
+          "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+          "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+          "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+          "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied"
+        ],
+        "StandardOutput": [
+          "BV1-VALIDATION-CONTROL baseline passed=True expected-exit=0 actual-exit=0",
+          "BV1-VALIDATION-CONTROL-REGISTRY executed=1 expected=1 passed=True total=5 unchanged=True status-unchanged=True"
+        ],
+        "StandardError": [
+          "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+          "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+          "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+          "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 80.827,
+        "DeadlineSeconds": 660,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "id": "empty",
+      "expectedExit": 2,
+      "expectedSurface": "BV1-SELECTOR FAIL",
+      "passed": true,
+      "result": {
+        "Stage": "bv1-selector-empty",
+        "ExitCode": 2,
+        "Output": [
+          "BV1-SELECTOR FAIL: Case must be one exact nonempty registry name"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "BV1-SELECTOR FAIL: Case must be one exact nonempty registry name"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 4.586,
+        "DeadlineSeconds": 660,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "id": "whitespace",
+      "expectedExit": 2,
+      "expectedSurface": "BV1-SELECTOR FAIL",
+      "passed": true,
+      "result": {
+        "Stage": "bv1-selector-whitespace",
+        "ExitCode": 2,
+        "Output": [
+          "BV1-SELECTOR FAIL: Case must be one exact nonempty registry name"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "BV1-SELECTOR FAIL: Case must be one exact nonempty registry name"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.971,
+        "DeadlineSeconds": 660,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "id": "malformed",
+      "expectedExit": 2,
+      "expectedSurface": "BV1-SELECTOR FAIL",
+      "passed": true,
+      "result": {
+        "Stage": "bv1-selector-malformed",
+        "ExitCode": 2,
+        "Output": [
+          "BV1-SELECTOR FAIL: Case must be one exact nonempty registry name"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "BV1-SELECTOR FAIL: Case must be one exact nonempty registry name"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.365,
+        "DeadlineSeconds": 660,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "id": "unknown",
+      "expectedExit": 2,
+      "expectedSurface": "BV1-SELECTOR FAIL",
+      "passed": true,
+      "result": {
+        "Stage": "bv1-selector-unknown",
+        "ExitCode": 2,
+        "Output": [
+          "BV1-SELECTOR FAIL: Case must be one exact nonempty registry name"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "BV1-SELECTOR FAIL: Case must be one exact nonempty registry name"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.947,
+        "DeadlineSeconds": 660,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "id": "padded",
+      "expectedExit": 2,
+      "expectedSurface": "BV1-SELECTOR FAIL",
+      "passed": true,
+      "result": {
+        "Stage": "bv1-selector-padded",
+        "ExitCode": 2,
+        "Output": [
+          "BV1-SELECTOR FAIL: Case must be one exact nonempty registry name"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "BV1-SELECTOR FAIL: Case must be one exact nonempty registry name"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 4.226,
+        "DeadlineSeconds": 660,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "id": "incompatible",
+      "expectedExit": 2,
+      "expectedSurface": "BV1-SELECTOR FAIL",
+      "passed": true,
+      "result": {
+        "Stage": "bv1-selector-incompatible",
+        "ExitCode": 2,
+        "Output": [
+          "BV1-SELECTOR FAIL: incompatible selectors"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "BV1-SELECTOR FAIL: incompatible selectors"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 5.435,
+        "DeadlineSeconds": 660,
+        "Ownership": "kill-on-close-job"
+      }
+    }
+  ],
+  "platform": "Windows",
+  "deadlineSeconds": 660
+}

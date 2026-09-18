@@ -1,0 +1,865 @@
+{
+  "stage": "controller-machine-static-r20",
+  "utc": "2026-09-12T11:26:22.1875369Z",
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "passed": true,
+  "checks": [
+    {
+      "name": "trust",
+      "exit": 1,
+      "output": [],
+      "passed": true
+    },
+    {
+      "name": "native",
+      "exit": 1,
+      "output": [],
+      "passed": true
+    },
+    {
+      "name": "working-tree-whitespace",
+      "exit": 0,
+      "output": [
+        "warning: in the working copy of 'RMQ/Validation/PackedBitvector.lean', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'docs/internal/DESIGN_DECISIONS.md', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'docs/internal/WORKFLOW_DESIGN_DECISIONS.md', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'docs/internal/extensions/bv1/CONTRACT.md', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'docs/internal/extensions/bv1/REPORT.md', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'scripts/packed_bitvector_crossing.lean', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'scripts/packed_bitvector_probe.ps1', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'scripts/packed_bitvector_selector_controls.ps1', LF will be replaced by CRLF the next time Git touches it"
+      ],
+      "passed": true
+    },
+    {
+      "name": "committed-range-whitespace",
+      "base": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+      "exit": 0,
+      "output": [],
+      "passed": true
+    },
+    {
+      "name": "powershell-parser",
+      "errorCount": 0,
+      "passed": true
+    },
+    {
+      "name": "frozen-matrix",
+      "hash": "80BD59A314FD33D37076802954444DA24F65C87A2A91DE23BC668B6AF9CCEB24",
+      "expectedHash": "80BD59A314FD33D37076802954444DA24F65C87A2A91DE23BC668B6AF9CCEB24",
+      "passed": true
+    },
+    {
+      "name": "final-source-identity",
+      "count": 134,
+      "sources": [
+        {
+          "path": "lakefile.toml",
+          "expected": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A",
+          "actual": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A",
+          "passed": true
+        },
+        {
+          "path": "lean-toolchain",
+          "expected": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F",
+          "actual": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/Backend.lean",
+          "expected": "8D911857ED6E9669936D5F8818149E23EBF4874C2C508D63CEEA889660ACC751",
+          "actual": "8D911857ED6E9669936D5F8818149E23EBF4874C2C508D63CEEA889660ACC751",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/Cartesian.lean",
+          "expected": "A0C175425B7DF234F8CF59E177B36E3ED593D81D78337D40E6E2ED74028D9580",
+          "actual": "A0C175425B7DF234F8CF59E177B36E3ED593D81D78337D40E6E2ED74028D9580",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/Cost.lean",
+          "expected": "887CDCCA893969756F6B7F785E1CA2249106F215A4155C6BA6FE714A6373BAA4",
+          "actual": "887CDCCA893969756F6B7F785E1CA2249106F215A4155C6BA6FE714A6373BAA4",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/EncodingLowerBound.lean",
+          "expected": "BA555AADFA7F3AB3BF0B8DC1D09E093A33DE6A4747DCE6BA707FA68BCBAE61E5",
+          "actual": "BA555AADFA7F3AB3BF0B8DC1D09E093A33DE6A4747DCE6BA707FA68BCBAE61E5",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/Arithmetic.lean",
+          "expected": "188659DFE14431FA924C60BE82D03EE1733CFC01AC5E5DB046FAB129DB4B88AC",
+          "actual": "188659DFE14431FA924C60BE82D03EE1733CFC01AC5E5DB046FAB129DB4B88AC",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/DenseEntryTable.lean",
+          "expected": "9AF07D6EC8A806E0F7966D3F62801989F8E7DEC84A20C245A9A80555F0655EAB",
+          "actual": "9AF07D6EC8A806E0F7966D3F62801989F8E7DEC84A20C245A9A80555F0655EAB",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/DenseWord.lean",
+          "expected": "771195F6125E8DE11C24F1F94876B620151CD4A2EA86DB3464E0C9E6E26FA728",
+          "actual": "771195F6125E8DE11C24F1F94876B620151CD4A2EA86DB3464E0C9E6E26FA728",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/Directory.lean",
+          "expected": "1B99217374A50A1DA29B9E2625D8884F89B1EF255FFF3EC643A32DA58CE246B9",
+          "actual": "1B99217374A50A1DA29B9E2625D8884F89B1EF255FFF3EC643A32DA58CE246B9",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/Entries.lean",
+          "expected": "AE17F58FF740414FE9DFB6DF59B1EE92D2912A26E50D0AB042DD26C813C341F8",
+          "actual": "AE17F58FF740414FE9DFB6DF59B1EE92D2912A26E50D0AB042DD26C813C341F8",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/Family.lean",
+          "expected": "982BA48D8EB6EE8271FE6037BD0A84A0920AC1A5CFE6076B8800211EAA0F891F",
+          "actual": "982BA48D8EB6EE8271FE6037BD0A84A0920AC1A5CFE6076B8800211EAA0F891F",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/FlagRank.lean",
+          "expected": "25EF697C1D68E47DEAD370FFF58717279317E3BB7B5103CD9A5FD8E71896359C",
+          "actual": "25EF697C1D68E47DEAD370FFF58717279317E3BB7B5103CD9A5FD8E71896359C",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/LowLevel.lean",
+          "expected": "D80DC849E26E30EB31487C03865098CD582A62E89EEB2BCD7CAE1020AB306535",
+          "actual": "D80DC849E26E30EB31487C03865098CD582A62E89EEB2BCD7CAE1020AB306535",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/Params.lean",
+          "expected": "05F8E4CB75A07792F6B51E5F561EE5E20EEB8F7F51EC05664CDDAF0E55440EA1",
+          "actual": "05F8E4CB75A07792F6B51E5F561EE5E20EEB8F7F51EC05664CDDAF0E55440EA1",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/Primitives.lean",
+          "expected": "EAF0C05A429B425A40E8CC77044F268BC8FF36F8B9BB648473D6576F53DF6840",
+          "actual": "EAF0C05A429B425A40E8CC77044F268BC8FF36F8B9BB648473D6576F53DF6840",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/RAM.lean",
+          "expected": "FEE4D7BE36077D93F928716E4909B4773F818CE39FDA17BC17E85E944EC2892F",
+          "actual": "FEE4D7BE36077D93F928716E4909B4773F818CE39FDA17BC17E85E944EC2892F",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/RAMStoreParam.lean",
+          "expected": "F17C7F141928ADEA7320B3187C98F2983B34E3D95B9E6F629860AB4C1313A277",
+          "actual": "F17C7F141928ADEA7320B3187C98F2983B34E3D95B9E6F629860AB4C1313A277",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/RelativeSplit.lean",
+          "expected": "89E4188223B34F322480147FE5EA4D57542E79A00763408B2EC45D4C80DD9C36",
+          "actual": "89E4188223B34F322480147FE5EA4D57542E79A00763408B2EC45D4C80DD9C36",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/RelativeTables.lean",
+          "expected": "7131A37475059E917D114531BA34726E1C34432BC9DF271D56C166370DC9F1EC",
+          "actual": "7131A37475059E917D114531BA34726E1C34432BC9DF271D56C166370DC9F1EC",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/SelectFacts.lean",
+          "expected": "DF6E9CB61E7FEEE0659B62960379FB8CD851B6BD914347A2D3BD06785CF93C69",
+          "actual": "DF6E9CB61E7FEEE0659B62960379FB8CD851B6BD914347A2D3BD06785CF93C69",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/SelectSource.lean",
+          "expected": "222526C0D6D8AD56EB1E4FD5678111471961A6D3674614790BD5ACE58098D57A",
+          "actual": "222526C0D6D8AD56EB1E4FD5678111471961A6D3674614790BD5ACE58098D57A",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/Slots.lean",
+          "expected": "AE96B766A1D0CF34CE468B3EE9C9FDF82195AE25FA4ACA41E150AE426FA59051",
+          "actual": "AE96B766A1D0CF34CE468B3EE9C9FDF82195AE25FA4ACA41E150AE426FA59051",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/GenericSelect/Source.lean",
+          "expected": "D1A404009FB648D1F256AFB0EFC396594C00B6E0EC85192F978B16BC0F08932E",
+          "actual": "D1A404009FB648D1F256AFB0EFC396594C00B6E0EC85192F978B16BC0F08932E",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/LCA.lean",
+          "expected": "E981D40A5C3429A6794BD7857AEB01A0B49653F869C1139232AFB8766F1B053C",
+          "actual": "E981D40A5C3429A6794BD7857AEB01A0B49653F869C1139232AFB8766F1B053C",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/ListLemmas.lean",
+          "expected": "E4DF7A2D19754BC5BA77BA05235EC72E839DF226B00D4A38BAEB452B46ECA1FA",
+          "actual": "E4DF7A2D19754BC5BA77BA05235EC72E839DF226B00D4A38BAEB452B46ECA1FA",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/LowerBound.lean",
+          "expected": "FEFE56A46F206F5233C7E4B9EDAFC6BC1FA5CB0E04B03494FB94D9D0DFD6DF56",
+          "actual": "FEFE56A46F206F5233C7E4B9EDAFC6BC1FA5CB0E04B03494FB94D9D0DFD6DF56",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/Microtable.lean",
+          "expected": "7AC16582B05226A39314CB12CF4032394BCC9802E01867697E1271BBD9C21A80",
+          "actual": "7AC16582B05226A39314CB12CF4032394BCC9802E01867697E1271BBD9C21A80",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/PayloadLowerBound.lean",
+          "expected": "24523EC8D3DD5859738DDBDF69BCC14C41FB0E21D7175ADDD494072FFF1BCA55",
+          "actual": "24523EC8D3DD5859738DDBDF69BCC14C41FB0E21D7175ADDD494072FFF1BCA55",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/PlusMinusOne.lean",
+          "expected": "F66CFC4256FA0F3806E4C64EB3DC530E9675A86F3D1C3082AF349DFA9A3F74EF",
+          "actual": "F66CFC4256FA0F3806E4C64EB3DC530E9675A86F3D1C3082AF349DFA9A3F74EF",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/RAM.lean",
+          "expected": "208E621844CA2A0F5CA73312B3C5688406AFD330EB753506987DAB603AADEF4F",
+          "actual": "208E621844CA2A0F5CA73312B3C5688406AFD330EB753506987DAB603AADEF4F",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/RankSelectSpec.lean",
+          "expected": "2D48B2089432B601337E7FDB6CF9B081D8382A44019068D5DF64FBC4867DBCD1",
+          "actual": "2D48B2089432B601337E7FDB6CF9B081D8382A44019068D5DF64FBC4867DBCD1",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/Reduction.lean",
+          "expected": "A15808CA01F085C691CC30F73EEEB88E8AA858670D4BF0B707F2DED1AA1791EF",
+          "actual": "A15808CA01F085C691CC30F73EEEB88E8AA858670D4BF0B707F2DED1AA1791EF",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/Refine.lean",
+          "expected": "75953F297DE26411AF75EA9BE3CDBF2FD6D0403EE0AE88E3310DDCD5ABBBEB2A",
+          "actual": "75953F297DE26411AF75EA9BE3CDBF2FD6D0403EE0AE88E3310DDCD5ABBBEB2A",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/Shape.lean",
+          "expected": "A29366B989E786A5C762764C2DA1FFC9DF1487BE212A113A122384D9A1E2C863",
+          "actual": "A29366B989E786A5C762764C2DA1FFC9DF1487BE212A113A122384D9A1E2C863",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/Spec.lean",
+          "expected": "D32B9EF9873E9C9D8E2AEFE1227770F2B565122FAE01C0AE86737FA750F74AE3",
+          "actual": "D32B9EF9873E9C9D8E2AEFE1227770F2B565122FAE01C0AE86737FA750F74AE3",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/Succinct.lean",
+          "expected": "C81AF4978110198561B109893832045509D8C8846CF2FCB179C809B5BA67E74E",
+          "actual": "C81AF4978110198561B109893832045509D8C8846CF2FCB179C809B5BA67E74E",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/BlockLocal.lean",
+          "expected": "818D93BC4665385FD6F5E45431DFC783E1A1D0860DCA35DCB9B75EFCDB5F0B62",
+          "actual": "818D93BC4665385FD6F5E45431DFC783E1A1D0860DCA35DCB9B75EFCDB5F0B62",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe.lean",
+          "expected": "47F178B980D4386FA297A3BC8352F5D8FFD73AE9CA5C8E5CE8C5994FAC04F6F3",
+          "actual": "47F178B980D4386FA297A3BC8352F5D8FFD73AE9CA5C8E5CE8C5994FAC04F6F3",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro.lean",
+          "expected": "466D70E742C3B92EE02833F796B1776DDFC3BEA4CF487F0EB2F1734B48005732",
+          "actual": "466D70E742C3B92EE02833F796B1776DDFC3BEA4CF487F0EB2F1734B48005732",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/MicroCodebook.lean",
+          "expected": "3E9DFFFD9C463376798509E1E88919A47EA52C39D7DF18D8369996954929BF04",
+          "actual": "3E9DFFFD9C463376798509E1E88919A47EA52C39D7DF18D8369996954929BF04",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro.lean",
+          "expected": "F9E7C1471B2167BDAF3D049E187224E27AAB87971C3404C5F17298C55E0A99D9",
+          "actual": "F9E7C1471B2167BDAF3D049E187224E27AAB87971C3404C5F17298C55E0A99D9",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/Concrete.lean",
+          "expected": "1A72C3A22D9EC67B1F7D728E4E369E0AF4CC33384C8922583A971CA4224E74B2",
+          "actual": "1A72C3A22D9EC67B1F7D728E4E369E0AF4CC33384C8922583A971CA4224E74B2",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/PayloadMacro.lean",
+          "expected": "9FA35FD83C7F46FBA374B549AE1F85F2733A2409FFB03B9CCBEAFCC6510CD08B",
+          "actual": "9FA35FD83C7F46FBA374B549AE1F85F2733A2409FFB03B9CCBEAFCC6510CD08B",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/RangeTables.lean",
+          "expected": "C036F7B736ABF755A8B8D9B1A02CE5810AD441CDAC7F546993F8D5B5AF63F041",
+          "actual": "C036F7B736ABF755A8B8D9B1A02CE5810AD441CDAC7F546993F8D5B5AF63F041",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/RelativeMerge.lean",
+          "expected": "ABDEAEBF1C169C5EDE34EF2323C2C942D26C8052BE68C6E1E21D2FE0A86C09EF",
+          "actual": "ABDEAEBF1C169C5EDE34EF2323C2C942D26C8052BE68C6E1E21D2FE0A86C09EF",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate.lean",
+          "expected": "948813C73489C2642729997DC9AB448EB8FCFB70966A9F6307783F4DE5434BCC",
+          "actual": "948813C73489C2642729997DC9AB448EB8FCFB70966A9F6307783F4DE5434BCC",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/Candidate.lean",
+          "expected": "C843AABE9ADCA16A463EFC1307CF629604470E8847D3591131EC29784D4C6D83",
+          "actual": "C843AABE9ADCA16A463EFC1307CF629604470E8847D3591131EC29784D4C6D83",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean",
+          "expected": "92A2322E6DD91D8D2718E65F52B5DAC2572C142297501F0DF3882BF84534BC16",
+          "actual": "92A2322E6DD91D8D2718E65F52B5DAC2572C142297501F0DF3882BF84534BC16",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/Base.lean",
+          "expected": "65522F59E57BE29618BCA88A624F9A867C8DE02469A42C526B48E087751391A1",
+          "actual": "65522F59E57BE29618BCA88A624F9A867C8DE02469A42C526B48E087751391A1",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/SparseLevelWidth.lean",
+          "expected": "25A067E1C7E41C525680E44BB0767868EEEACE8D09825F232CB957EE000996B1",
+          "actual": "25A067E1C7E41C525680E44BB0767868EEEACE8D09825F232CB957EE000996B1",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/ValueDependency.lean",
+          "expected": "B10110A3A0231D1FAD754A830EE0397A55ECB894C16B0864B6DD8A0B6F607D2C",
+          "actual": "B10110A3A0231D1FAD754A830EE0397A55ECB894C16B0864B6DD8A0B6F607D2C",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorRAM.lean",
+          "expected": "E6850BE91B2120958019452EE26658AB2AA13CDAFD42BDDE649B6BA177EFD956",
+          "actual": "E6850BE91B2120958019452EE26658AB2AA13CDAFD42BDDE649B6BA177EFD956",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/LocalGlobalSparse.lean",
+          "expected": "B2A3B8866E5FCB52CC5A0884B22AFBE6DE2B74C92CED3D36B6F5C1CB8D29EFA6",
+          "actual": "B2A3B8866E5FCB52CC5A0884B22AFBE6DE2B74C92CED3D36B6F5C1CB8D29EFA6",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/RelativeScan.lean",
+          "expected": "AD29744DA234215194478A2D8D0F2BF31FCCA119E5E9C9554A11970F2C9E0B21",
+          "actual": "AD29744DA234215194478A2D8D0F2BF31FCCA119E5E9C9554A11970F2C9E0B21",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/TwoLevelCandidate.lean",
+          "expected": "6900B5DDEB67DF79BA9A1A2B39682FEFCD9EA975E2E408ECD8291316748D15A8",
+          "actual": "6900B5DDEB67DF79BA9A1A2B39682FEFCD9EA975E2E408ECD8291316748D15A8",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/WordReads.lean",
+          "expected": "995F2E38D1F5C43FCAA1E4815FD2235EA481F7DBDCFFE3738EB5CFF7BACC37F6",
+          "actual": "995F2E38D1F5C43FCAA1E4815FD2235EA481F7DBDCFFE3738EB5CFF7BACC37F6",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange.lean",
+          "expected": "A0FED5EE46F3152D63EF42F8791D802FA34CCF8AE9D4A98A3288DF1425302B0D",
+          "actual": "A0FED5EE46F3152D63EF42F8791D802FA34CCF8AE9D4A98A3288DF1425302B0D",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/AnswerSemantics.lean",
+          "expected": "148B0E1DB197AADFD8F0927A82A89195D5F066F98B8BFF31C92718DCA1D66A9F",
+          "actual": "148B0E1DB197AADFD8F0927A82A89195D5F066F98B8BFF31C92718DCA1D66A9F",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/LocalSparseOffset.lean",
+          "expected": "717A2514A0255D9994D780C87E0BA952D193EE791EFFAFF440D194438765B82D",
+          "actual": "717A2514A0255D9994D780C87E0BA952D193EE791EFFAFF440D194438765B82D",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/PrefixArgMin.lean",
+          "expected": "02EAC18E6679B60A7A78BA101C39E3269C18EAF8202178B3C0335441FE548CAD",
+          "actual": "02EAC18E6679B60A7A78BA101C39E3269C18EAF8202178B3C0335441FE548CAD",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/PrefixWitnessTable.lean",
+          "expected": "07538D0E27689BCB02915F5101ED158B5258A168ABB172F35DE0CF5733C2B56B",
+          "actual": "07538D0E27689BCB02915F5101ED158B5258A168ABB172F35DE0CF5733C2B56B",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/RelativeSummaryCandidate.lean",
+          "expected": "4092148FDDBF60A1F481128DC96EFFB2FABD121CAD14F8EAA0142DDF6F30ECAA",
+          "actual": "4092148FDDBF60A1F481128DC96EFFB2FABD121CAD14F8EAA0142DDF6F30ECAA",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/SparseArgMin.lean",
+          "expected": "BD98AF45F9D43B75768E23013EAEC66400850215124102C7720BE4CA115A774E",
+          "actual": "BD98AF45F9D43B75768E23013EAEC66400850215124102C7720BE4CA115A774E",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/SparseLevelTable.lean",
+          "expected": "15E23994297D09D37CABDCFB2277BC8F819FF76C307636AC6E3889C1B7E61043",
+          "actual": "15E23994297D09D37CABDCFB2277BC8F819FF76C307636AC6E3889C1B7E61043",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RangeSummary.lean",
+          "expected": "4DBE30022D3066FB44C1405D2C52FD8D4469537B6DE0C589DB6F99FBABB9A7EE",
+          "actual": "4DBE30022D3066FB44C1405D2C52FD8D4469537B6DE0C589DB6F99FBABB9A7EE",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RangeWitness.lean",
+          "expected": "4A9EF0FAD0B84ED02F55A1313353375F5159322DA5B159DBC6081E8781F378DC",
+          "actual": "4A9EF0FAD0B84ED02F55A1313353375F5159322DA5B159DBC6081E8781F378DC",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/AbstractMacro.lean",
+          "expected": "4A368521FB415863E5FD77A7B0F4ED83CBD49983DBF4A7CD4A2B6921A0407553",
+          "actual": "4A368521FB415863E5FD77A7B0F4ED83CBD49983DBF4A7CD4A2B6921A0407553",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeChunks.lean",
+          "expected": "7D3C02BF0F79FF53008D322C7FB92A99449252AA1303FB539222BB4F0B75CC6A",
+          "actual": "7D3C02BF0F79FF53008D322C7FB92A99449252AA1303FB539222BB4F0B75CC6A",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeSubstitution.lean",
+          "expected": "A76B18F22F18D2F26F60136ECA544921FC6177B55718E092D6C92A74071D9BEB",
+          "actual": "A76B18F22F18D2F26F60136ECA544921FC6177B55718E092D6C92A74071D9BEB",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeTrace.lean",
+          "expected": "3958821F9FFB5FE5A3E51664ECF50191AF3BC27FEF1303BCA27565D772B61E26",
+          "actual": "3958821F9FFB5FE5A3E51664ECF50191AF3BC27FEF1303BCA27565D772B61E26",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedRankSelectLeafTrace.lean",
+          "expected": "418AAB560F5E0A6DB37CB4D5B3245D44580BE8004ADCC3A98528DEC598B87C96",
+          "actual": "418AAB560F5E0A6DB37CB4D5B3245D44580BE8004ADCC3A98528DEC598B87C96",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedRankSelectLeaves.lean",
+          "expected": "4964AD5844644F486DF44F75ABC31862DFFD3BE4A507B503E120A615657BB418",
+          "actual": "4964AD5844644F486DF44F75ABC31862DFFD3BE4A507B503E120A615657BB418",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedRankSelectTrace.lean",
+          "expected": "D22D91D49051A544BC511FBB7D0663069323F41BAD782B092B147185707FB595",
+          "actual": "D22D91D49051A544BC511FBB7D0663069323F41BAD782B092B147185707FB595",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedSameBlockChunks.lean",
+          "expected": "F3E233EDD10FC8DE7098ED037A3A173A3096FB026043F6F81E9AA83F09D34470",
+          "actual": "F3E233EDD10FC8DE7098ED037A3A173A3096FB026043F6F81E9AA83F09D34470",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedSameBlockTrace.lean",
+          "expected": "F68059B658962AA7D00942DA93B27415B19D2D04A9D6E5A1614706A914D37373",
+          "actual": "F68059B658962AA7D00942DA93B27415B19D2D04A9D6E5A1614706A914D37373",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedWordChunks.lean",
+          "expected": "32AFF7472532A2CD3FDBD8DEECB92148466ABBA6780CEAFF695BE52F83F467C8",
+          "actual": "32AFF7472532A2CD3FDBD8DEECB92148466ABBA6780CEAFF695BE52F83F467C8",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/CompactEndpoint.lean",
+          "expected": "383F30B3C6662F9C455632E6AE96F5935ADCA6EB65D25642676139DB08681761",
+          "actual": "383F30B3C6662F9C455632E6AE96F5935ADCA6EB65D25642676139DB08681761",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectory.lean",
+          "expected": "823081F1FF979F77970BA2477CD9F9F5BB6E1255EA15129C061B726BA62CB7CE",
+          "actual": "823081F1FF979F77970BA2477CD9F9F5BB6E1255EA15129C061B726BA62CB7CE",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectoryRAM.lean",
+          "expected": "0CED594DE17F432C8FDB3BBDFF926FAF26F051BCACE6B9EB5040D70A91172E49",
+          "actual": "0CED594DE17F432C8FDB3BBDFF926FAF26F051BCACE6B9EB5040D70A91172E49",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectoryRAMStoreParam.lean",
+          "expected": "074AE2026220430F9B6D00805FC51BA46917C8C0C50FD599A777245E029CC31E",
+          "actual": "074AE2026220430F9B6D00805FC51BA46917C8C0C50FD599A777245E029CC31E",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/EndpointCodebook.lean",
+          "expected": "5029E982326AB8DEA8D0E0F22B0A29081F2D802B2C78770E5D7584158BDB66A7",
+          "actual": "5029E982326AB8DEA8D0E0F22B0A29081F2D802B2C78770E5D7584158BDB66A7",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/LocalBPDecoder.lean",
+          "expected": "54CAD93011FDA3A464BE6F93D102332A375712E3993E4A8380D88EDDBE5F5B8A",
+          "actual": "54CAD93011FDA3A464BE6F93D102332A375712E3993E4A8380D88EDDBE5F5B8A",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctClose/RelativeSummary.lean",
+          "expected": "14346D7A6E5C881DA559C423A53CE82170EE2A78D77F7ED31282671504AF034E",
+          "actual": "14346D7A6E5C881DA559C423A53CE82170EE2A78D77F7ED31282671504AF034E",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctRank.lean",
+          "expected": "164F2C7BF988559DB4EFE7FC8C933E91DB66737C9C6F0297D6993831FFFF335B",
+          "actual": "164F2C7BF988559DB4EFE7FC8C933E91DB66737C9C6F0297D6993831FFFF335B",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace.lean",
+          "expected": "2DB86CA92D7EFBEB75B4DEB59A039ACA1E1C9DFE9BD597330A814568A12D7FEB",
+          "actual": "2DB86CA92D7EFBEB75B4DEB59A039ACA1E1C9DFE9BD597330A814568A12D7FEB",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/Asymptotics.lean",
+          "expected": "39493F9BD2B86C041ED7471C310244E4FCED9DE831C566A8FEB8593EA783FFCE",
+          "actual": "39493F9BD2B86C041ED7471C310244E4FCED9DE831C566A8FEB8593EA783FFCE",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/BPAccess.lean",
+          "expected": "F79B2360503863665F30953566AEFF88BAC736063F725C599858460F13F344DF",
+          "actual": "F79B2360503863665F30953566AEFF88BAC736063F725C599858460F13F344DF",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/BPCloseLCA.lean",
+          "expected": "00C85BEEA48B2DFA4BEFA8A3DAAF70ADA06F876B71F7DAE6CC185FF47DC465AF",
+          "actual": "00C85BEEA48B2DFA4BEFA8A3DAAF70ADA06F876B71F7DAE6CC185FF47DC465AF",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/BPCloseLCARAM.lean",
+          "expected": "776D7F64C12CF9F6515D121FECFAA28C963887C0C9DD34E834CFC9B2FEF3C1DF",
+          "actual": "776D7F64C12CF9F6515D121FECFAA28C963887C0C9DD34E834CFC9B2FEF3C1DF",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/BPCloseRMQNavigation.lean",
+          "expected": "9F7FA7CCDDB6F4106559D483EA35313BD1AE34B00F27259723DA6AD9E4A1AB55",
+          "actual": "9F7FA7CCDDB6F4106559D483EA35313BD1AE34B00F27259723DA6AD9E4A1AB55",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/BPCloseRMQNavigationRAM.lean",
+          "expected": "11541F260779F41468BECE8C941B16B6ED06AB32487AEEA9F916279DC36248DE",
+          "actual": "11541F260779F41468BECE8C941B16B6ED06AB32487AEEA9F916279DC36248DE",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/BPShape.lean",
+          "expected": "633C2CFCEE96751D7CB84B5492A16E1DE3A79B7BE4904C799188363D5B75A00F",
+          "actual": "633C2CFCEE96751D7CB84B5492A16E1DE3A79B7BE4904C799188363D5B75A00F",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/BroadwordRMQ.lean",
+          "expected": "FB21261792E59FEC4A48350A968076CA8E45454F7F7CBA32EF36538DB5F163AD",
+          "actual": "FB21261792E59FEC4A48350A968076CA8E45454F7F7CBA32EF36538DB5F163AD",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/MachineChunkedTable.lean",
+          "expected": "CA5804E728E7CCB5AEE8C8BC2EBC220D5E7AE27A5BD286599337BC6EB682576A",
+          "actual": "CA5804E728E7CCB5AEE8C8BC2EBC220D5E7AE27A5BD286599337BC6EB682576A",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/MachineChunkedTableProgram.lean",
+          "expected": "E8BAA33AA98DBBC67CD12E033B85DA1BC0B3A46303938A6A47A400C5FE34FB80",
+          "actual": "E8BAA33AA98DBBC67CD12E033B85DA1BC0B3A46303938A6A47A400C5FE34FB80",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/RankSelect.lean",
+          "expected": "8DDB5D45C8EA60413EC5A0478C968895172406E855A4B1E5BB8405ECFE66B4A4",
+          "actual": "8DDB5D45C8EA60413EC5A0478C968895172406E855A4B1E5BB8405ECFE66B4A4",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/RankSelectRAM.lean",
+          "expected": "42CE073D6492EE4FAD5E45A3D41F26B73BBE6493B33ACC189AEAB8681342F0EE",
+          "actual": "42CE073D6492EE4FAD5E45A3D41F26B73BBE6493B33ACC189AEAB8681342F0EE",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/SelectSamples.lean",
+          "expected": "62B18FA9CB7301DAA61490224C65068A38B3FB10D48B9E9FEF57359194B23495",
+          "actual": "62B18FA9CB7301DAA61490224C65068A38B3FB10D48B9E9FEF57359194B23495",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/SelectSamplesRAM.lean",
+          "expected": "4931E8C80A9490DF33ADD8DE32ED3DE84041FB16A7E01B8031F400C44C01AFF4",
+          "actual": "4931E8C80A9490DF33ADD8DE32ED3DE84041FB16A7E01B8031F400C44C01AFF4",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/Tables.lean",
+          "expected": "5676C8B39B17EB0C183C9CE7C7E5B7210CEB947182D44933355A24BFB34A3BBF",
+          "actual": "5676C8B39B17EB0C183C9CE7C7E5B7210CEB947182D44933355A24BFB34A3BBF",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/TablesRAM.lean",
+          "expected": "6E5E99094B6B9D4C273AF2A6D3988C7627FEACC8EE0F75ADABB2652FAD4322BE",
+          "actual": "6E5E99094B6B9D4C273AF2A6D3988C7627FEACC8EE0F75ADABB2652FAD4322BE",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/WordStore.lean",
+          "expected": "E508F5EEBA21D642E94D391B29E0DA85228A941539C341BCC97B333D2A23BC34",
+          "actual": "E508F5EEBA21D642E94D391B29E0DA85228A941539C341BCC97B333D2A23BC34",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/SuccinctSpace/WordStoreRAM.lean",
+          "expected": "E73D6D9DB3D61E28CFA9F108E23C97E8CA3C7176A59C28E14B91C320574EA5C3",
+          "actual": "E73D6D9DB3D61E28CFA9F108E23C97E8CA3C7176A59C28E14B91C320574EA5C3",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/TableModel.lean",
+          "expected": "B015B94A0B2E130B6E6ABBB44415868B824AD5242148D614355E580EFA5D8159",
+          "actual": "B015B94A0B2E130B6E6ABBB44415868B824AD5242148D614355E580EFA5D8159",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/Window.lean",
+          "expected": "C135E68A11AF7FF52623A7CCD8439330A93D5758B2E548330889BBF04B08432C",
+          "actual": "C135E68A11AF7FF52623A7CCD8439330A93D5758B2E548330889BBF04B08432C",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM.lean",
+          "expected": "7A47CED349D84C379135918115E3A0424B1DE2D9F4DDA0BB774FF42A94A174A9",
+          "actual": "7A47CED349D84C379135918115E3A0424B1DE2D9F4DDA0BB774FF42A94A174A9",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Bitvector/Allocation.lean",
+          "expected": "B4DE6C3B923589A2AA890399D7D0B8236E3C46E1608ADE74F8CEFE65B60F392B",
+          "actual": "B4DE6C3B923589A2AA890399D7D0B8236E3C46E1608ADE74F8CEFE65B60F392B",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Bitvector/MemoryLayout.lean",
+          "expected": "2CB94877358664BDC93234128FE2115B626C10442AEC87C9429A89395B0D6A24",
+          "actual": "2CB94877358664BDC93234128FE2115B626C10442AEC87C9429A89395B0D6A24",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Bitvector/SelectExperiment.lean",
+          "expected": "156744CBE4DEC77C874114E10408820F7B107B86D5635068D6B855B8363AF0E8",
+          "actual": "156744CBE4DEC77C874114E10408820F7B107B86D5635068D6B855B8363AF0E8",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Bitvector/Source.lean",
+          "expected": "8277F15D876437BD6C35835C57C9332E839AAA94EA63EC8A9F10B8BC661D1074",
+          "actual": "8277F15D876437BD6C35835C57C9332E839AAA94EA63EC8A9F10B8BC661D1074",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/E1FringeBridge.lean",
+          "expected": "B0287F964144901282A2949DC7FDCE9B682506EFB34F0BEC15F9098A5C8351DF",
+          "actual": "B0287F964144901282A2949DC7FDCE9B682506EFB34F0BEC15F9098A5C8351DF",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/E1Machine.lean",
+          "expected": "69CC3DDEFD185F7B6E9B09B64E8B2FB0FEFBE0669210E3D17D96CA707F3E1F94",
+          "actual": "69CC3DDEFD185F7B6E9B09B64E8B2FB0FEFBE0669210E3D17D96CA707F3E1F94",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/E1MachineCalculus.lean",
+          "expected": "15138768C905F6B462B52C2A128801B94E57A70411AAE7439CBE36183446FE66",
+          "actual": "15138768C905F6B462B52C2A128801B94E57A70411AAE7439CBE36183446FE66",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/E1RankBridge.lean",
+          "expected": "40754A0D37317F48F88125E66E6CE207683F639BB4DDBEDDA4669D80BF1B4ED0",
+          "actual": "40754A0D37317F48F88125E66E6CE207683F639BB4DDBEDDA4669D80BF1B4ED0",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Packed/ArrayRun.lean",
+          "expected": "CD45C07C1F822C1BA57B65ACCA2F5CE916FA735B33269AFB7CEB17F4E3B9C82F",
+          "actual": "CD45C07C1F822C1BA57B65ACCA2F5CE916FA735B33269AFB7CEB17F4E3B9C82F",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Packed/Calculus.lean",
+          "expected": "2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45",
+          "actual": "2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Packed/ChunkArithmetic.lean",
+          "expected": "0F1B3DE7E3CF3DC37036335DA47FEA5F4A859E06BFBDF47314F23C6312A982FE",
+          "actual": "0F1B3DE7E3CF3DC37036335DA47FEA5F4A859E06BFBDF47314F23C6312A982FE",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Packed/Compiler.lean",
+          "expected": "C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505",
+          "actual": "C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Packed/DensePacking.lean",
+          "expected": "75487722A3DBB6BCB3D445B0C242E8380F7B9F77A0762354D83F692CBC956913",
+          "actual": "75487722A3DBB6BCB3D445B0C242E8380F7B9F77A0762354D83F692CBC956913",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Packed/Frame.lean",
+          "expected": "480EA8DF315B6DEE0F2048EEEAC03131368FD27EF09E0AAFA21DA2A676929939",
+          "actual": "480EA8DF315B6DEE0F2048EEEAC03131368FD27EF09E0AAFA21DA2A676929939",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Packed/Primitive.lean",
+          "expected": "4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4",
+          "actual": "4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Packed/RankSource.lean",
+          "expected": "B10BA599D21313AC0E5FC7D837D1FE1B999D270280959CA1AE30B8690AB4F6FB",
+          "actual": "B10BA599D21313AC0E5FC7D837D1FE1B999D270280959CA1AE30B8690AB4F6FB",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Packed/RegularLocate.lean",
+          "expected": "047ECF38990BD410085689FDE702417C035785C59C738BA6E1D66B248709D360",
+          "actual": "047ECF38990BD410085689FDE702417C035785C59C738BA6E1D66B248709D360",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Packed/Scalar.lean",
+          "expected": "5D25C758D77F5523DF8AE1C1136AE85FAE12BD9B11BCB6E472DBFABF97506493",
+          "actual": "5D25C758D77F5523DF8AE1C1136AE85FAE12BD9B11BCB6E472DBFABF97506493",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Packed/SelectSource.lean",
+          "expected": "9C41270FE301B417CA622E523F6546E1EB4CB707FDF68D38F64F2975A97C9A5D",
+          "actual": "9C41270FE301B417CA622E523F6546E1EB4CB707FDF68D38F64F2975A97C9A5D",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Packed/Span.lean",
+          "expected": "54E1A81BDDE51E0C460C9BA5ADFD57A04254FE5D14CA6A77259F4108A64584B7",
+          "actual": "54E1A81BDDE51E0C460C9BA5ADFD57A04254FE5D14CA6A77259F4108A64584B7",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Packed/SpanAssembly.lean",
+          "expected": "EA0B7CA706C9750A6E0CDF6220F5F8B411A54CEC33CFADDDED4F010020239106",
+          "actual": "EA0B7CA706C9750A6E0CDF6220F5F8B411A54CEC33CFADDDED4F010020239106",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Packed/Structured.lean",
+          "expected": "F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887",
+          "actual": "F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/ReadStoreEval.lean",
+          "expected": "862496D886BE52077FD0B6F9A8AD6D4E49EE0C39234DCD3213C3DF33300397D2",
+          "actual": "862496D886BE52077FD0B6F9A8AD6D4E49EE0C39234DCD3213C3DF33300397D2",
+          "passed": true
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Register.lean",
+          "expected": "93284E2A6DCACF9C3B425C3267EB8A0568E38CB2CDB083D21EC93FCDB32B783D",
+          "actual": "93284E2A6DCACF9C3B425C3267EB8A0568E38CB2CDB083D21EC93FCDB32B783D",
+          "passed": true
+        },
+        {
+          "path": "scripts/owned_process_tree.ps1",
+          "expected": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+          "actual": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+          "passed": true
+        },
+        {
+          "path": "scripts/packed_bitvector_machine_controls.lean",
+          "expected": "F8F7ECBB3C6AF7023B9F5FD69E9034EFB48C1EF29449A288C2395B7B363C2DC5",
+          "actual": "F8F7ECBB3C6AF7023B9F5FD69E9034EFB48C1EF29449A288C2395B7B363C2DC5",
+          "passed": true
+        },
+        {
+          "path": "scripts/packed_bitvector_machine_controls.ps1",
+          "expected": "19299CD26FDC0050605D8054DD2608723DB95E76682EE8F2DDC4A1347AE71F13",
+          "actual": "19299CD26FDC0050605D8054DD2608723DB95E76682EE8F2DDC4A1347AE71F13",
+          "passed": true
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "priorAttempt": "r19 static checks reached evidence serialization; PowerShell ErrorRecord objects caused over-deep serialization, so its owned session76398 was interrupted before output creation. This retry converts external outputs to strings; no Lean replay was repeated."
+}

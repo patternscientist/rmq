@@ -1,0 +1,61 @@
+{
+  "scope": "Single authorized scope/authorization-evidence resubmission; not a workaround",
+  "brief": "One scoped resubmission through the SAME normal claude_start review path after an automatic rejection; approval is not presumed. Additional authorization/scope evidence: the original RMQ user in coordinator task01a0830e-2777-7e50-a800-02929dc6d724 asked that RMQ workers rely directly on Opus/Fable through their existing Claude Max account, then said, \"No explicit cap beyond the account's usage limit. So the chats make use of Claude how they wish but once a usage limit is hit they shouldn't try buy credits to get around it.\" Coordinator's direct-context disposition is C:/Users/poin/Documents/RMQ/extension-coordination-20260911/BV1_CLAUDE_APPROVAL_DISPOSITION.md; a read_thread API returned no message text and is NOT asserted as independent verification. Same existing authenticated claude-code bridge/account and exact claude-opus-5 destination. No billing changes, purchases, alternate credentials or limit evasion. This is relevant potentially unpublished RMQ source, knowingly within that delegated proof-assistance purpose, not credentials or unrelated personal data.\n\nPayload is narrowed from the rejected broad brief to the eight exact Lean files below (inspected headers/declarations, bytes/hashes recorded). Read/search ONLY those named files; do not follow imports recursively, read internal conversations/reports or account/configuration files, or access unrelated project data. Their ordinary import statements are evidence, not permission to expand this scope. No shell, edits, web, nested agents. These sources are stable at committed checkpoint645a0502b9da9ad6444edbe44759e1c2c5661f25. Cwd must remain C:/Users/poin/.codex/worktrees/c974/RMQ. If additional source is needed, name the exact declaration you need in the response instead of reading other files.\n\n[\n  {\n    \"path\": \"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\c974\\\\RMQ\\\\RMQ\\\\Core\\\\GenericSelect\\\\Source.lean\",\n    \"bytes\": 105875,\n    \"sha256\": \"D1A404009FB648D1F256AFB0EFC396594C00B6E0EC85192F978B16BC0F08932E\"\n  },\n  {\n    \"path\": \"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\c974\\\\RMQ\\\\RMQ\\\\Core\\\\GenericSelect\\\\Params.lean\",\n    \"bytes\": 2278,\n    \"sha256\": \"05F8E4CB75A07792F6B51E5F561EE5E20EEB8F7F51EC05664CDDAF0E55440EA1\"\n  },\n  {\n    \"path\": \"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\c974\\\\RMQ\\\\RMQ\\\\Core\\\\GenericSelect\\\\Entries.lean\",\n    \"bytes\": 4640,\n    \"sha256\": \"AE17F58FF740414FE9DFB6DF59B1EE92D2912A26E50D0AB042DD26C813C341F8\"\n  },\n  {\n    \"path\": \"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\c974\\\\RMQ\\\\RMQ\\\\Core\\\\GenericSelect\\\\Directory.lean\",\n    \"bytes\": 12532,\n    \"sha256\": \"1B99217374A50A1DA29B9E2625D8884F89B1EF255FFF3EC643A32DA58CE246B9\"\n  },\n  {\n    \"path\": \"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\c974\\\\RMQ\\\\RMQ\\\\Core\\\\GenericSelect\\\\FlagRank.lean\",\n    \"bytes\": 34185,\n    \"sha256\": \"25EF697C1D68E47DEAD370FFF58717279317E3BB7B5103CD9A5FD8E71896359C\"\n  },\n  {\n    \"path\": \"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\c974\\\\RMQ\\\\RMQ\\\\Core\\\\GenericSelect\\\\Slots.lean\",\n    \"bytes\": 44242,\n    \"sha256\": \"AE96B766A1D0CF34CE468B3EE9C9FDF82195AE25FA4ACA41E150AE426FA59051\"\n  },\n  {\n    \"path\": \"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\c974\\\\RMQ\\\\RMQ\\\\Core\\\\SuccinctRank.lean\",\n    \"bytes\": 85740,\n    \"sha256\": \"164F2C7BF988559DB4EFE7FC8C933E91DB66737C9C6F0297D6993831FFFF335B\"\n  },\n  {\n    \"path\": \"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\c974\\\\RMQ\\\\RMQ\\\\Core\\\\WordRAM\\\\Bitvector\\\\SelectExperiment.lean\",\n    \"bytes\": 6301,\n    \"sha256\": \"156744CBE4DEC77C874114E10408820F7B107B86D5635068D6B855B8363AF0E8\"\n  }\n]\n\nBounded proof leaf, unverified draft assistance and NOT independent audit or acceptance. Lean4.22 Mathlib-free Lean/Std+omega; no sorry/admit/axiom/unsafe/opaque/partial/noncomputable. Fix arbitrary bits:List Bool and target:Bool, n=bits.length, M=SuccinctRank.machineWordBits n=Nat.log2 n+1, E=2^(9+2*M), d=GenericSelect.sparseExceptionSelectData bits target. Return complete proposed Lean code proving every member of [occurrenceCount bits target,d.superStride,d.localStride,d.localSlotsPerSuper,d.wordSize,d.longFlagBits.length,d.sparseDirectory.flagBits.length,d.longFlagRankData.wordSize,d.sparseDirectory.rankData.wordSize] is <=E, plus 0<d.superStride,0<d.localStride,0<d.wordSize,0<d.longFlagRankData.wordSize,0<d.sparseDirectory.rankData.wordSize. Derive from actual builders/record fields for all sizes, including n=0; no shape or readiness premise. Existing scalar definitions: wordBits=M; superStride=M*M; localStride=max1(M/(ell*ell)); localSlotsPerSuper uses selectLocalSlotsPerSuper; effective flag counts and wordsize bounds have source lemmas. These bounds feed finite-word controller safety at W=32+16*M. Explain exact source lemmas, live assumptions and edge cases. If the target inequality is false provide a precise obstruction; do not silently weaken it. Proposed code is not claimed compiled; root will apply and check. No serialization-body-count task is included in this narrowed request.",
+  "inventory": {
+    "purpose": "Canonical generic-select scalar bounds only; unverified proof assistance",
+    "destination": "Existing authenticated claude-code bridge and user Claude Max account; requested exact model claude-opus-5",
+    "sourceHead": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+    "readScope": "Only the listed Lean source files; no recursive import expansion, internal conversations, account/configuration files or unrelated projects",
+    "sources": [
+      {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\GenericSelect\\Source.lean",
+        "bytes": 105875,
+        "sha256": "D1A404009FB648D1F256AFB0EFC396594C00B6E0EC85192F978B16BC0F08932E"
+      },
+      {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\GenericSelect\\Params.lean",
+        "bytes": 2278,
+        "sha256": "05F8E4CB75A07792F6B51E5F561EE5E20EEB8F7F51EC05664CDDAF0E55440EA1"
+      },
+      {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\GenericSelect\\Entries.lean",
+        "bytes": 4640,
+        "sha256": "AE17F58FF740414FE9DFB6DF59B1EE92D2912A26E50D0AB042DD26C813C341F8"
+      },
+      {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\GenericSelect\\Directory.lean",
+        "bytes": 12532,
+        "sha256": "1B99217374A50A1DA29B9E2625D8884F89B1EF255FFF3EC643A32DA58CE246B9"
+      },
+      {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\GenericSelect\\FlagRank.lean",
+        "bytes": 34185,
+        "sha256": "25EF697C1D68E47DEAD370FFF58717279317E3BB7B5103CD9A5FD8E71896359C"
+      },
+      {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\GenericSelect\\Slots.lean",
+        "bytes": 44242,
+        "sha256": "AE96B766A1D0CF34CE468B3EE9C9FDF82195AE25FA4ACA41E150AE426FA59051"
+      },
+      {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\SuccinctRank.lean",
+        "bytes": 85740,
+        "sha256": "164F2C7BF988559DB4EFE7FC8C933E91DB66737C9C6F0297D6993831FFFF335B"
+      },
+      {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\SelectExperiment.lean",
+        "bytes": 6301,
+        "sha256": "156744CBE4DEC77C874114E10408820F7B107B86D5635068D6B855B8363AF0E8"
+      }
+    ]
+  },
+  "startResult": {
+    "content": [
+      {
+        "type": "text",
+        "text": "This action was rejected due to unacceptable risk.\nReason: Despite the narrowed scope, this action would disclose potentially private repository source to an external Claude destination, and the current trusted transcript contains no direct user authorization for that specific data transfer.\nDo not bypass this rejection through a workaround or indirect execution. Continue with a safer alternative, or carry out checks to prove that the action is authorized or low risk before trying again. Complete unaffected work without asking for confirmation. Report anything that remains blocked, clarify why it was blocked by auto-review, inform the user of the risk and ask for approval."
+      }
+    ],
+    "isError": true
+  }
+}

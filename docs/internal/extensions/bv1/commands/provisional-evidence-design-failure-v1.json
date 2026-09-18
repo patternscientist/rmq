@@ -1,0 +1,24 @@
+{
+  "status": "FAILED_PROVISIONAL_EVIDENCE_COMMIT",
+  "provisionalCommit": "125f2e1ab1579dff5cf0fbf8cde311bf9be06cba",
+  "sourceCommit": "763b00e68cabef2ea322a92fb7b3be354b367179",
+  "command": [
+    "pwsh",
+    "-NoProfile",
+    "-File",
+    "scripts/design_decision_check.ps1",
+    "-Strict",
+    "-Base",
+    "763b00e68cabef2ea322a92fb7b3be354b367179",
+    "-Head",
+    "125f2e1ab1579dff5cf0fbf8cde311bf9be06cba"
+  ],
+  "exit": 1,
+  "output": [
+    "DESIGN-CHECK: code/public/repository-sensitive paths changed; update docs/internal/DESIGN_DECISIONS.md",
+    "  code: docs/FAMILY_SUMMARY.md",
+    "DESIGN-CHECK: checked 11 changed files (1 code, 8 workflow, 2 neutral)",
+    "DESIGN-CHECK: strict mode found 1 missing design-log updates"
+  ],
+  "disposition": "Add the public status/provenance rationale to DESIGN_DECISIONS.md and amend the unpublished, undelivered evidence commit. Preserve the tested source candidate and every tested input. The replacement commit requires a new per-commit check; this failure is never relabeled PASS."
+}

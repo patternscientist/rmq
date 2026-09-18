@@ -1,0 +1,1175 @@
+{
+  "version": 1,
+  "registry": [
+    "unchanged",
+    "harmless-comment",
+    "weaken-completeCapacity",
+    "weaken-overheadLittleO",
+    "weaken-widthBounds",
+    "weaken-memoryWordsFit",
+    "weaken-readerGeometry",
+    "weaken-readerCorrect",
+    "weaken-accessCorrect",
+    "weaken-rankCorrect",
+    "weaken-selectCorrect",
+    "weaken-accessExecution",
+    "weaken-rankExecution",
+    "weaken-selectExecution",
+    "weaken-accessSafety",
+    "weaken-rankSafety",
+    "weaken-selectSafety",
+    "weaken-programLengths",
+    "weaken-sourceBudgets",
+    "weaken-stepsBound",
+    "weaken-categoryPartition",
+    "weaken-categoryBounds",
+    "weaken-finiteScratch",
+    "weaken-suppliedMemoryAgreement",
+    "weaken-validArgumentFits",
+    "delete-accessCorrect",
+    "sibling-completeCapacity",
+    "sibling-selectSafety",
+    "sibling-readerCorrect",
+    "public-proposition-True",
+    "capacity-without-code",
+    "capacity-without-scratch"
+  ],
+  "fields": [
+    "completeCapacity",
+    "overheadLittleO",
+    "widthBounds",
+    "memoryWordsFit",
+    "readerGeometry",
+    "readerCorrect",
+    "accessCorrect",
+    "rankCorrect",
+    "selectCorrect",
+    "accessExecution",
+    "rankExecution",
+    "selectExecution",
+    "accessSafety",
+    "rankSafety",
+    "selectSafety",
+    "programLengths",
+    "sourceBudgets",
+    "stepsBound",
+    "categoryPartition",
+    "categoryBounds",
+    "finiteScratch",
+    "suppliedMemoryAgreement",
+    "validArgumentFits"
+  ],
+  "snapshotId": "97405C70ED3B60CED72874D6DF622D2E9BBA0BD8F04808A3F98ED34EE1CEB770",
+  "capstonePath": "RMQ/Core/WordRAM/Bitvector/Capstone.lean",
+  "consumerPath": "docs/internal/extensions/bv1/controls/public_expected_type.lean",
+  "capstoneSHA256": "1C6CD0A85B77FBA7706C77DA87DE358808A24FA661D5635A3C4B3BBF96005D69",
+  "consumerSHA256": "FEA8D045EF0A9CB9679949ED8825F2E04A4542C01E8F056A778BB0B474BF7A9E",
+  "consumerRemovedImport": "import RMQ.Core.WordRAM.Bitvector.Capstone\n",
+  "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+  "runnerSHA256": "673F6DB06D7DF1585741D2015F1BB2C034B3BF95266063735C452749B539385A",
+  "cases": [
+    {
+      "id": "unchanged",
+      "field": "",
+      "constructorExit": 0,
+      "consumerExit": 0,
+      "expectedDiagnosticClasses": [],
+      "expectedErrorLines": null,
+      "consumerOriginalLine": 0,
+      "constructorFile": "unchanged.constructor.lean",
+      "consumerFile": "unchanged.consumer.lean",
+      "constructorSHA256": "1C6CD0A85B77FBA7706C77DA87DE358808A24FA661D5635A3C4B3BBF96005D69",
+      "consumerSHA256": "34030EC06C9424F6692A02E49352D7B58CB67A6F1A874BCF07D980DEA0FCB3FB",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": []
+    },
+    {
+      "id": "harmless-comment",
+      "field": "",
+      "constructorExit": 0,
+      "consumerExit": 0,
+      "expectedDiagnosticClasses": [],
+      "expectedErrorLines": null,
+      "consumerOriginalLine": 0,
+      "constructorFile": "harmless-comment.constructor.lean",
+      "consumerFile": "harmless-comment.consumer.lean",
+      "constructorSHA256": "72FB34AEFDD6DD4C5D58160F954FF6F6A251B957438528E4BFE9FE86CCDA4DAA",
+      "consumerSHA256": "FD5635974A1AB26F392D5AD314220BC219019ACBC066C38D8B4BB1275A3917A8",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "structure FullyChargedBitvectorCapstone : Prop where",
+          "after": "-- Harmless version1 acceptance control; the proposition is unchanged.\nstructure FullyChargedBitvectorCapstone : Prop where",
+          "beforeSHA256": "BB45170082BA0156D17D6EB7C918542C867AA8838CE6669709638CB8193485CB",
+          "afterSHA256": "31DE749DCFCA4D77E5619358DE391654977CF6F4FEE6694DBF308368FE17C6AC",
+          "beforeBytes": 52,
+          "afterBytes": 123
+        }
+      ]
+    },
+    {
+      "id": "weaken-completeCapacity",
+      "field": "completeCapacity",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 249,
+      "consumerOriginalLine": 17,
+      "constructorFile": "weaken-completeCapacity.constructor.lean",
+      "consumerFile": "weaken-completeCapacity.consumer.lean",
+      "constructorSHA256": "4B0706831969C019A3D2783BA58FB40FCF6314ABA0324A8FA664F5F8E1486FA7",
+      "consumerSHA256": "6EEAC100AD379A0CCF6D0AE1DF62AED680DB286B4A3ACA11A204C23ECFFA28E4",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN completeCapacity\n  completeCapacity : ∀ bits : List Bool,\n    ((Allocation.memory bits).length +\n      ((program .access).map Instruction.encoding).flatten.length +\n      ((program .rank).map Instruction.encoding).flatten.length +\n      ((program .select).map Instruction.encoding).flatten.length +\n      (8271 + 3)) * Experiment.width bits.length ≤\n        bits.length + completeRho bits.length\n  -- BV1-FIELD-END completeCapacity\n",
+          "after": "  -- BV1-FIELD-BEGIN completeCapacity\n  completeCapacity : True\n  -- BV1-FIELD-END completeCapacity\n",
+          "beforeSHA256": "C9735D5BF781129D75EC696FC1A45B8350C5A87619BFE7916C64117AEF3A4987",
+          "afterSHA256": "B8D8676439A7A24FC59467C68D29CDA1D7DF5F9E29F4C1DBF57EE5FA3A887609",
+          "beforeBytes": 457,
+          "afterBytes": 100
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN completeCapacity\n  completeCapacity := complete_capacity\n  -- BV1-VALUE-END completeCapacity\n",
+          "after": "  -- BV1-VALUE-BEGIN completeCapacity\n  completeCapacity := True.intro\n  -- BV1-VALUE-END completeCapacity\n",
+          "beforeSHA256": "00991AE4E06A4FB6F4837D8546793A53563E67C18A20F4A396A99651C5A255B9",
+          "afterSHA256": "357FF908EBA266AF6A94EA052100D0C0495C9D7B3E196230E5656F7A6E3084D1",
+          "beforeBytes": 114,
+          "afterBytes": 107
+        }
+      ]
+    },
+    {
+      "id": "weaken-overheadLittleO",
+      "field": "overheadLittleO",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 258,
+      "consumerOriginalLine": 20,
+      "constructorFile": "weaken-overheadLittleO.constructor.lean",
+      "consumerFile": "weaken-overheadLittleO.consumer.lean",
+      "constructorSHA256": "81B4ED9073C48C982CD353D2FC5AEA6DB93312EAF20E1A5F3B1E59B0F57AF1EC",
+      "consumerSHA256": "4B929237A0A552FB5C0452ADC7C67645CC48145DF3136145429E914DE25A39E3",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN overheadLittleO\n  overheadLittleO : LittleOLinear completeRho\n  -- BV1-FIELD-END overheadLittleO\n",
+          "after": "  -- BV1-FIELD-BEGIN overheadLittleO\n  overheadLittleO : True\n  -- BV1-FIELD-END overheadLittleO\n",
+          "beforeSHA256": "71E6EC2B1B5EFAA3F5D287C13167F160BF5FFD7CA69B946D19D25E7E5C7AA4FE",
+          "afterSHA256": "44B3F9B1C3BBDB8408932E5D18A8729CF24E92873C0712BD75ED81659F7ECEE3",
+          "beforeBytes": 118,
+          "afterBytes": 97
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN overheadLittleO\n  overheadLittleO := completeRho_littleO\n  -- BV1-VALUE-END overheadLittleO\n",
+          "after": "  -- BV1-VALUE-BEGIN overheadLittleO\n  overheadLittleO := True.intro\n  -- BV1-VALUE-END overheadLittleO\n",
+          "beforeSHA256": "CBF001C4AEEE97C65C5F4BC83303D55C466E1B865E9071B40C1C0BAE42E5CAA3",
+          "afterSHA256": "2EC47CB952597403195785612835FD47F8CFA925D2D4B98971B035B261F449EB",
+          "beforeBytes": 113,
+          "afterBytes": 104
+        }
+      ]
+    },
+    {
+      "id": "weaken-widthBounds",
+      "field": "widthBounds",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 260,
+      "consumerOriginalLine": 24,
+      "constructorFile": "weaken-widthBounds.constructor.lean",
+      "consumerFile": "weaken-widthBounds.consumer.lean",
+      "constructorSHA256": "DCAC8F2FE924655589D8A5436CB92A1288A0BDD797F3A20A8E15C2B0BD0F4689",
+      "consumerSHA256": "2ECB9D416095DC8ADFF4067438A5D2FD17D57D5EC63EF29B747C6FE0108380CF",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN widthBounds\n  widthBounds : ∀ n : Nat,\n    Nat.log2 (n + 2) + 1 ≤ Experiment.width n ∧\n      Experiment.width n ≤ 48 * (Nat.log2 (n + 2) + 1)\n  -- BV1-FIELD-END widthBounds\n",
+          "after": "  -- BV1-FIELD-BEGIN widthBounds\n  widthBounds : True\n  -- BV1-FIELD-END widthBounds\n",
+          "beforeSHA256": "E9125C41FE1B324ABD6013EF247ACA4B4B2078F93F8DE2FC26A145BA3597A63F",
+          "afterSHA256": "DA8EB44466837FCF324A003DFF381AB99B3CD4772BD5A91DAB7042C1DE97C0B5",
+          "beforeBytes": 202,
+          "afterBytes": 85
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN widthBounds\n  widthBounds := width_bounds\n  -- BV1-VALUE-END widthBounds\n",
+          "after": "  -- BV1-VALUE-BEGIN widthBounds\n  widthBounds := True.intro\n  -- BV1-VALUE-END widthBounds\n",
+          "beforeSHA256": "3D6F38AC0ADD676ED0B9B695115F3A4E14A74E809C37441E08BBA64DB4919402",
+          "afterSHA256": "65930B6BD0B44CB5E889337B6B6471AEC10A33C7055A90DD2FEC92441D14186E",
+          "beforeBytes": 94,
+          "afterBytes": 92
+        }
+      ]
+    },
+    {
+      "id": "weaken-memoryWordsFit",
+      "field": "memoryWordsFit",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 265,
+      "consumerOriginalLine": 28,
+      "constructorFile": "weaken-memoryWordsFit.constructor.lean",
+      "consumerFile": "weaken-memoryWordsFit.consumer.lean",
+      "constructorSHA256": "357895F2A939A21AD32072C92496E332A6A7C0D19B11ACD6460BB4777F1365BE",
+      "consumerSHA256": "7C694AF7B9DCB60A38645BEF898AF307E331504B9234F03C727782CE119FB382",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN memoryWordsFit\n  memoryWordsFit : ∀ (bits : List Bool) (value : Nat),\n    value ∈ Allocation.memory bits → value < 2 ^ Experiment.width bits.length\n  -- BV1-FIELD-END memoryWordsFit\n",
+          "after": "  -- BV1-FIELD-BEGIN memoryWordsFit\n  memoryWordsFit : True\n  -- BV1-FIELD-END memoryWordsFit\n",
+          "beforeSHA256": "30E3BC8156F9620969289F8D48DE90FA058FE07A5364BEF9B6C04FBDDCD4A145",
+          "afterSHA256": "3FB9D57AF08FD613E4726018FB44C3D15F7C81965BEF9C76625468E7698BA5B1",
+          "beforeBytes": 209,
+          "afterBytes": 94
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN memoryWordsFit\n  memoryWordsFit := canonical_memoryWordsFit\n  -- BV1-VALUE-END memoryWordsFit\n",
+          "after": "  -- BV1-VALUE-BEGIN memoryWordsFit\n  memoryWordsFit := True.intro\n  -- BV1-VALUE-END memoryWordsFit\n",
+          "beforeSHA256": "E0DB7F4EF08DB8720E76B77EB2FE74A8C88FC4C78BBE7997892FF91537E0E1CF",
+          "afterSHA256": "61D2F122E44EC86E6DC69D49B8FFE3BED8870EF894E1285BAC56C6A4DF2DBF74",
+          "beforeBytes": 115,
+          "afterBytes": 101
+        }
+      ]
+    },
+    {
+      "id": "weaken-readerGeometry",
+      "field": "readerGeometry",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 277,
+      "consumerOriginalLine": 42,
+      "constructorFile": "weaken-readerGeometry.constructor.lean",
+      "consumerFile": "weaken-readerGeometry.consumer.lean",
+      "constructorSHA256": "B83749B6812A69E42E75C286F433BDEC4F07B8297B50EC220313C8EDACAB1029",
+      "consumerSHA256": "94B58CD1D753928B54BE64BF9341E3F01AD2ED48EF6FFC1ED915D28D7B18F7EA",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN readerGeometry\n  readerGeometry : ∀ (bits : List Bool) (target : Bool) (regs : Registers),\n    regs 3 = target.toNat → regs 22 = Experiment.width bits.length →\n    NumericReaderGeometry (Allocation.memory bits) (Experiment.width bits.length) regs\n  -- BV1-FIELD-END readerGeometry\n",
+          "after": "  -- BV1-FIELD-BEGIN readerGeometry\n  readerGeometry : True\n  -- BV1-FIELD-END readerGeometry\n",
+          "beforeSHA256": "4EF0AEC05060ECDC9A5568CE9554058BAD143DD730AAAAAE32040F2E967B8408",
+          "afterSHA256": "8325AA1BDDC4DE8762529806971C8CE96CC5490F05A7AE2C2F79DFF89BAE6A2F",
+          "beforeBytes": 308,
+          "afterBytes": 94
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN readerGeometry\n  readerGeometry := fun bits target regs ht hw =>\n    canonical_numericReaderGeometry bits target regs ⟨ht, hw⟩\n  -- BV1-VALUE-END readerGeometry\n",
+          "after": "  -- BV1-VALUE-BEGIN readerGeometry\n  readerGeometry := True.intro\n  -- BV1-VALUE-END readerGeometry\n",
+          "beforeSHA256": "3D19FFC994CE1C7DC2581CB879FCADF975D0B8AF116D55971E633AF1A44BC87A",
+          "afterSHA256": "328F6AE008413900D5171650C5F6BCC3E3A8CB3CAA8F971126AC5D2D31DC1D7F",
+          "beforeBytes": 186,
+          "afterBytes": 101
+        }
+      ]
+    },
+    {
+      "id": "weaken-readerCorrect",
+      "field": "readerCorrect",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 283,
+      "consumerOriginalLine": 54,
+      "constructorFile": "weaken-readerCorrect.constructor.lean",
+      "consumerFile": "weaken-readerCorrect.consumer.lean",
+      "constructorSHA256": "93E5ED046477366087D233485968F19B015170505D15C2E7745C1EBC54F5C1DC",
+      "consumerSHA256": "ED39EA38FA85B96952E8C5442E95D3F60BB16147A4995C5CD2256C0F8B6EE0B7",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN readerCorrect\n  readerCorrect : ∀ (bits : List Bool) (target : Bool) (regs : Registers),\n    regs 3 = target.toNat → regs 22 = Experiment.width bits.length →\n    let actual := Experiment.physicalReader.eval (Allocation.memory bits) ⟨regs, .running⟩\n    let expected := (Allocation.readStore bits target).readWord? (regs 8192) (regs 8193)\n    actual.final.status = .running ∧\n    actual.final.regs 8194 = logicalPacket expected ∧\n    actual.final.regs 8195 = logicalLength expected ∧\n    actual.reads = Allocation.readerReceipts bits target (regs 8192) (regs 8193) ∧\n    ReaderFrame regs actual.final.regs\n  -- BV1-FIELD-END readerCorrect\n",
+          "after": "  -- BV1-FIELD-BEGIN readerCorrect\n  readerCorrect : True\n  -- BV1-FIELD-END readerCorrect\n",
+          "beforeSHA256": "AA3F960242C1C8FADC976AFFDA18C6F748883E5BE492AE1B25FB91C4D288D0FD",
+          "afterSHA256": "67B6E2615CCC14087B42DEFAF0D58DFDA3197CA934D494E4417947BCB5F4733C",
+          "beforeBytes": 677,
+          "afterBytes": 91
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN readerCorrect\n  readerCorrect := fun bits target regs ht hw =>\n    Allocation.physicalReader_correct bits target regs ⟨ht, hw⟩\n  -- BV1-VALUE-END readerCorrect\n",
+          "after": "  -- BV1-VALUE-BEGIN readerCorrect\n  readerCorrect := True.intro\n  -- BV1-VALUE-END readerCorrect\n",
+          "beforeSHA256": "FFA77B1DFC8BBF1E9E181C911281EB787E59C59D21EEE4B7E202F1E5CC813987",
+          "afterSHA256": "1F6EC3BCFDFA2C5D02F1551DD130280DFD413AD57AE200071AD69B3AC8615C6F",
+          "beforeBytes": 185,
+          "afterBytes": 98
+        }
+      ]
+    },
+    {
+      "id": "weaken-accessCorrect",
+      "field": "accessCorrect",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 295,
+      "consumerOriginalLine": 57,
+      "constructorFile": "weaken-accessCorrect.constructor.lean",
+      "consumerFile": "weaken-accessCorrect.consumer.lean",
+      "constructorSHA256": "BE09F4706F3D5A0B82A0B7A2B3C2F7EC974F39181B7FF6EB82A3C2F0D0905839",
+      "consumerSHA256": "3E46A4250093F07453FDDD3077B0CD86D24E4F0C7DA68E0B7A36614937D1EB8F",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN accessCorrect\n  accessCorrect : ∀ (bits : List Bool) (index : Nat), access bits index = bits[index]?\n  -- BV1-FIELD-END accessCorrect\n",
+          "after": "  -- BV1-FIELD-BEGIN accessCorrect\n  accessCorrect : True\n  -- BV1-FIELD-END accessCorrect\n",
+          "beforeSHA256": "45653DB1B85CBE3E8A22AA364B8DA3F384C9D7B102EC5D2DB6DD4CFE3053991C",
+          "afterSHA256": "481EAAF1750B2FC17487581299B48E537E484AF283DBC6CEDCFC7C1BF69E53DE",
+          "beforeBytes": 157,
+          "afterBytes": 91
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN accessCorrect\n  accessCorrect := access_eq\n  -- BV1-VALUE-END accessCorrect\n",
+          "after": "  -- BV1-VALUE-BEGIN accessCorrect\n  accessCorrect := True.intro\n  -- BV1-VALUE-END accessCorrect\n",
+          "beforeSHA256": "4E888BC62FAE36F63F68D9FEAF7120A34593F000B55CB2D3FCDDF626D88C463F",
+          "afterSHA256": "9A7719545CF826F003AC8A9383BA83FED5906D9E9498E9D82EB2A1911CE2F53A",
+          "beforeBytes": 97,
+          "afterBytes": 98
+        }
+      ]
+    },
+    {
+      "id": "weaken-rankCorrect",
+      "field": "rankCorrect",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 298,
+      "consumerOriginalLine": 62,
+      "constructorFile": "weaken-rankCorrect.constructor.lean",
+      "consumerFile": "weaken-rankCorrect.consumer.lean",
+      "constructorSHA256": "CB537E5BDF53729456D4CC64D8ED0C587EB0DCB02FC71B0890E0FEACFFF08AED",
+      "consumerSHA256": "70DC8889FB84878BE1F28130F289EFEE45D4A993A1B41AF79F989B1B637468E9",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN rankCorrect\n  rankCorrect : ∀ (bits : List Bool) (target : Bool) (endPos : Nat),\n    rank bits target endPos =\n      if endPos ≤ bits.length then some (Succinct.rankPrefix target bits endPos) else none\n  -- BV1-FIELD-END rankCorrect\n",
+          "after": "  -- BV1-FIELD-BEGIN rankCorrect\n  rankCorrect : True\n  -- BV1-FIELD-END rankCorrect\n",
+          "beforeSHA256": "331491B82ECA5F25F1AFC43A5EA4DFA1D275C87111950590F29CB4F33842DD05",
+          "afterSHA256": "9FF8C6F1883E6E88EAE6252F5EA5BE4CDDF21EBA5D360B219F72F0A9247947AB",
+          "beforeBytes": 258,
+          "afterBytes": 85
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN rankCorrect\n  rankCorrect := rank_eq\n  -- BV1-VALUE-END rankCorrect\n",
+          "after": "  -- BV1-VALUE-BEGIN rankCorrect\n  rankCorrect := True.intro\n  -- BV1-VALUE-END rankCorrect\n",
+          "beforeSHA256": "0161CCBC5B17632C82D36C2D19B2DA0DA16DA78215A620BA9A1CAE940CCC6023",
+          "afterSHA256": "396A05208B40AC456BCE975C8D4BBB7EEEB544F050FF1B9E0A5EE002D049A185",
+          "beforeBytes": 89,
+          "afterBytes": 92
+        }
+      ]
+    },
+    {
+      "id": "weaken-selectCorrect",
+      "field": "selectCorrect",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 303,
+      "consumerOriginalLine": 66,
+      "constructorFile": "weaken-selectCorrect.constructor.lean",
+      "consumerFile": "weaken-selectCorrect.consumer.lean",
+      "constructorSHA256": "CF4D7AF5EFA1270F66619985DA7A42453826FEC680C932BF3CD562DEDA1D4820",
+      "consumerSHA256": "EC2BC5463D39D9511A08403449B9818356DB57309E3D0BA6CADC6875B831BB81",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN selectCorrect\n  selectCorrect : ∀ (bits : List Bool) (target : Bool) (occurrence : Nat),\n    select bits target occurrence = Succinct.select target bits occurrence\n  -- BV1-FIELD-END selectCorrect\n",
+          "after": "  -- BV1-FIELD-BEGIN selectCorrect\n  selectCorrect : True\n  -- BV1-FIELD-END selectCorrect\n",
+          "beforeSHA256": "CACEFA27DF8D14C2CB808E19A93F893104E77E69018621FD2A6E458DB1255DD1",
+          "afterSHA256": "79B9BAB5CCD3904D00DB670AC06A95A7A2523627B51F2E369A642A512600A4FE",
+          "beforeBytes": 220,
+          "afterBytes": 91
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN selectCorrect\n  selectCorrect := select_eq\n  -- BV1-VALUE-END selectCorrect\n",
+          "after": "  -- BV1-VALUE-BEGIN selectCorrect\n  selectCorrect := True.intro\n  -- BV1-VALUE-END selectCorrect\n",
+          "beforeSHA256": "E12DF2BB60284617B2EC5E231A3454F47BB2DC64C96C16532615E03CE2F4ABC8",
+          "afterSHA256": "3DC32B8E4C5C03CF16A033F3F659E2777A07CB79130486E230782170729B6ECF",
+          "beforeBytes": 97,
+          "afterBytes": 98
+        }
+      ]
+    },
+    {
+      "id": "weaken-accessExecution",
+      "field": "accessExecution",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 306,
+      "consumerOriginalLine": 75,
+      "constructorFile": "weaken-accessExecution.constructor.lean",
+      "consumerFile": "weaken-accessExecution.consumer.lean",
+      "constructorSHA256": "D08CBAFF37A5A3CF762A697B7C0B041D91612DB39CED86481A29F11D80A9A4F5",
+      "consumerSHA256": "233BC572F5947A66BFB47857CA8629E696B691E3399AE6DDB7BEF3814129EF9E",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN accessExecution\n  accessExecution : ∀ (bits : List Bool) (argument : Nat),\n    let actual := execute bits .access false argument\n    let packet := AccessProof.accessPacket bits argument\n    actual.result = some packet ∧ actual.final.status = .halted packet ∧\n    actual.final.regs 705 = packet ∧ actual.reads = accessExecutionReceipts bits argument ∧\n    actual.steps ≤ 132\n  -- BV1-FIELD-END accessExecution\n",
+          "after": "  -- BV1-FIELD-BEGIN accessExecution\n  accessExecution : True\n  -- BV1-FIELD-END accessExecution\n",
+          "beforeSHA256": "0A02B9997FAAB0B52BEBE5DFC96AA4C3C8B473DE45E0FD4964B635E753BFD7C3",
+          "afterSHA256": "AAA7C70C9AC897591FDAACFA0F7CD601D0E447B2B76DDC1101439A089C9382FF",
+          "beforeBytes": 442,
+          "afterBytes": 97
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN accessExecution\n  accessExecution := by\n    intro bits argument\n    simpa only [source_budget, instructionBound] using execute_access bits argument\n  -- BV1-VALUE-END accessExecution\n",
+          "after": "  -- BV1-VALUE-BEGIN accessExecution\n  accessExecution := True.intro\n  -- BV1-VALUE-END accessExecution\n",
+          "beforeSHA256": "D983748C09A017A42D6EACBEC392AF72A4DD604C56AE537E61C78E36F438F079",
+          "afterSHA256": "E1B637356F252F760BDC8F418E13E1506DF92C6A6D52DA733EA8157216AAE4FC",
+          "beforeBytes": 204,
+          "afterBytes": 104
+        }
+      ]
+    },
+    {
+      "id": "weaken-rankExecution",
+      "field": "rankExecution",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 317,
+      "consumerOriginalLine": 86,
+      "constructorFile": "weaken-rankExecution.constructor.lean",
+      "consumerFile": "weaken-rankExecution.consumer.lean",
+      "constructorSHA256": "94001D672071D489778FA49426B372FBFBC332370182A6281D7548F5702CA367",
+      "consumerSHA256": "8560837AA178EAF503503DD786C74EA68E3AD4CA57822877611C460FC5762AFF",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN rankExecution\n  rankExecution : ∀ (bits : List Bool) (target : Bool) (argument : Nat),\n    let actual := execute bits .rank target argument\n    let packet := rankPacket bits target argument\n    actual.result = some packet ∧ actual.final.status = .halted packet ∧\n    actual.final.regs 360 = packet ∧ actual.reads = rankExecutionReceipts bits target argument ∧\n    actual.steps ≤ 1450\n  -- BV1-FIELD-END rankExecution\n",
+          "after": "  -- BV1-FIELD-BEGIN rankExecution\n  rankExecution : True\n  -- BV1-FIELD-END rankExecution\n",
+          "beforeSHA256": "96F2FC8ACF9267F77DD1594EA2A43F600B2F663BF00192F56E05D9D3E895C7B6",
+          "afterSHA256": "4CC0CFD217637B6E53E64EA6E5DCDB1AA4F4465D17E3D44B9A3D87C311861E70",
+          "beforeBytes": 450,
+          "afterBytes": 91
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN rankExecution\n  rankExecution := by\n    intro bits target argument\n    simpa only [source_budget, instructionBound] using execute_rank bits target argument\n  -- BV1-VALUE-END rankExecution\n",
+          "after": "  -- BV1-VALUE-BEGIN rankExecution\n  rankExecution := True.intro\n  -- BV1-VALUE-END rankExecution\n",
+          "beforeSHA256": "9CECB86025734E373EC6A1C6581DB5C8D84D1A3E3C4F6331262A7F4A0E8155D3",
+          "afterSHA256": "1F6626DACBBCE44534D91B074895CD2F61CC1823733A1FEF84FCB99AC96BF374",
+          "beforeBytes": 210,
+          "afterBytes": 98
+        }
+      ]
+    },
+    {
+      "id": "weaken-selectExecution",
+      "field": "selectExecution",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 333,
+      "consumerOriginalLine": 102,
+      "constructorFile": "weaken-selectExecution.constructor.lean",
+      "consumerFile": "weaken-selectExecution.consumer.lean",
+      "constructorSHA256": "6F840AFC5BA6467310E7DB225FC8A8D1396F3B01339A8463CCC3AB60716BF122",
+      "consumerSHA256": "0507FAB74975C9FFA4094FC2644580900A2AE77FD74013F6131E0666D7A326F6",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN selectExecution\n  selectExecution : ∀ (bits : List Bool) (target : Bool) (argument : Nat),\n    let actual := execute bits .select target argument\n    let packet := optionNatPacket (Succinct.select target bits argument)\n    actual.result = some packet ∧ actual.final.status = .halted packet ∧\n    actual.final.regs 513 = packet ∧ actual.reads = selectExecutionReceipts bits target argument ∧\n    actual.steps ≤ 10030\n  -- BV1-FIELD-END selectExecution\n",
+          "after": "  -- BV1-FIELD-BEGIN selectExecution\n  selectExecution : True\n  -- BV1-FIELD-END selectExecution\n",
+          "beforeSHA256": "7145911BB081CAF24FE7A8F0347845ECC3E4EAE3A9C2C9D03DCC079D8C0338B7",
+          "afterSHA256": "B8D3D4C234F51BC0C4C18C56B99A0837171BA503ED5A892327D445C41536E869",
+          "beforeBytes": 484,
+          "afterBytes": 97
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN selectExecution\n  selectExecution := by\n    intro bits target argument\n    simpa only [source_budget, instructionBound] using execute_select bits target argument\n  -- BV1-VALUE-END selectExecution\n",
+          "after": "  -- BV1-VALUE-BEGIN selectExecution\n  selectExecution := True.intro\n  -- BV1-VALUE-END selectExecution\n",
+          "beforeSHA256": "7ED25CF3F8315087FAEC2D44838897C914260C1B3801782F3CC69D13C4C6FC1D",
+          "afterSHA256": "B30A57162C3F431C56CD8F1CD9FAE3F240349F31AA2A587539473342292FB051",
+          "beforeBytes": 218,
+          "afterBytes": 104
+        }
+      ]
+    },
+    {
+      "id": "weaken-accessSafety",
+      "field": "accessSafety",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 355,
+      "consumerOriginalLine": 120,
+      "constructorFile": "weaken-accessSafety.constructor.lean",
+      "consumerFile": "weaken-accessSafety.consumer.lean",
+      "constructorSHA256": "89BD8C1D125D764AB8538610A7986B71B4639107B89DE60C3B00B012F89127E2",
+      "consumerSHA256": "5433D05760D65D9F969D3433834EEDABAB1A6274F65F951EFA5FD0AF339E901F",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN accessSafety\n  accessSafety : ∀ (bits : List Bool) (argument : Nat),\n    argument < 2 ^ Experiment.width bits.length →\n    RankExecutionSafety (Allocation.memory bits) (Experiment.width bits.length)\n      (program .access) ((source .access).size + 1) (initial .access false argument)\n  -- BV1-FIELD-END accessSafety\n",
+          "after": "  -- BV1-FIELD-BEGIN accessSafety\n  accessSafety : True\n  -- BV1-FIELD-END accessSafety\n",
+          "beforeSHA256": "D0460056AEE689EE0613E74E27ADDD69E419392C3BE1498A262F6AE57CC47B53",
+          "afterSHA256": "81A2739E49D55507DE1D9D2239CCAAE40B0C637BD91CCA48AFFCF60DA78B7C41",
+          "beforeBytes": 341,
+          "afterBytes": 88
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN accessSafety\n  accessSafety := canonical_access_execution_safe\n  -- BV1-VALUE-END accessSafety\n",
+          "after": "  -- BV1-VALUE-BEGIN accessSafety\n  accessSafety := True.intro\n  -- BV1-VALUE-END accessSafety\n",
+          "beforeSHA256": "F7EF19F98FD3B19903097D5FA06AA12B6542A5E4CD3630F6A1D3AA23AB32AEF8",
+          "afterSHA256": "A568D72707AA5170AADF401D09BF213EE589C6EF8222ADBCF6CDB28A86F35224",
+          "beforeBytes": 116,
+          "afterBytes": 95
+        }
+      ]
+    },
+    {
+      "id": "weaken-rankSafety",
+      "field": "rankSafety",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 374,
+      "consumerOriginalLine": 139,
+      "constructorFile": "weaken-rankSafety.constructor.lean",
+      "consumerFile": "weaken-rankSafety.consumer.lean",
+      "constructorSHA256": "507059533A947EBAF1CEDF8BF78F68A90E76904793922602F4EFB1BCCDBD8641",
+      "consumerSHA256": "5CA82990A028513E0955CFD0D3BB20E97D6B7109A30BF36A3FC8305CA6ADC937",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN rankSafety\n  rankSafety : ∀ (bits : List Bool) (target : Bool) (argument : Nat),\n    argument < 2 ^ Experiment.width bits.length →\n    RankExecutionSafety (Allocation.memory bits) (Experiment.width bits.length)\n      (program .rank) ((source .rank).size + 1) (initial .rank target argument)\n  -- BV1-FIELD-END rankSafety\n",
+          "after": "  -- BV1-FIELD-BEGIN rankSafety\n  rankSafety : True\n  -- BV1-FIELD-END rankSafety\n",
+          "beforeSHA256": "968D9B774C6E2DC52A2854433FADD2DED18F3681681E443B6DCDDED972977862",
+          "afterSHA256": "4582263B11A09616FF1BCC1D48E891FF82E3115A7F5F2344D0E8D0426BBEBDC8",
+          "beforeBytes": 346,
+          "afterBytes": 82
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN rankSafety\n  rankSafety := canonical_rank_execution_safe\n  -- BV1-VALUE-END rankSafety\n",
+          "after": "  -- BV1-VALUE-BEGIN rankSafety\n  rankSafety := True.intro\n  -- BV1-VALUE-END rankSafety\n",
+          "beforeSHA256": "82B16B2584C0EA608A1EAFD1B95D5DAF519B92B39C26FA0DBE2DA65F05C5F2D2",
+          "afterSHA256": "053490213AA6B37A23B12B402F35C9ACF1AC1F5AB969FCE66DE56AD918FBF5C8",
+          "beforeBytes": 108,
+          "afterBytes": 89
+        }
+      ]
+    },
+    {
+      "id": "weaken-selectSafety",
+      "field": "selectSafety",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 393,
+      "consumerOriginalLine": 158,
+      "constructorFile": "weaken-selectSafety.constructor.lean",
+      "consumerFile": "weaken-selectSafety.consumer.lean",
+      "constructorSHA256": "2B7D753EC6DFBF5848B7F3E14BD0C6C4AE0E98D0D04876EFFBE316ED497C5BE1",
+      "consumerSHA256": "A61094FE7ECF898D423E14830D6845942F59E93C24DFA49F10B3559D8CD1B588",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN selectSafety\n  selectSafety : ∀ (bits : List Bool) (target : Bool) (argument : Nat),\n    argument < 2 ^ Experiment.width bits.length →\n    RankExecutionSafety (Allocation.memory bits) (Experiment.width bits.length)\n      (program .select) ((source .select).size + 1) (initial .select target argument)\n  -- BV1-FIELD-END selectSafety\n",
+          "after": "  -- BV1-FIELD-BEGIN selectSafety\n  selectSafety : True\n  -- BV1-FIELD-END selectSafety\n",
+          "beforeSHA256": "5A11664093353F4D5C53CAF1DADC709987ED476D68D69A796AE3AA3CD11839B8",
+          "afterSHA256": "567D67A2461264B4F4151334A230F729640CC7CEA229F88E770D54C6C7D1B6B3",
+          "beforeBytes": 358,
+          "afterBytes": 88
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN selectSafety\n  selectSafety := canonical_select_execution_safe\n  -- BV1-VALUE-END selectSafety\n",
+          "after": "  -- BV1-VALUE-BEGIN selectSafety\n  selectSafety := True.intro\n  -- BV1-VALUE-END selectSafety\n",
+          "beforeSHA256": "B6F0668C37B89F4E7A91FA238D0A67A4233661F3AF73963729707209FDA56BDE",
+          "afterSHA256": "888CBEFD0733C3E0E2658990F2E1E37445FF56F934124F3797AA18BC34C2A3E6",
+          "beforeBytes": 116,
+          "afterBytes": 95
+        }
+      ]
+    },
+    {
+      "id": "weaken-programLengths",
+      "field": "programLengths",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 397,
+      "consumerOriginalLine": 162,
+      "constructorFile": "weaken-programLengths.constructor.lean",
+      "consumerFile": "weaken-programLengths.consumer.lean",
+      "constructorSHA256": "218B2E0E75ADA30FF7CC020751D13604192493D43BF9DEA4A8A38720A1BEC884",
+      "consumerSHA256": "6504D0887EBEABC94D26FF26EC79CFBB9BE8E44E192D1179A9B9A872799E425D",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN programLengths\n  programLengths :\n    (program .access).length = 132 ∧\n    (program .rank).length = 1450 ∧\n    (program .select).length = 10030\n  -- BV1-FIELD-END programLengths\n",
+          "after": "  -- BV1-FIELD-BEGIN programLengths\n  programLengths : True\n  -- BV1-FIELD-END programLengths\n",
+          "beforeSHA256": "B913CC65FE9E666B88F9D577C46F25EB912C67D1CCB5BFFF4E1064CF415BF2D0",
+          "afterSHA256": "A0B0126A7A9743ED793FFC35C0CC046D87CDE16B314DF40EE30245A19B25BF1B",
+          "beforeBytes": 203,
+          "afterBytes": 94
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN programLengths\n  programLengths := ⟨program_length .access, program_length .rank, program_length .select⟩\n  -- BV1-VALUE-END programLengths\n",
+          "after": "  -- BV1-VALUE-BEGIN programLengths\n  programLengths := True.intro\n  -- BV1-VALUE-END programLengths\n",
+          "beforeSHA256": "2E63C3CA16E3F9AFB16FF2C45FFB11F1B1FEDE6B4630AD1BF932A5A7CE610C80",
+          "afterSHA256": "549C766281F316E77AA7F32F31D38BE3B03D090E031086A85445FBB421D32129",
+          "beforeBytes": 165,
+          "afterBytes": 101
+        }
+      ]
+    },
+    {
+      "id": "weaken-sourceBudgets",
+      "field": "sourceBudgets",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 401,
+      "consumerOriginalLine": 166,
+      "constructorFile": "weaken-sourceBudgets.constructor.lean",
+      "consumerFile": "weaken-sourceBudgets.consumer.lean",
+      "constructorSHA256": "005BB35670B2C32FBE85E30EF1718DC644B1234AED677F8754C5659BA5AC2331",
+      "consumerSHA256": "6C7C268A1034C947B8F8E922E17B4DCA6E675F1B40F2FC6962B8227D3DB1631E",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN sourceBudgets\n  sourceBudgets :\n    (source .access).size + 1 = 132 ∧\n    (source .rank).size + 1 = 1450 ∧\n    (source .select).size + 1 = 10030\n  -- BV1-FIELD-END sourceBudgets\n",
+          "after": "  -- BV1-FIELD-BEGIN sourceBudgets\n  sourceBudgets : True\n  -- BV1-FIELD-END sourceBudgets\n",
+          "beforeSHA256": "6F9EA4B783A621A718055B4022EDEB280BFE5595458152508A7FC0C1BD6D4277",
+          "afterSHA256": "E35F917B0D9CBFC1ECA116B5A78F16B718209CA6B68FB25609FE8150CB739382",
+          "beforeBytes": 203,
+          "afterBytes": 91
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN sourceBudgets\n  sourceBudgets := ⟨source_budget .access, source_budget .rank, source_budget .select⟩\n  -- BV1-VALUE-END sourceBudgets\n",
+          "after": "  -- BV1-VALUE-BEGIN sourceBudgets\n  sourceBudgets := True.intro\n  -- BV1-VALUE-END sourceBudgets\n",
+          "beforeSHA256": "CB630341F2750E2E6370EF6E5AB9444CEB2E6E6BEA0FCFC8B307DD5D844BD8F3",
+          "afterSHA256": "8B0A1DEC46DDD12CB7372C1CE45F2EF7529A46ED2FD4FBC96ED0EDDD5C8C51F2",
+          "beforeBytes": 159,
+          "afterBytes": 98
+        }
+      ]
+    },
+    {
+      "id": "weaken-stepsBound",
+      "field": "stepsBound",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 409,
+      "consumerOriginalLine": 172,
+      "constructorFile": "weaken-stepsBound.constructor.lean",
+      "consumerFile": "weaken-stepsBound.consumer.lean",
+      "constructorSHA256": "01046965F0DB6E44EB0701DC4D8E77BE3A61037132270B41D24B76324384E193",
+      "consumerSHA256": "BBDFC89E87897BEC6F8CDFE092134FF9D8AA413F0BBED409D832DD7077DE9765",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN stepsBound\n  stepsBound : ∀ (bits : List Bool) (operation : Operation) (target : Bool) (argument : Nat),\n    (execute bits operation target argument).steps ≤ instructionBound operation\n  -- BV1-FIELD-END stepsBound\n",
+          "after": "  -- BV1-FIELD-BEGIN stepsBound\n  stepsBound : True\n  -- BV1-FIELD-END stepsBound\n",
+          "beforeSHA256": "DFD528B5DA25C87A2BF93E2FE7DE4A5B7DCB887B75DA989A0D83E7EAD61D857E",
+          "afterSHA256": "B32FC199DA45E5A8FE783B764036CD1E7D377E388BCD3166BE422BCBC5394DC6",
+          "beforeBytes": 240,
+          "afterBytes": 82
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN stepsBound\n  stepsBound := execute_steps_bound\n  -- BV1-VALUE-END stepsBound\n",
+          "after": "  -- BV1-VALUE-BEGIN stepsBound\n  stepsBound := True.intro\n  -- BV1-VALUE-END stepsBound\n",
+          "beforeSHA256": "6E8D8D81D6A0877FC18E39F2A90E150A0D663CD7CA6F7E076FD8E3554E6CC559",
+          "afterSHA256": "2B9D4DD17692AF962808056EA86D1E5B15A83CF49DF7999980791D9A411CD4A0",
+          "beforeBytes": 98,
+          "afterBytes": 89
+        }
+      ]
+    },
+    {
+      "id": "weaken-categoryPartition",
+      "field": "categoryPartition",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 414,
+      "consumerOriginalLine": 180,
+      "constructorFile": "weaken-categoryPartition.constructor.lean",
+      "consumerFile": "weaken-categoryPartition.consumer.lean",
+      "constructorSHA256": "04863CC2F81C1F9DE7E69F8A8E551AF2DC69AE39DD7327ACE348FDC7314C0719",
+      "consumerSHA256": "A87CC95187DDEB2E09FB08D0834036C10F434318E32B1631581E80CBDB05106A",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN categoryPartition\n  categoryPartition : ∀ (bits : List Bool) (operation : Operation) (target : Bool) (argument : Nat),\n    let actual := execute bits operation target argument\n    actual.steps = actual.categoryCount .memoryRead + actual.categoryCount .registerWrite +\n      actual.categoryCount .arithmetic + actual.categoryCount .comparison +\n      actual.categoryCount .branch + actual.categoryCount .control\n  -- BV1-FIELD-END categoryPartition\n",
+          "after": "  -- BV1-FIELD-BEGIN categoryPartition\n  categoryPartition : True\n  -- BV1-FIELD-END categoryPartition\n",
+          "beforeSHA256": "0042F2755D872FF5CDD78DCBDC72169E60F77E8501012901BD3D64A2C60983D0",
+          "afterSHA256": "2A28D2316DA98A1203DC1ADC8C04255B56846B6E6D4FDFA22E3D7A748B615BD1",
+          "beforeBytes": 471,
+          "afterBytes": 103
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN categoryPartition\n  categoryPartition := execute_steps_partition\n  -- BV1-VALUE-END categoryPartition\n",
+          "after": "  -- BV1-VALUE-BEGIN categoryPartition\n  categoryPartition := True.intro\n  -- BV1-VALUE-END categoryPartition\n",
+          "beforeSHA256": "FFCD97B77E27222DBC76E948E16C1BCA12DD14D9F62ABEBE23BCAC6172480A29",
+          "afterSHA256": "505D97463C717C1813F1798198656E5B16978D92BAE6B61FBDA2D9BC289882FE",
+          "beforeBytes": 123,
+          "afterBytes": 110
+        }
+      ]
+    },
+    {
+      "id": "weaken-categoryBounds",
+      "field": "categoryBounds",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 422,
+      "consumerOriginalLine": 186,
+      "constructorFile": "weaken-categoryBounds.constructor.lean",
+      "consumerFile": "weaken-categoryBounds.consumer.lean",
+      "constructorSHA256": "7716C9062519F437B242E46328219893B7C9DA9FDB4F56C7F7CAB92E96A899F5",
+      "consumerSHA256": "E4311923FFF5ADB3787056D750814B35477E68419265D522BF46FCA8D7FF79A8",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN categoryBounds\n  categoryBounds : ∀ (bits : List Bool) (operation : Operation) (target : Bool)\n      (argument : Nat) (category : Category),\n    (execute bits operation target argument).categoryCount category ≤ instructionBound operation\n  -- BV1-FIELD-END categoryBounds\n",
+          "after": "  -- BV1-FIELD-BEGIN categoryBounds\n  categoryBounds : True\n  -- BV1-FIELD-END categoryBounds\n",
+          "beforeSHA256": "FB68C1900E6C5D89238D48044F9622275102178AB1153D3AE61AE5A34B3D0263",
+          "afterSHA256": "6A9CA5C5417CCBFFDF7222071C3CE957923CE7E459F3FF189EF4D4B0ADFACAFF",
+          "beforeBytes": 297,
+          "afterBytes": 94
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN categoryBounds\n  categoryBounds := execute_category_bound\n  -- BV1-VALUE-END categoryBounds\n",
+          "after": "  -- BV1-VALUE-BEGIN categoryBounds\n  categoryBounds := True.intro\n  -- BV1-VALUE-END categoryBounds\n",
+          "beforeSHA256": "92692457C4C22A4B747FEBE23CAA4034B64F47DD87F66CA6A1C71F7581B7428C",
+          "afterSHA256": "F77EDFCE1F74164FCC1FBC0AB5D120F40F1754C3CC06836F3F0C14D0E976EE97",
+          "beforeBytes": 113,
+          "afterBytes": 101
+        }
+      ]
+    },
+    {
+      "id": "weaken-finiteScratch",
+      "field": "finiteScratch",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 428,
+      "consumerOriginalLine": 192,
+      "constructorFile": "weaken-finiteScratch.constructor.lean",
+      "consumerFile": "weaken-finiteScratch.consumer.lean",
+      "constructorSHA256": "B152A554E610CD1B71AF4FEBE48EF7DE76A07AD1E552BBBB369329F73E753D95",
+      "consumerSHA256": "45A0F90170383AEBCC6A26B1F805930C9EDD1C7AC7712A4572CB05413B124C07",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN finiteScratch\n  finiteScratch : ∀ (memory : Memory) (operation : Operation) (target : Bool)\n      (argument fuel r : Nat), 8271 ≤ r →\n    (run memory (program operation) fuel (initial operation target argument)).final.regs r = 0\n  -- BV1-FIELD-END finiteScratch\n",
+          "after": "  -- BV1-FIELD-BEGIN finiteScratch\n  finiteScratch : True\n  -- BV1-FIELD-END finiteScratch\n",
+          "beforeSHA256": "D7419DD7A0ABFD3621702A5086E91F2383D8BC9380DD2BF8864B0267E58527BB",
+          "afterSHA256": "8D63D0CD4D66A3067B2AE7294FBFD6924B66DB19E23B3F24526720B1259A5203",
+          "beforeBytes": 289,
+          "afterBytes": 91
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN finiteScratch\n  finiteScratch := run_finite_registers\n  -- BV1-VALUE-END finiteScratch\n",
+          "after": "  -- BV1-VALUE-BEGIN finiteScratch\n  finiteScratch := True.intro\n  -- BV1-VALUE-END finiteScratch\n",
+          "beforeSHA256": "9BAB95BA1596402DAD18C48EFD0CF2AE753C304F7BF8B32AA29EA399F1936DB1",
+          "afterSHA256": "8DA9E9AF5DD9EEB32E77CED4EBE6C2666A3E51D3BFE954475463930783D51456",
+          "beforeBytes": 108,
+          "afterBytes": 98
+        }
+      ]
+    },
+    {
+      "id": "weaken-suppliedMemoryAgreement",
+      "field": "suppliedMemoryAgreement",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 433,
+      "consumerOriginalLine": 200,
+      "constructorFile": "weaken-suppliedMemoryAgreement.constructor.lean",
+      "consumerFile": "weaken-suppliedMemoryAgreement.consumer.lean",
+      "constructorSHA256": "46B67E7A43110C142844548F3C12F71C6A261E216105A7E98EE0511E909F96FE",
+      "consumerSHA256": "BC23BD30C1C415D25127455ED9C75E7158BAB19325CB69F93797032FD9F3E195",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN suppliedMemoryAgreement\n  suppliedMemoryAgreement : ∀ (bits : List Bool) (operation : Operation)\n      (target : Bool) (argument : Nat) (supplied : Memory),\n    (∀ receipt ∈ (execute bits operation target argument).reads,\n      supplied[receipt.address]? = (Allocation.memory bits)[receipt.address]?) →\n    run supplied (program operation) ((source operation).size + 1) (initial operation target argument) =\n      execute bits operation target argument\n  -- BV1-FIELD-END suppliedMemoryAgreement\n",
+          "after": "  -- BV1-FIELD-BEGIN suppliedMemoryAgreement\n  suppliedMemoryAgreement : True\n  -- BV1-FIELD-END suppliedMemoryAgreement\n",
+          "beforeSHA256": "2A92E7D8CEA3CDA823851463205902F51AB80403346ECB2C6EDF220CA65B8E8B",
+          "afterSHA256": "5EC1C7F7C6CB5A5654A79A56F5CFC26BB83FB0CF39292D6A02D606764C62C2CE",
+          "beforeBytes": 525,
+          "afterBytes": 121
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN suppliedMemoryAgreement\n  suppliedMemoryAgreement := execution_eq_of_agree\n  -- BV1-VALUE-END suppliedMemoryAgreement\n",
+          "after": "  -- BV1-VALUE-BEGIN suppliedMemoryAgreement\n  suppliedMemoryAgreement := True.intro\n  -- BV1-VALUE-END suppliedMemoryAgreement\n",
+          "beforeSHA256": "C440F436CBA8E2E506B60ED137AEEE0A58C7EC081F75A861F8CCEACD016C21C2",
+          "afterSHA256": "58B90F609105C1802A51DEDD6C31B91524F48A24205294189CE8032926200AE0",
+          "beforeBytes": 139,
+          "afterBytes": 128
+        }
+      ]
+    },
+    {
+      "id": "weaken-validArgumentFits",
+      "field": "validArgumentFits",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch",
+        "function expected"
+      ],
+      "expectedErrorLines": 442,
+      "consumerOriginalLine": 204,
+      "constructorFile": "weaken-validArgumentFits.constructor.lean",
+      "consumerFile": "weaken-validArgumentFits.consumer.lean",
+      "constructorSHA256": "6B9A8F0B135126F6A20839D0AC2E1EDA63FAE2ADDB068C2E40CA3FAC14C89C35",
+      "consumerSHA256": "FE300CD5BE7A660467EA4C06DD91B6CDDE02C5BAD63490A5A6C9EEE56226AF69",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN validArgumentFits\n  validArgumentFits : ∀ (n argument : Nat), argument ≤ n → argument < 2 ^ Experiment.width n\n  -- BV1-FIELD-END validArgumentFits\n",
+          "after": "  -- BV1-FIELD-BEGIN validArgumentFits\n  validArgumentFits : True\n  -- BV1-FIELD-END validArgumentFits\n",
+          "beforeSHA256": "95ECB985E333027E6BFA0DA5BFCD73CF3D5410C85489A5D5A7B645AB87378188",
+          "afterSHA256": "A9561D073E722F4B58193C846DC4C3F5C355AB124DFD82AE7541CF6365F363B2",
+          "beforeBytes": 175,
+          "afterBytes": 103
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN validArgumentFits\n  validArgumentFits := valid_argument_fits\n  -- BV1-VALUE-END validArgumentFits\n",
+          "after": "  -- BV1-VALUE-BEGIN validArgumentFits\n  validArgumentFits := True.intro\n  -- BV1-VALUE-END validArgumentFits\n",
+          "beforeSHA256": "25AE517335A22A75E1B2F87BE62ED1BAA4870AB66B73780E58DBA1F565D680FB",
+          "afterSHA256": "7B6942DF4096E08A337933A8F683CAF504CA6C551DCAB60D39099A2329B046E1",
+          "beforeBytes": 119,
+          "afterBytes": 110
+        }
+      ]
+    },
+    {
+      "id": "delete-accessCorrect",
+      "field": "accessCorrect",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "invalid field"
+      ],
+      "expectedErrorLines": 289,
+      "consumerOriginalLine": 57,
+      "constructorFile": "delete-accessCorrect.constructor.lean",
+      "consumerFile": "delete-accessCorrect.consumer.lean",
+      "constructorSHA256": "651791C2BACE987748195F70EAE64B2B7456DAD1B64F76D39959113EDEFFC6E7",
+      "consumerSHA256": "1D448F39649BE5CA08713BA75E8B198063819BC1DE619488DE32A3D06145DCEA",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN accessCorrect\n  accessCorrect : ∀ (bits : List Bool) (index : Nat), access bits index = bits[index]?\n  -- BV1-FIELD-END accessCorrect\n",
+          "after": "",
+          "beforeSHA256": "45653DB1B85CBE3E8A22AA364B8DA3F384C9D7B102EC5D2DB6DD4CFE3053991C",
+          "afterSHA256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+          "beforeBytes": 157,
+          "afterBytes": 0
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN accessCorrect\n  accessCorrect := access_eq\n  -- BV1-VALUE-END accessCorrect\n",
+          "after": "",
+          "beforeSHA256": "4E888BC62FAE36F63F68D9FEAF7120A34593F000B55CB2D3FCDDF626D88C463F",
+          "afterSHA256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+          "beforeBytes": 97,
+          "afterBytes": 0
+        }
+      ]
+    },
+    {
+      "id": "sibling-completeCapacity",
+      "field": "completeCapacity",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch"
+      ],
+      "expectedErrorLines": 256,
+      "consumerOriginalLine": 17,
+      "constructorFile": "sibling-completeCapacity.constructor.lean",
+      "consumerFile": "sibling-completeCapacity.consumer.lean",
+      "constructorSHA256": "383AC71E84D35B513E61FB2D6922511EC707A66D73906EDBE059F110BB4CA583",
+      "consumerSHA256": "3D897DBE47103BB5DBAB786B2EFC7DBB6320EDCFEDAA5E5F050AF8C9B6A321A5",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN completeCapacity\n  completeCapacity : ∀ bits : List Bool,\n    ((Allocation.memory bits).length +\n      ((program .access).map Instruction.encoding).flatten.length +\n      ((program .rank).map Instruction.encoding).flatten.length +\n      ((program .select).map Instruction.encoding).flatten.length +\n      (8271 + 3)) * Experiment.width bits.length ≤\n        bits.length + completeRho bits.length\n  -- BV1-FIELD-END completeCapacity\n",
+          "after": "  -- BV1-FIELD-BEGIN completeCapacity\n  completeCapacity : ∀ bits : List Bool,\n    (((Allocation.memory bits).take 1).length + ((program .access).map Instruction.encoding).flatten.length + ((program .rank).map Instruction.encoding).flatten.length + ((program .select).map Instruction.encoding).flatten.length + (8271 + 3)) * Experiment.width bits.length ≤ bits.length + completeRho bits.length\n  -- BV1-FIELD-END completeCapacity\n",
+          "beforeSHA256": "C9735D5BF781129D75EC696FC1A45B8350C5A87619BFE7916C64117AEF3A4987",
+          "afterSHA256": "5E572065B0E53645816E75D9644842A444115C0BCCA014DE6E67F64A2134DF9B",
+          "beforeBytes": 457,
+          "afterBytes": 434
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN completeCapacity\n  completeCapacity := complete_capacity\n  -- BV1-VALUE-END completeCapacity\n",
+          "after": "  -- BV1-VALUE-BEGIN completeCapacity\n  completeCapacity := by\n    intro bits\n    have hfull := complete_capacity bits\n    simp only [registerCount] at hfull\n    have hm : ((Allocation.memory bits).take 1).length ≤ (Allocation.memory bits).length := List.length_take_le _ _\n    have hcount : ((Allocation.memory bits).take 1).length + ((program .access).map Instruction.encoding).flatten.length + ((program .rank).map Instruction.encoding).flatten.length + ((program .select).map Instruction.encoding).flatten.length + (8271 + 3) ≤ (Allocation.memory bits).length + ((program .access).map Instruction.encoding).flatten.length + ((program .rank).map Instruction.encoding).flatten.length + ((program .select).map Instruction.encoding).flatten.length + (8271 + 3) := by omega\n    exact Nat.le_trans (Nat.mul_le_mul_right (Experiment.width bits.length) hcount) hfull\n  -- BV1-VALUE-END completeCapacity\n",
+          "beforeSHA256": "00991AE4E06A4FB6F4837D8546793A53563E67C18A20F4A396A99651C5A255B9",
+          "afterSHA256": "130D24EFC32F397B68973EA5DF551480D2EA63514808AA9DB6A7BE8578614F72",
+          "beforeBytes": 114,
+          "afterBytes": 903
+        }
+      ]
+    },
+    {
+      "id": "sibling-selectSafety",
+      "field": "selectSafety",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch"
+      ],
+      "expectedErrorLines": 396,
+      "consumerOriginalLine": 158,
+      "constructorFile": "sibling-selectSafety.constructor.lean",
+      "consumerFile": "sibling-selectSafety.consumer.lean",
+      "constructorSHA256": "E7EC2C585E24141BF454AC9B116F824ACBA24EDE85D58D5CFD33B9670BF7E2A0",
+      "consumerSHA256": "E6C6E5F62FEB8B9A903A40606A2FCE0C84E467480595BC097B9DB2F2949DBF0E",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN selectSafety\n  selectSafety : ∀ (bits : List Bool) (target : Bool) (argument : Nat),\n    argument < 2 ^ Experiment.width bits.length →\n    RankExecutionSafety (Allocation.memory bits) (Experiment.width bits.length)\n      (program .select) ((source .select).size + 1) (initial .select target argument)\n  -- BV1-FIELD-END selectSafety\n",
+          "after": "  -- BV1-FIELD-BEGIN selectSafety\n  selectSafety : ∀ (bits : List Bool) (target : Bool) (argument : Nat),\n    argument < 2 ^ Experiment.width bits.length →\n    RankExecutionSafety (Allocation.memory bits) (Experiment.width bits.length)\n      (program .access) ((source .access).size + 1) (initial .access false argument)\n  -- BV1-FIELD-END selectSafety\n",
+          "beforeSHA256": "5A11664093353F4D5C53CAF1DADC709987ED476D68D69A796AE3AA3CD11839B8",
+          "afterSHA256": "C0970F5661ED7F23554D45E2BE5B06A1A9F0C1EF2881473F0B54186025847B6B",
+          "beforeBytes": 358,
+          "afterBytes": 357
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN selectSafety\n  selectSafety := canonical_select_execution_safe\n  -- BV1-VALUE-END selectSafety\n",
+          "after": "  -- BV1-VALUE-BEGIN selectSafety\n  selectSafety := fun bits _target argument ha => canonical_access_execution_safe bits argument ha\n  -- BV1-VALUE-END selectSafety\n",
+          "beforeSHA256": "B6F0668C37B89F4E7A91FA238D0A67A4233661F3AF73963729707209FDA56BDE",
+          "afterSHA256": "6F3B808C163064C78E42B862C93660273B9B898C5E7788765548C97848B46560",
+          "beforeBytes": 116,
+          "afterBytes": 165
+        }
+      ]
+    },
+    {
+      "id": "sibling-readerCorrect",
+      "field": "readerCorrect",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch"
+      ],
+      "expectedErrorLines": 285,
+      "consumerOriginalLine": 54,
+      "constructorFile": "sibling-readerCorrect.constructor.lean",
+      "consumerFile": "sibling-readerCorrect.consumer.lean",
+      "constructorSHA256": "09DD0A40D2E4AA6100F2FCD52327F3F1A899DFD7C18CFA8AA6025D02A56D8A93",
+      "consumerSHA256": "8BF63B05D98C8F0785AC0684B7F1D960757C792A0A81CEF5B98445B5845DA11F",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN readerCorrect\n  readerCorrect : ∀ (bits : List Bool) (target : Bool) (regs : Registers),\n    regs 3 = target.toNat → regs 22 = Experiment.width bits.length →\n    let actual := Experiment.physicalReader.eval (Allocation.memory bits) ⟨regs, .running⟩\n    let expected := (Allocation.readStore bits target).readWord? (regs 8192) (regs 8193)\n    actual.final.status = .running ∧\n    actual.final.regs 8194 = logicalPacket expected ∧\n    actual.final.regs 8195 = logicalLength expected ∧\n    actual.reads = Allocation.readerReceipts bits target (regs 8192) (regs 8193) ∧\n    ReaderFrame regs actual.final.regs\n  -- BV1-FIELD-END readerCorrect\n",
+          "after": "  -- BV1-FIELD-BEGIN readerCorrect\n  readerCorrect : ∀ (bits : List Bool) (target : Bool) (regs : Registers),\n    regs 3 = target.toNat → regs 22 = Experiment.width bits.length →\n    access bits 0 = bits[0]?\n  -- BV1-FIELD-END readerCorrect\n",
+          "beforeSHA256": "AA3F960242C1C8FADC976AFFDA18C6F748883E5BE492AE1B25FB91C4D288D0FD",
+          "afterSHA256": "1465364937A89627DCE3FE70C37E422CB29D7981ED7CCB76F69A7962361E7954",
+          "beforeBytes": 677,
+          "afterBytes": 247
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN readerCorrect\n  readerCorrect := fun bits target regs ht hw =>\n    Allocation.physicalReader_correct bits target regs ⟨ht, hw⟩\n  -- BV1-VALUE-END readerCorrect\n",
+          "after": "  -- BV1-VALUE-BEGIN readerCorrect\n  readerCorrect := fun bits _target _regs _ht _hw => access_eq bits 0\n  -- BV1-VALUE-END readerCorrect\n",
+          "beforeSHA256": "FFA77B1DFC8BBF1E9E181C911281EB787E59C59D21EEE4B7E202F1E5CC813987",
+          "afterSHA256": "DD67D128260E76F563CACAB351B21B4036A12E6E5C4427FAC645B1555C822B54",
+          "beforeBytes": 185,
+          "afterBytes": 138
+        }
+      ]
+    },
+    {
+      "id": "public-proposition-True",
+      "field": "inhabitant",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch"
+      ],
+      "expectedErrorLines": 368,
+      "consumerOriginalLine": 207,
+      "constructorFile": "public-proposition-True.constructor.lean",
+      "consumerFile": "public-proposition-True.consumer.lean",
+      "constructorSHA256": "25F7DFA212CA726BFA0B94D53514F418F636334834E611683C107DDB500198F5",
+      "consumerSHA256": "CD318D4A01D7EB7D85734777D2DE9793DF29C799AF2DBBC66E6E39521CFB8E2A",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "theorem fullyChargedBitvectorCapstone_holds : FullyChargedBitvectorCapstone where\n  -- BV1-VALUE-BEGIN completeCapacity\n  completeCapacity := complete_capacity\n  -- BV1-VALUE-END completeCapacity\n  -- BV1-VALUE-BEGIN overheadLittleO\n  overheadLittleO := completeRho_littleO\n  -- BV1-VALUE-END overheadLittleO\n  -- BV1-VALUE-BEGIN widthBounds\n  widthBounds := width_bounds\n  -- BV1-VALUE-END widthBounds\n  -- BV1-VALUE-BEGIN memoryWordsFit\n  memoryWordsFit := canonical_memoryWordsFit\n  -- BV1-VALUE-END memoryWordsFit\n  -- BV1-VALUE-BEGIN readerGeometry\n  readerGeometry := fun bits target regs ht hw =>\n    canonical_numericReaderGeometry bits target regs ⟨ht, hw⟩\n  -- BV1-VALUE-END readerGeometry\n  -- BV1-VALUE-BEGIN readerCorrect\n  readerCorrect := fun bits target regs ht hw =>\n    Allocation.physicalReader_correct bits target regs ⟨ht, hw⟩\n  -- BV1-VALUE-END readerCorrect\n  -- BV1-VALUE-BEGIN accessCorrect\n  accessCorrect := access_eq\n  -- BV1-VALUE-END accessCorrect\n  -- BV1-VALUE-BEGIN rankCorrect\n  rankCorrect := rank_eq\n  -- BV1-VALUE-END rankCorrect\n  -- BV1-VALUE-BEGIN selectCorrect\n  selectCorrect := select_eq\n  -- BV1-VALUE-END selectCorrect\n  -- BV1-VALUE-BEGIN accessExecution\n  accessExecution := by\n    intro bits argument\n    simpa only [source_budget, instructionBound] using execute_access bits argument\n  -- BV1-VALUE-END accessExecution\n  -- BV1-VALUE-BEGIN rankExecution\n  rankExecution := by\n    intro bits target argument\n    simpa only [source_budget, instructionBound] using execute_rank bits target argument\n  -- BV1-VALUE-END rankExecution\n  -- BV1-VALUE-BEGIN selectExecution\n  selectExecution := by\n    intro bits target argument\n    simpa only [source_budget, instructionBound] using execute_select bits target argument\n  -- BV1-VALUE-END selectExecution\n  -- BV1-VALUE-BEGIN accessSafety\n  accessSafety := canonical_access_execution_safe\n  -- BV1-VALUE-END accessSafety\n  -- BV1-VALUE-BEGIN rankSafety\n  rankSafety := canonical_rank_execution_safe\n  -- BV1-VALUE-END rankSafety\n  -- BV1-VALUE-BEGIN selectSafety\n  selectSafety := canonical_select_execution_safe\n  -- BV1-VALUE-END selectSafety\n  -- BV1-VALUE-BEGIN programLengths\n  programLengths := ⟨program_length .access, program_length .rank, program_length .select⟩\n  -- BV1-VALUE-END programLengths\n  -- BV1-VALUE-BEGIN sourceBudgets\n  sourceBudgets := ⟨source_budget .access, source_budget .rank, source_budget .select⟩\n  -- BV1-VALUE-END sourceBudgets\n  -- BV1-VALUE-BEGIN stepsBound\n  stepsBound := execute_steps_bound\n  -- BV1-VALUE-END stepsBound\n  -- BV1-VALUE-BEGIN categoryPartition\n  categoryPartition := execute_steps_partition\n  -- BV1-VALUE-END categoryPartition\n  -- BV1-VALUE-BEGIN categoryBounds\n  categoryBounds := execute_category_bound\n  -- BV1-VALUE-END categoryBounds\n  -- BV1-VALUE-BEGIN finiteScratch\n  finiteScratch := run_finite_registers\n  -- BV1-VALUE-END finiteScratch\n  -- BV1-VALUE-BEGIN suppliedMemoryAgreement\n  suppliedMemoryAgreement := execution_eq_of_agree\n  -- BV1-VALUE-END suppliedMemoryAgreement\n  -- BV1-VALUE-BEGIN validArgumentFits\n  validArgumentFits := valid_argument_fits\n  -- BV1-VALUE-END validArgumentFits\n\n",
+          "after": "theorem fullyChargedBitvectorCapstone_holds : True := True.intro\n\n",
+          "beforeSHA256": "2E4AF8897F5887E1D2344E1BFB393928923652C1E0E604208E9B1179E4E76A88",
+          "afterSHA256": "C938BAD0C61F7B9CB2ADC137C3372B7711164AF9BD63F97250C8AA828785F0FB",
+          "beforeBytes": 3169,
+          "afterBytes": 66
+        }
+      ]
+    },
+    {
+      "id": "capacity-without-code",
+      "field": "completeCapacity",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch"
+      ],
+      "expectedErrorLines": 255,
+      "consumerOriginalLine": 17,
+      "constructorFile": "capacity-without-code.constructor.lean",
+      "consumerFile": "capacity-without-code.consumer.lean",
+      "constructorSHA256": "3B8F2B138D8688E6135B810B4DFE542D2E6A541CD0228EE11F3EDF7A7A7BC4FB",
+      "consumerSHA256": "51441D1D50D5306585FB86A5B6E7878A40227EF4496E567482675373B6F55A80",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN completeCapacity\n  completeCapacity : ∀ bits : List Bool,\n    ((Allocation.memory bits).length +\n      ((program .access).map Instruction.encoding).flatten.length +\n      ((program .rank).map Instruction.encoding).flatten.length +\n      ((program .select).map Instruction.encoding).flatten.length +\n      (8271 + 3)) * Experiment.width bits.length ≤\n        bits.length + completeRho bits.length\n  -- BV1-FIELD-END completeCapacity\n",
+          "after": "  -- BV1-FIELD-BEGIN completeCapacity\n  completeCapacity : ∀ bits : List Bool,\n    ((Allocation.memory bits).length + (8271 + 3)) * Experiment.width bits.length ≤ bits.length + completeRho bits.length\n  -- BV1-FIELD-END completeCapacity\n",
+          "beforeSHA256": "C9735D5BF781129D75EC696FC1A45B8350C5A87619BFE7916C64117AEF3A4987",
+          "afterSHA256": "16FC7EE6F1F1B584C570029D2F4362A1E39D401A1C8CA16BA1220E668FE4FB14",
+          "beforeBytes": 457,
+          "afterBytes": 241
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN completeCapacity\n  completeCapacity := complete_capacity\n  -- BV1-VALUE-END completeCapacity\n",
+          "after": "  -- BV1-VALUE-BEGIN completeCapacity\n  completeCapacity := by\n    intro bits\n    have hfull := complete_capacity bits\n    simp only [registerCount] at hfull\n    have hcount : (Allocation.memory bits).length + (8271 + 3) ≤ (Allocation.memory bits).length + ((program .access).map Instruction.encoding).flatten.length + ((program .rank).map Instruction.encoding).flatten.length + ((program .select).map Instruction.encoding).flatten.length + (8271 + 3) := by omega\n    exact Nat.le_trans (Nat.mul_le_mul_right (Experiment.width bits.length) hcount) hfull\n  -- BV1-VALUE-END completeCapacity\n",
+          "beforeSHA256": "00991AE4E06A4FB6F4837D8546793A53563E67C18A20F4A396A99651C5A255B9",
+          "afterSHA256": "520AE1525A1179295A025776311F667BE36B20392643D3E5C829426BEF4A6AEA",
+          "beforeBytes": 114,
+          "afterBytes": 592
+        }
+      ]
+    },
+    {
+      "id": "capacity-without-scratch",
+      "field": "completeCapacity",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedDiagnosticClasses": [
+        "type mismatch",
+        "application type mismatch"
+      ],
+      "expectedErrorLines": 255,
+      "consumerOriginalLine": 17,
+      "constructorFile": "capacity-without-scratch.constructor.lean",
+      "consumerFile": "capacity-without-scratch.consumer.lean",
+      "constructorSHA256": "A753103B1A5ACF77E6C1E99AE347C5737CE5F430BE46AC37FF0A6F5FCC33A6C9",
+      "consumerSHA256": "C4F7C8FD7424E1E114FA44146C8264A73DB4979B726735DC43C6D7A5F2CA338C",
+      "consumerBodySHA256": "E7C3BEAA35EA58110EB978359302D82420F045BB8D359BA878E3288A2B63D382",
+      "replacements": [
+        {
+          "before": "  -- BV1-FIELD-BEGIN completeCapacity\n  completeCapacity : ∀ bits : List Bool,\n    ((Allocation.memory bits).length +\n      ((program .access).map Instruction.encoding).flatten.length +\n      ((program .rank).map Instruction.encoding).flatten.length +\n      ((program .select).map Instruction.encoding).flatten.length +\n      (8271 + 3)) * Experiment.width bits.length ≤\n        bits.length + completeRho bits.length\n  -- BV1-FIELD-END completeCapacity\n",
+          "after": "  -- BV1-FIELD-BEGIN completeCapacity\n  completeCapacity : ∀ bits : List Bool,\n    ((Allocation.memory bits).length + ((program .access).map Instruction.encoding).flatten.length + ((program .rank).map Instruction.encoding).flatten.length + ((program .select).map Instruction.encoding).flatten.length) * Experiment.width bits.length ≤ bits.length + completeRho bits.length\n  -- BV1-FIELD-END completeCapacity\n",
+          "beforeSHA256": "C9735D5BF781129D75EC696FC1A45B8350C5A87619BFE7916C64117AEF3A4987",
+          "afterSHA256": "AEC7468A28993D3D6865C73A4D8F564B797D0BBCB23342C0509CD73282423895",
+          "beforeBytes": 457,
+          "afterBytes": 412
+        },
+        {
+          "before": "  -- BV1-VALUE-BEGIN completeCapacity\n  completeCapacity := complete_capacity\n  -- BV1-VALUE-END completeCapacity\n",
+          "after": "  -- BV1-VALUE-BEGIN completeCapacity\n  completeCapacity := by\n    intro bits\n    have hfull := complete_capacity bits\n    simp only [registerCount] at hfull\n    have hcount : (Allocation.memory bits).length + ((program .access).map Instruction.encoding).flatten.length + ((program .rank).map Instruction.encoding).flatten.length + ((program .select).map Instruction.encoding).flatten.length ≤ (Allocation.memory bits).length + ((program .access).map Instruction.encoding).flatten.length + ((program .rank).map Instruction.encoding).flatten.length + ((program .select).map Instruction.encoding).flatten.length + (8271 + 3) := by omega\n    exact Nat.le_trans (Nat.mul_le_mul_right (Experiment.width bits.length) hcount) hfull\n  -- BV1-VALUE-END completeCapacity\n",
+          "beforeSHA256": "00991AE4E06A4FB6F4837D8546793A53563E67C18A20F4A396A99651C5A255B9",
+          "afterSHA256": "32864B74F947A9DE9F911D7632A3595CE3A42CC89B05A64844C9FD85D6A49136",
+          "beforeBytes": 114,
+          "afterBytes": 763
+        }
+      ]
+    }
+  ]
+}

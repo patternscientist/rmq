@@ -1,0 +1,1183 @@
+{
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "exceptionFiles": 38,
+  "normalControls": 5,
+  "outsideControls": 2,
+  "expectedChecks": 90,
+  "executedChecks": 90,
+  "passed": true,
+  "attributesSHA256": "18204A9B4B274A0DDE2A93A34C77ED4B21494D8ECDA5299D7D3C2666E3F69C2E",
+  "developmentCorrection": "The initial read-only probe supplied newline-delimited paths with -z and failed its count assertion before writing evidence. This checked invocation supplies the required NUL delimiters.",
+  "rows": [
+    {
+      "surface": "working",
+      "path": "RMQ/Core/WordRAM/Bitvector/Capstone.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/CHECKOUT_BYTES_DISPOSITION.md",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/CHECKOUT_BYTES_LAKEFILE_DISPOSITION.md",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/COORDINATOR_ROUTE_DISPOSITION.md",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/capacity-without-code.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/capacity-without-scratch.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/delete-accessCorrect.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/harmless-comment.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/public-proposition-True.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/sibling-completeCapacity.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/sibling-readerCorrect.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/sibling-selectSafety.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/unchanged.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-accessCorrect.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-accessExecution.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-accessSafety.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-categoryBounds.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-categoryPartition.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-completeCapacity.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-finiteScratch.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-memoryWordsFit.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-overheadLittleO.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-programLengths.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-rankCorrect.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-rankExecution.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-rankSafety.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-readerCorrect.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-readerGeometry.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-selectCorrect.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-selectExecution.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-selectSafety.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-sourceBudgets.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-stepsBound.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-suppliedMemoryAgreement.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-validArgumentFits.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-widthBounds.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/snapshots/97405C70ED3B60CED72874D6DF622D2E9BBA0BD8F04808A3F98ED34EE1CEB770/Capstone.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "scripts/packed_bitvector_validation_controls.ps1",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "RMQ/Core/WordRAM/Bitvector/Source.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "RMQ/Validation/PackedBitvector.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "scripts/packed_bitvector_probe.ps1",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/internal/extensions/bv1/REPORT.md",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "lakefile.toml",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "RMQ/UnrelatedWhitespaceControl.lean",
+      "expected": {
+        "text": "unspecified",
+        "whitespace": "unspecified"
+      },
+      "actual": {
+        "text": "unspecified",
+        "whitespace": "unspecified"
+      },
+      "passed": true
+    },
+    {
+      "surface": "working",
+      "path": "docs/UnrelatedWhitespaceControl.md",
+      "expected": {
+        "text": "unspecified",
+        "whitespace": "unspecified"
+      },
+      "actual": {
+        "text": "unspecified",
+        "whitespace": "unspecified"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "RMQ/Core/WordRAM/Bitvector/Capstone.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/CHECKOUT_BYTES_DISPOSITION.md",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/CHECKOUT_BYTES_LAKEFILE_DISPOSITION.md",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/COORDINATOR_ROUTE_DISPOSITION.md",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/capacity-without-code.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/capacity-without-scratch.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/delete-accessCorrect.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/harmless-comment.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/public-proposition-True.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/sibling-completeCapacity.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/sibling-readerCorrect.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/sibling-selectSafety.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/unchanged.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-accessCorrect.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-accessExecution.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-accessSafety.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-categoryBounds.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-categoryPartition.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-completeCapacity.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-finiteScratch.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-memoryWordsFit.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-overheadLittleO.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-programLengths.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-rankCorrect.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-rankExecution.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-rankSafety.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-readerCorrect.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-readerGeometry.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-selectCorrect.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-selectExecution.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-selectSafety.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-sourceBudgets.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-stepsBound.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-suppliedMemoryAgreement.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-validArgumentFits.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-widthBounds.constructor.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/controls/public_mutations/snapshots/97405C70ED3B60CED72874D6DF622D2E9BBA0BD8F04808A3F98ED34EE1CEB770/Capstone.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "scripts/packed_bitvector_validation_controls.ps1",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "RMQ/Core/WordRAM/Bitvector/Source.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "RMQ/Validation/PackedBitvector.lean",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "scripts/packed_bitvector_probe.ps1",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/internal/extensions/bv1/REPORT.md",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "lakefile.toml",
+      "expected": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "actual": {
+        "text": "unset",
+        "whitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "RMQ/UnrelatedWhitespaceControl.lean",
+      "expected": {
+        "text": "unspecified",
+        "whitespace": "unspecified"
+      },
+      "actual": {
+        "text": "unspecified",
+        "whitespace": "unspecified"
+      },
+      "passed": true
+    },
+    {
+      "surface": "index",
+      "path": "docs/UnrelatedWhitespaceControl.md",
+      "expected": {
+        "text": "unspecified",
+        "whitespace": "unspecified"
+      },
+      "actual": {
+        "text": "unspecified",
+        "whitespace": "unspecified"
+      },
+      "passed": true
+    }
+  ]
+}

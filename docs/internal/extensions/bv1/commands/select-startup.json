@@ -1,0 +1,61 @@
+{
+  "stage": "select-startup",
+  "platform": "Windows",
+  "head": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "dirty": [
+    " M lakefile.toml",
+    "?? RMQ/Core/WordRAM/Bitvector/",
+    "?? RMQ/Validation/PackedBitvector.lean",
+    "?? docs/internal/extensions/"
+  ],
+  "sourceHashes": [
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\Normalization.lean",
+      "Hash": "BA10A82917C9914E0BB11F619A15A51CFC65E2C0842C066F372339C77FF5F9D4"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ReaderInterface.lean",
+      "Hash": "ECD8043060AAE4A3F753B81ADCFE47F9E22B2914744DB6686ABBFB18A218A210"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\SelectExperiment.lean",
+      "Hash": "156744CBE4DEC77C874114E10408820F7B107B86D5635068D6B855B8363AF0E8"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Validation\\PackedBitvector.lean",
+      "Hash": "A36ACF5EDF0750D2F5F01BCCE931B2104310E68AEFEB4F7A6BBE6CEBEA30ACA3"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\lakefile.toml",
+      "Hash": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A"
+    }
+  ],
+  "startedUtc": "2026-09-12T07:31:57.9832012Z",
+  "executable": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+  "arguments": [
+    "env",
+    "lean",
+    "--run",
+    "RMQ/Validation/PackedBitvector.lean",
+    "--startup"
+  ],
+  "deadlineSeconds": 60,
+  "leanNumThreads": 1,
+  "result": {
+    "Stage": "select-startup",
+    "ExitCode": 0,
+    "Output": [
+      "BV1-STARTUP PASS version=1 expected=18"
+    ],
+    "StandardOutput": [
+      "BV1-STARTUP PASS version=1 expected=18"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 6.438,
+    "DeadlineSeconds": 60,
+    "Ownership": "kill-on-close-job"
+  }
+}

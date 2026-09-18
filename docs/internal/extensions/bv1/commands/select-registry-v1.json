@@ -1,0 +1,96 @@
+{
+  "stage": "select-registry-v1",
+  "platform": "Windows",
+  "head": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "dirty": [
+    " M lakefile.toml",
+    "?? RMQ/Core/WordRAM/Bitvector/",
+    "?? RMQ/Validation/PackedBitvector.lean",
+    "?? docs/internal/extensions/"
+  ],
+  "sourceHashes": [
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\Normalization.lean",
+      "Hash": "BA10A82917C9914E0BB11F619A15A51CFC65E2C0842C066F372339C77FF5F9D4"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ReaderInterface.lean",
+      "Hash": "ECD8043060AAE4A3F753B81ADCFE47F9E22B2914744DB6686ABBFB18A218A210"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\SelectExperiment.lean",
+      "Hash": "156744CBE4DEC77C874114E10408820F7B107B86D5635068D6B855B8363AF0E8"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Validation\\PackedBitvector.lean",
+      "Hash": "A36ACF5EDF0750D2F5F01BCCE931B2104310E68AEFEB4F7A6BBE6CEBEA30ACA3"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\lakefile.toml",
+      "Hash": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A"
+    }
+  ],
+  "startedUtc": "2026-09-12T07:37:01.9271413Z",
+  "executable": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+  "arguments": [
+    "env",
+    "lean",
+    "--run",
+    "RMQ/Validation/PackedBitvector.lean"
+  ],
+  "deadlineSeconds": 600,
+  "leanNumThreads": 1,
+  "result": {
+    "Stage": "select-registry-v1",
+    "ExitCode": 0,
+    "Output": [
+      "BV1-CASE empty-false PASS n=0 target=false occurrence=0 expected=0 actual=some 0 steps=43 reads=19 capacity=10032",
+      "BV1-CASE empty-true PASS n=0 target=true occurrence=0 expected=0 actual=some 0 steps=53 reads=23 capacity=10032",
+      "BV1-CASE singleton-zero PASS n=1 target=false occurrence=0 expected=1 actual=some 1 steps=1264 reads=84 capacity=10032",
+      "BV1-CASE singleton-one PASS n=1 target=true occurrence=0 expected=1 actual=some 1 steps=1277 reads=88 capacity=10032",
+      "BV1-CASE singleton-missing PASS n=1 target=false occurrence=0 expected=0 actual=some 0 steps=43 reads=19 capacity=10032",
+      "BV1-CASE size-two-false PASS n=2 target=false occurrence=0 expected=2 actual=some 2 steps=1498 reads=94 capacity=13440",
+      "BV1-CASE size-two-true PASS n=2 target=true occurrence=0 expected=2 actual=some 2 steps=1511 reads=98 capacity=13440",
+      "BV1-CASE size-two-invalid PASS n=2 target=true occurrence=2 expected=0 actual=some 0 steps=53 reads=23 capacity=13376",
+      "BV1-CASE zeros-last PASS n=8 target=false occurrence=7 expected=8 actual=some 8 steps=2188 reads=124 capacity=20256",
+      "BV1-CASE zeros-missing-true PASS n=8 target=true occurrence=0 expected=0 actual=some 0 steps=53 reads=23 capacity=20256",
+      "BV1-CASE ones-last PASS n=8 target=true occurrence=7 expected=8 actual=some 8 steps=2201 reads=128 capacity=20256",
+      "BV1-CASE ones-missing-false PASS n=8 target=false occurrence=0 expected=0 actual=some 0 steps=43 reads=19 capacity=20256",
+      "BV1-CASE alternating-false PASS n=17 target=false occurrence=7 expected=15 actual=some 15 steps=2538 reads=140 capacity=24416",
+      "BV1-CASE alternating-true PASS n=17 target=true occurrence=7 expected=16 actual=some 16 steps=1394 reads=94 capacity=24416",
+      "BV1-CASE mixed-false PASS n=9 target=false occurrence=2 expected=6 actual=some 6 steps=1724 reads=104 capacity=20544",
+      "BV1-CASE mixed-true PASS n=9 target=true occurrence=3 expected=7 actual=some 7 steps=1969 reads=118 capacity=20544",
+      "BV1-CASE threshold-minus-one PASS n=127 target=true occurrence=60 expected=122 actual=some 122 steps=2313 reads=134 capacity=36144",
+      "BV1-CASE threshold PASS n=128 target=false occurrence=60 expected=121 actual=some 121 steps=1603 reads=99 capacity=38240",
+      "BV1-REGISTRY version=1 executed=18 expected=18 passed=18 total=18"
+    ],
+    "StandardOutput": [
+      "BV1-CASE empty-false PASS n=0 target=false occurrence=0 expected=0 actual=some 0 steps=43 reads=19 capacity=10032",
+      "BV1-CASE empty-true PASS n=0 target=true occurrence=0 expected=0 actual=some 0 steps=53 reads=23 capacity=10032",
+      "BV1-CASE singleton-zero PASS n=1 target=false occurrence=0 expected=1 actual=some 1 steps=1264 reads=84 capacity=10032",
+      "BV1-CASE singleton-one PASS n=1 target=true occurrence=0 expected=1 actual=some 1 steps=1277 reads=88 capacity=10032",
+      "BV1-CASE singleton-missing PASS n=1 target=false occurrence=0 expected=0 actual=some 0 steps=43 reads=19 capacity=10032",
+      "BV1-CASE size-two-false PASS n=2 target=false occurrence=0 expected=2 actual=some 2 steps=1498 reads=94 capacity=13440",
+      "BV1-CASE size-two-true PASS n=2 target=true occurrence=0 expected=2 actual=some 2 steps=1511 reads=98 capacity=13440",
+      "BV1-CASE size-two-invalid PASS n=2 target=true occurrence=2 expected=0 actual=some 0 steps=53 reads=23 capacity=13376",
+      "BV1-CASE zeros-last PASS n=8 target=false occurrence=7 expected=8 actual=some 8 steps=2188 reads=124 capacity=20256",
+      "BV1-CASE zeros-missing-true PASS n=8 target=true occurrence=0 expected=0 actual=some 0 steps=53 reads=23 capacity=20256",
+      "BV1-CASE ones-last PASS n=8 target=true occurrence=7 expected=8 actual=some 8 steps=2201 reads=128 capacity=20256",
+      "BV1-CASE ones-missing-false PASS n=8 target=false occurrence=0 expected=0 actual=some 0 steps=43 reads=19 capacity=20256",
+      "BV1-CASE alternating-false PASS n=17 target=false occurrence=7 expected=15 actual=some 15 steps=2538 reads=140 capacity=24416",
+      "BV1-CASE alternating-true PASS n=17 target=true occurrence=7 expected=16 actual=some 16 steps=1394 reads=94 capacity=24416",
+      "BV1-CASE mixed-false PASS n=9 target=false occurrence=2 expected=6 actual=some 6 steps=1724 reads=104 capacity=20544",
+      "BV1-CASE mixed-true PASS n=9 target=true occurrence=3 expected=7 actual=some 7 steps=1969 reads=118 capacity=20544",
+      "BV1-CASE threshold-minus-one PASS n=127 target=true occurrence=60 expected=122 actual=some 122 steps=2313 reads=134 capacity=36144",
+      "BV1-CASE threshold PASS n=128 target=false occurrence=60 expected=121 actual=some 121 steps=1603 reads=99 capacity=38240",
+      "BV1-REGISTRY version=1 executed=18 expected=18 passed=18 total=18"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 30.208,
+    "DeadlineSeconds": 600,
+    "Ownership": "kill-on-close-job"
+  }
+}

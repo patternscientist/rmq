@@ -1,0 +1,128 @@
+{
+  "stage": "regular-layout-3",
+  "platform": "Windows",
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "dirty": [
+    " M docs/internal/DESIGN_DECISIONS.md",
+    " M docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+    " M docs/internal/extensions/bv1/CONTRACT.md",
+    " M docs/internal/extensions/bv1/REPORT.md",
+    "?? RMQ/Core/WordRAM/Bitvector/ControllerInterface.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericRankProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericSelectProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/MemoryLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/NumericReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RegularLayout.lean",
+    "?? docs/internal/extensions/bv1/CONTINUATION.md",
+    "?? docs/internal/extensions/bv1/CONTROLLER_PROOFS.md",
+    "?? docs/internal/extensions/bv1/COORDINATOR_ROUTE_DISPOSITION.md",
+    "?? docs/internal/extensions/bv1/NUMERIC_READER.md",
+    "?? docs/internal/extensions/bv1/REGULAR_LAYOUT.md",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-1.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-2.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-3.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-1.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-2.json"
+  ],
+  "sourceHashes": [
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\AllocationFacts.lean",
+      "Hash": "F189969208B13333219EE460DB8581D43BABB88F18480C68A37F47C070801623"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ControllerInterface.lean",
+      "Hash": "7E8B1CE2F605D0B5FF9D7EC1D8BC612AD72F89FE278D91764F4559C3F3A240E9"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\GenericRankProof.lean",
+      "Hash": "9A640C12D69FC0AD4C26575BC08018B6DB34975811B843E5ACB2CDE81A19CB17"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\GenericSelectProof.lean",
+      "Hash": "08CB42FED08B5D7D6E41EAF20495F130C702A4AFAC36D7C0FAB0B0AB17F42DA5"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\MemoryLayout.lean",
+      "Hash": "A8E0E44FAF061AA51C4B1C3B051508C4EBA9127EF96CBDCA5763308BA01A3DAB"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\Normalization.lean",
+      "Hash": "BA10A82917C9914E0BB11F619A15A51CFC65E2C0842C066F372339C77FF5F9D4"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\NumericReader.lean",
+      "Hash": "2485874C0246B0D83987C03BB0E0D4A9A483D863D313680227B2E3C1E20C9E5A"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ReaderInterface.lean",
+      "Hash": "ECD8043060AAE4A3F753B81ADCFE47F9E22B2914744DB6686ABBFB18A218A210"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\RegularLayout.lean",
+      "Hash": "172ED0F83F0D8E63136F7A3063F8EDC009F71D57C4BF8B1D311067F1AC53638C"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\SelectExperiment.lean",
+      "Hash": "156744CBE4DEC77C874114E10408820F7B107B86D5635068D6B855B8363AF0E8"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_allocation_consumers.lean",
+      "Hash": "11625C223A9EA1952FE664DFEE7D8DC9C2C3CE798A6C74A39CCD24ACC42D08DE"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_axioms.lean",
+      "Hash": "505072CA4722C123F65C7184855813AD75C4208763F696222B9127C955C0C145"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_crossing.lean",
+      "Hash": "1623CD71929F0CE1EB4DFEBD283144BAC5FB4366759F6C1D588B749743322714"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_normalization_consumers.lean",
+      "Hash": "CF7C09F2CE8DF5D364933FD0BD982BC1835610F5D2B6CCAEBE0EDD6374C529A2"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_probe.ps1",
+      "Hash": "8C3D92D057026636386BCD075886C54E9D034C6E2322F8C7290244B1934F4D38"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_selector_controls.ps1",
+      "Hash": "D676AC5F587F3EECC0A15B75CCBB0E76B729DD531E7E6A72EAF1FFCB3F0E1228"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Validation\\PackedBitvector.lean",
+      "Hash": "A36ACF5EDF0750D2F5F01BCCE931B2104310E68AEFEB4F7A6BBE6CEBEA30ACA3"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\lakefile.toml",
+      "Hash": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A"
+    }
+  ],
+  "startedUtc": "2026-09-12T08:38:35.2516984Z",
+  "executable": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+  "arguments": [
+    "build",
+    "RMQ.Core.WordRAM.Bitvector.RegularLayout"
+  ],
+  "deadlineSeconds": 180,
+  "leanNumThreads": 1,
+  "result": {
+    "Stage": "regular-layout-3",
+    "ExitCode": 0,
+    "Output": [
+      "✔ [127/127] Built RMQ.Core.WordRAM.Bitvector.RegularLayout",
+      "Build completed successfully."
+    ],
+    "StandardOutput": [
+      "✔ [127/127] Built RMQ.Core.WordRAM.Bitvector.RegularLayout",
+      "Build completed successfully."
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 5.178,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  }
+}

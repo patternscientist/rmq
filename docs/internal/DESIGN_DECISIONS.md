@@ -12634,3 +12634,65 @@ Decision (date in UTC): accept the revised E1/PQ1 construction on repaired sourc
 The follow-up updates the 18 registered current-fact surfaces, the declaration-adjacent public docstring and the manuscript status companions. Theorem definitions, statements, proof bodies, numeric constants, counted allocation, operation set, consumers and replay cases remain unchanged. The original source pin in paper/ remains the mathematical reference; later audit and coordinator acceptance are separate identities. No priority claim or release-wide acceptance follows.
 
 Alternatives rejected: leaving “straight-line” unexplained despite conditional branches; relabeling an older trace/probe theorem as instruction-costed; treating a green audit as automatic coordinator acceptance; rerunning hours of unchanged mutation campaigns for one docstring and process wording; and rewriting frozen evidence/history instead of appending a disposition. The public import and exact-type consumer are rebuilt, and affected claim, design, paper, topology, source-identity and hygiene checks cover the follow-up. The prior both-host gates remain the source certification. S1, preprocessing, tighter path-sensitive costs, extraction and release-wide V1 work remain distinct targets.
+
+## DD-20260912-BV1-001: generic both-bit select through a normalized physical reader
+
+Context: the user authorized BV-1 as a new post-PQ1 extension at governance/source 0e6a00f654abc64f8b68988fa9675b9a839dca2f. This task-specific authorization supersedes the old roadmap's broad-expansion deferral for this lane without rewriting historical wording. The assigned endpoint remains one all-size fully charged access/rank/select capstone over arbitrary List Bool, both targets, and one n+o(n) complete allocation. The present commit is contract/feasibility evidence, not that endpoint.
+
+Decision: test the actual existing selectCloseBlock with an additive physical reader that retains the raw bitvector once and normalizes only a loaded raw data word when selecting true. Both target-specific select directories are stored; their long/sparse true-flag words remain unmodified. Charged metadata selects the occurrence count independently of length-based geometry. The reader uses the actual regularLocateBlock and spanBlock, and source code is compiled by the existing Structured compiler into the accepted primitive ISA. No shared Packed module is edited.
+
+The experiment has 23 scalar words and two banks of 23 four-word segment descriptors; its body starts at 207 times the physical width. Those are current select-experiment constants, not final access/rank/select capacity constants. The width candidate is 32+16*machineWordBits(n), and chunk width is bpFringeChunkBits(2*n), allowing the existing sublinear chunk-table envelopes to be consumed later. A first-word-length descriptor still requires canonical chunk/sentinel/fixed-width regularity proofs; a generic maximum-length store invariant does not entail that property.
+
+Alternatives rejected: retaining a complemented second n-bit input; treating arbitrary bits as a Cartesian BP shape; copying the select controller or ISA; specializing program constants to the chosen bitvector; normalizing exception flag words; and claiming an abstract selected-read profile as a physical execution theorem. The generic semantic normalization theorem proves the rank/select and optional packet identities for all inputs. AllocationFacts separately reconciles the sixteen retained directory components with the original generic payload, adding exactly the four omitted false sample tables; both targets receive independent bounds. These leaves do not yet prove the final allocation or controller.
+
+Evidence and consequences: the normalization and directory-count leaves have explicit typed consumers and axiom inventories. The generic select experiment and reader proposition elaborate; all 18 first-registry physical select cases pass against independent List semantics. The independent reader review found no canonical counterexample, while requiring regularity, exact descriptor recovery, charged reply dependence, whole-controller refinement and strict width/safety proofs. The expected receipt specification is canonical; arbitrary-memory fault statements must describe actual execution and stop on the first failed descriptor load. The exact contract, open matrix and command records are in docs/internal/extensions/bv1. Full access/rank programs, capstone, anti-bypass replay and coordinator acceptance remain assigned work.
+
+## DD-20260912-BV1-002: instantiate the reviewed generic physical route
+
+The coordinator recorded APPROVE_ROUTE_AND_CONTINUE for evidence commit 645a0502b9da9ad6444edbe44759e1c2c5661f25 and source 581deebcacfded874d17da7db1e9132a1eefa184. Its exact disposition is preserved in extensions/bv1/COORDINATOR_ROUTE_DISPOSITION.md. The route now uses one raw input, both select directories and normalization of charged segment-zero replies, as tested in DD-20260912-BV1-001. No full capstone field is accepted by this disposition.
+
+Expose proof-side names for the existing allocation's component list, descriptor banks, header and body through definitional equality. Prove canonical regularity separately, then use the shared generic decodeSpanNat_repacked_span theorem to recover exact component words from the same numerical memory. This theorem's explicit zero-length branch preserves empty sentinels without requiring their nominal bit position to be in the allocation. Source evaluation consumes the actual shared regularLocateBlock/spanBlock; independent controller proofs use a frozen low-register metadata snapshot and arbitrary supplied logical store. No executable callback or proof field supplies a query answer.
+
+Alternatives rejected: deriving regularity from a maximum word-size bound; making every sentinel position an executed address; treating canonical expected receipts as arbitrary-memory fault behavior; or using CartesianShape metadata as an assumption for arbitrary bitvectors. The generic controller reference remains the existing packedSelectCloseRead with scalars loaded from memory. Safety, normalized-store semantics, access/rank data and complete accounting still require their own joins. Exact component and source checks are recorded in extensions/bv1 as each proof is consumed.
+
+## DD-20260912-BV1-003: compose all three operations on one counted numeric allocation
+
+The completed mathematical construction retains the original35 select/raw/table components and appends four Jacobson rank sample arrays, for39 actual body components. Both descriptor banks keep the207-word header boundary. Segment19 aliases the original raw payload for access/rank and supplies the required logical empty sentinels; it does not retain another input. Segment-zero normalization applies only to loaded raw true-select words. The two Boolean select directories and all flag/sample/table payloads remain counted. The complete capacity expression contains the literal encoding length of each of the three fixed programs and8274 scratch words in addition to the entire numerical memory; its remainder is proved LittleOLinear.
+
+Use one query-independent width W=32+16*machineWordBits(n). Canonical memory, scalar headers, descriptor fields, nominal positions and reader strides are bounded directly, including zero-length sentinels. A controller envelope E=2^(9+2*M), directory bound2^(2*M+3) and table bound2^(M+8) discharge the generic square/cube arithmetic obligations without adding a readiness premise. The same width bounds every dormant instruction field, actual transition, fuel prefix and indexed receipt. Full source evaluation is unconditional in the Nat model; numerical safety has the sole machine-input premise argument<2^W. The outer all-Nat API rejects larger arguments, which are proved invalid in the List specification.
+
+Keep generic controller evaluation and compiler conversion abstract until the final operation/output register is specialized. This is a proof-engineering boundary, not a new executable abstraction: the source still contains the shared Packed blocks and the actual Structured compiler. Eager comparison of concrete run projections caused deterministic elaborator timeouts; an explicit output-register equality and generic query-packet bridge avoid unfolding thousands of steps. Rank composition similarly abstracts the already-proved core evaluation before simplifying loaded metadata and finite source syntax. No raised heartbeat limit or new trust primitive is part of these proofs.
+
+Rejected alternatives were a second complemented raw payload; a separate rank payload containing another n bits; uncharged metadata or input-dependent code; a shape-specific hypothesis; proving only reached instruction operands; ignoring nominal sentinel positions; and counting a code-length alias whose unfolding obscured the literal public capacity statement. The concrete effects are all-natural access/rank/select correctness, representable whole-program safety, exact same-memory ordered receipts, actual category counts and an all-fuel finite-register theorem, joined in the23-field fullyChargedBitvectorCapstone_holds. Its first module check and expanded public consumer pass; final replay, exact-commit audit and coordinator acceptance remain distinct workflow obligations. Evidence and exact propositions are in extensions/bv1/CAPSTONE_COMPOSITION.md and the linked leaf reports.
+
+The model assumptions remain unit-cost scalar division, remainder, shifts and other explicit ISA operations; unbounded preprocessing; an uncharged outer Nat-domain check; and asymptotic-only absorption of fixed code/scratch. No claim about measured Lean interpreter performance or useful finite-size thresholds is added. FAMILY_SUMMARY and DIGESTION_LOG receive additive task-specific entries. README and the shared public aliases remain outside this lane's write scope, so no broader RMQ headline or paper theorem is rewritten.
+
+
+## DD-20260912-BV1-004: identify checked source separately from later evidence
+
+The complete generic bitvector construction and its tested replay inputs are
+frozen at source candidate 763b00e68cabef2ea322a92fb7b3be354b367179. A subsequent
+fresh checkout established exact raw-byte equality for 717 protected artifacts,
+including 33 binary archives, and all 552 dependency occurrences across 284
+paths. The measurement receipt necessarily exists after the commit it measures.
+Public family status should reflect that observed result while continuing to
+state that aggregate certification and coordinator acceptance are pending.
+
+Keep the source candidate fixed and retain the new receipts and current report
+updates in a distinct evidence commit. Name both roles explicitly: source and
+replay-input bytes remain those measured at the source candidate; the later
+receipt and updated prose are not silently added to the original 717 count.
+The exact commit and receipt identities provide a reader with an auditable path
+from the mathematical certificate through the tested physical object to the
+Git checkout measurement. This publication/provenance decision does not change
+any proposition, memory component, instruction, width, capacity or cost bound.
+
+Rejected alternatives are presenting the byte-preservation attributes alone as
+reproducibility evidence, folding the receipt into a self-referential claim about
+its own commit identity, leaving the public family status stale after the
+measurement passed, or treating the local checks as coordinator acceptance.
+The evidence delta contains maintained reports and retained verification results;
+tested Lean/replay/attribute/manifest bytes are preserved. Its public status
+update carries this design rationale in the same commit, as required by the
+repository's per-commit policy. The existing model and preprocessing/runtime
+caveats remain live, and the coordinator's aggregate hold remains authoritative.

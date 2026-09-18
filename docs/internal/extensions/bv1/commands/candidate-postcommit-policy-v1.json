@@ -1,0 +1,39 @@
+{
+  "commit": "763b00e68cabef2ea322a92fb7b3be354b367179",
+  "passed": true,
+  "expected": 2,
+  "executed": 2,
+  "checks": [
+    {
+      "id": "committed-range",
+      "passed": true,
+      "arguments": [
+        "-c",
+        "core.excludesfile=",
+        "diff",
+        "--check",
+        "0e6a00f654abc64f8b68988fa9675b9a839dca2f..763b00e68cabef2ea322a92fb7b3be354b367179"
+      ],
+      "exit": 0,
+      "seconds": 3.451
+    },
+    {
+      "id": "per-commit-design",
+      "passed": true,
+      "arguments": [
+        "-NoProfile",
+        "-File",
+        "scripts/design_decision_check.ps1",
+        "-Strict",
+        "-Base",
+        "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+        "-Head",
+        "763b00e68cabef2ea322a92fb7b3be354b367179"
+      ],
+      "exit": 0,
+      "seconds": 5.862
+    }
+  ],
+  "outputArchive": "docs/internal/extensions/bv1/commands/candidate-postcommit-policy-v1-output.json.gz",
+  "archiveSHA256": "24EC2A88C88DE6AC4F14D4264DCEF25EF6F7D7DE818FEA7A882879B34D50F7F3"
+}
