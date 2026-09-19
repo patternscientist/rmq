@@ -53,7 +53,9 @@ param(
   #   coordinator ruling R-R2-1, so the default is raised to the measured
   #   duration times 2.5 rounded up to a multiple of 1800 s: 23400 s =
   #   2.70 x measured (never shortened).
-  [int]$OuterDeadlineSeconds = 23400
+  [int]$OuterDeadlineSeconds = 23400,
+  # Warm-up build of the replay's own prerequisites (see the body).
+  [ValidateRange(1, 86400)][int]$WarmDeadlineSeconds = 7200
 )
 
 Set-StrictMode -Version Latest
@@ -69,6 +71,27 @@ try {
   $replay = Join-Path $PSScriptRoot 'preprocessing_builder_replay.ps1'
   $arguments = @('-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $replay)
   if (-not [string]::IsNullOrWhiteSpace($LakePath)) { $arguments += @('-LakePath', $LakePath) }
+  # Warm-up (2026-09-19, FM-5). The replay's baseline stages build the producer
+  # targets and the capstone closure under its per-stage deadline (600 s by
+  # default), which a cold tree exceeds: the default `lake build` target does
+  # not contain the Construction modules, so a fresh checkout (CI, a new
+  # worktree) reached the replay unbuilt and failed as inconclusive. Build the
+  # same targets here first, as an owned bounded child with its own deadline.
+  # Measured cold on this host: about 2,100-3,400 s; 7200 s is at least 2x.
+  $lake = if (-not [string]::IsNullOrWhiteSpace($LakePath)) { $LakePath } else { (Get-Command lake -ErrorAction Stop).Source }
+  $warmTargets = @('RMQ.Core.WordRAM.Construction.Loop', 'RMQ.Core.WordRAM.Construction.ArrayRun',
+    'RMQ.Core.WordRAM.Construction.HeaderUse', 'RMQ.Core.WordRAM.Construction.Proof.Constants',
+    'RMQ.Core.WordRAM.Construction.Capstone', 'RMQ.Validation.PreprocessingContract', 'rmq_preprocessing_validate')
+  Write-Host "PRE1-BUILDER-REPLAY warm-up lake=$lake deadline=$($WarmDeadlineSeconds)s"
+  $warm = Invoke-RMQOwnedBoundedProcess -FilePath $lake -Arguments (@('build') + $warmTargets) `
+    -WorkingDirectory $script:RepositoryRoot -Stage 'builder-replay-warm' `
+    -DeadlineSeconds $WarmDeadlineSeconds -OutputLimitBytes $script:OutputLimitBytes `
+    -TempRoot $script:TempRoot -Environment @{ LEAN_NUM_THREADS = '1' }
+  $script:LastOutput = @($warm.Output | Select-Object -Last 40)
+  if ($warm.TimedOut -or $warm.OutputLimitExceeded -or $warm.ExitCode -ne 0) {
+    throw "warm-up build failed or was inconclusive after $($warm.DurationSeconds)s: exit=$($warm.ExitCode), timeout=$($warm.TimedOut), outputLimit=$($warm.OutputLimitExceeded)"
+  }
+  Write-Host "PRE1-BUILDER-REPLAY warm-up duration=$($warm.DurationSeconds)s"
   Write-Host "PRE1-BUILDER-REPLAY shell=$shell replay=$replay deadline=$($OuterDeadlineSeconds)s"
   $result = Invoke-RMQOwnedBoundedProcess -FilePath $shell -Arguments $arguments `
     -WorkingDirectory $script:RepositoryRoot -Stage 'builder-replay-full' `

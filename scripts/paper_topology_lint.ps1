@@ -653,8 +653,26 @@ foreach ($path in $trackedFiles) {
   if ($textExtensions -notcontains [IO.Path]::GetExtension($path)) { continue }
   if (-not (Test-Path -LiteralPath $path)) { continue }
 
+  # Prefilter (2026-09-19, FM-6). Every failure below needs the line to hold
+  # the snapshot marker or a removed spelling, and registered snapshot files
+  # are always walked, so a file whose whole text holds neither can produce
+  # no finding. The test is case-insensitive because `-match` below is. It
+  # turns a per-line regex walk of every tracked byte into one substring
+  # probe per name for almost every file; verdicts are unchanged.
+  $text = Read-Text $path
+  if (-not $frozenSnapshotLines.Contains($path)) {
+    $candidate = $text.IndexOf($frozenSnapshotMarker, [StringComparison]::OrdinalIgnoreCase) -ge 0
+    if (-not $candidate) {
+      foreach ($name in $retiredAliasReplacements.Keys) {
+        if ($text.IndexOf($name, [StringComparison]::OrdinalIgnoreCase) -ge 0) { $candidate = $true; break }
+      }
+    }
+    if (-not $candidate) { continue }
+  }
+
   $lineNumber = 0
-  foreach ($line in Read-Lines $path) {
+  foreach ($line in [regex]::Split($text, '?
+')) {
     $lineNumber += 1
     $isPreciselyFrozen = Is-PreciselyFrozenSnapshotLine $path $line
     if ($line.Contains($frozenSnapshotMarker) -and -not $isPreciselyFrozen) {
