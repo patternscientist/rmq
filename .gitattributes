@@ -20,9 +20,6 @@ RMQ/Validation/PackedBitvector.lean -text whitespace=blank-at-eol,blank-at-eof,s
 scripts/packed_bitvector_* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 docs/internal/extensions/bv1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 
-# BV-1 replay also pins the existing build manifest's exact mixed newline bytes.
-lakefile.toml -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-
 # These exact replay-pinned artifacts retain their recorded final blank line.
 # Other trailing whitespace and indentation checks remain enabled.
 RMQ/Core/WordRAM/Bitvector/Capstone.lean whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol
