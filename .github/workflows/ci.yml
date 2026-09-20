@@ -39,8 +39,17 @@ jobs:
           lake --version
 
       - name: Run repository gate
-        shell: pwsh
-        run: ./scripts/gate.ps1
+        # bash, not pwsh, so the stack limit can be raised first. The packed-query
+        # replay runs its runtime fixtures with `lean --run`, whose interpreter
+        # recursion needs far more than Linux's default 8 MiB main-thread stack
+        # (it fails with "deep recursion was detected at 'interpreter'"); Windows
+        # reserves a large stack for lean.exe, so the local gate never saw this.
+        # Children inherit the limit. 1 GiB is the value measured to work.
+        shell: bash
+        run: |
+          ulimit -s 1048576
+          echo "stack limit: $(ulimit -s) KB"
+          pwsh -NoLogo -NoProfile -File ./scripts/gate.ps1
 
       - name: Run strict claim-drift scan
         if: always()

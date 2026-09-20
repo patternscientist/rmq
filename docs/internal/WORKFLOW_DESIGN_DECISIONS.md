@@ -13977,3 +13977,13 @@ Decision: (1) the lint reads each file once and skips it when its whole text con
 Alternatives rejected: raising the regression's per-case budget (capped by the script and it would put the gate near twelve hours); raising the replay's per-stage deadline (hides a cold build inside a mutation stage and changes a lane-frozen runner); restructuring the scanners' scope or tiering the gate now (owner direction of 2026-09-19: integrate first, keep tooling changes minimal; those go to a later tooling lane).
 
 Consequences: no checker is removed or weakened; the replay runner, its registry and every pin are unchanged. Measurements after the change are recorded by the coordinator with the next gate evidence.
+
+## WDD-20260920-INT-002: CI and the artifact reproduction script raise the stack limit before running the gate
+
+Context: the first CI run on any commit that contains the fully charged packed query (the integration branch at `7b227c4`; `origin/main` had not been updated since before that work) failed both required checks, Lean gate and Reproduce artifact, at the same place: the packed-query replay's runtime stage runs its fixtures with `lean --run`, and on Linux the interpreter reported deep recursion in `PackedWordRAM.runArray` at about eighteen thousand frames, so a negative control could not be evaluated and the checker reported that it did not run. Linux gives the main thread 8 MiB of stack by default; the Windows `lean.exe` reserves far more, so every local gate passed. A WSL toy confirms the mechanism on the pinned toolchain: a non-tail recursion of depth three hundred thousand fails under the default limit and passes under a 1 GiB limit. The same limit was needed for the LB-1 replay campaign under WSL.
+
+Decision: `.github/workflows/ci.yml` runs the gate step under bash with `ulimit -s 1048576` before invoking `pwsh ... scripts/gate.ps1`, and `scripts/reproduce_artifact.sh` raises the limit the same way (falling back to the hard limit) before its gate call; both print the limit in force. Child processes inherit it, including the owned bounded children.
+
+Alternatives rejected: changing the frozen packed-query replay runner to wrap its runtime stage (it is pinned by its lane's provenance checks); rewriting `runArray` to be tail-recursive for the interpreter (a proof-bearing definition; out of scope for integration); running the fixtures through a compiled executable only (changes what the lane's replay certifies).
+
+Consequences: a user running the gate directly on Linux or macOS without the reproduction script must raise the stack limit themselves; the README's reproduction path goes through the script. Whether the whole gate fits the hosted job time limit is still unmeasured and is tracked separately.
