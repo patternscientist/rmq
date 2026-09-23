@@ -1,0 +1,40 @@
+{
+  "Status": "PROOF_COMPOSITION_CHECKED_FINAL_VERIFICATION_PENDING",
+  "ObservedHEAD": "8e355fda7788077f548865c1d6acf2ae5e88da55",
+  "DirtySourceSnapshot": true,
+  "Modules": [
+    {
+      "Module": "QueryProof",
+      "SourceSHA256": "E64DEA58F75D67E797A232814B8D1A00812142312509203119BD2FA890F4FABE",
+      "DurationSeconds": 5.476,
+      "ResultPath": "composition-development/RMQ.Core.WordRAM.Optimization.QueryProof.json"
+    },
+    {
+      "Module": "QuerySafety",
+      "SourceSHA256": "4A8404ED30DE03ACE87670B9D007E29C418665068DBB99E987351DCECE7F73CD",
+      "DurationSeconds": 2.893,
+      "ResultPath": "composition-development/RMQ.Core.WordRAM.Optimization.QuerySafety.json"
+    },
+    {
+      "Module": "Certificate",
+      "SourceSHA256": "D0B8109E23431050D9949749BEF8678F35891E3CFE1CEE9EDD9038CA662F9448",
+      "DurationSeconds": 4.715,
+      "ResultPath": "composition-development/RMQ.Core.WordRAM.Optimization.Certificate.json"
+    },
+    {
+      "Module": "Capstone",
+      "SourceSHA256": "838FCE234F85FE2FC3720411F78DC813CBC10529CAB61E5513876EA38BB30A75",
+      "DurationSeconds": 29.172,
+      "ResultPath": "composition-development/RMQ.Core.WordRAM.Optimization.Capstone.json"
+    },
+    {
+      "Module": "Consumers",
+      "SourceSHA256": "6A435EFF7E3CD2A2DFEA248B3A8ABEBABAF10FF643927C5C3FCAE52E666E7CB5",
+      "DurationSeconds": 7.261,
+      "ResultPath": "composition-development/RMQ.Core.WordRAM.Optimization.Consumers.json"
+    }
+  ],
+  "FieldCount": 39,
+  "TypedConsumers": 78,
+  "FullTargetNotComplete": true
+}

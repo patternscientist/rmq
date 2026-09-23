@@ -214,7 +214,7 @@ $cases = @(
   @{ Id = "new-validation-path"; Files = @{ "RMQ/Validation/NewPolicyProbe.lean" = "def newPolicyProbe := true" }; Reject = $true; Output = "code/public/repository-sensitive" },
   @{ Id = "new-workflow-script"; Files = @{ "scripts/new_workflow_probe.ps1" = "Write-Host probe" }; Reject = $true; Output = "workflow/process-sensitive" },
   @{ Id = "ordinary-public-doc"; Files = @{ "docs/NEW_PUBLIC_NOTE.md" = "# Public note" }; Reject = $true; Output = "code/public/repository-sensitive" },
-  @{ Id = "unknown-repository-path-default-sensitive"; Files = @{ "new-format/data.policy" = "policy" }; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "unknown-repository-path-is-unclassified"; Files = @{ "new-format/data.policy" = "policy" }; Reject = $true; Output = "match no classification rule" },
   @{ Id = "missing-code-decision"; Files = @{ "lakefile.toml" = "name = 'probe'" }; Reject = $true; Output = "update docs/internal/DESIGN_DECISIONS.md" },
   @{ Id = "missing-workflow-decision"; Files = @{ ".agents/new_policy/README.md" = "workflow" }; Reject = $true; Output = "update docs/internal/WORKFLOW_DESIGN_DECISIONS.md" },
   @{ Id = "p1-neutral-evidence-path-cannot-shadow-code-or-current-surface"; Files = @{ "docs/internal/audit_reports/P1NeutralBypass.lean" = "def p1NeutralBypass := true"; "docs/digests/PROJECT_DIGESTION_CURRENT_V2.md" = "# Unregistered current surface" }; Reject = $true; Output = "code/public/repository-sensitive" },
@@ -227,13 +227,129 @@ $cases = @(
   @{ Id = "present-correct-decisions"; Files = @{ "RMQ/New/BothDecisions.lean" = "def bothDecisions := true"; "scripts/both_decisions.ps1" = "Write-Host governed" }; CodeDecision = $true; WorkflowDecision = $true; Reject = $false; Output = "checked" },
   @{ Id = "neutral-worklog"; Files = @{ "docs/internal/NEW_POLICY_WORKLOG.md" = "# Evidence" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
   @{ Id = "neutral-audit-report"; Files = @{ "docs/internal/audit_reports/2026-07-19_probe.md" = "# Audit evidence" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  @{ Id = "neutral-dated-internal-audit"; Files = @{ "docs/internal/packed_query/PQ1_CONTINUATION_AUDIT_20260911.md" = "# Frozen audit evidence" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  @{ Id = "dated-audit-lean-remains-code"; Files = @{ "docs/internal/packed_query/PQ1_CONTINUATION_AUDIT_20260911.lean" = "def auditProbe := true" }; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "dated-audit-script-remains-workflow"; Files = @{ "docs/internal/packed_query/PQ1_CONTINUATION_AUDIT_20260911.ps1" = "Write-Host probe" }; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "dated-audit-prompt-remains-workflow"; Files = @{ "docs/internal/packed_query/PQ1_CONTINUATION_AUDIT_20260911_PROMPT.md" = "# Audit instructions" }; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "dated-audit-plan-remains-workflow"; Files = @{ "docs/internal/packed_query/PQ1_CONTINUATION_AUDIT_PLAN_20260911.md" = "# Audit plan" }; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "dated-public-audit-remains-public"; Files = @{ "docs/PQ1_CONTINUATION_AUDIT_20260911.md" = "# Public current claim" }; Reject = $true; Output = "code/public/repository-sensitive" },
   @{ Id = "neutral-historical-digest"; Files = @{ "docs/digests/PROJECT_STATE_2026_07_19.md" = "# Frozen history" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
   @{ Id = "p1-neutral-audit-markdown-control"; Files = @{ "docs/internal/audit_reports/P1NeutralEvidence.md" = "# Audit evidence" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
   @{ Id = "p1-frozen-historical-digest-control"; Files = @{ "docs/digests/DEEP_PROJECT_DIGESTION_2026_07_19.md" = "# Frozen history" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
   @{ Id = "decision-logs-nonrecursive"; Files = @{}; CodeDecision = $true; WorkflowDecision = $true; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
   @{ Id = "nonstrict-local-worktree-mode"; Files = @{ "RMQ/New/LocalAdvisory.lean" = "def localAdvisory := true" }; NonStrict = $true; OmitBase = $true; Reject = $false; Output = "code/public/repository-sensitive" },
-  @{ Id = "absolute-windows-repository-root"; Files = @{ "another-new-root/path.data" = "data" }; Reject = $true; Output = "code/public/repository-sensitive"; RequireDriveRoot = $true },
-  @{ Id = "strict-unresolvable-base"; Files = @{ "RMQ/New/BadBase.lean" = "def badBase := true" }; BaseOverride = "not-a-real-base"; Reject = $true; Output = "could not resolve base" }
+  @{ Id = "absolute-windows-repository-root"; Files = @{ "RMQ/DriveRoot/Probe.lean" = "def driveRootProbe := true" }; Reject = $true; Output = "code/public/repository-sensitive"; RequireDriveRoot = $true },
+  @{ Id = "strict-unresolvable-base"; Files = @{ "RMQ/New/BadBase.lean" = "def badBase := true" }; BaseOverride = "not-a-real-base"; Reject = $true; Output = "could not resolve base" },
+  # An unclassified path means the checker cannot judge the commit, so it is a
+  # hard error in EVERY mode. Without this case, non-strict callers would get
+  # exit 0 on a path the classifier could not place -- a green result standing
+  # in for a judgment never made.
+  @{ Id = "unclassified-path-fails-even-nonstrict"; Files = @{ "yet-another-root/x.data" = "data" }; NonStrict = $true; Reject = $true; Output = "match no classification rule" },
+  # Root-agnostic neutral evidence. Anchoring these to `^docs/internal/` is how
+  # paper/WORKLOG.md came to be proof/code architecture while
+  # docs/internal/X_WORKLOG.md was exempt evidence. WDD-20260817-077.
+  @{ Id = "neutral-worklog-outside-docs-internal"; Files = @{ "paper/WORKLOG.md" = "# Evidence" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  @{ Id = "neutral-theorem-ledger-outside-docs-internal"; Files = @{ "paper/THEOREM_LEDGER.md" = "# Ledger" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  @{ Id = "neutral-handoff-tracker"; Files = @{ "docs/internal/PROBE_CORRECTION_HANDOFF.md" = "- [x] done" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  @{ Id = "neutral-repository-plumbing"; Files = @{ "paper/.gitignore" = "*.aux" }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  # The counterweight to the four above: exempting paper/ wholesale would make
+  # the manuscript -- the public claim surface -- ungoverned. It stays code.
+  @{ Id = "paper-manuscript-remains-code-sensitive"; Files = @{ "paper/rmq.tex" = "\\section{Probe}" }; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "paper-bibliography-remains-code-sensitive"; Files = @{ "paper/references.bib" = "@misc{probe}" }; Reject = $true; Output = "code/public/repository-sensitive" },
+  # Runtime skills are process definition. `.claude/` was absent from the
+  # workflow roots, so skill edits were classified as proof/code and
+  # DD-20260725 had to record a code decision to satisfy a misclassification.
+  @{ Id = "claude-runtime-skill-is-workflow"; Files = @{ ".claude/skills/probe/SKILL.md" = "# Probe" }; Reject = $true; Output = "workflow/process-sensitive" },
+  # Native category holdouts exercise the real checker and exact ledger roles.
+  # These names are independent of the implementation's category patterns.
+  @{ Id = "native-rust-nested-requires-code"; Files = @{ "native/packed-rmq/src/heldout/deep/Index.rs" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-rust-nested-with-code"; Files = @{ "native/packed-rmq/src/heldout/deep/Index.rs" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-c-source-requires-code"; Files = @{ "native/packed-rmq/generated/heldout_core.c" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-c-source-with-code"; Files = @{ "native/packed-rmq/generated/heldout_core.c" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-cc-source-requires-code"; Files = @{ "native/packed-rmq/examples/heldout.cc" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-cc-source-with-code"; Files = @{ "native/packed-rmq/examples/heldout.cc" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-cpp-consumer-requires-code"; Files = @{ "native/packed-rmq/examples/heldout/consume.cpp" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-cpp-consumer-with-code"; Files = @{ "native/packed-rmq/examples/heldout/consume.cpp" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-cxx-source-requires-code"; Files = @{ "native/packed-rmq/examples/heldout.cxx" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-cxx-source-with-code"; Files = @{ "native/packed-rmq/examples/heldout.cxx" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-c-header-requires-code"; Files = @{ "native/packed-rmq/include/heldout/interface.h" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-c-header-with-code"; Files = @{ "native/packed-rmq/include/heldout/interface.h" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-hpp-header-requires-code"; Files = @{ "native/packed-rmq/include/heldout.hpp" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-hpp-header-with-code"; Files = @{ "native/packed-rmq/include/heldout.hpp" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-hxx-header-requires-code"; Files = @{ "native/packed-rmq/include/heldout.hxx" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-hxx-header-with-code"; Files = @{ "native/packed-rmq/include/heldout.hxx" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-abi-def-requires-code"; Files = @{ "native/packed-rmq/heldout_exports.def" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-abi-def-with-code"; Files = @{ "native/packed-rmq/heldout_exports.def" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-cargo-manifest-requires-code"; Files = @{ "native/packed-rmq/Cargo.toml" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-cargo-manifest-with-code"; Files = @{ "native/packed-rmq/Cargo.toml" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-cargo-lock-requires-code"; Files = @{ "native/packed-rmq/Cargo.lock" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-cargo-lock-with-code"; Files = @{ "native/packed-rmq/Cargo.lock" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-public-readme-requires-code"; Files = @{ "native/packed-rmq/README.md" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-public-readme-with-code"; Files = @{ "native/packed-rmq/README.md" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-fixture-requires-code"; Files = @{ "native/packed-rmq/fixtures/heldout.fixture" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-fixture-with-code"; Files = @{ "native/packed-rmq/fixtures/heldout.fixture" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-expected-requires-code"; Files = @{ "native/packed-rmq/fixtures/heldout.expected" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-expected-with-code"; Files = @{ "native/packed-rmq/fixtures/heldout.expected" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-program-archive-requires-code"; Files = @{ "native/packed-rmq/fixtures/program.txt.gz" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-program-archive-with-code"; Files = @{ "native/packed-rmq/fixtures/program.txt.gz" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-evidence-named-source-requires-code"; Files = @{ "native/packed-rmq/fixtures/Native_WORKLOG.rs" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-evidence-named-source-with-code"; Files = @{ "native/packed-rmq/fixtures/Native_WORKLOG.rs" = 'native policy probe' }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-registry-requires-workflow"; Files = @{ "native/packed-rmq/route-registry.json" = '{ "newField": "still governed", "cases": ["heldout"] }' }; CodeDecision = $true; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "native-registry-with-workflow"; Files = @{ "native/packed-rmq/route-registry.json" = '{ "newField": "still governed", "cases": ["heldout"] }' }; WorkflowDecision = $true; Reject = $false; Output = "(0 code, 1 workflow, 1 neutral)" },
+  @{ Id = "native-manifest-requires-workflow"; Files = @{ "native/packed-rmq/fixtures/manifest.json" = '{ "newField": "still governed", "cases": ["heldout"] }' }; CodeDecision = $true; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "native-manifest-with-workflow"; Files = @{ "native/packed-rmq/fixtures/manifest.json" = '{ "newField": "still governed", "cases": ["heldout"] }' }; WorkflowDecision = $true; Reject = $false; Output = "(0 code, 1 workflow, 1 neutral)" },
+  @{ Id = "native-build-hook-requires-workflow"; Files = @{ "native/packed-rmq/build.rs" = 'native policy probe' }; CodeDecision = $true; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "native-build-hook-requires-code"; Files = @{ "native/packed-rmq/build.rs" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-build-hook-with-both"; Files = @{ "native/packed-rmq/build.rs" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $false; Output = "(1 code, 1 workflow, 2 neutral)" },
+  @{ Id = "native-script-requires-workflow"; Files = @{ "native/packed-rmq/tools/heldout.ps1" = 'native policy probe' }; CodeDecision = $true; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "native-script-with-workflow"; Files = @{ "native/packed-rmq/tools/heldout.ps1" = 'native policy probe' }; WorkflowDecision = $true; Reject = $false; Output = "(0 code, 1 workflow, 1 neutral)" },
+  @{ Id = "native-lean-script-requires-workflow"; Files = @{ "scripts/packed_native_policy_probe.lean" = 'native policy probe' }; CodeDecision = $true; Reject = $true; Output = "workflow/process-sensitive" },
+  @{ Id = "native-lean-script-requires-code"; Files = @{ "scripts/packed_native_policy_probe.lean" = 'native policy probe' }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-lean-script-with-both"; Files = @{ "scripts/packed_native_policy_probe.lean" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $false; Output = "(1 code, 1 workflow, 2 neutral)" },
+  @{ Id = "native-unknown-binary-unclassified"; Files = @{ "native/packed-rmq/unknown.bin" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-unknown-policy-json-unclassified"; Files = @{ "native/packed-rmq/fixtures/new-policy.json" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-fixture-readme-unclassified"; Files = @{ "native/packed-rmq/fixtures/README.md" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-another-package-unclassified"; Files = @{ "native/another-package/src/lib.rs" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-neighbor-prefix-unclassified"; Files = @{ "native/packed-rmq-other/src/lib.rs" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-appended-program-suffix-unclassified"; Files = @{ "native/packed-rmq/fixtures/program.txt.gz.bak" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-nested-fixture-unclassified"; Files = @{ "native/packed-rmq/fixtures/nested/heldout.fixture" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-unknown-nonstrict"; Files = @{ "native/packed-rmq/unknown.bin" = 'native policy probe' }; CodeDecision = $true; WorkflowDecision = $true; NonStrict = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-gitignore-neutral"; Files = @{ "native/packed-rmq/.gitignore" = '*.tmp' }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  @{ Id = "native-gitattributes-neutral"; Files = @{ "native/packed-rmq/.gitattributes" = '* text=auto' }; Reject = $false; Output = "only neutral decision/evidence/history/report paths" },
+  @{ Id = "native-current-28-path-role-counts"; Files = @{
+    "native/packed-rmq/src/lib.rs" = "operational probe"
+    "native/packed-rmq/src/main.rs" = "operational probe"
+    "native/packed-rmq/route_shim.c" = "operational probe"
+    "native/packed-rmq/include/packed_rmq_route.h" = "operational probe"
+    "native/packed-rmq/examples/route.cpp" = "operational probe"
+    "native/packed-rmq/packed_route.def" = "operational probe"
+    "native/packed-rmq/Cargo.toml" = "operational probe"
+    "native/packed-rmq/Cargo.lock" = "operational probe"
+    "native/packed-rmq/README.md" = "operational probe"
+    "native/packed-rmq/route-registry.json" = "operational probe"
+    "native/packed-rmq/fixtures/manifest.json" = "operational probe"
+    "native/packed-rmq/fixtures/program.txt.gz" = "operational probe"
+    "native/packed-rmq/fixtures/n12-adjacent.expected" = "operational probe"
+    "native/packed-rmq/fixtures/n12-adjacent.fixture" = "operational probe"
+    "native/packed-rmq/fixtures/n12-interior.expected" = "operational probe"
+    "native/packed-rmq/fixtures/n12-interior.fixture" = "operational probe"
+    "native/packed-rmq/fixtures/n12-same.expected" = "operational probe"
+    "native/packed-rmq/fixtures/n12-same.fixture" = "operational probe"
+    "native/packed-rmq/fixtures/n9-corrupt.expected" = "operational probe"
+    "native/packed-rmq/fixtures/n9-corrupt.fixture" = "operational probe"
+    "native/packed-rmq/fixtures/n9-empty.expected" = "operational probe"
+    "native/packed-rmq/fixtures/n9-empty.fixture" = "operational probe"
+    "native/packed-rmq/fixtures/n9-full.expected" = "operational probe"
+    "native/packed-rmq/fixtures/n9-full.fixture" = "operational probe"
+    "native/packed-rmq/fixtures/n9-missing.expected" = "operational probe"
+    "native/packed-rmq/fixtures/n9-missing.fixture" = "operational probe"
+    "native/packed-rmq/fixtures/n9-range.expected" = "operational probe"
+    "native/packed-rmq/fixtures/n9-range.fixture" = "operational probe"
+  }; CodeDecision = $true; WorkflowDecision = $true; Reject = $false; Output = "(26 code, 2 workflow, 2 neutral)" },
+  @{ Id = "native-binary-image-requires-code"; Files = @{ "native/packed-rmq/fixtures/heldout.rmqbin" = "binary image probe" }; WorkflowDecision = $true; Reject = $true; Output = "code/public/repository-sensitive" },
+  @{ Id = "native-binary-image-with-code"; Files = @{ "native/packed-rmq/fixtures/heldout.rmqbin" = "binary image probe" }; CodeDecision = $true; Reject = $false; Output = "(1 code, 0 workflow, 1 neutral)" },
+  @{ Id = "native-binary-neighbor-extension-unclassified"; Files = @{ "native/packed-rmq/fixtures/heldout.rmqbinx" = "unknown image probe" }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" },
+  @{ Id = "native-binary-appended-suffix-unclassified"; Files = @{ "native/packed-rmq/fixtures/heldout.rmqbin.bak" = "unknown image probe" }; CodeDecision = $true; WorkflowDecision = $true; Reject = $true; Output = "match no classification rule" }
 )
 
 $expectedCaseIds = @(
@@ -242,7 +358,7 @@ $expectedCaseIds = @(
   "new-validation-path",
   "new-workflow-script",
   "ordinary-public-doc",
-  "unknown-repository-path-default-sensitive",
+  "unknown-repository-path-is-unclassified",
   "missing-code-decision",
   "missing-workflow-decision",
   "p1-neutral-evidence-path-cannot-shadow-code-or-current-surface",
@@ -255,13 +371,86 @@ $expectedCaseIds = @(
   "present-correct-decisions",
   "neutral-worklog",
   "neutral-audit-report",
+  "neutral-dated-internal-audit",
+  "dated-audit-lean-remains-code",
+  "dated-audit-script-remains-workflow",
+  "dated-audit-prompt-remains-workflow",
+  "dated-audit-plan-remains-workflow",
+  "dated-public-audit-remains-public",
   "neutral-historical-digest",
   "p1-neutral-audit-markdown-control",
   "p1-frozen-historical-digest-control",
   "decision-logs-nonrecursive",
   "nonstrict-local-worktree-mode",
   "absolute-windows-repository-root",
-  "strict-unresolvable-base"
+  "strict-unresolvable-base",
+  "unclassified-path-fails-even-nonstrict",
+  "neutral-worklog-outside-docs-internal",
+  "neutral-theorem-ledger-outside-docs-internal",
+  "neutral-handoff-tracker",
+  "neutral-repository-plumbing",
+  "paper-manuscript-remains-code-sensitive",
+  "paper-bibliography-remains-code-sensitive",
+  "claude-runtime-skill-is-workflow",
+  "native-rust-nested-requires-code",
+  "native-rust-nested-with-code",
+  "native-c-source-requires-code",
+  "native-c-source-with-code",
+  "native-cc-source-requires-code",
+  "native-cc-source-with-code",
+  "native-cpp-consumer-requires-code",
+  "native-cpp-consumer-with-code",
+  "native-cxx-source-requires-code",
+  "native-cxx-source-with-code",
+  "native-c-header-requires-code",
+  "native-c-header-with-code",
+  "native-hpp-header-requires-code",
+  "native-hpp-header-with-code",
+  "native-hxx-header-requires-code",
+  "native-hxx-header-with-code",
+  "native-abi-def-requires-code",
+  "native-abi-def-with-code",
+  "native-cargo-manifest-requires-code",
+  "native-cargo-manifest-with-code",
+  "native-cargo-lock-requires-code",
+  "native-cargo-lock-with-code",
+  "native-public-readme-requires-code",
+  "native-public-readme-with-code",
+  "native-fixture-requires-code",
+  "native-fixture-with-code",
+  "native-expected-requires-code",
+  "native-expected-with-code",
+  "native-program-archive-requires-code",
+  "native-program-archive-with-code",
+  "native-evidence-named-source-requires-code",
+  "native-evidence-named-source-with-code",
+  "native-registry-requires-workflow",
+  "native-registry-with-workflow",
+  "native-manifest-requires-workflow",
+  "native-manifest-with-workflow",
+  "native-build-hook-requires-workflow",
+  "native-build-hook-requires-code",
+  "native-build-hook-with-both",
+  "native-script-requires-workflow",
+  "native-script-with-workflow",
+  "native-lean-script-requires-workflow",
+  "native-lean-script-requires-code",
+  "native-lean-script-with-both",
+  "native-unknown-binary-unclassified",
+  "native-unknown-policy-json-unclassified",
+  "native-fixture-readme-unclassified",
+  "native-another-package-unclassified",
+  "native-neighbor-prefix-unclassified",
+  "native-appended-program-suffix-unclassified",
+  "native-nested-fixture-unclassified",
+  "native-unknown-nonstrict",
+  "native-gitignore-neutral",
+  "native-gitattributes-neutral",
+  "native-current-28-path-role-counts",
+  "native-binary-image-requires-code",
+  "native-binary-image-with-code",
+  "native-binary-neighbor-extension-unclassified",
+  "native-binary-appended-suffix-unclassified"
 )
 
 $expectedRejectCaseIds = @(
@@ -270,7 +459,7 @@ $expectedRejectCaseIds = @(
   "new-validation-path",
   "new-workflow-script",
   "ordinary-public-doc",
-  "unknown-repository-path-default-sensitive",
+  "unknown-repository-path-is-unclassified",
   "missing-code-decision",
   "missing-workflow-decision",
   "p1-neutral-evidence-path-cannot-shadow-code-or-current-surface",
@@ -278,8 +467,51 @@ $expectedRejectCaseIds = @(
   "p1-neutral-digest-code-rejected",
   "p1-current-looking-digest-heldout-rejected",
   "p1-registered-current-digest-remains-sensitive",
+  "dated-audit-lean-remains-code",
+  "dated-audit-script-remains-workflow",
+  "dated-audit-prompt-remains-workflow",
+  "dated-audit-plan-remains-workflow",
+  "dated-public-audit-remains-public",
   "absolute-windows-repository-root",
-  "strict-unresolvable-base"
+  "strict-unresolvable-base",
+  "unclassified-path-fails-even-nonstrict",
+  "paper-manuscript-remains-code-sensitive",
+  "paper-bibliography-remains-code-sensitive",
+  "claude-runtime-skill-is-workflow",
+  "native-rust-nested-requires-code",
+  "native-c-source-requires-code",
+  "native-cc-source-requires-code",
+  "native-cpp-consumer-requires-code",
+  "native-cxx-source-requires-code",
+  "native-c-header-requires-code",
+  "native-hpp-header-requires-code",
+  "native-hxx-header-requires-code",
+  "native-abi-def-requires-code",
+  "native-cargo-manifest-requires-code",
+  "native-cargo-lock-requires-code",
+  "native-public-readme-requires-code",
+  "native-fixture-requires-code",
+  "native-expected-requires-code",
+  "native-program-archive-requires-code",
+  "native-evidence-named-source-requires-code",
+  "native-registry-requires-workflow",
+  "native-manifest-requires-workflow",
+  "native-build-hook-requires-workflow",
+  "native-build-hook-requires-code",
+  "native-script-requires-workflow",
+  "native-lean-script-requires-workflow",
+  "native-lean-script-requires-code",
+  "native-unknown-binary-unclassified",
+  "native-unknown-policy-json-unclassified",
+  "native-fixture-readme-unclassified",
+  "native-another-package-unclassified",
+  "native-neighbor-prefix-unclassified",
+  "native-appended-program-suffix-unclassified",
+  "native-nested-fixture-unclassified",
+  "native-unknown-nonstrict",
+  "native-binary-image-requires-code",
+  "native-binary-neighbor-extension-unclassified",
+  "native-binary-appended-suffix-unclassified"
 )
 
 function Test-CaseRegistry {
@@ -351,9 +583,22 @@ Write-Host "DESIGN-CHECK-REGRESSION: PASS [case-verdict-drift-control] REJECT"
 Write-Host "DESIGN-CHECK-REGRESSION: PASS [exact-case-registry] $($cases.Count) ordered cases"
 
 $gateText = Get-Content -Raw -LiteralPath $gatePath
-$designInvocationPattern = '(?m)^\s*& "\$PSScriptRoot\\design_decision_check_regression\.ps1"\s*$'
-$claimInvocationPattern = '(?m)^\s*& "\$PSScriptRoot\\claim_drift_policy_regression\.ps1"\s*$'
-$designPropagationPattern = '(?ms)& "\$PSScriptRoot\\design_decision_check_regression\.ps1"\s*\r?\nif \(\$LASTEXITCODE -ne 0\) \{ Fail "design_decision_check_regression\.ps1 found issues" \}'
+# Wiring moved from `& script; if ($LASTEXITCODE -ne 0) { Fail ... }` to
+# Invoke-Checker (WDD-20260816-046): the old shape scored a checker that never
+# ran as a PASS. The property defended here is unchanged -- each regression is
+# invoked exactly once, and the design one is HARD, its failure stopping the
+# gate rather than being collected. Under Invoke-Checker that is the ABSENCE
+# of -Soft, so the absence is asserted, together with the helper's non-Soft
+# branch actually calling Fail -- pinning the call text alone would still pass
+# if that branch were weakened to SoftFail.
+# The tails end `\s*$` rather than `$`: these files are CRLF, and .NET's
+# multiline `$` matches before `\n`, not before the `\r` preceding it. A
+# character class excluding `\r` cannot consume it, so the anchor never lands.
+# The original patterns had `\s*$` for the same reason; dropping it silently
+# turned both counts to zero.
+$designInvocationPattern = '(?m)^\s*Invoke-Checker -Path "\$PSScriptRoot\\design_decision_check_regression\.ps1"(?![^\r\n]*-Soft)[^\r\n]*\s*$'
+$claimInvocationPattern = '(?m)^\s*Invoke-Checker -Path "\$PSScriptRoot\\claim_drift_policy_regression\.ps1"[^\r\n]*\s*$'
+$designPropagationPattern = '(?ms)if \(\$Soft\) \{ SoftFail \$m; return \}\s*\r?\n\s*Fail \$m'
 if ([regex]::Matches($gateText, $designInvocationPattern).Count -ne 1 -or
     [regex]::Matches($gateText, $claimInvocationPattern).Count -ne 1 -or
     -not [regex]::IsMatch($gateText, $designPropagationPattern)) {
@@ -462,8 +707,438 @@ try {
   }
 }
 
-if ($rejectCount -ne 15 -or $acceptCount -ne 10) {
-  Write-Host "DESIGN-CHECK-REGRESSION: FAIL [final-verdict-counts] expected 15 reject and 10 accept; got $rejectCount reject and $acceptCount accept"
+# ---------------------------------------------------------------------------
+# PER-COMMIT CERTIFICATION, and the blind spot it closes.
+#
+# The repository states that EVERY commit carries its own design-log update.
+# CI ran the check once over a whole range, which does not enforce that: one
+# commit's DESIGN_DECISIONS.md satisfies the membership test for every
+# code-sensitive file in the range. WDD-20260816-043 records a commit that
+# breached the invariant and passed CI for exactly this reason.
+#
+# This case builds the smallest tree exhibiting it and asserts all three legs.
+# Leg 1 is the one that matters: if the aggregate ever starts REJECTING this
+# fixture, the blind spot is gone and legs 2-3 no longer prove anything, so the
+# case fails rather than passing for the wrong reason.
+$pcRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("rmq-percommit-" + [Guid]::NewGuid().ToString('N'))
+try {
+  [System.IO.Directory]::CreateDirectory($pcRoot) | Out-Null
+  [System.IO.Directory]::CreateDirectory((Join-Path $pcRoot 'scripts')) | Out-Null
+  Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'design_decision_check.ps1') `
+    -Destination (Join-Path $pcRoot 'scripts\design_decision_check.ps1') -Force
+
+  Push-Location $pcRoot
+  try {
+    & git init -q . 2>&1 | Out-Null
+    & git config user.email 'regression@local' | Out-Null
+    & git config user.name 'regression' | Out-Null
+    & git config commit.gpgsign false | Out-Null
+    # This fixture tests commit membership, not checkout line-ending policy.
+    # A copied LF checker plus inherited autocrlf=true emits native stderr;
+    # Windows PowerShell promotes that warning to an error under Stop.
+    $null = Invoke-BoundedGit -WorkingDirectory $pcRoot -Arguments @("config", "core.autocrlf", "false")
+
+    Write-FixtureFile -Root $pcRoot -RelativePath 'docs/internal/DESIGN_DECISIONS.md' `
+      -Content '# Design decisions'
+    Write-FixtureFile -Root $pcRoot -RelativePath 'docs/internal/WORKFLOW_DESIGN_DECISIONS.md' `
+      -Content '# Workflow design decisions'
+    Write-FixtureFile -Root $pcRoot -RelativePath 'paper/rmq.tex' -Content 'baseline'
+    & git add -A 2>&1 | Out-Null; & git commit -qm 'c0 baseline' 2>&1 | Out-Null
+    $c0 = (& git rev-parse HEAD)
+
+    # c1: a code-sensitive file changed with NO design-log entry -- the breach.
+    Write-FixtureFile -Root $pcRoot -RelativePath 'paper/rmq.tex' -Content 'changed with no entry'
+    & git add -A 2>&1 | Out-Null; & git commit -qm 'c1 breach' 2>&1 | Out-Null
+    $c1 = (& git rev-parse HEAD)
+
+    # c2: an unrelated commit that DOES touch the design log.
+    Write-FixtureFile -Root $pcRoot -RelativePath 'docs/internal/DESIGN_DECISIONS.md' `
+      -Content '## DD-20000101-002 -- unrelated' -Append
+    & git add -A 2>&1 | Out-Null; & git commit -qm 'c2 unrelated entry' 2>&1 | Out-Null
+    $c2 = (& git rev-parse HEAD)
+
+    $checker = Join-Path $pcRoot 'scripts\design_decision_check.ps1'
+    function Invoke-PcCheck { param([string[]]$CheckArgs)
+      & $shellPath -NoProfile -ExecutionPolicy Bypass -File $checker @CheckArgs 2>&1 | Out-Null
+      return $LASTEXITCODE
+    }
+
+    $aggregate = Invoke-PcCheck @('-Base', $c0, '-Strict')
+    $perCommitBreach = Invoke-PcCheck @('-Base', ($c1 + '~1'), '-Head', $c1, '-Strict')
+    $perCommitClean = Invoke-PcCheck @('-Base', ($c2 + '~1'), '-Head', $c2, '-Strict')
+
+    # A PUSH RANGE, not a single commit. ci.yml used `HEAD~1..HEAD`, a fixed
+    # one-commit window, so a push of three commits certified only the tip and
+    # the breach at c1 went through -- the same blind spot, one level up. This
+    # walks the range the way the workflow now does.
+    # MERGE COMMITS. The checker refuses them (DD-20260816-122) because a merge's
+    # first-parent diff carries the merged branch's design log. That refusal had no
+    # regression coverage, and its consequence was unmeasured: `git rev-list`
+    # enumerates merges, so the CI step could never pass on a pull request --
+    # actions/checkout builds `refs/pull/N/merge`, so HEAD IS a merge commit.
+    #
+    # Branched from c2 -- not c0 -- and the entry goes in DESIGN_DECISIONS.md,
+    # the log that a CODE-classified path requires. Branching from c0 and
+    # logging to the WORKFLOW file made the merge fail for a MISSING CODE ENTRY
+    # rather than for being a merge, so this leg passed with the refusal deleted:
+    # setting `$parents.Count -gt 2` to `-gt 99` left the whole suite at exit 0.
+    # The branch still touches a file the trunk does not, so the merge is
+    # conflict-free: a conflicted merge leaves the index unresolved and the
+    # fixture cannot continue.
+    $trunk = (& git rev-parse --abbrev-ref HEAD)
+    & git checkout -q -b mergefix $c2 2>&1 | Out-Null
+    Write-FixtureFile -Root $pcRoot -RelativePath 'paper/branch_only.tex' -Content 'branch side'
+    Write-FixtureFile -Root $pcRoot -RelativePath 'docs/internal/DESIGN_DECISIONS.md' `
+      -Content '## DD-20000101-003 -- branch' -Append
+    & git add -A 2>&1 | Out-Null
+    & git commit -qm 'branch commit with entry' 2>&1 | Out-Null
+    & git checkout -q $trunk 2>&1 | Out-Null
+    & git merge --no-ff -q mergefix -m 'merge' 2>&1 | Out-Null
+    $mergeSha = (& git rev-parse HEAD)
+    $mergeParents = @((& git rev-list --parents -n 1 $mergeSha) -split '\s+' | Where-Object { $_ })
+    $mergeRefused = Invoke-PcCheck @('-Base', ($mergeSha + '~1'), '-Head', $mergeSha, '-Strict')
+    $withMerges = @(& git rev-list --reverse ($c0 + '..' + $mergeSha)).Count
+    $noMerges = @(& git rev-list --reverse --no-merges ($c0 + '..' + $mergeSha)).Count
+    & git reset -q --hard $c2 2>&1 | Out-Null
+    & git branch -D mergefix 2>&1 | Out-Null
+
+    if ($mergeParents.Count -ne 3) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [merge-fixture] expected a 2-parent merge, built $($mergeParents.Count - 1)"
+      $failures += 1
+    } elseif ($mergeRefused -eq 0) {
+      Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [merge-refused] a merge commit was certified; its first-parent diff carries the merged branch design log'
+      $failures += 1
+    } else {
+      Write-Host 'DESIGN-CHECK-REGRESSION: PASS [merge-refused] a merge commit is refused, not certified'
+    }
+    if ($noMerges -ge $withMerges) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [merge-excluded] --no-merges enumerated $noMerges of $withMerges; the merge is still in the range and the step could never pass"
+      $failures += 1
+    } else {
+      Write-Host "DESIGN-CHECK-REGRESSION: PASS [merge-excluded] --no-merges drops the merge ($noMerges of $withMerges)"
+    }
+
+    $pushRange = @(& git rev-list --reverse ($c0 + '..' + $c2))
+    $pushBad = 0
+    foreach ($rc in $pushRange) {
+      if ((Invoke-PcCheck @('-Base', ($rc + '~1'), '-Head', $rc, '-Strict')) -ne 0) { $pushBad += 1 }
+    }
+
+    if ($aggregate -ne 0) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-blind-spot] the aggregate run rejected the fixture (exit $aggregate); it is supposed to MISS this, and legs 2-3 prove nothing if it does not"
+      $failures += 1
+    } else {
+      Write-Host 'DESIGN-CHECK-REGRESSION: PASS [per-commit-blind-spot] aggregate accepts a range containing an uncertified commit'
+    }
+    if ($perCommitBreach -eq 0) {
+      Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-detects] per-commit accepted the uncertified commit'
+      $failures += 1
+    } else {
+      Write-Host 'DESIGN-CHECK-REGRESSION: PASS [per-commit-detects] REJECT the uncertified commit the aggregate accepted'
+    }
+    if ($perCommitClean -ne 0) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-control] per-commit rejected a compliant commit (exit $perCommitClean); it would reject everything"
+      $failures += 1
+    } else {
+      Write-Host 'DESIGN-CHECK-REGRESSION: PASS [per-commit-control] ACCEPT a compliant commit'
+    }
+    if ($pushRange.Count -ne 2) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-push-range] expected 2 commits in the pushed range, walked $($pushRange.Count)"
+      $failures += 1
+    } elseif ($pushBad -ne 1) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-push-range] walking a 2-commit push found $pushBad breach(es); the uncertified commit is not the tip and must still be caught"
+      $failures += 1
+    } else {
+      Write-Host 'DESIGN-CHECK-REGRESSION: PASS [per-commit-push-range] a breach behind the tip of a pushed range is caught'
+    }
+  } finally {
+    Pop-Location
+  }
+} finally {
+  Remove-FixtureTree -Path $pcRoot
+}
+
+# And CI must actually USE it. A checker that supports -Head while CI still runs
+# one aggregate invocation closes nothing.
+$ciPath = Join-Path $PSScriptRoot '..\.github\workflows\ci.yml'
+if (-not (Test-Path -LiteralPath $ciPath)) {
+  Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] .github/workflows/ci.yml is missing'
+  $failures += 1
+} else {
+  $ciText = [IO.File]::ReadAllText($ciPath)
+  # Presence AND absence. Presence alone passed on a ci.yml whose push branch
+  # had been reverted to one aggregate call, because the loop text still sat
+  # above it -- the pin did not pin the wiring.
+  $wired = ($ciText -match 'git rev-list --reverse --no-merges') -and ($ciText -match '-Head \$c') -and
+           ($ciText -match 'github\.event\.before') -and ($ciText -match '(?m)^\s*fetch-depth: 0\s*$')
+  # Matched against the COMMAND, not the prose: the workflow's own comment
+  # explains why `--depth=0` was removed, and a bare substring test fired on
+  # that explanation. A pin over a file that documents itself has to say which
+  # occurrence it means.
+  # Matched against the COMMAND, not the prose: the workflow's own comment
+  # explains why `--depth=0` was removed, and a bare substring test fired on that
+  # explanation. A pin over a file that documents itself must say which
+  # occurrence it means.
+  #
+  # Only ONE reverted shape is testable by text here. A push branch that is only
+  # `HEAD~1..HEAD` is the revert -- but that same line is also the legitimate
+  # fallback for a new branch, where `github.event.before` is all zeros. What
+  # distinguishes them is the event-based branch above it, which the presence
+  # test already requires; pinning the line itself flagged the fallback.
+  $revertedShapes = @(
+    'git fetch[^\r\n]*--depth=0'
+  )
+  foreach ($rs in $revertedShapes) { if ($ciText -match $rs) { $wired = $false } }
+  # Token presence is not wiring. An audit satisfied every presence test with a
+  # ci.yml that certified exactly ONE commit -- by appending a second
+  # `$range = "HEAD~1..HEAD"` after the chain, or by wrapping the loop in
+  # `if ($false)` and leaving one aggregate call to do the work. So the shape of
+  # the range derivation is pinned too: exactly three assignments (pull request,
+  # event-based push, new-branch fallback) and no assignment after the chain.
+  # Pinning the three values fixes what each branch assigns and nothing about
+  # which branch RUNS. Flipping `-notmatch '^0{40}$'` to `-match` makes the
+  # event-based branch unreachable on an ordinary push -- every push then takes
+  # the one-commit fallback. Measured: 1 of 3 pushed commits certified, every
+  # other case in this suite green. So the CONDITIONS are pinned as well.
+  $expectedConditions = @(
+    '"${{ github.event_name }}" -eq "pull_request"',
+    '"${{ github.event.before }}" -and',
+    '"${{ github.event.before }}" -notmatch ''^0{40}$'''
+  )
+  foreach ($cond in $expectedConditions) {
+    if ($ciText -cnotmatch [regex]::Escape($cond)) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml no longer carries the branch condition [$cond]; a branch can be made unreachable without altering any range value"
+      $wired = $false
+    }
+  }
+  # Counting assignments is not pinning the derivation. An audit satisfied the
+  # count with a ci.yml that certified ONE commit: changing the event-based range
+  # to the constant `HEAD~1..HEAD` is a one-token edit that leaves the count at 3
+  # and reinstates the exact window DD-20260816-121 exists to close. So the three
+  # VALUES are pinned, in order, and $commits must be assigned exactly once.
+  $expectedRanges = @(
+    'origin/${{ github.base_ref }}..HEAD',
+    '${{ github.event.before }}..HEAD',
+    'HEAD~1..HEAD'
+  )
+  $actualRanges = @([regex]::Matches($ciText, '(?m)^\s*\$range = ["'']([^"'']+)["'']') |
+    ForEach-Object { $_.Groups[1].Value })
+  if (($actualRanges -join '|') -cne ($expectedRanges -join '|')) {
+    Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] range derivation is [$($actualRanges -join ', ')]; expected [$($expectedRanges -join ', ')] -- a constant range certifies one commit"
+    $wired = $false
+  }
+  if (([regex]::Matches($ciText, '(?m)^\s*\$commits = ')).Count -ne 1) {
+    Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml assigns $commits more than once; a later assignment can reduce the range'
+    $wired = $false
+  }
+  # `$commits = ` is not the only way to rebind it. `Set-Variable -Name commits`
+  # reaches the same variable and passed every other test here.
+  if ($ciText -match 'Set-Variable[^\r\n]*-Name[^\r\n]*commits') {
+    Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml rebinds \$commits through Set-Variable; the range can be reduced without an assignment'
+    $wired = $false
+  }
+  # And the loop must not be wrapped. A dead `if` around it leaves the body
+  # byte-identical, so the whole-body pin below cannot see it.
+  if ($ciText -notmatch '(?m)^\s*\$bad = 0\s*\r?\n\s*foreach \(\$c in \$commits\)') {
+    Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] the certification loop does not follow the counter reset; it may be wrapped in a branch that never runs'
+    $wired = $false
+  }
+  # That predecessor test is not enough on its own. Wrapping `$bad = 0` AND the
+  # loop together in a dead branch keeps `$bad = 0` immediately before
+  # `foreach` -- the `\s*` absorbs the extra indent -- and leaves the loop body
+  # byte-identical, so every pin here passed. Measured: ZERO commits certified,
+  # the green sentence still printed, step exit 0, suite exit 0. That was the
+  # strongest evasion twelve audit rounds produced. What a wrapper cannot hide
+  # is indentation: these statements are siblings in one flat block, so
+  # wrapping any proper subset of them indents that subset and nothing else.
+  $flatAnchors = @(
+    '(?m)^([ ]*)if \("\$\{\{ github\.event_name \}\}"',
+    '(?m)^([ ]*)\$commits = @\(git rev-list',
+    '(?m)^([ ]*)\$bad = 0',
+    '(?m)^([ ]*)foreach \(\$c in \$commits\)',
+    '(?m)^([ ]*)if \(\$bad -gt 0\)',
+    '(?m)^([ ]*)Write-Host "DESIGN-CHECK: all '
+  )
+  $indents = @()
+  foreach ($anchor in $flatAnchors) {
+    $hits = [regex]::Matches($ciText, $anchor)
+    # Exactly one, so a decoy at the sanctioned indent cannot supply the match
+    # while the live statement sits wrapped somewhere deeper.
+    if ($hits.Count -ne 1) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] the certification block has $($hits.Count) occurrence(s) of anchor [$anchor]; expected exactly 1"
+      $wired = $false
+    } else {
+      $indents += $hits[0].Groups[1].Value.Length
+    }
+  }
+  if ((@($indents | Sort-Object -Unique)).Count -gt 1) {
+    Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] the certification statements are not siblings in one block; indents are [$($indents -join ', ')] -- part of the block is wrapped in a conditional"
+    $wired = $false
+  }
+  # The loop body is pinned WHOLE, not by its first statement. Pinning placement
+  # only stopped a `continue` in position 1; five edits still certified one
+  # commit while printing the green sentence and passing this case -- `break` at
+  # the end, the same `continue` moved to position 2, `Set-Variable` on
+  # $commits, a dead-branch wrapper, and an $LASTEXITCODE test that can never
+  # increment $bad. A text pin over a body cannot be complete; what it can do is
+  # stop being weaker than the pin one line above it.
+  $expectedLoop = @(
+    'foreach ($c in $commits) {',
+    'Write-Host "--- $c $(git log -1 --format=%s $c)"',
+    './scripts/design_decision_check.ps1 -Base "$c~1" -Head $c -Strict',
+    'if ($LASTEXITCODE -ne 0) { $bad++ }',
+    '}'
+  ) -join ' '
+  $actualLoop = [regex]::Match($ciText,
+    '(?s)foreach \(\$c in \$commits\) \{.*?\r?\n\s*\}').Value
+  $actualLoop = (($actualLoop -split "`r?`n" | ForEach-Object { $_.Trim() } |
+    Where-Object { $_ }) -join ' ')
+  if ($actualLoop -cne $expectedLoop) {
+    Write-Host "DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] the certification loop body is not the pinned four statements; it reads [$actualLoop]"
+    $wired = $false
+  }
+  # And THIS step must be scheduled. Testing for `if: always()` anywhere in the
+  # file passed a ci.yml whose certification step was `if: false`, because other
+  # steps carry the condition -- so the test is anchored to the step name.
+  if ($ciText -notmatch '(?ms)name: Run strict design-decision scan\s*\r?\n\s*if: always\(\)') {
+    Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] the design-decision step is not scheduled with if: always(); it can be disabled by its own condition'
+    $wired = $false
+  }
+  # The enumeration must not be filtered. `git rev-list --reverse $range |
+  # Select-Object -Last 1` satisfies every token test above and certifies one
+  # commit, so the assignment is pinned whole.
+  if ($ciText -notmatch '(?m)^\s*\$commits = @\(git rev-list --reverse --no-merges \$range\)\s*$') {
+    Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml does not enumerate the range unfiltered; a pipe or selector can reduce it to one commit'
+    $wired = $false
+  }
+  # And the certification call must not sit inside a disabled branch.
+  if ($ciText -match '(?s)if\s*\(\s*\$false\s*\)') { $wired = $false }
+  $stillAggregate = $ciText -match 'design_decision_check\.ps1 -Base "origin/\$\{\{ github\.base_ref \}\}" -Strict'
+  if (-not $wired -or $stillAggregate) {
+    if ($stillAggregate) {
+      Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] ci.yml still runs the aggregate base..HEAD scan that per-commit certification replaced'
+    }
+    # A case ROLLUP, not a finding. It used to assert one specific cause -- "does
+    # not iterate the range with -Head" -- whichever check had actually fired, so
+    # a wrapped-block failure was reported as a range-iteration defect. The cause
+    # is whichever check above set $wired false; those messages are the finding.
+    Write-Host 'DESIGN-CHECK-REGRESSION: FAIL [per-commit-ci-wiring] per-commit certification is not correctly wired; see the specific failure(s) above'
+    $failures += 1
+  } else {
+    Write-Host 'DESIGN-CHECK-REGRESSION: PASS [per-commit-ci-wiring] ci.yml certifies each commit in the range'
+  }
+}
+
+# ---------------------------------------------------------------------------
+# Retrospective certifications must stay a RECORD, not an exemption.
+#
+# docs/internal/RETROSPECTIVE_CERTIFICATIONS.md lets eight pre-policy commits
+# certify. That is only honest while the table is exactly those eight and each
+# recorded missing-set is exactly what the production checker computes. Pin both,
+# and prove a tampered record rejects -- otherwise the file is a blanket pass
+# with a paragraph of prose in front of it. WDD-20260817-079.
+$retroPath = Join-Path $callerRoot "docs/internal/RETROSPECTIVE_CERTIFICATIONS.md"
+$expectedRetroShas = @(
+  "29c688bd88bc413ff3d960222e6d0a7db34b51f5",
+  "32659871aa55336a5155a00bf60b9a618c24b43f",
+  "3652d4b5bf5bb8a08efe1c6e6c0076de787f03a0",
+  "4c56e7ed09da4c96d550d831c9e9599275d019f6",
+  "7655ee8f2bad1cdd705061463453e5300acd1203",
+  "aa3d585887e5e475a1f5cd94a4ff4a8fef45c93e",
+  "bb15006b47449031af9eb432c5b8bb1ec30b41b3",
+  "ebdaf222d05a2e243fb15ad19a91ad62fd10f9ff"
+)
+if (-not (Test-Path -LiteralPath $retroPath -PathType Leaf)) {
+  Write-Host "DESIGN-CHECK-REGRESSION: FAIL [retrospective-record] the record file is missing"
+  $failures += 1
+} else {
+  $retroOriginal = [System.IO.File]::ReadAllText($retroPath)
+  $retroRows = @()
+  $inTable = $false
+  foreach ($line in ($retroOriginal -split "\r?\n")) {
+    if ($line -match '^```retrospective-certifications\s*$') { $inTable = $true; continue }
+    if ($inTable -and $line -match '^```') { break }
+    if ($inTable -and $line.Trim()) { $retroRows += $line }
+  }
+  $retroShas = @($retroRows | ForEach-Object { ($_ -split '\s*\|\s*', 2)[0].Trim() } | Sort-Object)
+  $retroOk = $true
+
+  if (($retroShas -join ',') -cne ($expectedRetroShas -join ',')) {
+    Write-Host "DESIGN-CHECK-REGRESSION: FAIL [retrospective-record] the table is not the pinned eight commits; it is [$($retroShas -join ', ')]"
+    $retroOk = $false
+  }
+
+  # Each recorded set must equal what the production checker derives TODAY. A
+  # widened row would excuse paths the commit never had.
+  foreach ($row in $retroRows) {
+    $parts = $row -split '\s*\|\s*', 2
+    $sha = $parts[0].Trim()
+    $recorded = $parts[1].Trim()
+    # "the commit is not in this clone" is not "the commit failed to certify".
+    # A shallow checkout made all eight unresolvable and the leg reported eight
+    # certification failures, which named the wrong defect entirely.
+    $present = Invoke-BoundedProcess -FilePath "git" -WorkingDirectory $callerRoot `
+      -TimeoutMs $gitTimeoutMs -Arguments @("cat-file", "-e", "$sha^{commit}")
+    if ($present.Code -ne 0) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [retrospective-record] $sha is absent from this clone, so its record cannot be re-derived; run with full history (git fetch --unshallow)"
+      $retroOk = $false
+      continue
+    }
+    $probe = Invoke-BoundedProcess -FilePath $shellPath -WorkingDirectory $callerRoot `
+      -TimeoutMs $productionTimeoutMs -Arguments @(
+        "-NoLogo", "-NoProfile", "-File", $productionPath,
+        "-Base", "$sha~1", "-Head", $sha, "-Strict")
+    $line = @($probe.Output | Where-Object { $_ -match 'missing set matches the record exactly:' })
+    if ($probe.Code -ne 0 -or $line.Count -ne 1) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [retrospective-record] $sha does not certify retrospectively (exit $($probe.Code))"
+      $retroOk = $false
+      continue
+    }
+    $derived = ($line[0] -replace '^.*missing set matches the record exactly:\s*', '').Trim()
+    if ($derived -cne $recorded) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [retrospective-record] $sha records [$recorded] but the checker derives [$derived]"
+      $retroOk = $false
+    }
+  }
+
+  # Tamper: widening one row must REJECT that commit. Restored in finally, and
+  # the restoration is verified rather than assumed.
+  try {
+    $victim = "3652d4b5bf5bb8a08efe1c6e6c0076de787f03a0"
+    $tampered = $retroOriginal.Replace(
+      "$victim | code: scripts/independence_check.lean",
+      "$victim | code: scripts/independence_check.lean;code: paper/rmq.tex")
+    if ($tampered -ceq $retroOriginal) {
+      Write-Host "DESIGN-CHECK-REGRESSION: FAIL [retrospective-record] the tamper fixture matched nothing; the row it targets has moved"
+      $retroOk = $false
+    } else {
+      [System.IO.File]::WriteAllText($retroPath, $tampered)
+      $probe = Invoke-BoundedProcess -FilePath $shellPath -WorkingDirectory $callerRoot `
+        -TimeoutMs $productionTimeoutMs -Arguments @(
+          "-NoLogo", "-NoProfile", "-File", $productionPath,
+          "-Base", "$victim~1", "-Head", $victim, "-Strict")
+      if ($probe.Code -eq 0) {
+        Write-Host "DESIGN-CHECK-REGRESSION: FAIL [retrospective-record] a widened record still certified $victim; the match is not exact"
+        $retroOk = $false
+      }
+    }
+  } finally {
+    [System.IO.File]::WriteAllText($retroPath, $retroOriginal)
+  }
+  if ([System.IO.File]::ReadAllText($retroPath) -cne $retroOriginal) {
+    Write-Host "DESIGN-CHECK-REGRESSION: FAIL [retrospective-record] the record file was not restored after the tamper case"
+    $retroOk = $false
+  }
+
+  if ($retroOk) {
+    Write-Host "DESIGN-CHECK-REGRESSION: PASS [retrospective-record] $($retroShas.Count) pinned commits, each set re-derived, tampering rejected"
+  } else {
+    $failures += 1
+  }
+}
+
+if ($rejectCount -ne 58 -or $acceptCount -ne 40) {
+  Write-Host "DESIGN-CHECK-REGRESSION: FAIL [final-verdict-counts] expected 58 reject and 40 accept; got $rejectCount reject and $acceptCount accept"
   $failures += 1
 }
 
@@ -472,5 +1147,8 @@ if ($failures -gt 0) {
   exit 1
 }
 
-Write-Host "DESIGN-CHECK-REGRESSION: PASS [final-verdict-counts] (15 reject, 10 accept, production classifier, isolated Git fixtures)"
+# Derived, not spelled. This line read "(15 reject, 10 accept)" while the
+# assertion above required 19 and 14: the success message was a literal nobody
+# updated, so it announced counts the run had not produced.
+Write-Host "DESIGN-CHECK-REGRESSION: PASS [final-verdict-counts] ($rejectCount reject, $acceptCount accept, production classifier, isolated Git fixtures)"
 exit 0

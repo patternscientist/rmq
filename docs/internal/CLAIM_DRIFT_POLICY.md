@@ -133,6 +133,61 @@ query regimes from the canonical module, current public rows, and headline
 axiom inventory. The aggregate gate runs the lint, its mutation regression,
 and the headline axiom inventory.
 
+## Primitive-Instruction Claims
+
+Policy version 28 adds two strict current-fact-surface terms for the
+accepted primitive-machine query and rescopes one existing term.
+
+`required-pq1-fully-charged-attribution` is an attribution rule. On a
+registered current surface, every paragraph that states the 837,572 budget
+(with or without the comma) or the words "fully charged" must also name
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` or its producer
+`fullyChargedPackedQueryCapstone_holds`. A paragraph is a maximal run of
+non-blank lines; the multiline pattern spans it, so the line allowance sees
+exactly that paragraph. A file-wide required attribution was rejected: one
+alias anywhere in a file would excuse every later paragraph, including one
+that attached the words to a different theorem. Headings are paragraphs too,
+so a heading carrying those words needs the alias or different words.
+
+`forbidden-pq1-charge-on-trace-or-probe-theorem` forbids attaching the budget
+numeral or the words to a theorem name of the charged-trace or packed-probe
+results, within one physical line or one adjacent continuation line, in either
+order. It has no path or line allowance. A negated sentence next to such a
+name also fails; rephrase it so the name and the words are not adjacent.
+Numerals are deliberately not covered, because accurate contrasts such as
+"the 210 trace and 427 probe bounds are separate quantities" must stay
+possible. The covered names are the public aliases and core theorems for the
+charged-trace cost, its algebra and numeric equality, the construction-facing
+profile, the paper main theorem, the reviewer-machine certificate with its
+required-facts consumer and guarded list packet, the canonical and
+list-facing supplied-store cost transfers, and the packed cell-probe
+architecture with its derived probe cap.
+
+The existing `forbidden-wordram-instruction-count` keeps its pattern and
+allowances. Only its status text changes: it now says that the charged-trace
+and packed-probe bounds are not word-RAM instruction counts and that the
+separate bound of `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` is
+stated as an attributed at-most bound of 837,572 primitive instructions. The
+sentence shapes it matches ("executes in N word-RAM instructions", "runs in a
+fixed or constant number of word-RAM steps") stay rejected for every theorem,
+including that theorem, whose bound must be written as an attributed
+at-most bound.
+
+Each behaviour is pinned twice. `claim_drift_scan.ps1 -SelfTest` asserts the
+production decision on fixed probes: an unattributed budget sentence, an
+unattributed use of the words, and a probe-theorem attachment that is excused
+by the attribution term and can only be rejected by the attachment term, plus
+two attributed sentences that must stay accepted. The policy regression runs
+paired must-fail and must-pass fixtures through `claim_drift_scan.ps1
+-Strict`, including an alias in a different paragraph and a cross-line
+attachment, and pins each term's configuration. Deleting either new term, or
+the rescoped status, fails the regression.
+
+This remains a tripwire. A paragraph that names
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` and then says in numerals
+that another bound is fully charged passes both terms; theorem-directed review
+still owns the meaning of the surrounding English.
+
 ## Initial Sensitive Claims
 
 - Novelty language such as "first mechanized" or "first-ever" must be qualified
@@ -156,7 +211,10 @@ and the headline axiom inventory.
   trace length. The current route is `readWord`-only: attempted payload reads
   are charged and `wordRank`/`wordSelect` remain compatibility-only
   constructors that are never emitted by this route. Controller operations
-  remain explicitly uncharged.
+  remain explicitly uncharged in that theorem. The separate accepted
+  primitive-machine query charges every executed instruction of its own
+  distinct execution; its budget is governed by the primitive-instruction
+  terms above, not by this bullet.
 - The strict event-silent category is a current-surface zero-remaining form:
   `no` followed immediately by `event-silent` (or `event silent`), then
   `computation` or `work`, optionally followed by `left`, `is left`, `remain`,

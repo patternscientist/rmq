@@ -1,0 +1,2 @@
+# Native source and independent replay consumers pin exact source bytes.
+*.lean text eol=lf

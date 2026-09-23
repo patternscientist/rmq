@@ -1,0 +1,190 @@
+{
+  "version": "PRE1-R1-CONTROLS-FOCUSED-V1",
+  "note": "focused reruns of the changed runner before commit ece8ae5 (worktree held that runner uncommitted on top of e977053; registry, verifiers and helper unchanged)",
+  "deadlinePs51": {
+    "version": "PRE1-R1-REPAIR-CONTROLS-RECEIPT-V1",
+    "registryVersion": "PRE1-R1-REPAIR-CONTROLS-V1",
+    "registrySha256": "3B44C6BC3693B1017D4451BDC5DF1E372AF97AFEE1B7183366C7C349C5EB7ED7",
+    "runnerSha256": "3C7AE3B0AEF6FBB4A83EA027C528AD4AC8EF16E5FAE8C6EDC337FF4E683B1B87",
+    "helperSha256": "7D4ED15EDDFF0E6358D1973E782240CFC215EA9CB393DA8B3B82EC45C246A476",
+    "archivesVerifierSha256": "76AFAACBA4D788856F4F023872019CF999C63B2AF41AD9FBCC6DA5D2D278A3D3",
+    "rewordsVerifierSha256": "B980778487D495B2BC7434EDF26D03C758A5A81FFD975C3DE5F93A7F0F65DF85",
+    "liveBytesNote": "SHA-256 values are of the live checkout bytes that ran",
+    "repo": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r1-claim-receipts",
+    "revision": "e977053d8355d0d429da33d71a42251cfa5e964a",
+    "host": "POINPAD",
+    "os": "Microsoft Windows NT 10.0.26200.0",
+    "powershell": "5.1.26100.9444",
+    "hostPath": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "packagedHost": false,
+    "python": "C:\\Python314\\python.exe",
+    "pythonSha256": "7CA24F26D6E3F463419EE4F537DDD3ACD312C38FE45E678CCE08572F26A8BD1A",
+    "workRoot": "<scratch>\\t-ps51",
+    "workRootRemoved": true,
+    "selectorBound": true,
+    "selected": [
+      "deadline-descendant-cleanup"
+    ],
+    "expected": [
+      "deadline-descendant-cleanup"
+    ],
+    "executed": [
+      "deadline-descendant-cleanup"
+    ],
+    "registryCaseCount": 34,
+    "result": "PASS",
+    "cases": [
+      {
+        "id": "deadline-descendant-cleanup",
+        "kind": "deadline",
+        "requirement": "REPLAY-SUBPROCESS-DEADLINE",
+        "verdict": "PASS",
+        "detail": "timed out after 5.206 s; root 9672 and child 36184 both absent",
+        "sleeper": {
+          "started": true,
+          "launchError": "",
+          "host": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+          "packagedHost": false,
+          "pids": [
+            9672,
+            36184
+          ],
+          "aliveAfter": [],
+          "exit": -1,
+          "seconds": 5.206,
+          "deadline": 5,
+          "timedOut": true,
+          "terminatedIds": [
+            35172,
+            9672,
+            36184
+          ],
+          "ownership": "kill-on-close-job",
+          "stderr": []
+        },
+        "copyRemoved": true,
+        "repositoryStateUnchanged": true,
+        "repositoryStateSha256": "66DC86F4A71959E742862DE5CF706B767FA3C22D7D12865AD53CB5EC0C384A77",
+        "seconds": 8.543
+      }
+    ]
+  },
+  "deadlinePwsh": {
+    "version": "PRE1-R1-REPAIR-CONTROLS-RECEIPT-V1",
+    "registryVersion": "PRE1-R1-REPAIR-CONTROLS-V1",
+    "registrySha256": "3B44C6BC3693B1017D4451BDC5DF1E372AF97AFEE1B7183366C7C349C5EB7ED7",
+    "runnerSha256": "3C7AE3B0AEF6FBB4A83EA027C528AD4AC8EF16E5FAE8C6EDC337FF4E683B1B87",
+    "helperSha256": "7D4ED15EDDFF0E6358D1973E782240CFC215EA9CB393DA8B3B82EC45C246A476",
+    "archivesVerifierSha256": "76AFAACBA4D788856F4F023872019CF999C63B2AF41AD9FBCC6DA5D2D278A3D3",
+    "rewordsVerifierSha256": "B980778487D495B2BC7434EDF26D03C758A5A81FFD975C3DE5F93A7F0F65DF85",
+    "liveBytesNote": "SHA-256 values are of the live checkout bytes that ran",
+    "repo": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r1-claim-receipts",
+    "revision": "e977053d8355d0d429da33d71a42251cfa5e964a",
+    "host": "POINPAD",
+    "os": "Microsoft Windows NT 10.0.26200.0",
+    "powershell": "7.6.6",
+    "hostPath": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+    "packagedHost": true,
+    "python": "C:\\Python314\\python.exe",
+    "pythonSha256": "7CA24F26D6E3F463419EE4F537DDD3ACD312C38FE45E678CCE08572F26A8BD1A",
+    "workRoot": "<scratch>\\t-pwsh",
+    "workRootRemoved": true,
+    "selectorBound": true,
+    "selected": [
+      "deadline-descendant-cleanup"
+    ],
+    "expected": [
+      "deadline-descendant-cleanup"
+    ],
+    "executed": [
+      "deadline-descendant-cleanup"
+    ],
+    "registryCaseCount": 34,
+    "result": "INCONCLUSIVE",
+    "cases": [
+      {
+        "id": "deadline-descendant-cleanup",
+        "kind": "deadline",
+        "requirement": "REPLAY-SUBPROCESS-DEADLINE",
+        "verdict": "INCONCLUSIVE",
+        "detail": "packaged PowerShell host: descendant cleanup cannot be established here; sleeper not started",
+        "sleeper": {
+          "started": false,
+          "host": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+          "packagedHost": true
+        },
+        "copyRemoved": true,
+        "repositoryStateUnchanged": true,
+        "repositoryStateSha256": "66DC86F4A71959E742862DE5CF706B767FA3C22D7D12865AD53CB5EC0C384A77",
+        "seconds": 4.26
+      }
+    ]
+  },
+  "committedCaseUnderPs51ChildOfPwsh": {
+    "version": "PRE1-R1-REPAIR-CONTROLS-RECEIPT-V1",
+    "registryVersion": "PRE1-R1-REPAIR-CONTROLS-V1",
+    "registrySha256": "3B44C6BC3693B1017D4451BDC5DF1E372AF97AFEE1B7183366C7C349C5EB7ED7",
+    "runnerSha256": "3C7AE3B0AEF6FBB4A83EA027C528AD4AC8EF16E5FAE8C6EDC337FF4E683B1B87",
+    "helperSha256": "7D4ED15EDDFF0E6358D1973E782240CFC215EA9CB393DA8B3B82EC45C246A476",
+    "archivesVerifierSha256": "76AFAACBA4D788856F4F023872019CF999C63B2AF41AD9FBCC6DA5D2D278A3D3",
+    "rewordsVerifierSha256": "B980778487D495B2BC7434EDF26D03C758A5A81FFD975C3DE5F93A7F0F65DF85",
+    "liveBytesNote": "SHA-256 values are of the live checkout bytes that ran",
+    "repo": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r1-claim-receipts",
+    "revision": "e977053d8355d0d429da33d71a42251cfa5e964a",
+    "host": "POINPAD",
+    "os": "Microsoft Windows NT 10.0.26200.0",
+    "powershell": "5.1.26100.9444",
+    "hostPath": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "packagedHost": false,
+    "python": "C:\\Python314\\python.exe",
+    "pythonSha256": "7CA24F26D6E3F463419EE4F537DDD3ACD312C38FE45E678CCE08572F26A8BD1A",
+    "workRoot": "<scratch>\\t-nested",
+    "workRootRemoved": true,
+    "selectorBound": true,
+    "selected": [
+      "archives-positive-committed"
+    ],
+    "expected": [
+      "archives-positive-committed"
+    ],
+    "executed": [
+      "archives-positive-committed"
+    ],
+    "registryCaseCount": 34,
+    "result": "PASS",
+    "cases": [
+      {
+        "id": "archives-positive-committed",
+        "kind": "verify-committed",
+        "requirement": "archive verifier positive on committed blobs",
+        "verdict": "PASS",
+        "detail": "archives exit 0 codes [] expected exit 0 codes []",
+        "verifier": {
+          "name": "archives",
+          "exit": 0,
+          "seconds": 4.541,
+          "deadline": 900,
+          "timedOut": false,
+          "overflow": false,
+          "ownership": "kill-on-close-job",
+          "codes": [],
+          "jsonCodes": [],
+          "expectedExit": 0,
+          "expectedCodes": [],
+          "stdout": [
+            "RECEIPT-ARCHIVES: source commit e977053d8355d0d429da33d71a42251cfa5e964a",
+            "RECEIPT-ARCHIVES: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 55 blobs under docs/internal/extensions/pre1/; 1 contain claim-scanner result lines; 1 named; 2 mention scanner text without a result line; 3 zip containers hold result lines inside members",
+            "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz -> docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md (named) blob b8a7abc83d9347f00198836ac2c011805b0ec6e3 sha256 2B35DD0386D202EA7D73D28C4754791B43232D4E6CE591E6DAB7C543393EEA52 bytes 88646 archive sha256 E8F77103CE5AB4E15734AF6E09564D3FE8A6BDA8C2463C2776471E8A02D0FDBD bytes 33919 result-lines 0 summary-pattern-lines 2 referring-files 6",
+            "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz -> docs/internal/extensions/pre1/evidence/author-final-checks-summary.json (result-line) blob f52767d9b690ecc444b9e181e56fb6a411f93dbd sha256 5590C0FB372BDDCE4B29BAB621E9F86B16C1F8E3F251BC5889BEF8181301B4BB bytes 4453 archive sha256 DB44F7AC0D2DBFE58CAB93CCF20B0BF1ABD14B71625C458AC72F66822FD45E39 bytes 1199 result-lines 1 summary-pattern-lines 1 referring-files 0",
+            "RECEIPT-ARCHIVES: RESULT: PASS (2 of 2 required archives verified; 2 manifest entries; 0 extra archives; 2 unselected scanner-text files and 3 zip containers present and unchanged; base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897)"
+          ],
+          "stderr": []
+        },
+        "copyRemoved": true,
+        "repositoryStateUnchanged": true,
+        "repositoryStateSha256": "66DC86F4A71959E742862DE5CF706B767FA3C22D7D12865AD53CB5EC0C384A77",
+        "seconds": 9.185
+      }
+    ]
+  }
+}

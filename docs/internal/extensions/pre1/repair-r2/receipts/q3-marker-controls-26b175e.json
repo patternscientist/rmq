@@ -1,0 +1,102 @@
+{
+  "version": "PRE1-R2-RECEIPT-V1",
+  "label": "Q3 attempt 2: marker control matrix, full registry on Windows PowerShell 5.1 and the twelve non-Lean cases on pwsh 7.6.6, on 26b175e (content tree of 341bc28), default work root",
+  "repo": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+  "revision": "26b175e068780633118839e6383e2e38e576e637",
+  "status": "?? docs/internal/extensions/pre1/repair-r2/receipts/q3-marker-controls-26b175e-ps51.json\n?? docs/internal/extensions/pre1/repair-r2/receipts/q3-marker-controls-26b175e-pwsh.json",
+  "host": "PoinPad",
+  "os": "Windows-11-10.0.26200-SP0",
+  "mutex": "Global\\RMQHeavyVerification",
+  "mutexWaitSeconds": 0.0,
+  "requested": "2026-09-17T12:19:07.8129324-07:00",
+  "acquired": "2026-09-17T12:19:07.8309675-07:00",
+  "released": "2026-09-17T13:21:08.7264820-07:00",
+  "queueStatus": "DONE",
+  "steps": [
+    {
+      "label": "controls-ps51-full",
+      "command": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/docs/internal/extensions/pre1/repair-r2/run_marker_controls.ps1",
+        "-ReceiptPath",
+        "C:/Users/poin/AppData/Local/Temp/claude/C--Users-poin-Documents-RMQ--claude-worktrees-pq1-preprocessing-native-bounds-b3fee3/e89e3ad0-2cc5-4b25-95d1-280ec16233b7/scratchpad/pre1-r2/q3b/controls-ps51.json"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 10800,
+      "start": "2026-09-17T12:19:07.8377443-07:00",
+      "end": "2026-09-17T13:19:38.4548164-07:00",
+      "seconds": 3630.524,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "faf99736986b63ddbb8828e45b77224361a9f2502ec47343758d5de8aa1a65d7",
+      "logBytes": 5436,
+      "logLines": 46,
+      "markerLines": {
+        "MARKER-CONTROLS: RESULT:": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "MARKER-CONTROLS: PASS [selector-empty] exit 2 marker 1 executed [] (4.34 s)",
+        "MARKER-CONTROLS: PASS [selector-whitespace] exit 2 marker 1 executed [] (4.279 s)",
+        "MARKER-CONTROLS: PASS [selector-malformed] exit 2 marker 1 executed [] (4.163 s)",
+        "MARKER-CONTROLS: PASS [selector-unknown] exit 2 marker 1 executed [] (4.366 s)",
+        "MARKER-CONTROLS: PASS [selector-duplicate] exit 2 marker 1 executed [] (4.439 s)",
+        "MARKER-CONTROLS: RESULT: PASS executed 45 of 45 selected cases (registry PRE1-R2-MARKER-CONTROLS-V1, 45 cases)"
+      ]
+    },
+    {
+      "label": "controls-pwsh-nonlean",
+      "command": "C:/Users/poin/AppData/Local/Microsoft/WindowsApps/pwsh.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/docs/internal/extensions/pre1/repair-r2/run_marker_controls.ps1",
+        "-Case",
+        "deadline-descendant-cleanup,registry-remove-last,registry-swap-first-two,registry-version,registry-content,selector-omitted,selector-valid,selector-empty,selector-whitespace,selector-malformed,selector-unknown,selector-duplicate",
+        "-ReceiptPath",
+        "C:/Users/poin/AppData/Local/Temp/claude/C--Users-poin-Documents-RMQ--claude-worktrees-pq1-preprocessing-native-bounds-b3fee3/e89e3ad0-2cc5-4b25-95d1-280ec16233b7/scratchpad/pre1-r2/q3b/controls-pwsh.json"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 3600,
+      "start": "2026-09-17T13:19:38.4686670-07:00",
+      "end": "2026-09-17T13:21:08.7237098-07:00",
+      "seconds": 90.221,
+      "exit": 3,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "b9e81922bce399c26fdee26225dff05a463b234131b7c8ecf19350d0e4fb0f4e",
+      "logBytes": 1167,
+      "logLines": 13,
+      "markerLines": {
+        "MARKER-CONTROLS: RESULT:": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "MARKER-CONTROLS: PASS [selector-empty] exit 2 marker 1 executed [] (6.103 s)",
+        "MARKER-CONTROLS: PASS [selector-whitespace] exit 2 marker 1 executed [] (6.188 s)",
+        "MARKER-CONTROLS: PASS [selector-malformed] exit 2 marker 1 executed [] (6.054 s)",
+        "MARKER-CONTROLS: PASS [selector-unknown] exit 2 marker 1 executed [] (6.049 s)",
+        "MARKER-CONTROLS: PASS [selector-duplicate] exit 2 marker 1 executed [] (6.223 s)",
+        "MARKER-CONTROLS: RESULT: INCONCLUSIVE executed 12 of 12 selected cases (registry PRE1-R2-MARKER-CONTROLS-V1, 45 cases)"
+      ]
+    }
+  ],
+  "outcome": "Attempt 2 of the marker control matrix with the runner's default work root under %TEMP%. Windows PowerShell 5.1: RESULT PASS, 45 of 45 executed, every consumer case exercised (registered diagnostic and an error at the injected line), unchanged copies exit 0 with exactly one marker line, every injected class exit nonzero with zero marker lines, deadline case PASS (root and child absent after 45 s), four registry and seven selector cases PASS, every copy removed and the repository state unchanged around every case. pwsh 7.6.6 (packaged host): the twelve non-Lean cases, 12 of 12 executed, eleven PASS and deadline-descendant-cleanup INCONCLUSIVE because the packaged host cannot create the descendant-ownership condition (exit 3 by design; the PASS for that case comes from Windows PowerShell 5.1).",
+  "runnerReceipts": [
+    "q3-marker-controls-26b175e-ps51.json",
+    "q3-marker-controls-26b175e-pwsh.json"
+  ]
+}

@@ -1,7 +1,12 @@
 # Paper Substrate Worklog
 
 Branch: `codex/eg-cp-paper-evidence-r1`
-Base: `1490c97b399d136bad4e18953441da433d130d4d` (clean, verified)
+Base: `1490c97b399d136bad4e18953441da433d130d4d` (clean, verified) -- HISTORICAL,
+deliberately not moved by later repins: a session log records what was true when
+the session ran. The substrate's current base pin lives in `README.md` and
+`THEOREM_LEDGER.md`. Annotated 2026-08-16 because this is the only full-SHA base
+in `paper/` that a repin does not touch, so an unmarked third SHA reads like a
+straggler from the repin rather than a record.
 Governance: `f0c7232a8a52b8d61ead5e96d72a8a849bc094b5` (verified ancestor of base)
 Scope: private manuscript/evidence substrate under `paper/` only. No edits to
 `README.md`, `docs/WHAT_IS_PROVED.md`, `docs/FAMILY_SUMMARY.md`, artifact or
@@ -9,6 +14,12 @@ headline claim surfaces, Lean sources, validation, or replay. No Lean/Lake or
 aggregate gate runs while `EG-CP-ALLSIZE-R1` is active. No architecture choice
 is made here; the packed all-size result stays provisional and appears only at
 one marked insertion point.
+
+**HISTORICAL (annotated 2026-08-16).** That sentence describes the session this
+log records, not the current tree. The result was accepted (Stage A, 2026-08-07)
+and absorbed into `rmq.tex` Section 9 as a theorem in the RC-4 round; there is
+no marked insertion point left. Like the `Base:` SHA above, it is left standing
+as a record rather than rewritten.
 
 ## 2026-08-05 Session start: governance, preflight, reading
 
@@ -74,8 +85,9 @@ one marked insertion point.
 - `THEOREM_LEDGER.md`: 34 rows (2 reference-semantics, 20 upper-bound and
   adequacy, 2 lower-bound, 3 spokes, 1 PROVISIONAL_ARCHITECTURE, 6 OPEN),
   each ACCEPTED_BASE row pinned to `1490c97b...` with declaration and file
-  verified by direct grep/read this session (line references included where
-  read directly: Spec.lean:34/:48, SuccinctRMQClassic.lean:114/:1198/:1233/
+  verified by direct grep/read this session -- **one of those line references
+  was wrong; see the 2026-08-16 correction below** -- (line references included
+  where read directly: Spec.lean:34/:48, SuccinctRMQClassic.lean:114/:1198/:1233/
   :1240/:1256/:1282/:1324, EncodingLowerBound.lean:1650/:1654/:1840/:1878,
   ReviewerPhysical.lean:1474, SuccinctFinalRAM.lean:9349,
   RankSelectPublic/Capstones.lean:244, BPNavigationPublic.lean:1666,
@@ -167,3 +179,100 @@ attribution allowance rather than a weakening of the pattern.
 
 `check_paper.ps1 -SelfTest` exit 0; `latexmk` clean rebuild exit 0, 15 pages,
 zero undefined citations or references.
+
+## 2026-08-16 -- correction to the declaration-verification inventory above
+
+The inventory says every listed line reference was "verified by direct
+grep/read this session". **`SuccinctRMQClassic.lean:1324` was not right at
+`1490c97b`, the base this log names.** At that commit `:1324` is
+`theorem queryCostedWithStore_eq_of_orderedReadFootprint`, while the row that
+cites it (`L-UB-12`) names
+`queryTraceResultWithStore_eq_of_orderedReadFootprint`, which is at `:1298`.
+The other 17 references resolve.
+
+The pointer was corrected in `THEOREM_LEDGER.md` during the RC-4 round, and
+this sentence -- which asserts the pointers were checked -- was left standing.
+That is the same defect the round found in `paper/README.md` and recorded as
+DD-20260816-110: **fixing a claim at its origin is not fixing the claim.** It
+was found by a third audit, not by the round that corrected the pointer.
+
+Line references are now machine-checked by `paper/check_citations.ps1`, which
+covers `THEOREM_LEDGER.md`. This log is not covered; the correction above is a
+one-time manual pass over its 18 references, not a standing guarantee.
+
+## 2026-09-11 -- the fully charged packed query enters the manuscript as a candidate; repin to `3849ecbb`
+
+- Governance: branch `codex/fully-charged-packed-query-v1`, Lean work based on
+  `4639223b` (`audit-v1-rc-6`, governance). The owner
+  decided that the manuscript covers the PQ1 candidate theorem in this task.
+  The paper commit is a child of `3849ecbb` and changes no Lean library file.
+- Why: at `3849ecbb`, `import RMQPaper` supplies
+  `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, while `rmq.tex`, pinned
+  to `0665b494`, called instruction-level charging future work (Section 3,
+  Section 11 item 1, Section 12) and ledger row `L-OPEN-06` said no
+  instruction-level machine existed.
+- Edits: Section 9.2 (Theorem 9.2, candidate), with the machine, primary
+  sources for its operations, and integer division and remainder stated as an
+  explicit assumption; the abstract, Section 1.1 (lead-in and item 6), 1.2
+  and 1.3; Section 3 (six quantities, allocated bits, charge-policy scope,
+  model paragraph); the Section 7 import closure; a Section 8 replay
+  sentence; the Section 9 introduction and the second reading of Theorem
+  9.1; the Section 10 cost paragraph; Section 11 items 1, 3 and 6; Section
+  12. Ledger rows `L-PQ-01` (including the certificate fields `specResult`,
+  `noFailedLoads` and `invalidGuardSteps`) and `L-OPEN-07` added,
+  `L-OPEN-06` amended, and the orphan fragment at the end of `L-ARCH-01`
+  removed. Eight bibliography entries added, each with a receipt in
+  `RELATED_WORK_LEDGER.md`. The 38 full-SHA pins moved; `L-PQ-01` adds a
+  39th.
+- Pre-commit review. Two independent reviews of the uncommitted draft raised
+  21 issues, all addressed before commit. The substantive ones: Section 9.2
+  said the span decoder divides a bit position by "a cell width held in a
+  register"; the divisor is the word width `W(n)`, metadata word 6, loaded
+  into a register (`SpanAssembly.lean`, the `div` and `mod` of `spanBlock`),
+  and `DD-20260911-PQ1-020` corrects `DD-20260911-PQ1-018`, which said the
+  same. Several statements lacked the representable-endpoint premise
+  (`halt`, `result` and the safety fields hold for endpoints below
+  `2 ^ W(n)`; the six-step
+  invalid bound also covers larger endpoints, but only as a fact about the
+  unbounded evaluator). The `2 ^ 28` threshold is now marked as arithmetic
+  from the definitions, not a kernel-checked statement. Three phrasings
+  outside Section 9 described Theorem 9.1 by its model, against `EV-07`;
+  they now name it by label only, and the `EV-07` entry lists every added
+  reference. The `ACCEPTED_BASE` label of `L-PQ-01` asserts only the first
+  clause of its definition, and the ledger now says so. The `BMM97`
+  booktitle carried a workshop ordinal taken from a citing paper's reference
+  list (tier T3) and is now Crossref's container title.
+- Checks on the working tree of the paper commit, whose Lean library files
+  are byte-identical to `3849ecbb`: `paper/check_paper.ps1 -SelfTest` exit 0
+  (35 cite keys and 35 bibliography entries; 41 labels and 87
+  cross-references; 36 anchors and 36 rows; 57 declaration names equal to the
+  decl-check list; 30/0/6; 27 source citations resolve);
+  `paper/check_citations.ps1` and its `-SelfTest` exit 0;
+  `scripts/claim_drift_scan.ps1 -Strict` exit 0 with 0 strict failures;
+  `git diff --check` exit 0; `git diff --quiet` against `3849ecbb` over the
+  Lean library roots, `lakefile.toml`, `lake-manifest.json` and
+  `lean-toolchain` exit 0; `latexmk -pdf rmq.tex` in a scratch copy exit 0,
+  20 pages, no undefined citation or reference, and the same 23 overfull
+  boxes, at the same widths, as the `rmq.tex` committed at `3849ecbb`.
+- Lean checks for this move, run on a tree whose Lean library files are
+  byte-identical to `3849ecbb`: `lake build` and `lake build RMQPaper` exit 0
+  (up to date); `lake env lean scripts/axiom_check.lean` exit 0 (1,163 axiom
+  records, 30 of them axiom-free); `scripts/headline_axiom_check.lean` exit 0
+  (114 records; `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` depends on
+  `propext`, `Classical.choice` and `Quot.sound`);
+  `scripts/wordram_axiom_check.lean` exit 0 (348 records); no record in the
+  three inventories names any axiom other than those three;
+  `scripts/independence_check.lean` passes (three cap-supplying theorems
+  checked against the eight charged declarations);
+  `scripts/ledger_decl_check.lean` passes (57 names present, negative control
+  absent).
+- Not done in this commit: the novelty search was not extended; the step
+  counts printed by the runtime fixtures are not stated in the manuscript,
+  because no committed check asserts them. `scripts/paper_topology_lint.ps1`
+  refuses a dirty tree, so it runs after the commit.
+
+## 2026-09-12 UTC: PQ1 acceptance status synchronization (EV-07 evidence only)
+
+The coordinator accepted the repaired source-equivalent PQ1 lineage after both-host full gates, its fresh blind source audit and the narrow tooling correction review. `docs/internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md` records the exact identities and all 34 requirements. Editing-rule-5 status passages in rmq.tex, README, THEOREM_LEDGER and NOVELTY_LOG now distinguish that acceptance from the older mathematical pin and from the still-separate release-wide audit.
+
+This update changes process descriptions only: no theorem statement, allocation, instruction budget, operation set, bibliography or priority claim changes. Theorem 9.1 remains confined to its existing mathematical statement and capacity entry; its referenced reading changes only the process adjective attached to the distinct PQ1 theorem. The original 3849ecbb mathematical source pins remain. EV-07 and all frozen evidence-matrix requirements/status rows are preserved; this entry adds evidence and closes no additional paper row.

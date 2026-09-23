@@ -1,0 +1,26 @@
+{
+  "version": "OPT1-R2-RECEIPT-ARCHIVE-CONTROLS-V1",
+  "verifier": "docs/internal/extensions/opt1/repair-r2/verify_receipt_archives.py",
+  "cases": [
+    {"id": "positive-tree", "kind": "verify-tree", "requirement": "positive", "expectedExit": 0, "expectedCodes": []},
+    {"id": "positive-committed", "kind": "verify-committed", "requirement": "positive", "expectedExit": 0, "expectedCodes": []},
+    {"id": "positive-copy", "kind": "verify-copy", "requirement": "positive on an unmutated disposable copy", "expectedExit": 0, "expectedCodes": []},
+    {"id": "changed-archive-header-byte", "kind": "verify-copy", "requirement": "changed archive byte", "expectedExit": 1, "expectedCodes": ["archive-gzip-invalid", "archive-sha256-mismatch"]},
+    {"id": "changed-archive-trailer-byte", "kind": "verify-copy", "requirement": "changed archive byte", "expectedExit": 1, "expectedCodes": ["archive-gzip-invalid", "archive-sha256-mismatch"]},
+    {"id": "missing-archive", "kind": "verify-copy", "requirement": "missing archive", "expectedExit": 1, "expectedCodes": ["archive-missing"]},
+    {"id": "extra-archive", "kind": "verify-copy", "requirement": "extra archive not in the manifest", "expectedExit": 1, "expectedCodes": ["archive-extra"]},
+    {"id": "duplicate-manifest-entry", "kind": "verify-copy", "requirement": "duplicated manifest entry", "expectedExit": 1, "expectedCodes": ["manifest-duplicate-entry"]},
+    {"id": "wrong-base-blob-id", "kind": "verify-copy", "requirement": "wrong base blob id", "expectedExit": 1, "expectedCodes": ["base-blob-id-mismatch"]},
+    {"id": "decompressed-byte-mismatch", "kind": "verify-copy", "requirement": "decompressed-byte mismatch", "expectedExit": 1, "expectedCodes": ["decompressed-bytes-mismatch"]},
+    {"id": "original-restored", "kind": "verify-copy", "requirement": "original file restored beside its archive", "expectedExit": 1, "expectedCodes": ["original-present"]},
+    {"id": "manifest-entry-removed", "kind": "verify-copy", "requirement": "missing manifest entry (additional)", "expectedExit": 1, "expectedCodes": ["archive-extra", "attributes-manifest-mismatch", "manifest-missing-entry"]},
+    {"id": "new-result-line-file", "kind": "verify-copy", "requirement": "reintroduced result-line file (additional)", "expectedExit": 1, "expectedCodes": ["new-result-line-file"]},
+    {"id": "deadline-descendant-cleanup", "kind": "deadline", "requirement": "REPLAY-SUBPROCESS-DEADLINE", "deadlineSeconds": 5, "expectedExit": null, "expectedCodes": []},
+    {"id": "selector-valid", "kind": "selector", "requirement": "REPLAY-SELECTOR-NONVACUITY", "selector": "positive-tree", "expectedExit": 0, "expectedMarker": "RECEIPT-CONTROLS: RESULT: PASS executed 1 of 1 selected cases"},
+    {"id": "selector-empty", "kind": "selector", "requirement": "REPLAY-SELECTOR-NONVACUITY", "selector": "''", "expectedExit": 2, "expectedMarker": "RECEIPT-CONTROLS: SELECTOR-ERROR [empty]"},
+    {"id": "selector-whitespace", "kind": "selector", "requirement": "REPLAY-SELECTOR-NONVACUITY", "selector": "' '", "expectedExit": 2, "expectedMarker": "RECEIPT-CONTROLS: SELECTOR-ERROR [whitespace]"},
+    {"id": "selector-malformed", "kind": "selector", "requirement": "REPLAY-SELECTOR-NONVACUITY", "selector": "'Positive Tree!'", "expectedExit": 2, "expectedMarker": "RECEIPT-CONTROLS: SELECTOR-ERROR [malformed]"},
+    {"id": "selector-unknown", "kind": "selector", "requirement": "REPLAY-SELECTOR-NONVACUITY", "selector": "no-such-case", "expectedExit": 2, "expectedMarker": "RECEIPT-CONTROLS: SELECTOR-ERROR [unknown]"},
+    {"id": "selector-duplicate", "kind": "selector", "requirement": "REPLAY-SELECTOR-NONVACUITY", "selector": "positive-tree,positive-tree", "expectedExit": 2, "expectedMarker": "RECEIPT-CONTROLS: SELECTOR-ERROR [duplicate]"}
+  ]
+}

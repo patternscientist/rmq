@@ -1,0 +1,43 @@
+{
+  "Stage": "D03-ZERO-SERIALIZER-producer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Core\\WordRAM\\Packed\\AllocationLowerBound.lean:23:20: warning: unused variable `width`",
+    "Note: This linter can be disabled with `set_option linter.unusedVariables false`",
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Core\\WordRAM\\Packed\\AllocationLowerBound.lean:23:34: warning: unused variable `words`",
+    "Note: This linter can be disabled with `set_option linter.unusedVariables false`",
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Core\\WordRAM\\Packed\\AllocationLowerBound.lean:37:2: error: type mismatch, term",
+    "  h",
+    "after simplification has type",
+    "  (List.map (natToBitsLE width) words).flatten.length = words.length * width : Prop",
+    "but is expected to have type",
+    "  [].length = words.length * width : Prop",
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Core\\WordRAM\\Packed\\AllocationLowerBound.lean:54:4: error: 'change' tactic failed, pattern",
+    "  bitsToNatLE (List.take width (List.drop (i * width) (List.map (natToBitsLE width) words).flatten)) = words[i]",
+    "is not definitionally equal to target",
+    "  bitsToNatLE (List.take width (List.drop (i * width) (serializeWords width words))) = words[i]"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Core\\WordRAM\\Packed\\AllocationLowerBound.lean:23:20: warning: unused variable `width`",
+    "Note: This linter can be disabled with `set_option linter.unusedVariables false`",
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Core\\WordRAM\\Packed\\AllocationLowerBound.lean:23:34: warning: unused variable `words`",
+    "Note: This linter can be disabled with `set_option linter.unusedVariables false`",
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Core\\WordRAM\\Packed\\AllocationLowerBound.lean:37:2: error: type mismatch, term",
+    "  h",
+    "after simplification has type",
+    "  (List.map (natToBitsLE width) words).flatten.length = words.length * width : Prop",
+    "but is expected to have type",
+    "  [].length = words.length * width : Prop",
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Core\\WordRAM\\Packed\\AllocationLowerBound.lean:54:4: error: 'change' tactic failed, pattern",
+    "  bitsToNatLE (List.take width (List.drop (i * width) (List.map (natToBitsLE width) words).flatten)) = words[i]",
+    "is not definitionally equal to target",
+    "  bitsToNatLE (List.take width (List.drop (i * width) (serializeWords width words))) = words[i]"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 7.345,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

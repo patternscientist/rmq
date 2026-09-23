@@ -1,0 +1,22 @@
+{
+  "Label": "committed-design",
+  "Command": [
+    "powershell",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "scripts/design_decision_check.ps1",
+    "-Strict",
+    "-Base",
+    "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+    "-Head",
+    "a44691d500f3a094b4c96480ed74172c944f69f3"
+  ],
+  "ExitCode": 0,
+  "Passed": true,
+  "DurationSeconds": 8.795,
+  "Stdout": "DESIGN-CHECK: checked 231 changed files (17 code, 215 workflow, 3 neutral)\n",
+  "Stderr": "",
+  "Tree": "exact source checkpoint a44691d500f3a094b4c96480ed74172c944f69f3"
+}

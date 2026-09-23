@@ -1,0 +1,27 @@
+{
+  "Stage": "M02-completeResidualLittleO-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:93:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.completeResidualLittleO",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  LittleOLinear queryCompleteRho : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:93:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.completeResidualLittleO",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  LittleOLinear queryCompleteRho : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 33.565,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

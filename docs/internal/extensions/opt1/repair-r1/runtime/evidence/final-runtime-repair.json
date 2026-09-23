@@ -1,0 +1,2451 @@
+{
+  "Expected": [
+    "R1RT-ACCEPT-STDOUT",
+    "R1RT-ACCEPT-STDERR",
+    "R1RT-ACCEPT-BLANK-SEPARATORS",
+    "R1RT-MIXED-OUT-ERR",
+    "R1RT-MIXED-ERR-OUT",
+    "R1RT-MIXED-STDOUT",
+    "R1RT-MIXED-STDERR",
+    "R1RT-MIXED-BOTH",
+    "R1RT-HOLDOUT-STDOUT",
+    "R1RT-HOLDOUT-STDERR",
+    "R1RT-UNRELATED-ONLY",
+    "R1RT-DUPLICATE-STDOUT",
+    "R1RT-DUPLICATE-STDERR",
+    "R1RT-DUPLICATE-CROSS",
+    "R1RT-WRONG-SURFACE",
+    "R1RT-WRONG-CASE",
+    "R1RT-WRONG-PREFIX",
+    "R1RT-PAD-LEFT",
+    "R1RT-PAD-RIGHT",
+    "R1RT-WHITESPACE-EXTRA",
+    "R1RT-BLANK-ONLY",
+    "R1RT-NO-OUTPUT",
+    "R1RT-SUCCESS-CASE",
+    "R1RT-SUCCESS-SUMMARY",
+    "R1RT-HOLDOUT-SUCCESS",
+    "R1RT-RESOURCE-STACK",
+    "R1RT-RESOURCE-HEARTBEATS",
+    "R1RT-HOLDOUT-RESOURCE",
+    "R1RT-RESOURCE-ONLY",
+    "R1RT-EXIT-ZERO",
+    "R1RT-EXIT-SEVEN",
+    "R1RT-TIMEOUT-EXPECTED",
+    "R1RT-TIMEOUT-ABSENT",
+    "R1RT-OVERFLOW-EXPECTED",
+    "R1RT-OVERFLOW-ABSENT",
+    "R1RT-BOUNDARY-OMITTED",
+    "R1RT-BOUNDARY-VALID",
+    "R1RT-BOUNDARY-EMPTY",
+    "R1RT-BOUNDARY-WHITESPACE",
+    "R1RT-BOUNDARY-PADDED",
+    "R1RT-BOUNDARY-MALFORMED",
+    "R1RT-BOUNDARY-UNKNOWN",
+    "R1RT-BOUNDARY-ZERO",
+    "R1RT-BOUNDARY-DUPLICATE",
+    "R1RT-BOUNDARY-CONTRADICTORY",
+    "R1RT-BOUNDARY-SELECTOR-STARTUP",
+    "R1RT-BOUNDARY-REGISTRY-SELFTEST",
+    "R1RT-REGISTRY-LITERAL-POSITIVE",
+    "R1RT-REGISTRY-LITERAL-MIDDLE-OMITTED",
+    "R1RT-REGISTRY-LITERAL-MIDDLE-DUPLICATE",
+    "R1RT-REGISTRY-MARKDOWN-MIDDLE-OMITTED",
+    "R1RT-REGISTRY-SOURCE-MIDDLE-DUPLICATE",
+    "R1RT-REGISTRY-SOURCE-POSITIVE"
+  ],
+  "SourceAfter": {
+    "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_runtime.ps1": "69494710c3aaa873fdc3f915ba0dd67cfa449f40e2a9890dca126f9eade0f347",
+    "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\owned_process_tree.ps1": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+    "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\RMQ\\Validation\\PackedOptimized.lean": "894a4048230e1ed095eab24bf78e8ee594251579c5bda1163185722ac821eeed",
+    "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\docs\\internal\\extensions\\opt1\\runtime-replay\\REGISTRY.md": "94fbb20f078eeaf8c199b85f74b34e9c0293aad7decf1ae7f5e9fcf36b940af5",
+    "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\docs\\internal\\extensions\\opt1\\repair-r1\\runtime\\REGISTRY.json": "35dee68d8efbb972fb35276bc03b1ec18071048d83e0bfac0334daa9364ade4d",
+    "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\docs\\internal\\extensions\\opt1\\repair-r1\\runtime\\replay.ps1": "1d63d9b3327ed408e2ea2e1733741b232488f120da566ffd57dcfc4e5222f2c6"
+  },
+  "ExitCode": 0,
+  "SourceBefore": {
+    "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_runtime.ps1": "69494710c3aaa873fdc3f915ba0dd67cfa449f40e2a9890dca126f9eade0f347",
+    "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\owned_process_tree.ps1": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+    "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\RMQ\\Validation\\PackedOptimized.lean": "894a4048230e1ed095eab24bf78e8ee594251579c5bda1163185722ac821eeed",
+    "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\docs\\internal\\extensions\\opt1\\runtime-replay\\REGISTRY.md": "94fbb20f078eeaf8c199b85f74b34e9c0293aad7decf1ae7f5e9fcf36b940af5",
+    "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\docs\\internal\\extensions\\opt1\\repair-r1\\runtime\\REGISTRY.json": "35dee68d8efbb972fb35276bc03b1ec18071048d83e0bfac0334daa9364ade4d",
+    "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\docs\\internal\\extensions\\opt1\\repair-r1\\runtime\\replay.ps1": "1d63d9b3327ed408e2ea2e1733741b232488f120da566ffd57dcfc4e5222f2c6"
+  },
+  "POSIX": "UNEXECUTED",
+  "Version": "opt1-r1-runtime-v1",
+  "Meaning": "Host production-classifier and boundary controls; not Lean semantic execution",
+  "Cases": [
+    {
+      "ID": "R1RT-ACCEPT-STDOUT",
+      "Kind": "classifier",
+      "Expected": "ACCEPT",
+      "Result": {
+        "Stage": "R1RT-ACCEPT-STDOUT",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.733,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": true,
+        "Diagnostic": ""
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-ACCEPT-STDOUT.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-ACCEPT-STDERR",
+      "Kind": "classifier",
+      "Expected": "ACCEPT",
+      "Result": {
+        "Stage": "R1RT-ACCEPT-STDERR",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.26,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": true,
+        "Diagnostic": ""
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-ACCEPT-STDERR.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-ACCEPT-BLANK-SEPARATORS",
+      "Kind": "classifier",
+      "Expected": "ACCEPT",
+      "Result": {
+        "Stage": "R1RT-ACCEPT-BLANK-SEPARATORS",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.617,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": true,
+        "Diagnostic": ""
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-ACCEPT-BLANK-SEPARATORS.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-MIXED-OUT-ERR",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-MIXED-OUT-ERR",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "uncaught exception: independent coordinator failure"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [
+          "uncaught exception: independent coordinator failure"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.152,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-MIXED-OUT-ERR.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-MIXED-ERR-OUT",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-MIXED-ERR-OUT",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: independent coordinator failure",
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardOutput": [
+          "uncaught exception: independent coordinator failure"
+        ],
+        "StandardError": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.075,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-MIXED-ERR-OUT.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-MIXED-STDOUT",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-MIXED-STDOUT",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "uncaught exception: independent coordinator failure"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "uncaught exception: independent coordinator failure"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.065,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-MIXED-STDOUT.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-MIXED-STDERR",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-MIXED-STDERR",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "uncaught exception: independent coordinator failure"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "uncaught exception: independent coordinator failure"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.527,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-MIXED-STDERR.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-MIXED-BOTH",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-MIXED-BOTH",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "uncaught exception: independent coordinator failure",
+          "uncaught exception: independent coordinator failure"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "uncaught exception: independent coordinator failure"
+        ],
+        "StandardError": [
+          "uncaught exception: independent coordinator failure"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.845,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-MIXED-BOTH.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-HOLDOUT-STDOUT",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-HOLDOUT-STDOUT",
+        "ExitCode": 1,
+        "Output": [
+          "fatal signal from unrelated worker 73",
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardOutput": [
+          "fatal signal from unrelated worker 73",
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.103,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-HOLDOUT-STDOUT.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-HOLDOUT-STDERR",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-HOLDOUT-STDERR",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "fatal signal from unrelated worker 73"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [
+          "fatal signal from unrelated worker 73"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.051,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-HOLDOUT-STDERR.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-UNRELATED-ONLY",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-UNRELATED-ONLY",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: independent coordinator failure"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "uncaught exception: independent coordinator failure"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.255,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-UNRELATED-ONLY.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-DUPLICATE-STDOUT",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-DUPLICATE-STDOUT",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.25,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-DUPLICATE-STDOUT.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-DUPLICATE-STDERR",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-DUPLICATE-STDERR",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.598,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-DUPLICATE-STDERR.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-DUPLICATE-CROSS",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-DUPLICATE-CROSS",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.365,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-DUPLICATE-CROSS.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-WRONG-SURFACE",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-WRONG-SURFACE",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N02-COUNTER: compiler observation mismatch"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N02-COUNTER: compiler observation mismatch"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.203,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-WRONG-SURFACE.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-WRONG-CASE",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-WRONG-CASE",
+        "ExitCode": 1,
+        "Output": [
+          "UNCAUGHT EXCEPTION: N01-JUMP: COMPILER OBSERVATION MISMATCH"
+        ],
+        "StandardOutput": [
+          "UNCAUGHT EXCEPTION: N01-JUMP: COMPILER OBSERVATION MISMATCH"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.964,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-WRONG-CASE.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-WRONG-PREFIX",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-WRONG-PREFIX",
+        "ExitCode": 1,
+        "Output": [
+          "caught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardOutput": [
+          "caught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 4.296,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-WRONG-PREFIX.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-PAD-LEFT",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-PAD-LEFT",
+        "ExitCode": 1,
+        "Output": [
+          " uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardOutput": [
+          " uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 4.216,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-PAD-LEFT.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-PAD-RIGHT",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-PAD-RIGHT",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch "
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch "
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.473,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-PAD-RIGHT.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-WHITESPACE-EXTRA",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-WHITESPACE-EXTRA",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          " \t"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [
+          " \t"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.08,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-WHITESPACE-EXTRA.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-BLANK-ONLY",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-BLANK-ONLY",
+        "ExitCode": 1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 4.134,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-BLANK-ONLY.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-NO-OUTPUT",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-NO-OUTPUT",
+        "ExitCode": 1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 5.161,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-NO-OUTPUT.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-SUCCESS-CASE",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-SUCCESS-CASE",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "OPT1 CASE C01-ZERO-BRANCH PASS steps=3 reads=0"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "OPT1 CASE C01-ZERO-BRANCH PASS steps=3 reads=0"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 4.503,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-SUCCESS-CASE.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-SUCCESS-SUMMARY",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-SUCCESS-SUMMARY",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "OPT1 PASS executed=1 expected=1 registry=v1"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [
+          "OPT1 PASS executed=1 expected=1 registry=v1"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 4.695,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-SUCCESS-SUMMARY.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-HOLDOUT-SUCCESS",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-HOLDOUT-SUCCESS",
+        "ExitCode": 1,
+        "Output": [
+          "success: operation completed",
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardOutput": [
+          "success: operation completed",
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 5.418,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-HOLDOUT-SUCCESS.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-RESOURCE-STACK",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-RESOURCE-STACK",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "stack overflow"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "stack overflow"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 4.685,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-RESOURCE-STACK.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-RESOURCE-HEARTBEATS",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-RESOURCE-HEARTBEATS",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch",
+          "maximum heartbeats exceeded"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [
+          "maximum heartbeats exceeded"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.938,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-RESOURCE-HEARTBEATS.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-HOLDOUT-RESOURCE",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-HOLDOUT-RESOURCE",
+        "ExitCode": 1,
+        "Output": [
+          "allocation failed: unavailable memory",
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardOutput": [
+          "allocation failed: unavailable memory",
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.192,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-HOLDOUT-RESOURCE.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-RESOURCE-ONLY",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-RESOURCE-ONLY",
+        "ExitCode": 1,
+        "Output": [
+          "deep recursion"
+        ],
+        "StandardOutput": [
+          "deep recursion"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.216,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=1"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-RESOURCE-ONLY.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-EXIT-ZERO",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-EXIT-ZERO",
+        "ExitCode": 0,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.254,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=0"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-EXIT-ZERO.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-EXIT-SEVEN",
+      "Kind": "classifier",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-EXIT-SEVEN",
+        "ExitCode": 7,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.198,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-VERDICT: expected exact rejection 'N01-JUMP: compiler observation mismatch', observed exit=7"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-EXIT-SEVEN.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-TIMEOUT-EXPECTED",
+      "Kind": "timeout",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-TIMEOUT-EXPECTED",
+        "ExitCode": -1,
+        "Output": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardOutput": [
+          "uncaught exception: N01-JUMP: compiler observation mismatch"
+        ],
+        "StandardError": [],
+        "TimedOut": true,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [
+          25488,
+          24008,
+          23944,
+          33772
+        ],
+        "DurationSeconds": 30.096,
+        "DeadlineSeconds": 30,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-PROCESS: R1RT-TIMEOUT-EXPECTED incomplete timeout=True outputLimit=False"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-TIMEOUT-EXPECTED.ps1"
+        ],
+        "DeadlineSeconds": 30,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      },
+      "Emission": {
+        "Witness": "expected diagnostic emitted and flushed",
+        "CaptureLimit": "Shared owned helper discards both retained streams on overflow; production receives its untouched result and rejects by OutputLimitExceeded before diagnostics",
+        "ExpectedDiagnosticEmitted": true
+      },
+      "Descendants": {
+        "OtherHost": "UNEXECUTED",
+        "Child": 23944,
+        "Root": 24008,
+        "Absent": true,
+        "Host": "Win32NT"
+      }
+    },
+    {
+      "ID": "R1RT-TIMEOUT-ABSENT",
+      "Kind": "timeout",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-TIMEOUT-ABSENT",
+        "ExitCode": -1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": true,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [
+          25192,
+          18324,
+          25204,
+          32652
+        ],
+        "DurationSeconds": 30.154,
+        "DeadlineSeconds": 30,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-PROCESS: R1RT-TIMEOUT-ABSENT incomplete timeout=True outputLimit=False"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-TIMEOUT-ABSENT.ps1"
+        ],
+        "DeadlineSeconds": 30,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      },
+      "Emission": {
+        "Witness": "no expected diagnostic emitted",
+        "CaptureLimit": "Shared owned helper discards both retained streams on overflow; production receives its untouched result and rejects by OutputLimitExceeded before diagnostics",
+        "ExpectedDiagnosticEmitted": false
+      },
+      "Descendants": {
+        "OtherHost": "UNEXECUTED",
+        "Child": 25204,
+        "Root": 18324,
+        "Absent": true,
+        "Host": "Win32NT"
+      }
+    },
+    {
+      "ID": "R1RT-OVERFLOW-EXPECTED",
+      "Kind": "overflow",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-OVERFLOW-EXPECTED",
+        "ExitCode": -1,
+        "Output": [
+          "redirected output exceeded 32768 bytes"
+        ],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": true,
+        "TerminatedIds": [
+          24444,
+          30120
+        ],
+        "DurationSeconds": 3.793,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-PROCESS: R1RT-OVERFLOW-EXPECTED incomplete timeout=False outputLimit=True"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 32768,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-OVERFLOW-EXPECTED.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      },
+      "Emission": {
+        "Witness": "expected diagnostic emitted and flushed",
+        "CaptureLimit": "Shared owned helper discards both retained streams on overflow; production receives its untouched result and rejects by OutputLimitExceeded before diagnostics",
+        "ExpectedDiagnosticEmitted": true
+      }
+    },
+    {
+      "ID": "R1RT-OVERFLOW-ABSENT",
+      "Kind": "overflow",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-OVERFLOW-ABSENT",
+        "ExitCode": -1,
+        "Output": [
+          "redirected output exceeded 32768 bytes"
+        ],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": true,
+        "TerminatedIds": [
+          8604,
+          25488
+        ],
+        "DurationSeconds": 3.556,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-PROCESS: R1RT-OVERFLOW-ABSENT incomplete timeout=False outputLimit=True"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 32768,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-OVERFLOW-ABSENT.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      },
+      "Emission": {
+        "Witness": "no expected diagnostic emitted",
+        "CaptureLimit": "Shared owned helper discards both retained streams on overflow; production receives its untouched result and rejects by OutputLimitExceeded before diagnostics",
+        "ExpectedDiagnosticEmitted": false
+      }
+    },
+    {
+      "ID": "R1RT-BOUNDARY-OMITTED",
+      "Kind": "boundary",
+      "Expected": "ACCEPT",
+      "Result": {
+        "Stage": "R1RT-BOUNDARY-OMITTED",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-SELECTOR PROBE PASS bound=False selected=27 ids=C01-ZERO-BRANCH,C02-NONZERO-BRANCH,C03-ZERO-LOOP,C04-ONE-LOOP,C05-REPEATED-LOAD,C06-NESTED-LOOP,C07-EARLY-HALT,C08-FAILED-LOAD,C09-EMPTY-BODY-BOUNDARY,C10-NESTED-SEQUENCE,C11-INITIALLY-HALTED,C12-INITIALLY-FAULTED,C13-EMPTY-BRANCHES,Q01-EMPTY,Q02-SINGLE,Q03-LEFTMOST-TIE,Q04-REVERSED,Q05-OUT-OF-RANGE,Q06-DIFFERENT-BLOCKS,Q07-SAME-BLOCK,Q08-ADJACENT-BLOCKS,Q09-MALFORMED-METADATA,Q10-WORD-MAX,N01-JUMP,N02-COUNTER,N03-BUDGET,N04-FRESH-COLLISION",
+          "OPT1-R1-BOUNDARY ENV RESTORED"
+        ],
+        "StandardOutput": [
+          "OPT1-SELECTOR PROBE PASS bound=False selected=27 ids=C01-ZERO-BRANCH,C02-NONZERO-BRANCH,C03-ZERO-LOOP,C04-ONE-LOOP,C05-REPEATED-LOAD,C06-NESTED-LOOP,C07-EARLY-HALT,C08-FAILED-LOAD,C09-EMPTY-BODY-BOUNDARY,C10-NESTED-SEQUENCE,C11-INITIALLY-HALTED,C12-INITIALLY-FAULTED,C13-EMPTY-BRANCHES,Q01-EMPTY,Q02-SINGLE,Q03-LEFTMOST-TIE,Q04-REVERSED,Q05-OUT-OF-RANGE,Q06-DIFFERENT-BLOCKS,Q07-SAME-BLOCK,Q08-ADJACENT-BLOCKS,Q09-MALFORMED-METADATA,Q10-WORD-MAX,N01-JUMP,N02-COUNTER,N03-BUDGET,N04-FRESH-COLLISION",
+          "OPT1-R1-BOUNDARY ENV RESTORED"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.906,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "EnvironmentRestored": true,
+        "BoundaryExit": 0,
+        "SemanticLaunches": 0,
+        "ExactDiagnostic": "OPT1-SELECTOR PROBE PASS bound=False selected=27 ids="
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-BOUNDARY-OMITTED.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-BOUNDARY-VALID",
+      "Kind": "boundary",
+      "Expected": "ACCEPT",
+      "Result": {
+        "Stage": "R1RT-BOUNDARY-VALID",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-SELECTOR PROBE PASS bound=True selected=1 ids=C01-ZERO-BRANCH",
+          "OPT1-R1-BOUNDARY ENV RESTORED"
+        ],
+        "StandardOutput": [
+          "OPT1-SELECTOR PROBE PASS bound=True selected=1 ids=C01-ZERO-BRANCH",
+          "OPT1-R1-BOUNDARY ENV RESTORED"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 4.12,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "EnvironmentRestored": true,
+        "BoundaryExit": 0,
+        "SemanticLaunches": 0,
+        "ExactDiagnostic": "OPT1-SELECTOR PROBE PASS bound=True selected=1 ids=C01-ZERO-BRANCH"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-BOUNDARY-VALID.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-BOUNDARY-EMPTY",
+      "Kind": "boundary",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-BOUNDARY-EMPTY",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-R1-BOUNDARY ENV RESTORED",
+          "OPT1-SELECTOR: explicitly empty selector"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-BOUNDARY ENV RESTORED"
+        ],
+        "StandardError": [
+          "OPT1-SELECTOR: explicitly empty selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.516,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "EnvironmentRestored": true,
+        "BoundaryExit": 1,
+        "SemanticLaunches": 0,
+        "ExactDiagnostic": "OPT1-SELECTOR: explicitly empty selector"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-BOUNDARY-EMPTY.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-BOUNDARY-WHITESPACE",
+      "Kind": "boundary",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-BOUNDARY-WHITESPACE",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-R1-BOUNDARY ENV RESTORED",
+          "OPT1-SELECTOR: explicitly empty selector"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-BOUNDARY ENV RESTORED"
+        ],
+        "StandardError": [
+          "OPT1-SELECTOR: explicitly empty selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.295,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "EnvironmentRestored": true,
+        "BoundaryExit": 1,
+        "SemanticLaunches": 0,
+        "ExactDiagnostic": "OPT1-SELECTOR: explicitly empty selector"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-BOUNDARY-WHITESPACE.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-BOUNDARY-PADDED",
+      "Kind": "boundary",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-BOUNDARY-PADDED",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-R1-BOUNDARY ENV RESTORED",
+          "OPT1-SELECTOR: malformed selector"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-BOUNDARY ENV RESTORED"
+        ],
+        "StandardError": [
+          "OPT1-SELECTOR: malformed selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.227,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "EnvironmentRestored": true,
+        "BoundaryExit": 1,
+        "SemanticLaunches": 0,
+        "ExactDiagnostic": "OPT1-SELECTOR: malformed selector"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-BOUNDARY-PADDED.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-BOUNDARY-MALFORMED",
+      "Kind": "boundary",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-BOUNDARY-MALFORMED",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-R1-BOUNDARY ENV RESTORED",
+          "OPT1-SELECTOR: malformed selector"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-BOUNDARY ENV RESTORED"
+        ],
+        "StandardError": [
+          "OPT1-SELECTOR: malformed selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.157,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "EnvironmentRestored": true,
+        "BoundaryExit": 1,
+        "SemanticLaunches": 0,
+        "ExactDiagnostic": "OPT1-SELECTOR: malformed selector"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-BOUNDARY-MALFORMED.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-BOUNDARY-UNKNOWN",
+      "Kind": "boundary",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-BOUNDARY-UNKNOWN",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-R1-BOUNDARY ENV RESTORED",
+          "OPT1-SELECTOR: unknown selector C99-UNKNOWN"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-BOUNDARY ENV RESTORED"
+        ],
+        "StandardError": [
+          "OPT1-SELECTOR: unknown selector C99-UNKNOWN"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.561,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "EnvironmentRestored": true,
+        "BoundaryExit": 1,
+        "SemanticLaunches": 0,
+        "ExactDiagnostic": "OPT1-SELECTOR: unknown selector C99-UNKNOWN"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-BOUNDARY-UNKNOWN.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-BOUNDARY-ZERO",
+      "Kind": "boundary",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-BOUNDARY-ZERO",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-R1-BOUNDARY ENV RESTORED",
+          "OPT1-SELECTOR: malformed selector"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-BOUNDARY ENV RESTORED"
+        ],
+        "StandardError": [
+          "OPT1-SELECTOR: malformed selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.612,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "EnvironmentRestored": true,
+        "BoundaryExit": 1,
+        "SemanticLaunches": 0,
+        "ExactDiagnostic": "OPT1-SELECTOR: malformed selector"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-BOUNDARY-ZERO.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-BOUNDARY-DUPLICATE",
+      "Kind": "boundary",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-BOUNDARY-DUPLICATE",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-R1-BOUNDARY ENV RESTORED",
+          "OPT1-R1-BOUNDARY: duplicate parameter rejected"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-BOUNDARY ENV RESTORED"
+        ],
+        "StandardError": [
+          "OPT1-R1-BOUNDARY: duplicate parameter rejected"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.504,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "EnvironmentRestored": true,
+        "BoundaryExit": 1,
+        "SemanticLaunches": 0,
+        "ExactDiagnostic": "OPT1-R1-BOUNDARY: duplicate parameter rejected"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-BOUNDARY-DUPLICATE.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-BOUNDARY-CONTRADICTORY",
+      "Kind": "boundary",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-BOUNDARY-CONTRADICTORY",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-R1-BOUNDARY ENV RESTORED",
+          "OPT1-SELECTOR: incompatible modes"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-BOUNDARY ENV RESTORED"
+        ],
+        "StandardError": [
+          "OPT1-SELECTOR: incompatible modes"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 4.139,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "EnvironmentRestored": true,
+        "BoundaryExit": 1,
+        "SemanticLaunches": 0,
+        "ExactDiagnostic": "OPT1-SELECTOR: incompatible modes"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-BOUNDARY-CONTRADICTORY.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-BOUNDARY-SELECTOR-STARTUP",
+      "Kind": "boundary",
+      "Expected": "REJECT",
+      "Result": {
+        "Stage": "R1RT-BOUNDARY-SELECTOR-STARTUP",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-R1-BOUNDARY ENV RESTORED",
+          "OPT1-SELECTOR: incompatible modes"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-BOUNDARY ENV RESTORED"
+        ],
+        "StandardError": [
+          "OPT1-SELECTOR: incompatible modes"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 4.614,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "EnvironmentRestored": true,
+        "BoundaryExit": 1,
+        "SemanticLaunches": 0,
+        "ExactDiagnostic": "OPT1-SELECTOR: incompatible modes"
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-BOUNDARY-SELECTOR-STARTUP.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-BOUNDARY-REGISTRY-SELFTEST",
+      "Kind": "boundary",
+      "Expected": "ACCEPT",
+      "Result": {
+        "Stage": "R1RT-BOUNDARY-REGISTRY-SELFTEST",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-REGISTRY SELF-TEST PASS expected=27 empty/missing/duplicate/extra/reordered/source/markdown/zero-executed/wrong-reject/timeout",
+          "OPT1-R1-BOUNDARY ENV RESTORED"
+        ],
+        "StandardOutput": [
+          "OPT1-REGISTRY SELF-TEST PASS expected=27 empty/missing/duplicate/extra/reordered/source/markdown/zero-executed/wrong-reject/timeout",
+          "OPT1-R1-BOUNDARY ENV RESTORED"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 6.037,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "Verdict": {
+        "EnvironmentRestored": true,
+        "BoundaryExit": 0,
+        "SemanticLaunches": 0,
+        "ExactDiagnostic": "OPT1-REGISTRY SELF-TEST PASS expected=27 "
+      },
+      "Restoration": {
+        "ExactBytes": true,
+        "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+        "TrackedMutations": 0
+      },
+      "Command": {
+        "OutputLimitBytes": 1048576,
+        "Arguments": [
+          "-NoLogo",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\final53\\cases\\R1RT-BOUNDARY-REGISTRY-SELFTEST.ps1"
+        ],
+        "DeadlineSeconds": 60,
+        "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+      }
+    },
+    {
+      "ID": "R1RT-REGISTRY-LITERAL-POSITIVE",
+      "Kind": "registry",
+      "Expected": "ACCEPT",
+      "Result": null,
+      "Verdict": {
+        "Accepted": true,
+        "Diagnostic": ""
+      },
+      "Restoration": null
+    },
+    {
+      "ID": "R1RT-REGISTRY-LITERAL-MIDDLE-OMITTED",
+      "Kind": "registry",
+      "Expected": "REJECT",
+      "Result": null,
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-REGISTRY: literal registry missing, duplicate, extra, reordered or changed case"
+      },
+      "Restoration": null
+    },
+    {
+      "ID": "R1RT-REGISTRY-LITERAL-MIDDLE-DUPLICATE",
+      "Kind": "registry",
+      "Expected": "REJECT",
+      "Result": null,
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-REGISTRY: literal registry missing, duplicate, extra, reordered or changed case"
+      },
+      "Restoration": null
+    },
+    {
+      "ID": "R1RT-REGISTRY-MARKDOWN-MIDDLE-OMITTED",
+      "Kind": "registry",
+      "Expected": "REJECT",
+      "Result": null,
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-REGISTRY: Markdown registry missing, duplicate, extra, reordered or changed case"
+      },
+      "Restoration": null
+    },
+    {
+      "ID": "R1RT-REGISTRY-SOURCE-MIDDLE-DUPLICATE",
+      "Kind": "registry",
+      "Expected": "REJECT",
+      "Result": null,
+      "Verdict": {
+        "Accepted": false,
+        "Diagnostic": "OPT1-REGISTRY: source requiredIDs missing, duplicate, extra, reordered or changed case"
+      },
+      "Restoration": null
+    },
+    {
+      "ID": "R1RT-REGISTRY-SOURCE-POSITIVE",
+      "Kind": "registry",
+      "Expected": "ACCEPT",
+      "Result": null,
+      "Verdict": {
+        "Accepted": true,
+        "Diagnostic": ""
+      },
+      "Restoration": null
+    }
+  ],
+  "TrackedMutations": 0,
+  "Executed": [
+    "R1RT-ACCEPT-STDOUT",
+    "R1RT-ACCEPT-STDERR",
+    "R1RT-ACCEPT-BLANK-SEPARATORS",
+    "R1RT-MIXED-OUT-ERR",
+    "R1RT-MIXED-ERR-OUT",
+    "R1RT-MIXED-STDOUT",
+    "R1RT-MIXED-STDERR",
+    "R1RT-MIXED-BOTH",
+    "R1RT-HOLDOUT-STDOUT",
+    "R1RT-HOLDOUT-STDERR",
+    "R1RT-UNRELATED-ONLY",
+    "R1RT-DUPLICATE-STDOUT",
+    "R1RT-DUPLICATE-STDERR",
+    "R1RT-DUPLICATE-CROSS",
+    "R1RT-WRONG-SURFACE",
+    "R1RT-WRONG-CASE",
+    "R1RT-WRONG-PREFIX",
+    "R1RT-PAD-LEFT",
+    "R1RT-PAD-RIGHT",
+    "R1RT-WHITESPACE-EXTRA",
+    "R1RT-BLANK-ONLY",
+    "R1RT-NO-OUTPUT",
+    "R1RT-SUCCESS-CASE",
+    "R1RT-SUCCESS-SUMMARY",
+    "R1RT-HOLDOUT-SUCCESS",
+    "R1RT-RESOURCE-STACK",
+    "R1RT-RESOURCE-HEARTBEATS",
+    "R1RT-HOLDOUT-RESOURCE",
+    "R1RT-RESOURCE-ONLY",
+    "R1RT-EXIT-ZERO",
+    "R1RT-EXIT-SEVEN",
+    "R1RT-TIMEOUT-EXPECTED",
+    "R1RT-TIMEOUT-ABSENT",
+    "R1RT-OVERFLOW-EXPECTED",
+    "R1RT-OVERFLOW-ABSENT",
+    "R1RT-BOUNDARY-OMITTED",
+    "R1RT-BOUNDARY-VALID",
+    "R1RT-BOUNDARY-EMPTY",
+    "R1RT-BOUNDARY-WHITESPACE",
+    "R1RT-BOUNDARY-PADDED",
+    "R1RT-BOUNDARY-MALFORMED",
+    "R1RT-BOUNDARY-UNKNOWN",
+    "R1RT-BOUNDARY-ZERO",
+    "R1RT-BOUNDARY-DUPLICATE",
+    "R1RT-BOUNDARY-CONTRADICTORY",
+    "R1RT-BOUNDARY-SELECTOR-STARTUP",
+    "R1RT-BOUNDARY-REGISTRY-SELFTEST",
+    "R1RT-REGISTRY-LITERAL-POSITIVE",
+    "R1RT-REGISTRY-LITERAL-MIDDLE-OMITTED",
+    "R1RT-REGISTRY-LITERAL-MIDDLE-DUPLICATE",
+    "R1RT-REGISTRY-MARKDOWN-MIDDLE-OMITTED",
+    "R1RT-REGISTRY-SOURCE-MIDDLE-DUPLICATE",
+    "R1RT-REGISTRY-SOURCE-POSITIVE"
+  ]
+}

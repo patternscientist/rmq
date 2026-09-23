@@ -1,0 +1,25 @@
+{
+  "Command": [
+    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "-j1",
+    "-o",
+    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Optimization\\Query.olean",
+    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\Query.lean"
+  ],
+  "SourceSHA256": "9687616AE21AA435920C87D429B2E62D78758967BCAF7A481BEBEDF7D6C06F50",
+  "Base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "Platform": "Microsoft Windows NT 10.0.26200.0",
+  "Result": {
+    "Stage": "compact-static-Query",
+    "ExitCode": 0,
+    "Output": [],
+    "StandardOutput": [],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 68.383,
+    "DeadlineSeconds": 300,
+    "Ownership": "kill-on-close-job"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "Stage": "O11-canonicalCount-producer",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 5.801,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

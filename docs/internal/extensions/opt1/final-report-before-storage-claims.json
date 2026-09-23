@@ -1,0 +1,25 @@
+{
+  "Command": [
+    "powershell",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "scripts/claim_drift_scan.ps1",
+    "-Strict"
+  ],
+  "Status": "INCOMPLETE",
+  "WrapperExitCode": 1,
+  "DeadlineSeconds": 180,
+  "Failure": "Python subprocess.TimeoutExpired; no completed claim verdict",
+  "Session": 31789,
+  "ContemporaneousPIDs": [
+    28916,
+    27492
+  ],
+  "OwnershipOfRgPID": "not established; both absent before native identification",
+  "KilledProcesses": [],
+  "NewRawEvidenceBytes": 2317762,
+  "RemainingLightChecks": "three passing receipts preserved with before-storage prefix",
+  "NextAttempt": "owned process-tree helper with output capture and 900-second bound on the final report/storage tree"
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "command": {
+    "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "arguments": [
+      "-j",
+      "1",
+      "scripts/packed_native_types.lean"
+    ]
+  },
+  "result": {
+    "Stage": "exact-types-01",
+    "ExitCode": 0,
+    "Output": [
+      "'RMQ.SuccinctFinal.PackedNative.executeFinite_decode' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.runFinite_decode' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.runFinite_ofState' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.runThin_projection' depends on axioms: [propext]",
+      "'RMQ.SuccinctFinal.PackedNative.runThin_no_reads' depends on axioms: [propext]",
+      "'RMQ.SuccinctFinal.PackedNative.runThin_reference' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.parseInstruction_encoding' does not depend on any axioms",
+      "'RMQ.SuccinctFinal.PackedNative.instruction_encoding_injective' depends on axioms: [propext]",
+      "'RMQ.SuccinctFinal.PackedNative.routeCore_source' depends on axioms: [propext]",
+      "'RMQ.SuccinctFinal.PackedNative.routeCore_reference' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.routeCore_ofState' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.routeInitialState_decode' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.routeDestinationFits_iff' depends on axioms: [propext]"
+    ],
+    "StandardOutput": [
+      "'RMQ.SuccinctFinal.PackedNative.executeFinite_decode' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.runFinite_decode' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.runFinite_ofState' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.runThin_projection' depends on axioms: [propext]",
+      "'RMQ.SuccinctFinal.PackedNative.runThin_no_reads' depends on axioms: [propext]",
+      "'RMQ.SuccinctFinal.PackedNative.runThin_reference' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.parseInstruction_encoding' does not depend on any axioms",
+      "'RMQ.SuccinctFinal.PackedNative.instruction_encoding_injective' depends on axioms: [propext]",
+      "'RMQ.SuccinctFinal.PackedNative.routeCore_source' depends on axioms: [propext]",
+      "'RMQ.SuccinctFinal.PackedNative.routeCore_reference' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.routeCore_ofState' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.routeInitialState_decode' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.routeDestinationFits_iff' depends on axioms: [propext]"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 6.105,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  }
+}

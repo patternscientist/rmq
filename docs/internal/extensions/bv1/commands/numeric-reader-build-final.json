@@ -1,0 +1,183 @@
+{
+  "stage": "numeric-reader-build-final",
+  "platform": "Windows",
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "dirty": [
+    " M docs/internal/DESIGN_DECISIONS.md",
+    " M docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+    " M docs/internal/extensions/bv1/CONTRACT.md",
+    " M docs/internal/extensions/bv1/REPORT.md",
+    " M scripts/packed_bitvector_crossing.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ControllerInterface.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericRankProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericSelectProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/MemoryLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/NumericReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ReaderGeometry.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ReaderProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RegularLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SegmentMap.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SelectSemantics.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/WordBounds.lean",
+    "?? docs/internal/extensions/bv1/CONTINUATION.md",
+    "?? docs/internal/extensions/bv1/CONTROLLER_PROOFS.md",
+    "?? docs/internal/extensions/bv1/COORDINATOR_ROUTE_DISPOSITION.md",
+    "?? docs/internal/extensions/bv1/NUMERIC_READER.md",
+    "?? docs/internal/extensions/bv1/REGULAR_LAYOUT.md",
+    "?? docs/internal/extensions/bv1/SELECT_SEMANTICS.md",
+    "?? docs/internal/extensions/bv1/commands/controller-rank-r1.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-1.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-2.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-3.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-4.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-5.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-reader-build-v3.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-reader-compile-v1.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-reader-compile-v2.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-1.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-2.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-3.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-axiom-source.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-axioms.json",
+    "?? docs/internal/extensions/bv1/controls/controller_axioms.lean"
+  ],
+  "sourceHashes": [
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\AllocationFacts.lean",
+      "Hash": "F189969208B13333219EE460DB8581D43BABB88F18480C68A37F47C070801623"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ControllerInterface.lean",
+      "Hash": "69A3B4D42AE40CB3184BDCF8E2DE7CEF388DD28D4D37A465773AB8CA63652095"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\GenericRankProof.lean",
+      "Hash": "93AE0276085B942867F1F16571D6AF67713FE7BDB5FE9499DA9AB8EC4F802E9B"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\GenericSelectProof.lean",
+      "Hash": "A9C26A21B12C91255D18A193861E7A675FA88E3050637285A8DE075B74B06F52"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\MemoryLayout.lean",
+      "Hash": "D04C635FCB7F8427B80F487DB16A2B6DC5410F2B9D7CFD42293C039F0E2E014C"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\Normalization.lean",
+      "Hash": "BA10A82917C9914E0BB11F619A15A51CFC65E2C0842C066F372339C77FF5F9D4"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\NumericReader.lean",
+      "Hash": "7E2CC443F2DE7351112460B7C2B0699C2879B51E760DEC3261B055790133897D"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ReaderGeometry.lean",
+      "Hash": "44F07A4D74D298FF939B8C12A372FF0C1BD63F61BE972FD6CFF2E88D7E8AD151"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ReaderInterface.lean",
+      "Hash": "ECD8043060AAE4A3F753B81ADCFE47F9E22B2914744DB6686ABBFB18A218A210"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ReaderProof.lean",
+      "Hash": "5D9375AEA0A53FE103DA32BD0553DC8EDD4C9715345FDE7D28EE5E10CF45AB1E"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\RegularLayout.lean",
+      "Hash": "172ED0F83F0D8E63136F7A3063F8EDC009F71D57C4BF8B1D311067F1AC53638C"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\SegmentMap.lean",
+      "Hash": "90F510BDB947A05E6C84C1B0E3C04D76E13BD4AC69E70FE996E8A5449D19F452"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\SelectExperiment.lean",
+      "Hash": "156744CBE4DEC77C874114E10408820F7B107B86D5635068D6B855B8363AF0E8"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\SelectSemantics.lean",
+      "Hash": "1DE27C37687E1514889E5CF60870EF1A3B34A7616F85571DEEF87CCA4B0A46E1"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\WordBounds.lean",
+      "Hash": "DA05BBA34C9E9C15BADE80007D8733394DBD646084F33B94E3E6BADA0D450F88"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_allocation_consumers.lean",
+      "Hash": "11625C223A9EA1952FE664DFEE7D8DC9C2C3CE798A6C74A39CCD24ACC42D08DE"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_axioms.lean",
+      "Hash": "505072CA4722C123F65C7184855813AD75C4208763F696222B9127C955C0C145"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_crossing.lean",
+      "Hash": "EEDDA48140C4DB2912186F42D874206015CAB12A58D39CF6FCAF9F4D10B9833F"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_normalization_consumers.lean",
+      "Hash": "CF7C09F2CE8DF5D364933FD0BD982BC1835610F5D2B6CCAEBE0EDD6374C529A2"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_probe.ps1",
+      "Hash": "8C3D92D057026636386BCD075886C54E9D034C6E2322F8C7290244B1934F4D38"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_selector_controls.ps1",
+      "Hash": "D676AC5F587F3EECC0A15B75CCBB0E76B729DD531E7E6A72EAF1FFCB3F0E1228"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Validation\\PackedBitvector.lean",
+      "Hash": "A36ACF5EDF0750D2F5F01BCCE931B2104310E68AEFEB4F7A6BBE6CEBEA30ACA3"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\lakefile.toml",
+      "Hash": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A"
+    }
+  ],
+  "startedUtc": "2026-09-12T09:07:17.6475985Z",
+  "executable": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+  "arguments": [
+    "build",
+    "RMQ.Core.WordRAM.Bitvector.NumericReader"
+  ],
+  "deadlineSeconds": 180,
+  "leanNumThreads": 1,
+  "result": {
+    "Stage": "numeric-reader-build-final",
+    "ExitCode": 0,
+    "Output": [
+      "ℹ [128/128] Built RMQ.Core.WordRAM.Bitvector.NumericReader",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:350:0: 'RMQ.PackedBitvector.descriptorLoads_source' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:351:0: 'RMQ.PackedBitvector.finishPacket_source' depends on axioms: [propext]",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:352:0: 'RMQ.PackedBitvector.physicalReader_writes' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:353:0: 'RMQ.PackedBitvector.physicalReader_frame' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:354:0: 'RMQ.PackedBitvector.physicalReader_outside' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:355:0: 'RMQ.PackedBitvector.physicalReader_absent' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:356:0: 'RMQ.PackedBitvector.physicalReader_present' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:357:0: 'RMQ.PackedBitvector.physicalReader_first_descriptor_missing' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:358:0: 'RMQ.PackedBitvector.physicalReader_present_empty' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "Build completed successfully."
+    ],
+    "StandardOutput": [
+      "ℹ [128/128] Built RMQ.Core.WordRAM.Bitvector.NumericReader",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:350:0: 'RMQ.PackedBitvector.descriptorLoads_source' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:351:0: 'RMQ.PackedBitvector.finishPacket_source' depends on axioms: [propext]",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:352:0: 'RMQ.PackedBitvector.physicalReader_writes' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:353:0: 'RMQ.PackedBitvector.physicalReader_frame' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:354:0: 'RMQ.PackedBitvector.physicalReader_outside' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:355:0: 'RMQ.PackedBitvector.physicalReader_absent' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:356:0: 'RMQ.PackedBitvector.physicalReader_present' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:357:0: 'RMQ.PackedBitvector.physicalReader_first_descriptor_missing' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "info: RMQ/Core/WordRAM/Bitvector/NumericReader.lean:358:0: 'RMQ.PackedBitvector.physicalReader_present_empty' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "Build completed successfully."
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 13.729,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  }
+}

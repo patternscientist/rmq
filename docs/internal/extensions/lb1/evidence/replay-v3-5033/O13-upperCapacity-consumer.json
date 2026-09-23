@@ -1,0 +1,43 @@
+{
+  "Stage": "O13-upperCapacity-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:73:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.upperCapacity",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int), (allocationBits xs).length ≤ 2 * xs.length + allocationRho xs.length : Prop",
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:273:4: error: Application type mismatch: In the application",
+    "  ⟨packedAllocationOptimality_holds.memoryRecovery, packedAllocationOptimality_holds.upperCapacity⟩",
+    "the argument",
+    "  packedAllocationOptimality_holds.upperCapacity",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int), (allocationBits xs).length ≤ 2 * xs.length + allocationRho xs.length : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:73:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.upperCapacity",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int), (allocationBits xs).length ≤ 2 * xs.length + allocationRho xs.length : Prop",
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:273:4: error: Application type mismatch: In the application",
+    "  ⟨packedAllocationOptimality_holds.memoryRecovery, packedAllocationOptimality_holds.upperCapacity⟩",
+    "the argument",
+    "  packedAllocationOptimality_holds.upperCapacity",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int), (allocationBits xs).length ≤ 2 * xs.length + allocationRho xs.length : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 35.465,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

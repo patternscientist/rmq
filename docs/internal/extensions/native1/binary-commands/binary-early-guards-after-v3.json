@@ -1,0 +1,242 @@
+{
+  "schema": "native1-binary-early-guard-development-v1",
+  "startedUtc": "2026-09-12T12:24:41.9323833Z",
+  "completedUtc": "2026-09-12T12:26:41.0214584Z",
+  "pass": true,
+  "runnerSha256": "F4FDB47B674BCE93B4D353F071B04AE7F83CE347DEE8284DB0773D3416B22C46",
+  "registrySha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+  "restored": true,
+  "results": [
+    {
+      "pass": true,
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1",
+        "-Case",
+        ""
+      ],
+      "completedUtc": "2026-09-12T12:25:00.6857867Z",
+      "startedUtc": "2026-09-12T12:24:42.0904388Z",
+      "id": "empty",
+      "process": {
+        "Stage": "binary-early-empty",
+        "ExitCode": 1,
+        "Output": [
+          "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1:24",
+          "Line |",
+          "  24 |  … askIds -cnotcontains $Case) { throw 'invalid exact binary selector' }",
+          "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "     | invalid exact binary selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1:24",
+          "Line |",
+          "  24 |  … askIds -cnotcontains $Case) { throw 'invalid exact binary selector' }",
+          "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "     | invalid exact binary selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 17.394,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      },
+      "prepare": null,
+      "expectedMessage": "invalid exact binary selector"
+    },
+    {
+      "pass": true,
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1",
+        "-Case",
+        " "
+      ],
+      "completedUtc": "2026-09-12T12:25:21.1094878Z",
+      "startedUtc": "2026-09-12T12:25:00.8171330Z",
+      "id": "whitespace",
+      "process": {
+        "Stage": "binary-early-whitespace",
+        "ExitCode": 1,
+        "Output": [
+          "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1:24",
+          "Line |",
+          "  24 |  … askIds -cnotcontains $Case) { throw 'invalid exact binary selector' }",
+          "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "     | invalid exact binary selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1:24",
+          "Line |",
+          "  24 |  … askIds -cnotcontains $Case) { throw 'invalid exact binary selector' }",
+          "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "     | invalid exact binary selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 20.026,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      },
+      "prepare": null,
+      "expectedMessage": "invalid exact binary selector"
+    },
+    {
+      "pass": true,
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1",
+        "-Case",
+        "query-smoke,"
+      ],
+      "completedUtc": "2026-09-12T12:25:42.4249650Z",
+      "startedUtc": "2026-09-12T12:25:21.2867586Z",
+      "id": "malformed",
+      "process": {
+        "Stage": "binary-early-malformed",
+        "ExitCode": 1,
+        "Output": [
+          "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1:24",
+          "Line |",
+          "  24 |  … askIds -cnotcontains $Case) { throw 'invalid exact binary selector' }",
+          "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "     | invalid exact binary selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1:24",
+          "Line |",
+          "  24 |  … askIds -cnotcontains $Case) { throw 'invalid exact binary selector' }",
+          "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "     | invalid exact binary selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 21.044,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      },
+      "prepare": null,
+      "expectedMessage": "invalid exact binary selector"
+    },
+    {
+      "pass": true,
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1",
+        "-Case",
+        "not-a-binary-case"
+      ],
+      "completedUtc": "2026-09-12T12:26:06.5383636Z",
+      "startedUtc": "2026-09-12T12:25:42.4281770Z",
+      "id": "unknown",
+      "process": {
+        "Stage": "binary-early-unknown",
+        "ExitCode": 1,
+        "Output": [
+          "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1:24",
+          "Line |",
+          "  24 |  … askIds -cnotcontains $Case) { throw 'invalid exact binary selector' }",
+          "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "     | invalid exact binary selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1:24",
+          "Line |",
+          "  24 |  … askIds -cnotcontains $Case) { throw 'invalid exact binary selector' }",
+          "     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "     | invalid exact binary selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 23.886,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      },
+      "prepare": null,
+      "expectedMessage": "invalid exact binary selector"
+    },
+    {
+      "pass": true,
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1",
+        "-Case",
+        "query-smoke"
+      ],
+      "completedUtc": "2026-09-12T12:26:40.9478989Z",
+      "startedUtc": "2026-09-12T12:26:24.5743158Z",
+      "id": "source-kind-downgrade",
+      "process": {
+        "Stage": "binary-early-source-kind-downgrade",
+        "ExitCode": 1,
+        "Output": [
+          "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1:14",
+          "Line |",
+          "  14 |    throw 'exact binary semantic registry mismatch'",
+          "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "     | exact binary semantic registry mismatch"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1:14",
+          "Line |",
+          "  14 |    throw 'exact binary semantic registry mismatch'",
+          "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "     | exact binary semantic registry mismatch"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 16.336,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      },
+      "prepare": {
+        "Stage": "early-guard-mutation-prepare",
+        "ExitCode": 0,
+        "Output": [
+          "{\"case\":\"source-core-fuel\",\"field\":\"kind\",\"action\":\"change\",\"oldByteSpan\":[131402,131419],\"newSpanLength\":12,\"onlyIntendedSemanticChange\":true,\"beforeSha256\":\"2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637\",\"afterSha256\":\"8BEF45D699A497F46FE03D6B74525B78D6EB98CBE40DEABBB8E2DE5AD1022EBC\"}"
+        ],
+        "StandardOutput": [
+          "{\"case\":\"source-core-fuel\",\"field\":\"kind\",\"action\":\"change\",\"oldByteSpan\":[131402,131419],\"newSpanLength\":12,\"onlyIntendedSemanticChange\":true,\"beforeSha256\":\"2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637\",\"afterSha256\":\"8BEF45D699A497F46FE03D6B74525B78D6EB98CBE40DEABBB8E2DE5AD1022EBC\"}"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 17.431,
+        "DeadlineSeconds": 30,
+        "Ownership": "kill-on-close-job"
+      },
+      "expectedMessage": "exact binary semantic registry mismatch"
+    }
+  ]
+}

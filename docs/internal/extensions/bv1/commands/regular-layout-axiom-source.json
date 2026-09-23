@@ -1,0 +1,139 @@
+{
+  "stage": "regular-layout-axiom-source",
+  "platform": "Windows",
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "dirty": [
+    " M docs/internal/DESIGN_DECISIONS.md",
+    " M docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+    " M docs/internal/extensions/bv1/CONTRACT.md",
+    " M docs/internal/extensions/bv1/REPORT.md",
+    "?? RMQ/Core/WordRAM/Bitvector/ControllerInterface.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericRankProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericSelectProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/MemoryLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/NumericReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RegularLayout.lean",
+    "?? docs/internal/extensions/bv1/CONTINUATION.md",
+    "?? docs/internal/extensions/bv1/CONTROLLER_PROOFS.md",
+    "?? docs/internal/extensions/bv1/COORDINATOR_ROUTE_DISPOSITION.md",
+    "?? docs/internal/extensions/bv1/NUMERIC_READER.md",
+    "?? docs/internal/extensions/bv1/REGULAR_LAYOUT.md",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-1.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-2.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-3.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-1.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-2.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-3.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-axioms.json"
+  ],
+  "sourceHashes": [
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\AllocationFacts.lean",
+      "Hash": "F189969208B13333219EE460DB8581D43BABB88F18480C68A37F47C070801623"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ControllerInterface.lean",
+      "Hash": "69A3B4D42AE40CB3184BDCF8E2DE7CEF388DD28D4D37A465773AB8CA63652095"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\GenericRankProof.lean",
+      "Hash": "B3BBCFF0B6C6D0D70872C87771F017E458F96180CEC40F23653FB964FCD46E55"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\GenericSelectProof.lean",
+      "Hash": "A9C26A21B12C91255D18A193861E7A675FA88E3050637285A8DE075B74B06F52"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\MemoryLayout.lean",
+      "Hash": "B2A0AD78BA9BC4EE43B4059B71A568D5E1CF9D5F708E05C8593894E0420C93D9"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\Normalization.lean",
+      "Hash": "BA10A82917C9914E0BB11F619A15A51CFC65E2C0842C066F372339C77FF5F9D4"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\NumericReader.lean",
+      "Hash": "08C90046B5B14205890566AD85509223C84ED6328C95D9C7A5ED4758C595DDA1"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ReaderInterface.lean",
+      "Hash": "ECD8043060AAE4A3F753B81ADCFE47F9E22B2914744DB6686ABBFB18A218A210"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\RegularLayout.lean",
+      "Hash": "172ED0F83F0D8E63136F7A3063F8EDC009F71D57C4BF8B1D311067F1AC53638C"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\SelectExperiment.lean",
+      "Hash": "156744CBE4DEC77C874114E10408820F7B107B86D5635068D6B855B8363AF0E8"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_allocation_consumers.lean",
+      "Hash": "11625C223A9EA1952FE664DFEE7D8DC9C2C3CE798A6C74A39CCD24ACC42D08DE"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_axioms.lean",
+      "Hash": "505072CA4722C123F65C7184855813AD75C4208763F696222B9127C955C0C145"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_crossing.lean",
+      "Hash": "1623CD71929F0CE1EB4DFEBD283144BAC5FB4366759F6C1D588B749743322714"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_normalization_consumers.lean",
+      "Hash": "CF7C09F2CE8DF5D364933FD0BD982BC1835610F5D2B6CCAEBE0EDD6374C529A2"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_probe.ps1",
+      "Hash": "8C3D92D057026636386BCD075886C54E9D034C6E2322F8C7290244B1934F4D38"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_selector_controls.ps1",
+      "Hash": "D676AC5F587F3EECC0A15B75CCBB0E76B729DD531E7E6A72EAF1FFCB3F0E1228"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Validation\\PackedBitvector.lean",
+      "Hash": "A36ACF5EDF0750D2F5F01BCCE931B2104310E68AEFEB4F7A6BBE6CEBEA30ACA3"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\lakefile.toml",
+      "Hash": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A"
+    }
+  ],
+  "startedUtc": "2026-09-12T08:40:34.8804689Z",
+  "executable": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+  "arguments": [
+    "env",
+    "lean",
+    "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-regular-layout-axiom-source.lean"
+  ],
+  "deadlineSeconds": 180,
+  "leanNumThreads": 1,
+  "result": {
+    "Stage": "regular-layout-axiom-source",
+    "ExitCode": 0,
+    "Output": [
+      "'RMQ.SuccinctSpace.chunkPayloadWords_get?_some_of_mul_lt' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.SuccinctSpace.chunkPayloadWords_get?_eq_take_drop' depends on axioms: [propext]",
+      "'RMQ.SuccinctSpace.flattenPayloadWords_chunkPayloadWords' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'List.getElem?_eq_some_iff' depends on axioms: [propext]",
+      "'List.mem_of_getElem?' depends on axioms: [propext]",
+      "'List.mem_replicate' depends on axioms: [propext]"
+    ],
+    "StandardOutput": [
+      "'RMQ.SuccinctSpace.chunkPayloadWords_get?_some_of_mul_lt' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.SuccinctSpace.chunkPayloadWords_get?_eq_take_drop' depends on axioms: [propext]",
+      "'RMQ.SuccinctSpace.flattenPayloadWords_chunkPayloadWords' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'List.getElem?_eq_some_iff' depends on axioms: [propext]",
+      "'List.mem_of_getElem?' depends on axioms: [propext]",
+      "'List.mem_replicate' depends on axioms: [propext]"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 6.09,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  }
+}

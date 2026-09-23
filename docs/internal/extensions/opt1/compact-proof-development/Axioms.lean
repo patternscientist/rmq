@@ -1,0 +1,16 @@
+import RMQ.Core.WordRAM.Optimization.CompactSafety
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.compact_loop_realizes
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.compact_realizes
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.compact_compile_run
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.compact_compile_with_halt
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.compact_safe_loop_realizes
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.compact_safe_realizes
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.compact_compile_safe_run
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactConsumers.compact_realizes_expectedType
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactConsumers.compact_halt_expectedType
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactConsumers.nested_loop_execution
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactConsumers.nested_loop_fault
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactConsumers.zero_and_stopped_loops
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactConsumers.counter_collision_rejected
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactSafetyConsumers.compact_safe_expectedType
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactSafetyConsumers.finite_agreement_does_not_give_fit

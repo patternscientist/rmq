@@ -1,0 +1,48 @@
+{
+  "Status": "FAILED_DEVELOPMENT_CONTROL",
+  "Reason": "OPT1-R1-DEADLINE: intended diagnostic-presence control not created",
+  "Explanation": "The shared helper deliberately discarded both streams on overflow, so the test could not establish its requested retained-line condition. Production rejection was not credited. Corrected runner uses a separate flushed child-emission witness and untouched actual helper result.",
+  "ActualCase": {
+    "ID": "R1RT-OVERFLOW-EXPECTED",
+    "Kind": "overflow",
+    "Expected": "REJECT",
+    "Result": {
+      "Stage": "R1RT-OVERFLOW-EXPECTED",
+      "ExitCode": -1,
+      "Output": [
+        "redirected output exceeded 32768 bytes"
+      ],
+      "StandardOutput": [],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": true,
+      "TerminatedIds": [
+        30312,
+        27784
+      ],
+      "DurationSeconds": 3.412,
+      "DeadlineSeconds": 60,
+      "Ownership": "kill-on-close-job"
+    },
+    "Verdict": null,
+    "Restoration": {
+      "TrackedMutations": 0,
+      "AfterSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+      "BeforeSHA256": "29F69E0923F2D70969117B79A8A4AF4BBAFC0EC226F7B98A8F225A7202971ED9",
+      "ExactBytes": true
+    },
+    "Command": {
+      "OutputLimitBytes": 32768,
+      "Arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\opt1-r1-runtime\\development-full-1\\R1RT-OVERFLOW-EXPECTED.ps1"
+      ],
+      "DeadlineSeconds": 60,
+      "Executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+    }
+  }
+}

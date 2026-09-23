@@ -1,0 +1,13 @@
+LIBRARY packed_rmq
+EXPORTS
+packed_rmq_init
+packed_rmq_load
+packed_rmq_load_status
+packed_rmq_load_error
+packed_rmq_loaded_image
+packed_rmq_word_bytes
+packed_rmq_load_free
+packed_rmq_query
+packed_rmq_query_status
+packed_rmq_query_text
+packed_rmq_query_free

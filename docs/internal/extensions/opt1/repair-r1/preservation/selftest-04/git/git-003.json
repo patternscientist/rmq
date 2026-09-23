@@ -1,0 +1,34 @@
+{
+  "command": [
+    "git",
+    "--no-pager",
+    "-c",
+    "core.fsmonitor=false",
+    "-c",
+    "core.untrackedCache=false",
+    "merge-base",
+    "--is-ancestor",
+    "aecf4a580c591e8f694a3699e19e843198089194",
+    "aecf4a580c591e8f694a3699e19e843198089194"
+  ],
+  "cwd": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+  "exit": 0,
+  "expected_exit": 0,
+  "duration_seconds": 0.16921979999460746,
+  "deadline_seconds": 30.0,
+  "output_limit_bytes": 8388608,
+  "timed_out": false,
+  "overflow": false,
+  "stream_bytes": [
+    0,
+    0
+  ],
+  "stdout_file": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\docs\\internal\\extensions\\opt1\\repair-r1\\preservation\\selftest-04\\git\\git-003.stdout.bin",
+  "stderr_file": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\docs\\internal\\extensions\\opt1\\repair-r1\\preservation\\selftest-04\\git\\git-003.stderr.bin",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "capture_errors": [],
+  "capture_complete": true,
+  "root_absent": true,
+  "descendant_ownership": "Inherited from check.ps1 owned supervisor; see process.json"
+}

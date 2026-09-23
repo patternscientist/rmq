@@ -1,0 +1,106 @@
+{
+  "schema": "rmq.pre1.repair-r1.receipt-archives.v1",
+  "handle": "PRE-1-R1",
+  "baseCommit": "84ae12f6f6bad99fd3215c5bdd5b2a93e3779897",
+  "selection": {
+    "historyRoot": "docs/internal/extensions/pre1/",
+    "resultLineRegex": "CLAIM-DRIFT\\[[^\\]\\r\\n]*\\]\\[[^\\]\\r\\n]*\\]\\[[^\\]\\r\\n]*\\]",
+    "prefixGuard": "CLAIM-DRIFT[",
+    "scannerTextRegex": "CLAIM-DRIFT|scan complete \\([0-9]+ hits",
+    "summaryPatternRegex": "scan complete \\([0-9]+ hits",
+    "named": [
+      {
+        "originalPath": "docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md",
+        "archivePath": "docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz",
+        "addedByCommit": "5f325ddb856b9095d1ad2aacc0bc69eda571d447"
+      }
+    ],
+    "rule": "Result-line entries: every blob under historyRoot at baseCommit whose raw bytes contain a match of resultLineRegex; every prefixGuard occurrence must begin such a match. Named entries: the pinned originals, each the blob added unchanged by its addedByCommit. Blobs whose bytes match scannerTextRegex without a result line are listed and stay; zip containers whose compressed members hold result lines are listed and stay (the scanner does not read inside them)."
+  },
+  "encoding": {
+    "container": "single-member gzip, deflate level 9, mtime 0, no file name",
+    "header": "1f8b08000000000002ff",
+    "writer": "Python gzip.compress(data, compresslevel=9, mtime=0)",
+    "recovery": "gzip -dc <archivePath> > <originalPath>, or verify_receipt_archives.py, which compares the decompressed bytes with git cat-file of baseBlobId"
+  },
+  "attributes": {
+    "path": "docs/internal/extensions/pre1/.gitattributes",
+    "baseExists": false,
+    "lines": [
+      "/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz binary",
+      "/evidence/author-final-checks-summary.json.gz binary"
+    ],
+    "rule": "docs/internal/extensions/pre1/.gitattributes did not exist at baseCommit; it holds exactly one '/<archive path relative to the lane root> binary' line per archive, sorted, and nothing else."
+  },
+  "referenceResolution": "References to an original path or name elsewhere in the repository are not rewritten; this manifest resolves each originalPath to its archivePath. referringFilesAtBase lists every file at baseCommit whose text names the original file name.",
+  "archives": [
+    {
+      "selectionKind": "named",
+      "originalPath": "docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md",
+      "baseBlobId": "b8a7abc83d9347f00198836ac2c011805b0ec6e3",
+      "baseBlobMode": "100644",
+      "baseBlobSha256": "2B35DD0386D202EA7D73D28C4754791B43232D4E6CE591E6DAB7C543393EEA52",
+      "baseBlobBytes": 88646,
+      "claimScannerResultLines": 0,
+      "physicalLinesWithResultLines": 0,
+      "summaryPatternLines": [
+        909,
+        911
+      ],
+      "archivePath": "docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz",
+      "archiveSha256": "E8F77103CE5AB4E15734AF6E09564D3FE8A6BDA8C2463C2776471E8A02D0FDBD",
+      "archiveBytes": 33919,
+      "decompressedBytes": 88646,
+      "referringFilesAtBase": [
+        "docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md",
+        "docs/internal/extensions/pre1/AMENDMENTS.md",
+        "docs/internal/extensions/pre1/ATTACK_TABLE.md",
+        "docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md",
+        "docs/internal/extensions/pre1/CONTRACT.md",
+        "docs/internal/extensions/pre1/REPORT.md"
+      ]
+    },
+    {
+      "selectionKind": "result-line",
+      "originalPath": "docs/internal/extensions/pre1/evidence/author-final-checks-summary.json",
+      "baseBlobId": "f52767d9b690ecc444b9e181e56fb6a411f93dbd",
+      "baseBlobMode": "100644",
+      "baseBlobSha256": "5590C0FB372BDDCE4B29BAB621E9F86B16C1F8E3F251BC5889BEF8181301B4BB",
+      "baseBlobBytes": 4453,
+      "claimScannerResultLines": 1,
+      "physicalLinesWithResultLines": 1,
+      "summaryPatternLines": [
+        137
+      ],
+      "archivePath": "docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz",
+      "archiveSha256": "DB44F7AC0D2DBFE58CAB93CCF20B0BF1ABD14B71625C458AC72F66822FD45E39",
+      "archiveBytes": 1199,
+      "decompressedBytes": 4453,
+      "referringFilesAtBase": []
+    }
+  ],
+  "scannerTextWithoutResultLinesAtBase": [
+    "docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md",
+    "docs/internal/extensions/pre1/REPORT.md"
+  ],
+  "compressedContainersWithResultLinesAtBase": [
+    {
+      "path": "docs/internal/extensions/pre1/evidence/aggregate-gate.zip",
+      "members": 9,
+      "membersWithResultLines": 3,
+      "memberResultLines": 4300
+    },
+    {
+      "path": "docs/internal/extensions/pre1/evidence/author-final-checks.zip",
+      "members": 9,
+      "membersWithResultLines": 2,
+      "memberResultLines": 4300
+    },
+    {
+      "path": "docs/internal/extensions/pre1/evidence/postgate-final-checks.zip",
+      "members": 12,
+      "membersWithResultLines": 1,
+      "memberResultLines": 2150
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "ASSESSMENT.md": {
+    "bytes": 13392,
+    "sha256": "bf8f4bb30728365412c70563fd3bf9f3646267fa71d12286e9e9f80ee8cfd287"
+  },
+  "CheckMachine.lean": {
+    "bytes": 5870,
+    "sha256": "207d314aff59552c725ab54f9e20573c62e17696c4a4ffb9c368ef682dabd6e5"
+  },
+  "compiler_checks.py": {
+    "bytes": 838,
+    "sha256": "286504cfb9d199ae70b7bb3e14763ce6db05c0addf94ac35c62b86a51d2abfa6"
+  },
+  "CONTRACT.md": {
+    "bytes": 4924,
+    "sha256": "16dd79cf147ad1cd871d748fb6961ff72f2136a473dd15133bf5251ccbc4d105"
+  },
+  "ExportFixture.lean": {
+    "bytes": 15764,
+    "sha256": "feae2ccf257629a89bb0567d7f2cf8143bf3366cda0ad84b12dc239a19e013e7"
+  },
+  "fixture-n15-comb-vm.json": {
+    "bytes": 41372,
+    "sha256": "1f5c36ca27753655f06a91d3c0f8a4dec10e285536690a1984f30ff1f7d10bff"
+  },
+  "fixture-n15-comb.json": {
+    "bytes": 84059,
+    "sha256": "a5ea4b84c31832f8f2303882e2668a016787b6b46e2362c52f08c310fabd5361"
+  },
+  "fixture-n15-zigzag-vm.json": {
+    "bytes": 43930,
+    "sha256": "2ef8bd8b76f6c5a50740890e0f74293dba02f5742dcee10dc0a7f8ba1784ab2b"
+  },
+  "fixture-n15-zigzag.json": {
+    "bytes": 89986,
+    "sha256": "2db0a1eec22eb2c3ed5c0a1c44117ffc4138a4474844542e500cc252ea0e2173"
+  },
+  "fixture-n16-balanced-vm.json": {
+    "bytes": 42736,
+    "sha256": "a215c657ba75f04db4ea95173858c233dea1d7b8d963cf61d6df1141fc84bed0"
+  },
+  "fixture-n16-balanced.json": {
+    "bytes": 88013,
+    "sha256": "9c18600312f9c0c2abf95de57b935518257fb0a222cf4c0cb2dc088c2dc18c0a"
+  },
+  "fixture-n29-zigzag-vm.json": {
+    "bytes": 45389,
+    "sha256": "959455f0d722993e7920ee789a059df7cddb3a67962fff3bc74907750256742a"
+  },
+  "fixture-n29-zigzag.json": {
+    "bytes": 94411,
+    "sha256": "d56fb364f993f90240d32470e76ff1d4bfd97162f89c424f35621bb66f49926f"
+  },
+  "fixture-n9-ascending-vm.json": {
+    "bytes": 36788,
+    "sha256": "826407f5b41e4b28a4a367b46805d174182fb0f4ec6b5426e3323783c3d5f5ed"
+  },
+  "fixture-n9-ascending.json": {
+    "bytes": 73036,
+    "sha256": "79a3f29acde6be9432c9bd9913a80213b33695cdea33956ac52f1eacf0c54c5a"
+  },
+  "fixture-n9-balanced-vm.json": {
+    "bytes": 38132,
+    "sha256": "76d8c34be4eeef22409de10fc65e06e6cfecd8b22a810a2fdf245cf0c0511bce"
+  },
+  "fixture-n9-balanced.json": {
+    "bytes": 75738,
+    "sha256": "437d9512d3452aa753791cbc1feb5f6850c0162729b932327b8d57c8d68cb697"
+  },
+  "fixture-n9-descending-vm.json": {
+    "bytes": 29344,
+    "sha256": "328dfed4a208734e0f8c3f84d858b58a54a1ddafa9cfd2028e0e12438d940dcc"
+  },
+  "fixture-n9-descending.json": {
+    "bytes": 65253,
+    "sha256": "f9e6f7d9156ff62fc43d22983ba44128780987863c232ea8449a40404a0ddcc7"
+  },
+  "fixture-n9-invalid-vm.json": {
+    "bytes": 830,
+    "sha256": "b681cf928040b6a7615186842b2949e9cf7a1095e96422212429a875a06eefab"
+  },
+  "fixture-n9-invalid.json": {
+    "bytes": 7279,
+    "sha256": "613b3c9fab261b1db929f0c8c3821562309143f3b5129800de91cc828a019cbd"
+  },
+  "fixture-n9-ties-vm.json": {
+    "bytes": 36783,
+    "sha256": "c395d330c116b63d206652c5a88349dfcc2ab31845d45a061d0c0850a03455c4"
+  },
+  "fixture-n9-ties.json": {
+    "bytes": 73031,
+    "sha256": "a14e1b5353fe132eb435d2afa06dc82fd7b6468d4ad6522b6cf65fad93234af9"
+  },
+  "fixture-notes.md": {
+    "bytes": 7091,
+    "sha256": "c9fc8654209725e1f8ca34a6c37202a69a6c23be8b5bdf8dc719b2454a03f8cd"
+  },
+  "lca-interior-spec.md": {
+    "bytes": 16013,
+    "sha256": "edb7599808c25b8a5cf603cbf7a5145b3851495dd18f90307d30185d541b6a3f"
+  },
+  "lca_interior_program.py": {
+    "bytes": 9390,
+    "sha256": "8030779301e802313a7e7fd5ee6e7db8bf8267c811fc1e6b07b02e634f4efa7b"
+  },
+  "machine.py": {
+    "bytes": 15425,
+    "sha256": "730ef56fd1e8365a41c954fba46881eb450e1bab6918c2e831c6545e860979bf"
+  },
+  "package.py": {
+    "bytes": 957,
+    "sha256": "85d37ecbd2baa282abd1f9f99baf52c1c673a3e71018b10f41fe893e9aa850c9"
+  },
+  "physical_program.py": {
+    "bytes": 1599,
+    "sha256": "9015d68afdf3dbe03245734b554b6155502d626e9c3224791ab7a52622782d19"
+  },
+  "program-n15-source.py": {
+    "bytes": 24964,
+    "sha256": "74afdfba8c4e549a3bc0a0f9c2231dd6ca5811552de0b56d5dfcef6b16d16540"
+  },
+  "program-n15.json": {
+    "bytes": 154507,
+    "sha256": "77ad0f860fba8d04bb3b6a4daa595a5f05c974407087b8691e6aa04b9daf5249"
+  },
+  "program-n16-source.py": {
+    "bytes": 24965,
+    "sha256": "3b671eab457dc3acc4e8e1a8f94a7aed0f19cf24f5835dc8b2672aa913f5f8cf"
+  },
+  "program-n16.json": {
+    "bytes": 154520,
+    "sha256": "afa03b191e9ff6bfc5c60bb1e343a57e9f5e9fd1db7ba2d785d7112b6e63fb32"
+  },
+  "program-n29-source.py": {
+    "bytes": 24973,
+    "sha256": "00c1885ba71646aeda265b28f70c781f786e41bdf8a98f5d5648a97d9b96d1f5"
+  },
+  "program-n29.json": {
+    "bytes": 154529,
+    "sha256": "a2dc5e9764b4b39911c8474ce7ff709027191b82b4a23567c0f370ab7e9b529b"
+  },
+  "program-n9-source.py": {
+    "bytes": 24958,
+    "sha256": "95b95a22f63bc06157a9e3ccae93b6148b352a04cd03591e213827b39062eb1a"
+  },
+  "program-n9.json": {
+    "bytes": 154489,
+    "sha256": "9ee640e68601b47be82417621c557c688a4bbaa0b1bc061a9e43fa2da0309ab6"
+  },
+  "rank-select-spec.md": {
+    "bytes": 17432,
+    "sha256": "2ea0af303b6fd3fcb8a2bf69783ec2f39d952d4a07b80572645a2a93be024c1c"
+  },
+  "rank_select_program.py": {
+    "bytes": 5473,
+    "sha256": "346cba19724cf066e79e2a45a722c465dba8a7afe97432eea0653de2970c8166"
+  },
+  "README.md": {
+    "bytes": 1259,
+    "sha256": "29bb54823bf6168908de2943a19069c5ff61348095ffc32f30880f79ba0e1364"
+  },
+  "reproduce.ps1": {
+    "bytes": 2197,
+    "sha256": "baf93f3486f80af5d2f41ba406ddb897d65a2755748410ed019b2bdd4aac8859"
+  },
+  "reproduction.log": {
+    "bytes": 3735,
+    "sha256": "e4f48b76bd4736cb8548cd710a5924fada593af7872dac34db1fbce1457713b0"
+  },
+  "run_experiment.py": {
+    "bytes": 6952,
+    "sha256": "7f057d55da6b3678d8195ea0923858bda6a2dd03b7c58c5392ca28818a3af61f"
+  },
+  "validate.py": {
+    "bytes": 3818,
+    "sha256": "f1ec1cd52ed7cb4f836f8dbfe7547ac3304d93524665d5c660f582fe27dd264f"
+  },
+  "validation-results.json": {
+    "bytes": 7441,
+    "sha256": "dd1079a76552172aa9546539e577983b1701553c5997371590d98fb5671a2bea"
+  }
+}

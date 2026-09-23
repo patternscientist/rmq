@@ -1,0 +1,17 @@
+{
+  "Stage": "baseline-inventory",
+  "ExitCode": 0,
+  "Output": [
+    "LB1-FIELDS PASS actual=4,16,33; unchanged and ordered controls accepted; defaulted, indented, underscore, apostrophe, Unicode, escaped, absent, missing, reversed and parent controls rejected"
+  ],
+  "StandardOutput": [
+    "LB1-FIELDS PASS actual=4,16,33; unchanged and ordered controls accepted; defaulted, indented, underscore, apostrophe, Unicode, escaped, absent, missing, reversed and parent controls rejected"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 5.42,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

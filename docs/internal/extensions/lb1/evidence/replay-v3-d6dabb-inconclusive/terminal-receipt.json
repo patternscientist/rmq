@@ -1,0 +1,19 @@
+{
+  "Session": 20756,
+  "Command": [
+    "pwsh",
+    "-NoProfile",
+    "-File",
+    "scripts/variable_payload_replay.ps1",
+    "-DeadlineSeconds",
+    "600"
+  ],
+  "KnownLineEndingNoticesFiltered": true,
+  "Receipt": {
+    "chunk_id": "6c0a3d",
+    "wall_time_seconds": 0.0000032,
+    "exit_code": 1,
+    "original_token_count": 388,
+    "output": "LB1-REPLAY CASE S02-SIBLING-RUN PASS expected=REJECT\nLB1-STAGE S03-SIBLING-BUDGET-producer\nLB1-STAGE S03-SIBLING-BUDGET-consumer\nException: C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_replay.ps1:200\nLine |\n 200 |      throw \"LB1-REJECTION incorrect verdict/resource failure at $decla …\n     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | LB1-REJECTION incorrect verdict/resource failure at checkO09\n"
+  }
+}

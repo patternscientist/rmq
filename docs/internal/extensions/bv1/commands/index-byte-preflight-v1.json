@@ -1,0 +1,269 @@
+{
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "scope": "Current index versus raw protected source before final restaging; not a committed/fresh-checkout check",
+  "checked": 702,
+  "mismatches": 26,
+  "passed": false,
+  "failures": [
+    {
+      "path": "docs/internal/extensions/bv1/COMMANDS.md",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "5b4b1918565c7fb66cb2d7a59afb9c0354830a5f",
+      "rawBlob": "8286d18c42c52ff219afeefc6afaae391d3bfc8c",
+      "bytes": 13547,
+      "sha256": "1CEE95BFA24282C2EEE7BEDC0D4040D3837FD89587856DE92F45040F3EB7B6FD",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/REPORT.md",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "a6c4fd955440374e0aa6a07b1deb55df9dbcc17a",
+      "rawBlob": "3ce9b159ee855c9482be6ca75ff73c6be32390d5",
+      "bytes": 10790,
+      "sha256": "1A99C287DF86175303D9A1E496989C47486DD7209870DADF127C58120A4A693D",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/check_checkout_bytes.ps1",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "36e4fefd46830682cf636afd785d91d2c438feff",
+      "rawBlob": "0c7f548313c55209d3572b01a390c47755271f1b",
+      "bytes": 10854,
+      "sha256": "C2689D8B37F7BBF6EDE527295E1DAD543132E00FF847D9D654FBE2C5290A0807",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/allocation-facts-axioms.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "402e0a715ddbbcc1cf1c28f6982e8bdf510b6455",
+      "rawBlob": "c6a57ff53b6524ce4f8eb8e71d222747cd451032",
+      "bytes": 3977,
+      "sha256": "41A36C0A915F3781786BC69961E0D95DC32E3B1E5D1C4B7974446ECD35565BED",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/allocation-facts-repair-1.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "bcde72522871bc80c291bf7bee16c400b55bcdfa",
+      "rawBlob": "0e1a8a40839dc12df84ba1db0c055709bcde5019",
+      "bytes": 2450,
+      "sha256": "FF46DD9E2FF614E2FC4E589FD9A2715E9FB7D39F165339342D6C0883BED43717",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/allocation-facts.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "d48a9074bafd44a73315be2db1c93550d01863ec",
+      "rawBlob": "c4cf81f868cc3366001597132f8426d457c0e175",
+      "bytes": 5442,
+      "sha256": "6C357989DBD4EB1868295F728BB20B392C3A24F409FC1EB4845219812C2FCAD4",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/baseline-span-assembly.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "7b4317177bae72930e82e6c224b3d0b47eb92608",
+      "rawBlob": "72609b03a5cc929c20603c68ca00e9bd1e9c542e",
+      "bytes": 17480,
+      "sha256": "AD4C9B82BAD324C9A35DD2340C9E70D08F7F881001503FE53C271358950CDE44",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/crossing-known-case.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "798c4bf6cc490ddb984b8187415a5aeddfb69c93",
+      "rawBlob": "f3d8497fb24ba1ec972dd649336bd0f32427a7f2",
+      "bytes": 3346,
+      "sha256": "107B024045569970D416F968D0B68B9E5C467AEED4C3560F2C95A382E3A3B7B2",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/crossing-startup.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "9079aaf8740ce45744954bb598383fd53cf5e123",
+      "rawBlob": "4fd441d66e48f23adf973c6d7c647861f86463d6",
+      "bytes": 2554,
+      "sha256": "7DD909F870DE9B660097E37B5C4EB3E7E39211B0EB0975E33F6528D846EB3FF6",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/crossing-v2-known-case.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "89d4280b7836cbf4c215fd97891c499ea72767cc",
+      "rawBlob": "f7dce17e3b381e8c851f3fdde8b7187151b4e0b4",
+      "bytes": 3667,
+      "sha256": "FC96B072493C6B7C9B746156203F77E582FE28D28BECAA9320D69B97A0303204",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/crossing-v2-startup.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "60ed12faa1fda5ab7c783c191ebb93a8a0dd6f12",
+      "rawBlob": "3e98f1fb820dab2305ce3ac2f233f84210a04933",
+      "bytes": 3419,
+      "sha256": "B1EBFABD762C9FFCB6193F1A4C27A589AC0E274547D973EE28C6186DF3E09799",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/normalization-axioms.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "b58c47bbeeb37233c3d6c7fbebb70cebebfe75ec",
+      "rawBlob": "65e7898d575f389c123a1dc6c18ff35fe22a20a4",
+      "bytes": 2674,
+      "sha256": "5A396EA974D67BDAB45F3B26BF37BFEF7124712925D9F1C4E8AB67758CC5C7FB",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/normalization-final.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "78c8b49167545dfed05be5402059dbb1bc95f142",
+      "rawBlob": "a2cd0b172c58c4a2f29dff73820e13700b3d0071",
+      "bytes": 1077,
+      "sha256": "FFAB97E0C967554B6D5202C71A928911FAA14DECC913502485382EC987757D62",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/normalization.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "cfa629a574aa5e2213e8a9aa4332a57dd6ad24ac",
+      "rawBlob": "1faee7b38c0da895e822989bb514bced7156d145",
+      "bytes": 2327,
+      "sha256": "AB3DE5F3277A7F22BB8892CCBCEB606208062F5F441540829C25CE4B5D46B2CD",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/phase-postcommit.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "00e39e58cad4ad1290c5fabb766ddb80641c083c",
+      "rawBlob": "aa1e570784914100d6a8b04cafb12bde350f6a53",
+      "bytes": 5306,
+      "sha256": "1E3AD9EE5C0850BDF2FC38D5F93D9043A05EEEB16DB11381B3F2C3D7062AD4C9",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/phase-precommit-r2.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "f14d8a64035197097a49efb89b875583ec33980e",
+      "rawBlob": "4fa8c8c1bf79fb8c232f44314a2a547529e6a6ee",
+      "bytes": 5294,
+      "sha256": "23FDDDB8FF6E71877C1252FB1B1A2EDCF1BA8142E7550BA394A2D905256D1B9B",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/phase-precommit.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "44a572de320ef5c107d798c5d3b8258c3fb79bb8",
+      "rawBlob": "b3d72ba9464faaea4a7b092faf2fdd1655afd49e",
+      "bytes": 5278,
+      "sha256": "FBB6F49B8A0B6D7F819DB4F6AF97FE7C68C142893B9F6674DC918E1FA8F2968E",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/reader-typed-axioms.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "53af29b2b8254a3033bc4d99616dce60ba754830",
+      "rawBlob": "2cc623dfdc2c8d713dc6110b92c2fc70d2b66cef",
+      "bytes": 3642,
+      "sha256": "030CE603AEB22900875BD950D695B69DD4B78B5B9F5E023EBA1EF38850DEF1D1",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/select-experiment-compile.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "de40722a90f715472a236b40823e483a0153eace",
+      "rawBlob": "17fe04b8891d2c19072413e44e1810d30d739e41",
+      "bytes": 4192,
+      "sha256": "8497256A6218E97D3642041669BFBD15C12AF56DE826E07873985536F1F74962",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/select-known-case.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "91fe5e707181f1c39148cf9e45dc8e98ac2ad20e",
+      "rawBlob": "e6faef7593a7dc2debc4f7090f0416f9c6e5ddf7",
+      "bytes": 2397,
+      "sha256": "EFF5E47AAA2B941A7F9274622968D8C8DDF749E7AFBE0B7EA60E9C10C367E18E",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/select-reader-compile-r2.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "2f174edc88ed31c0107cb8c576dfdfb494e8c570",
+      "rawBlob": "5a4d5fef7f573198d732ab83d1d925a1b618f409",
+      "bytes": 1258,
+      "sha256": "105BD8BB6BB420D28F1CC2124533220F7C9D0B0568881F632A500D445B0EC24D",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/select-registry-v1.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "783a7fd5934e4bfa6aa831792d04bb3c860829ef",
+      "rawBlob": "429613884ea30d28d314176c6b5c18e871820ead",
+      "bytes": 6761,
+      "sha256": "C7827D26A18C302F09CE6902E03B9D90429D6FBE358F9D370E915427C29DD142",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/select-startup.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "9917af31bb9d41fe220ffe719c9a1dfd37cf6bba",
+      "rawBlob": "f755bec316d90ac15f3aa198fdae3562bc514057",
+      "bytes": 2074,
+      "sha256": "F4D75585761602DD84631EB71BE4C50EB7AEF43EFC12DD7EA5BDDD52DDF0ECDF",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/selector-controls-v1.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "3d30ee2e0f61e49c88b0f812b8005216e1da4dd0",
+      "rawBlob": "c8bb3e170085a28b2fa4dcf427f98b9ab82863e8",
+      "bytes": 21521,
+      "sha256": "5D2A9F16E0C9FF1F85958943774D32207D0D69C8E637CEBDB5F2F382F9A2C3E4",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/selector-omitted-v1.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "4902cbc9c72a39b387884afde368f30dc53b49fb",
+      "rawBlob": "31003b3d1a0dad3cfd0cf13480af319dd586b51f",
+      "bytes": 7081,
+      "sha256": "8B98D984C817016B4F683FD4C047E3B431906F2FA92FD13104BB84C5B5DF39AE",
+      "passed": false
+    },
+    {
+      "path": "docs/internal/extensions/bv1/commands/selector-valid-v1.json",
+      "mode": "100644",
+      "stage": "0",
+      "indexBlob": "8604f59c58b73943620306d641fa56e098e26d17",
+      "rawBlob": "a0e2ecb1faaea365ce77ead6520f7cba09feb529",
+      "bytes": 2814,
+      "sha256": "203E389B086C46EAA2B11FF495CC9D6E15D3EE9F672525684B8623B9FF64EF46",
+      "passed": false
+    }
+  ]
+}

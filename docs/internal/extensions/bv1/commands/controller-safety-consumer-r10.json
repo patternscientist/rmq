@@ -1,0 +1,318 @@
+{
+  "stage": "controller-safety-consumer-r10",
+  "platform": "Windows",
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "dirty": [
+    " M docs/internal/DESIGN_DECISIONS.md",
+    " M docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+    " M docs/internal/extensions/bv1/CONTRACT.md",
+    " M docs/internal/extensions/bv1/REPORT.md",
+    " M scripts/packed_bitvector_crossing.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Allocation.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/AllocationLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ChargedSetup.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CompleteLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CompleteReadStore.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/CompleteReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ControllerInterface.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/DescriptorReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericRankProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericRankSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/GenericSelectProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/MemoryLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/NumericReader.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/NumericSafety.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RankLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RankSemantics.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ReaderGeometry.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/ReaderProof.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/RegularLayout.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SafetyInterface.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SegmentMap.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/SelectSemantics.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Source.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Space.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/Width.lean",
+    "?? RMQ/Core/WordRAM/Bitvector/WordBounds.lean",
+    "?? docs/internal/extensions/bv1/ALLOCATION_READER_PROOFS.md",
+    "?? docs/internal/extensions/bv1/CHARGED_SETUP.md",
+    "?? docs/internal/extensions/bv1/CONTINUATION.md",
+    "?? docs/internal/extensions/bv1/CONTROLLER_PROOFS.md",
+    "?? docs/internal/extensions/bv1/COORDINATOR_ROUTE_DISPOSITION.md",
+    "?? docs/internal/extensions/bv1/NUMERIC_READER.md",
+    "?? docs/internal/extensions/bv1/NUMERIC_SAFETY.md",
+    "?? docs/internal/extensions/bv1/RANK_LAYOUT.md",
+    "?? docs/internal/extensions/bv1/RANK_SEMANTICS.md",
+    "?? docs/internal/extensions/bv1/REGULAR_LAYOUT.md",
+    "?? docs/internal/extensions/bv1/SELECT_SEMANTICS.md",
+    "?? docs/internal/extensions/bv1/claude/",
+    "?? docs/internal/extensions/bv1/commands/complete-layout-11.json",
+    "?? docs/internal/extensions/bv1/commands/complete-reader-12.json",
+    "?? docs/internal/extensions/bv1/commands/controller-generic-rank-r3.json",
+    "?? docs/internal/extensions/bv1/commands/controller-generic-rank-r4.json",
+    "?? docs/internal/extensions/bv1/commands/controller-generic-rank-r5.json",
+    "?? docs/internal/extensions/bv1/commands/controller-generic-select-r6.json",
+    "?? docs/internal/extensions/bv1/commands/controller-rank-prerequisite-r2.json",
+    "?? docs/internal/extensions/bv1/commands/controller-rank-r1.json",
+    "?? docs/internal/extensions/bv1/commands/controller-rank-safety-r9.json",
+    "?? docs/internal/extensions/bv1/commands/controller-select-interface-r7.json",
+    "?? docs/internal/extensions/bv1/commands/controller-source-consumer-r8.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-1.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-2.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-3.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-4.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-5.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-6.json",
+    "?? docs/internal/extensions/bv1/commands/memory-layout-7.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-reader-build-final.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-reader-build-v3.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-reader-compile-v1.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-reader-compile-v2.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-safety-build-v1.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-safety-build-v2.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-safety-build-v3.json",
+    "?? docs/internal/extensions/bv1/commands/numeric-safety-prerequisite-v1.json",
+    "?? docs/internal/extensions/bv1/commands/rank-layout-1.json",
+    "?? docs/internal/extensions/bv1/commands/rank-layout-2.json",
+    "?? docs/internal/extensions/bv1/commands/rank-layout-consumer.json",
+    "?? docs/internal/extensions/bv1/commands/rank-semantics-1.json",
+    "?? docs/internal/extensions/bv1/commands/rank-semantics-2.json",
+    "?? docs/internal/extensions/bv1/commands/rank-semantics-consumer-2.json",
+    "?? docs/internal/extensions/bv1/commands/rank-semantics-consumer.json",
+    "?? docs/internal/extensions/bv1/commands/reader-geometry-9.json",
+    "?? docs/internal/extensions/bv1/commands/reader-space-10.json",
+    "?? docs/internal/extensions/bv1/commands/reader-support-8.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-1.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-2.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-3.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-axiom-source.json",
+    "?? docs/internal/extensions/bv1/commands/regular-layout-axioms.json",
+    "?? docs/internal/extensions/bv1/commands/select-semantics-1.json",
+    "?? docs/internal/extensions/bv1/commands/select-semantics-2.json",
+    "?? docs/internal/extensions/bv1/commands/select-semantics-3.json",
+    "?? docs/internal/extensions/bv1/commands/select-semantics-consumer.json",
+    "?? docs/internal/extensions/bv1/controls/controller_axioms.lean"
+  ],
+  "sourceHashes": [
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\Allocation.lean",
+      "Hash": "B4DE6C3B923589A2AA890399D7D0B8236E3C46E1608ADE74F8CEFE65B60F392B"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\AllocationFacts.lean",
+      "Hash": "F189969208B13333219EE460DB8581D43BABB88F18480C68A37F47C070801623"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\AllocationLayout.lean",
+      "Hash": "EDE611982080F8600CE5F59BE89D8D331DC7920855F55B969A66F39C60E99ACF"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ChargedSetup.lean",
+      "Hash": "5D360DE9FE243C23A235CB62ED044723227CD805AB12CC4FEDB4AF07828D031B"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\CompleteLayout.lean",
+      "Hash": "E2C61B99E504E99940B3D63645F62CBE805FF21FF4B28473C1DE7646E08803DD"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\CompleteReader.lean",
+      "Hash": "53926E3596E4C98A76D939E14CFBB26BFC939950E7A25CB774FBDB0617F73055"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\CompleteReadStore.lean",
+      "Hash": "3A8A6F6F57CE5C7368C8115D4A95521DBC92FF25934BF9B5CD8D8A31AB92FD46"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ControllerInterface.lean",
+      "Hash": "14F14B5A78FC77DB768536BF78DA47CB60922364538859535198C1E440B30981"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\DescriptorReader.lean",
+      "Hash": "A85C55E8962F8F9F78E0FB00EDD81ED9DFF7E870792F62830DB6CADB54F45108"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\GenericRankProof.lean",
+      "Hash": "01544E3B71EBCB90B7ABF34F8C241BA6ED6F7954027C3E22443AD9AC65192F94"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\GenericRankSafety.lean",
+      "Hash": "46D1C897F34BA42A3DA76B5B9876D3C7CE46D05A63950FE9E1F2F9E513D3B4A5"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\GenericSelectProof.lean",
+      "Hash": "07D1090314E454341CCECBEFB74009600C9AFB40A812DC218C6810C450790EA0"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\MemoryLayout.lean",
+      "Hash": "2CB94877358664BDC93234128FE2115B626C10442AEC87C9429A89395B0D6A24"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\Normalization.lean",
+      "Hash": "BA10A82917C9914E0BB11F619A15A51CFC65E2C0842C066F372339C77FF5F9D4"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\NumericReader.lean",
+      "Hash": "7E2CC443F2DE7351112460B7C2B0699C2879B51E760DEC3261B055790133897D"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\NumericSafety.lean",
+      "Hash": "621FC88A3FD86C8188A3074608CB254FA1D507CC4482F21C9EA13F8888A02C92"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\RankLayout.lean",
+      "Hash": "7A5756940175BD775A0F4F0928EBB01F222C7C8DB0461CB12C74770A6F8D629B"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\RankSemantics.lean",
+      "Hash": "9AC0B86BC1630635EAA63A3DC3C3889206A0FDFB0205DD86C36ECF7F5516AB7C"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ReaderGeometry.lean",
+      "Hash": "F8FF6C3B35B86208E3C56B09FFA5CA1113FE17650F98EE51E8EA5D9515394133"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ReaderInterface.lean",
+      "Hash": "ECD8043060AAE4A3F753B81ADCFE47F9E22B2914744DB6686ABBFB18A218A210"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\ReaderProof.lean",
+      "Hash": "99773E1BA134E76C19A774433D54E1C26A281421ECABA099F7F019EC4A083921"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\RegularLayout.lean",
+      "Hash": "172ED0F83F0D8E63136F7A3063F8EDC009F71D57C4BF8B1D311067F1AC53638C"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\SafetyInterface.lean",
+      "Hash": "9BD0732D2863E80F4311D92C75366A0F280B7EBB250D51C32F66DA4540766CD5"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\SegmentMap.lean",
+      "Hash": "8F9454FD730B9B857A99BBC33530DAF23E2F185AC66E21CC0845F29742C55B41"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\SelectExperiment.lean",
+      "Hash": "156744CBE4DEC77C874114E10408820F7B107B86D5635068D6B855B8363AF0E8"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\SelectSemantics.lean",
+      "Hash": "D950323B3DE006F320335F68AF96BE9F8A7D50A425EDDB35B493EFA2AB8DD3A2"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\Source.lean",
+      "Hash": "8277F15D876437BD6C35835C57C9332E839AAA94EA63EC8A9F10B8BC661D1074"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\Space.lean",
+      "Hash": "DBF34F5508AC1A1FC57F722DEF6A4724B6B495B5416AE2A9970179E5780BEFC1"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\Width.lean",
+      "Hash": "873FE2E55102BEEB0E5B0450E86BF83CEF569303EF76C93D9B8AFC7A26860556"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Core\\WordRAM\\Bitvector\\WordBounds.lean",
+      "Hash": "756AD2CF263E310966CEE28F214B0190B3F748365C9D5B6E808D1BD994956AB0"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_allocation_consumers.lean",
+      "Hash": "11625C223A9EA1952FE664DFEE7D8DC9C2C3CE798A6C74A39CCD24ACC42D08DE"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_axioms.lean",
+      "Hash": "505072CA4722C123F65C7184855813AD75C4208763F696222B9127C955C0C145"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_crossing.lean",
+      "Hash": "EEDDA48140C4DB2912186F42D874206015CAB12A58D39CF6FCAF9F4D10B9833F"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_normalization_consumers.lean",
+      "Hash": "CF7C09F2CE8DF5D364933FD0BD982BC1835610F5D2B6CCAEBE0EDD6374C529A2"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_probe.ps1",
+      "Hash": "8C3D92D057026636386BCD075886C54E9D034C6E2322F8C7290244B1934F4D38"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\scripts\\packed_bitvector_selector_controls.ps1",
+      "Hash": "D676AC5F587F3EECC0A15B75CCBB0E76B729DD531E7E6A72EAF1FFCB3F0E1228"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Validation\\PackedBitvector.lean",
+      "Hash": "A36ACF5EDF0750D2F5F01BCCE931B2104310E68AEFEB4F7A6BBE6CEBEA30ACA3"
+    },
+    {
+      "Path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\lakefile.toml",
+      "Hash": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A"
+    }
+  ],
+  "startedUtc": "2026-09-12T10:05:13.9459145Z",
+  "executable": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+  "arguments": [
+    "env",
+    "lean",
+    "docs/internal/extensions/bv1/controls/controller_axioms.lean"
+  ],
+  "deadlineSeconds": 180,
+  "leanNumThreads": 1,
+  "result": {
+    "Stage": "controller-safety-consumer-r10",
+    "ExitCode": 0,
+    "Output": [
+      "'RMQ.PackedBitvector.Controller.readerSimulation_rejects_skip' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankWordBlock_source' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankBlock_source' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankBlock_machine' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankBlock_source_expectedType' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.selectReference_normalForm' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.selectCloseBlock_source' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.selectCloseBlock_machine' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.selectCloseBlock_source_expectedType' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.SafetyLimits.chunk_slot_fit' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankWordBlock_safe_invariant' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankBlock_safe_bound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankLongBlock_safe_bound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankSparseBlock_safe_bound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankBlock_execution_safe' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankBlock_execution_safe_expectedType' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]"
+    ],
+    "StandardOutput": [
+      "'RMQ.PackedBitvector.Controller.readerSimulation_rejects_skip' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankWordBlock_source' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankBlock_source' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankBlock_machine' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankBlock_source_expectedType' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.selectReference_normalForm' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.selectCloseBlock_source' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.selectCloseBlock_machine' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.selectCloseBlock_source_expectedType' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.SafetyLimits.chunk_slot_fit' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankWordBlock_safe_invariant' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankBlock_safe_bound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankLongBlock_safe_bound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankSparseBlock_safe_bound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankBlock_execution_safe' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.PackedBitvector.Controller.rankBlock_execution_safe_expectedType' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 8.068,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  }
+}

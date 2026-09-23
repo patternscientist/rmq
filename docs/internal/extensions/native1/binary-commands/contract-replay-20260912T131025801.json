@@ -1,0 +1,109 @@
+{
+  "schema": "native1-contract-replay-v1",
+  "startedUtc": "2026-09-12T13:10:25.8221738Z",
+  "completedUtc": "2026-09-12T13:10:30.6235328Z",
+  "pass": false,
+  "failure": "weakened contract producer did not compile: baseline",
+  "controls": false,
+  "selectorBound": true,
+  "selector": "baseline",
+  "registrySha256": "6E0C8E5A73F7DE47D14F7298435E7F72F2AC82A5881AEBF3EFFE0388CBF48E2C",
+  "runnerSha256": "94F2B9F82D685AA636DD3845300C71AB339FE1D8155AA42AD404290EC34ACF9A",
+  "sources": [
+    {
+      "path": "RMQ/Core/WordRAM/Native/Capstone.lean",
+      "sha256": "E2B2FB55223A271B3383AACB70361D85126ABEB3C252ACB0E314467729C6FA0D"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Native/Contract.lean",
+      "sha256": "A8DB1EAAC6445F2F8490A6C344A3F573FD169D3FD7B82E6637C4947159E306AE"
+    }
+  ],
+  "compiler": {
+    "sha256": "9B5AF669D8DC9B5826A1F5427584915EECA659E9BF34C7EE72667B93C0BFDCB0",
+    "process": {
+      "Stage": "contract-compiler-identity",
+      "ExitCode": 0,
+      "Output": [
+        "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+      ],
+      "StandardOutput": [
+        "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 1.884,
+      "DeadlineSeconds": 30,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:10:25.8554363Z",
+      "CompletedUtc": "2026-09-12T13:10:27.9009260Z",
+      "InvokedFilePath": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+      "InvokedArguments": [
+        "--version"
+      ]
+    },
+    "path": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "version": "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+  },
+  "expected": [
+    "baseline"
+  ],
+  "executed": [
+    null
+  ],
+  "results": [],
+  "commands": [
+    {
+      "Stage": "contract-compiler-identity",
+      "ExitCode": 0,
+      "Output": [
+        "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+      ],
+      "StandardOutput": [
+        "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 1.884,
+      "DeadlineSeconds": 30,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:10:25.8554363Z",
+      "CompletedUtc": "2026-09-12T13:10:27.9009260Z",
+      "InvokedFilePath": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+      "InvokedArguments": [
+        "--version"
+      ]
+    },
+    {
+      "Stage": "baseline-producer",
+      "ExitCode": 1,
+      "Output": [
+        "RMQ/Core/WordRAM/Native/Capstone.lean:1:0: error: object file 'C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T131025801\\overlay-baseline\\RMQ\\Core\\WordRAM\\Native\\Execution.olean' of module RMQ.Core.WordRAM.Native.Execution does not exist"
+      ],
+      "StandardOutput": [
+        "RMQ/Core/WordRAM/Native/Capstone.lean:1:0: error: object file 'C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T131025801\\overlay-baseline\\RMQ\\Core\\WordRAM\\Native\\Execution.olean' of module RMQ.Core.WordRAM.Native.Execution does not exist"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 2.137,
+      "DeadlineSeconds": 90,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:10:28.2005773Z",
+      "CompletedUtc": "2026-09-12T13:10:30.3624103Z",
+      "InvokedFilePath": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+      "InvokedArguments": [
+        "-j",
+        "1",
+        "-o",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\contract-replay\\20260912T131025801\\overlay-baseline\\RMQ\\Core\\WordRAM\\Native\\Capstone.olean",
+        "RMQ/Core/WordRAM/Native/Capstone.lean"
+      ]
+    }
+  ]
+}

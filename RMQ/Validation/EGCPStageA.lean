@@ -280,7 +280,8 @@ structure EGCPStageAArchitectureFacts
     ¬ (left < right ∧ right <= shape.size) ->
       (SuccinctClassic.queryTraceResult xs left right).value = none
   controller_exact_input_boundary :
-    @packedReviewerController =
+    (packedReviewerController :
+        Nat -> Nat -> Nat -> PackedReviewerControllerState) =
       (fun (n left right : Nat) => packedReviewerController n left right)
   controller_uniform_entry :
     ∀ n' l' r' : Nat,

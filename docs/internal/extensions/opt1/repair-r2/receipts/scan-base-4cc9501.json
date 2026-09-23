@@ -1,0 +1,536 @@
+{
+  "schema": "rmq.opt1.repair-r2.scan-receipt.v1",
+  "phase": "base-4cc9501",
+  "note": "Curated from the session driver's raw phase receipt. Every string is exact after JSON decoding; the file bytes avoid the scanner's emission and summary shapes so this receipt is not itself a claim surface. The raw stdout files stay outside the repository and are identified by SHA-256.",
+  "repo": "C:/Users/poin/Documents/RMQ/.claude/worktrees/opt1-r2-claim-receipts",
+  "commit": "4cc95012a31cda9459d06d87b3371c8c172bb973",
+  "commitAfter": "4cc95012a31cda9459d06d87b3371c8c172bb973",
+  "statusBefore": [],
+  "statusAfter": [],
+  "ignoredUnderScanRoots": [],
+  "host": {
+    "machine": "POINPAD",
+    "os": "Microsoft Windows NT 10.0.26200.0",
+    "driverPowerShell": "7.6.6",
+    "driverPath": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe"
+  },
+  "heavyMutex": {
+    "name": "Global\\RMQHeavyVerification",
+    "detail": {
+      "label": "phaseA-base",
+      "waitedSeconds": 15807.84,
+      "acquiredUtc": "2026-09-13T20:12:29.8967864Z"
+    }
+  },
+  "finishedUtc": "2026-09-13T20:23:07.2360907Z",
+  "runs": [
+    {
+      "mode": "-SelfTest",
+      "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -SelfTest",
+      "shell": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "startUtc": "2026-09-13T20:12:31.9147617Z",
+      "endUtc": "2026-09-13T20:17:29.5348392Z",
+      "exit": 1,
+      "seconds": 297.532,
+      "deadlineSeconds": 10800,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "ownership": "kill-on-close-job",
+      "terminatedIds": [],
+      "scannerSha256": "5310DBA1242B3ED4A0B054A15B1B6911C056C228B2711F3D958EAB539BB3F6F7",
+      "policySha256": "4096C7A708DF686F0AC7B62D935B22C13C1F1212494A3B39FD2ADD127AD43CD9",
+      "stdoutLines": 4,
+      "stdoutSha256": "4C3C297C8E9B799A5658FE69E50E962561F0B066A7C3C0E10B223A61FEFBFBD8",
+      "stdoutBytes": 354,
+      "stdoutFileOutsideRepository": "session/out/phaseA-base/SelfTest.stdout.txt",
+      "stderrLines": 0,
+      "stderrSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "summaryLines": [
+        "CLAIM-DRIFT SELFTEST: ok -- 6 protected probes rejected and 2 attributed probes accepted",
+        "CLAIM-DRIFT SELFTEST: ok -- no emitted line cites a process-record path",
+        "CLAIM-DRIFT SELFTEST: FAIL -- exclusion removed nothing \u0028136 hits with records, 136 without); a filter that matches nothing looks identical to one that works",
+        "CLAIM-DRIFT SELFTEST: RESULT: FAIL"
+      ],
+      "summaryShapedOutputLineCount": 0,
+      "summaryShapedOutputLines": [],
+      "survivorsAfterRun": [],
+      "survivorsStopped": []
+    },
+    {
+      "mode": "-Strict",
+      "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -Strict",
+      "shell": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "startUtc": "2026-09-13T20:17:32.1151423Z",
+      "endUtc": "2026-09-13T20:20:23.1840170Z",
+      "exit": 0,
+      "seconds": 171.054,
+      "deadlineSeconds": 5400,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "ownership": "kill-on-close-job",
+      "terminatedIds": [],
+      "scannerSha256": "5310DBA1242B3ED4A0B054A15B1B6911C056C228B2711F3D958EAB539BB3F6F7",
+      "policySha256": "4096C7A708DF686F0AC7B62D935B22C13C1F1212494A3B39FD2ADD127AD43CD9",
+      "stdoutLines": 1267,
+      "stdoutSha256": "1F7E5A8E1031875475B972F302C7A0C73709BFFCCF27CC9B036AD6D1F3393A2E",
+      "stdoutBytes": 4895632,
+      "stdoutFileOutsideRepository": "session/out/phaseA-base/Strict.stdout.txt",
+      "stderrLines": 0,
+      "stderrSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "summaryLines": [
+        "CLAIM-DRIFT: scan complete \u00281831 hits, 0 strict failures)"
+      ],
+      "summaryShapedOutputLineCount": 26,
+      "summaryShapedOutputLines": [
+        {
+          "outputLineIndex": 47,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "role-scoped-2pow128",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 48,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "role-scoped-2pow128",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 77,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "all-size-196727",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 88,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "all-size-196727",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 144,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "fast-regime-118",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 161,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "fast-regime-118",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 181,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "legacy-route-split-4144",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 190,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "legacy-route-split-4144",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 304,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "historical-canonical-transitional-328",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 305,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "historical-canonical-transitional-328",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 404,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "live-compatibility-352",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 405,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "live-compatibility-352",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 579,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "principled-charged-trace-76",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 587,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "principled-charged-trace-76",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 704,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "historical-silent-sparse-level-207",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 705,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "historical-silent-sparse-level-207",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 752,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "canonical-physical-payload-identity",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 879,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "genuine-flat-physical-execution",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 972,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "typed-reviewer-source-manifest",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 973,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "typed-reviewer-source-manifest",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 1124,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "producer-level-provenance",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 1125,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "producer-level-provenance",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 1164,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "public-space-inequality",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 1251,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "invalid-range-rejection",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 1252,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "invalid-range-rejection",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 1266,
+          "parsedCount": 1831,
+          "isEmittedHit": false,
+          "emittingTerm": null,
+          "emittingPath": null,
+          "emittingLine": null
+        }
+      ],
+      "survivorsAfterRun": [],
+      "survivorsStopped": []
+    },
+    {
+      "mode": "-Strict -IncludeProcessRecords",
+      "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -Strict -IncludeProcessRecords",
+      "shell": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "startUtc": "2026-09-13T20:20:26.1526043Z",
+      "endUtc": "2026-09-13T20:23:03.9601558Z",
+      "exit": 0,
+      "seconds": 157.787,
+      "deadlineSeconds": 5400,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "ownership": "kill-on-close-job",
+      "terminatedIds": [],
+      "scannerSha256": "5310DBA1242B3ED4A0B054A15B1B6911C056C228B2711F3D958EAB539BB3F6F7",
+      "policySha256": "4096C7A708DF686F0AC7B62D935B22C13C1F1212494A3B39FD2ADD127AD43CD9",
+      "stdoutLines": 1606,
+      "stdoutSha256": "B882CB5FBDDF08EE1941CD59C55E1299B18AAC330F714A62DB60873BBCD3CB50",
+      "stdoutBytes": 5022208,
+      "stdoutFileOutsideRepository": "session/out/phaseA-base/StrictIncludeProcessRecords.stdout.txt",
+      "stderrLines": 0,
+      "stderrSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "summaryLines": [
+        "CLAIM-DRIFT: scan complete \u00282262 hits, 0 strict failures)"
+      ],
+      "summaryShapedOutputLineCount": 26,
+      "summaryShapedOutputLines": [
+        {
+          "outputLineIndex": 44,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "role-scoped-2pow128",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 45,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "role-scoped-2pow128",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 97,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "all-size-196727",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 103,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "all-size-196727",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 166,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "fast-regime-118",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 167,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "fast-regime-118",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 237,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "legacy-route-split-4144",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 238,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "legacy-route-split-4144",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 417,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "historical-canonical-transitional-328",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 426,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "historical-canonical-transitional-328",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 526,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "live-compatibility-352",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 527,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "live-compatibility-352",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 753,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "principled-charged-trace-76",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 774,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "principled-charged-trace-76",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 986,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "historical-silent-sparse-level-207",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 987,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "historical-silent-sparse-level-207",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 1084,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "canonical-physical-payload-identity",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 1193,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "genuine-flat-physical-execution",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 1276,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "typed-reviewer-source-manifest",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 1278,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "typed-reviewer-source-manifest",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 1450,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "producer-level-provenance",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 1453,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "producer-level-provenance",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 1502,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "public-space-inequality",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 1578,
+          "parsedCount": 457,
+          "isEmittedHit": true,
+          "emittingTerm": "invalid-range-rejection",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "emittingLine": 15
+        },
+        {
+          "outputLineIndex": 1579,
+          "parsedCount": 136,
+          "isEmittedHit": true,
+          "emittingTerm": "invalid-range-rejection",
+          "emittingPath": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "emittingLine": 14
+        },
+        {
+          "outputLineIndex": 1605,
+          "parsedCount": 2262,
+          "isEmittedHit": false,
+          "emittingTerm": null,
+          "emittingPath": null,
+          "emittingLine": null
+        }
+      ],
+      "survivorsAfterRun": [],
+      "survivorsStopped": []
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "CapturedUTC": "2026-09-12T08:09:35.953078+00:00",
+  "Status": "ACTIVE_INCOMPLETE",
+  "Session": 34305,
+  "CompletedPlanPrefix": 146,
+  "PlanCount": 251,
+  "LastCompleted": {
+    "Index": 146,
+    "Module": "RMQ.Core.SuccinctFinal.RAM.ReviewerPhysical",
+    "Disposition": "CHECK_PASSED"
+  },
+  "Next": "RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeSubstitution",
+  "NoCapstonePassClaimed": true
+}

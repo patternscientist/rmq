@@ -1,0 +1,19 @@
+{
+  "Stage": "pre1-RMQ.Core.WordRAM.Construction.Contract-r7",
+  "ExitCode": 0,
+  "Output": [
+    "✔ [14/14] Built RMQ.Core.WordRAM.Construction.Contract",
+    "Build completed successfully."
+  ],
+  "StandardOutput": [
+    "✔ [14/14] Built RMQ.Core.WordRAM.Construction.Contract",
+    "Build completed successfully."
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 7.898,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

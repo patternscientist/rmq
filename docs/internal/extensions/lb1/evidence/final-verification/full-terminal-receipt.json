@@ -1,0 +1,22 @@
+{
+  "SourceTarget": "5033ce54da233fc7a3df319d50ab09a2ebee523a",
+  "Command": [
+    "pwsh",
+    "-NoProfile",
+    "-File",
+    "scripts/variable_payload_replay.ps1",
+    "-DeadlineSeconds",
+    "600"
+  ],
+  "WorkingDirectory": "C:/Users/poin/.codex/worktrees/2270/RMQ",
+  "SessionID": 81497,
+  "RunRoot": ".lake/lb1-replay/20260912T101947006",
+  "TerminalChunk": {
+    "chunk_id": "cc6b68",
+    "wall_time_seconds": 42.8485014,
+    "exit_code": 0,
+    "original_token_count": 372,
+    "output": "LB1-REPLAY CASE H01-EMPTY-ONLY-DECODER PASS expected=REJECT\r\nWARNING: restored-H01-EMPTY-ONLY-DECODER-worktree: warning: in the working copy of 'RMQ/Core/EncodingVariableLowerBound.lean', LF will be replaced by CRLF the next time Git touches it\r\nWARNING: restored-H01-EMPTY-ONLY-DECODER-worktree: warning: in the working copy of 'RMQ/Core/WordRAM/Packed/AllocationLowerBound.lean', LF will be replaced by CRLF the next time Git touches it\r\nLB1-STAGE A02-PROOF-ONLY-WRAPPER-producer\r\nLB1-STAGE A02-PROOF-ONLY-WRAPPER-inventory\r\nLB1-STAGE A02-PROOF-ONLY-WRAPPER-consumer\r\nLB1-REPLAY CASE A02-PROOF-ONLY-WRAPPER PASS expected=ACCEPT\r\nWARNING: restored-A02-PROOF-ONLY-WRAPPER-worktree: warning: in the working copy of 'RMQ/Core/EncodingVariableLowerBound.lean', LF will be replaced by CRLF the next time Git touches it\r\nWARNING: restored-A02-PROOF-ONLY-WRAPPER-worktree: warning: in the working copy of 'RMQ/Core/WordRAM/Packed/AllocationLowerBound.lean', LF will be replaced by CRLF the next time Git touches it\r\nWARNING: final-restoration-worktree: warning: in the working copy of 'RMQ/Core/EncodingVariableLowerBound.lean', LF will be replaced by CRLF the next time Git touches it\r\nWARNING: final-restoration-worktree: warning: in the working copy of 'RMQ/Core/WordRAM/Packed/AllocationLowerBound.lean', LF will be replaced by CRLF the next time Git touches it\r\nLB1-REPLAY-PASS expected=63 executed=63 evidence=C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\.lake\\lb1-replay\\20260912T101947006\r\n"
+  },
+  "Scope": "Final terminal chunk only; complete child stage outputs are preserved individually in the run root. Successful aggregate marker and exit are recorded here."
+}

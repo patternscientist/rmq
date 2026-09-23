@@ -1,0 +1,32 @@
+{
+  "schema": "native1-identity-v3-outer-v1",
+  "startedUtc": "2026-09-12T12:04:30.6396139Z",
+  "completedUtc": "2026-09-12T12:08:05.7597459Z",
+  "result": {
+    "Stage": "identity-v3-final-selectors",
+    "ExitCode": 0,
+    "Output": [
+      "NATIVE1-IDENTITY-V3-SELECTOR PASS empty",
+      "NATIVE1-IDENTITY-V3-SELECTOR PASS whitespace",
+      "NATIVE1-IDENTITY-V3-SELECTOR PASS malformed",
+      "NATIVE1-IDENTITY-V3-SELECTOR PASS unknown",
+      "NATIVE1-IDENTITY-V3-SELECTOR PASS valid",
+      "NATIVE1-IDENTITY-V3-SELECTOR PASS omitted"
+    ],
+    "StandardOutput": [
+      "NATIVE1-IDENTITY-V3-SELECTOR PASS empty",
+      "NATIVE1-IDENTITY-V3-SELECTOR PASS whitespace",
+      "NATIVE1-IDENTITY-V3-SELECTOR PASS malformed",
+      "NATIVE1-IDENTITY-V3-SELECTOR PASS unknown",
+      "NATIVE1-IDENTITY-V3-SELECTOR PASS valid",
+      "NATIVE1-IDENTITY-V3-SELECTOR PASS omitted"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 214.817,
+    "DeadlineSeconds": 600,
+    "Ownership": "kill-on-close-job"
+  }
+}

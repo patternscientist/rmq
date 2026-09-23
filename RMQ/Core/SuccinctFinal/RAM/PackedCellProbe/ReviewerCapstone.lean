@@ -1838,6 +1838,33 @@ theorem egcpFixtureTraceAddresses :
   simp +decide [egcpMemLit]
 
 /--
+The canonical fixture run issues exactly `68` attempted probes.
+
+Exported 2026-08-09 in response to a fresh-blind audit finding. The number `68`
+appears throughout the acceptance matrices, the result documents, and the
+manuscript as "the fixture run issues 68 attempted probes", and it was true and
+derivable -- but only as a local `have` inside one proof, so no reviewer could
+cite a theorem for it and nothing outside that proof would break if it drifted.
+It is now a named consequence of `egcpFixtureTraceAddresses`, whose right-hand
+side is the literal 68-address list, so the length and the addresses cannot
+disagree.
+
+This is `=`, not `<=`, and it is a statement about **one pinned fixture**. It is
+not an attainment witness for the `427` cap: `427` bounds attempted probes for
+every valid query and remains an upper bound with no execution known to attain
+it (`B7-UPPER-BOUND-IS-NOT-ATTAINMENT`). `68 <= 427` is a fact about this run,
+not evidence that the cap is tight.
+-/
+theorem egcpFixtureTraceLength :
+    (packedReviewerRunAgainstMemory egcpMemLit 3 0 3).trace.length = 68 := by
+  have hmap := congrArg List.length egcpFixtureTraceAddresses
+  -- `rw` rather than `simpa`: `simpa` tries to evaluate the run term in the
+  -- goal and exhausts the `isDefEq` heartbeat budget.  Rewriting the mapped
+  -- length in the hypothesis leaves the run term untouched on both sides.
+  rw [List.length_map] at hmap
+  exact hmap
+
+/--
 The frozen `SF-FG11-HEADER` fixture instance.  On `[7, 3, 3]` with query
 `(0, 3)`, replacing only header cell `0` by the commissioned same-width
 `longCount + w(n)` encoding moves the second attempted physical address
@@ -2274,9 +2301,8 @@ theorem packedReviewerDecisiveCellConnection :
     exact hstateEq
   rw [egcpFixtureShapeSize, egcpFixtureMemLit] at hterminalRun hstateRun ⊢
   have hlen :
-      (packedReviewerRunAgainstMemory egcpMemLit 3 0 3).trace.length = 68 := by
-    have hmap := congrArg List.length egcpFixtureTraceAddresses
-    simpa using hmap
+      (packedReviewerRunAgainstMemory egcpMemLit 3 0 3).trace.length = 68 :=
+    egcpFixtureTraceLength
   have hlt :
       11 < (packedReviewerDriveAgainstMemoryAux egcpMemLit
         (packedReviewerControllerMeasure (packedReviewerController 3 0 3))

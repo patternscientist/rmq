@@ -1,0 +1,217 @@
+{
+  "schema": "rmq.pre1.repair-r1.rewords.v1",
+  "handle": "PRE-1-R1",
+  "baseCommit": "84ae12f6f6bad99fd3215c5bdd5b2a93e3779897",
+  "selection": {
+    "root": "docs/internal/extensions/pre1/",
+    "fileRule": "every blob under root at baseCommit whose path ends with .md (gzip and zip archives are not Markdown)",
+    "patternRegex": "scan complete \\([0-9]+ hits",
+    "patternFlags": "IGNORECASE",
+    "integerRegex": "[0-9]+",
+    "lineRule": "lines are the blob bytes split on LF; a trailing LF ends the last line; SHA-256 values are of the exact line bytes without the LF"
+  },
+  "tailRule": "At the tip each recorded file equals its base blob with only the recorded lines replaced, followed by an optional tail after the last base line (the appended R1 section); neither the new lines nor the tail may match the pattern.",
+  "files": [
+    {
+      "path": "docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md",
+      "baseBlobId": "684a2894ca21fcc3f9e9c9d4c457578fb4db078d",
+      "baseBlobSha256": "801B92B2BC3DCD0E3A6E645340C7256A529C58E69000B04530002AB627E21038",
+      "baseBlobBytes": 103510,
+      "baseLines": 495,
+      "baseEndsWithLineFeed": true
+    },
+    {
+      "path": "docs/internal/extensions/pre1/REPORT.md",
+      "baseBlobId": "b3d07015f9aa4150578c7db26a9fc8ff2d33f13c",
+      "baseBlobSha256": "77C15AB7A581C4E9D7146CD15D8A1DDAF53C4B26138A4B11C26E6A40645F029E",
+      "baseBlobBytes": 143433,
+      "baseLines": 1661,
+      "baseEndsWithLineFeed": true
+    }
+  ],
+  "rewords": [
+    {
+      "path": "docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md",
+      "baseLineNumber": 427,
+      "baseBlobId": "684a2894ca21fcc3f9e9c9d4c457578fb4db078d",
+      "baseLineSha256": "B9041FFCF36D864B6FED35C600B712F69C973C4BF1D90674C7D6A8DC1C734BBE",
+      "newLineSha256": "60C315C96C0D52D4DA74E2DF673D2F3143A0B5344CD91ABD6F917E24E9BD7AAA",
+      "baseIntegers": [
+        7,
+        13,
+        1,
+        1,
+        1,
+        31,
+        28,
+        23,
+        68,
+        0,
+        1,
+        1603,
+        0,
+        11,
+        1603,
+        1
+      ],
+      "newIntegers": [
+        7,
+        13,
+        1,
+        1,
+        1,
+        31,
+        28,
+        23,
+        68,
+        0,
+        1,
+        1603,
+        0,
+        11,
+        1603,
+        1
+      ]
+    },
+    {
+      "path": "docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md",
+      "baseLineNumber": 428,
+      "baseBlobId": "684a2894ca21fcc3f9e9c9d4c457578fb4db078d",
+      "baseLineSha256": "694E3291E8A86E06BE82C3D140AC0EE9BAA8A696069312C1A1175C7894741978",
+      "newLineSha256": "87043B1AED181995C2B6783EE31E90EB9ADD6CFD9BAB5C5E9F27125583042761",
+      "baseIntegers": [
+        7,
+        14,
+        7,
+        13,
+        1,
+        1,
+        1,
+        33,
+        1,
+        36,
+        20,
+        0,
+        0,
+        2047,
+        587,
+        2026,
+        9,
+        12,
+        1,
+        911,
+        11,
+        0,
+        11,
+        444,
+        2047,
+        1603,
+        0,
+        5,
+        325,
+        1
+      ],
+      "newIntegers": [
+        7,
+        14,
+        7,
+        13,
+        1,
+        1,
+        1,
+        33,
+        1,
+        36,
+        20,
+        0,
+        0,
+        2047,
+        587,
+        2026,
+        9,
+        12,
+        1,
+        911,
+        11,
+        0,
+        11,
+        444,
+        2047,
+        1603,
+        0,
+        5,
+        325,
+        1
+      ]
+    },
+    {
+      "path": "docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md",
+      "baseLineNumber": 488,
+      "baseBlobId": "684a2894ca21fcc3f9e9c9d4c457578fb4db078d",
+      "baseLineSha256": "B431B175A7B3A7F3E82AD29A942D2FFEFCDEA715CB10C2655831F2B12B860DA6",
+      "newLineSha256": "B9A1DD36729D38192380742B73B66EFDB2B9CBB379466A56CAFE7A6836633C98",
+      "baseIntegers": [
+        11,
+        1,
+        1800,
+        6,
+        17,
+        1,
+        8,
+        29,
+        0,
+        1609,
+        0,
+        7,
+        13,
+        118,
+        352
+      ],
+      "newIntegers": [
+        11,
+        1,
+        1800,
+        6,
+        17,
+        1,
+        8,
+        29,
+        0,
+        1609,
+        0,
+        7,
+        13,
+        118,
+        352
+      ]
+    },
+    {
+      "path": "docs/internal/extensions/pre1/REPORT.md",
+      "baseLineNumber": 245,
+      "baseBlobId": "b3d07015f9aa4150578c7db26a9fc8ff2d33f13c",
+      "baseLineSha256": "02A65007166AFC4850EDE6E53CE365765288B4201FD12F7F27321428083D3EA4",
+      "newLineSha256": "66EF35FC786CF38F69B2CD16408E8331AEFCBE9409284300221F8E4F8F5AC76F",
+      "baseIntegers": [
+        11,
+        0
+      ],
+      "newIntegers": [
+        11,
+        0
+      ]
+    },
+    {
+      "path": "docs/internal/extensions/pre1/REPORT.md",
+      "baseLineNumber": 246,
+      "baseBlobId": "b3d07015f9aa4150578c7db26a9fc8ff2d33f13c",
+      "baseLineSha256": "734A6A0B8DEF9E6A45C863FB94A2DEB40A2E377C836A1729CCFB73FEB83B76E5",
+      "newLineSha256": "25CA7643B409D35FF140802D16AEEE451FDF70C5B2F3C31EBAB5D27DC2A61F4E",
+      "baseIntegers": [
+        2047
+      ],
+      "newIntegers": [
+        2047
+      ]
+    }
+  ]
+}

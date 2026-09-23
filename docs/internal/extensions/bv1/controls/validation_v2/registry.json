@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "productionVersion": 2,
+  "productionSource": "RMQ/Validation/PackedBitvector.lean",
+  "baselineSha256": "333B0A6BD8FB3082051845D2F1BD333668B9D33758A9030A68B25695CFEE068E",
+  "expected": [
+    "baseline",
+    "wrong-packet",
+    "removed-fixture",
+    "wrong-crossing",
+    "restored"
+  ],
+  "cases": [
+    {
+      "id": "baseline",
+      "file": "baseline.lean",
+      "arguments": [
+        "--case",
+        "access-crossing"
+      ],
+      "beforeText": "",
+      "afterText": "",
+      "expectedOccurrences": 0,
+      "expectedExit": 0,
+      "expectedSurfaces": [
+        "BV1-CASE access-crossing PASS",
+        "expected=2 actual=some 2",
+        "crossing=true",
+        "executed=1 expected=1 passed=1 total=46"
+      ],
+      "sourceSha256": "333B0A6BD8FB3082051845D2F1BD333668B9D33758A9030A68B25695CFEE068E"
+    },
+    {
+      "id": "wrong-packet",
+      "file": "wrong_packet.lean",
+      "arguments": [
+        "--case",
+        "access-crossing"
+      ],
+      "beforeText": "let expected := expectedPacket fixture",
+      "afterText": "let expected := expectedPacket fixture + 1",
+      "expectedOccurrences": 1,
+      "expectedExit": 1,
+      "expectedSurfaces": [
+        "BV1-CASE access-crossing FAIL",
+        "expected=3 actual=some 2",
+        "crossing=true",
+        "executed=1 expected=1 passed=0 total=46"
+      ],
+      "sourceSha256": "4895B39F548A5C434D173288346A59D812D996F5A2A1D31D1CC0E7FBACF478A1"
+    },
+    {
+      "id": "removed-fixture",
+      "file": "removed_fixture.lean",
+      "arguments": [
+        "--case",
+        "access-crossing"
+      ],
+      "beforeText": "  ⟨\"access-crossing\", .access, alternating 511, false, 171, some 19, false⟩,\n",
+      "afterText": "",
+      "expectedOccurrences": 1,
+      "expectedExit": 2,
+      "expectedSurfaces": [
+        "BV1-REGISTRY FAIL version=2"
+      ],
+      "sourceSha256": "1F2241088DD172B38673AA376F291400C5B68DB319545A3C465B78E971875BB2"
+    },
+    {
+      "id": "wrong-crossing",
+      "file": "wrong_crossing.lean",
+      "arguments": [
+        "--case",
+        "access-crossing"
+      ],
+      "beforeText": "transition.before.regs 8193 == 19",
+      "afterText": "transition.before.regs 8193 == 20",
+      "expectedOccurrences": 1,
+      "expectedExit": 1,
+      "expectedSurfaces": [
+        "BV1-CASE access-crossing FAIL",
+        "expected=2 actual=some 2",
+        "crossing=false",
+        "executed=1 expected=1 passed=0 total=46"
+      ],
+      "sourceSha256": "6B9484013683BFA4E6C0F46800582BFEDE057BA8661273DCACA5BB8453D06D14"
+    },
+    {
+      "id": "restored",
+      "file": "restored.lean",
+      "arguments": [
+        "--case",
+        "access-crossing"
+      ],
+      "beforeText": "",
+      "afterText": "",
+      "expectedOccurrences": 0,
+      "expectedExit": 0,
+      "expectedSurfaces": [
+        "BV1-CASE access-crossing PASS",
+        "expected=2 actual=some 2",
+        "crossing=true",
+        "executed=1 expected=1 passed=1 total=46"
+      ],
+      "sourceSha256": "333B0A6BD8FB3082051845D2F1BD333668B9D33758A9030A68B25695CFEE068E"
+    }
+  ]
+}

@@ -1,0 +1,1180 @@
+{
+  "schema": "native1-final-field-span-preparation-v1",
+  "completedUtc": "2026-09-12T11:40:54.470973+00:00",
+  "pass": true,
+  "registrySha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+  "count": 90,
+  "scope": "pure minimal mutation preparation only; no production subprocess verdict",
+  "cases": [
+    {
+      "case": "query-smoke",
+      "field": "id",
+      "action": "delete",
+      "oldByteSpan": [
+        695,
+        714
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "E0DABD0DDAD67923F418354F819C78A12C76747615D4E34FAB98A33C314B6015"
+    },
+    {
+      "case": "query-smoke",
+      "field": "id",
+      "action": "change",
+      "oldByteSpan": [
+        700,
+        713
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "16335FC9567D0B4855BCB0FBCEF92A07483CEE0DF8D24E782638A34AB6B13A12"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "kind",
+      "action": "delete",
+      "oldByteSpan": [
+        131395,
+        131420
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "91DCE28909836309B26DD26655902C1212045C7D4A62FF9F259EF3B39E3D9964"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "kind",
+      "action": "change",
+      "oldByteSpan": [
+        131402,
+        131419
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "190CA8133448E853CB5F4980AD319D825A3ED3FE74874D647C7D56B4A5A9B400"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "operation",
+      "action": "delete",
+      "oldByteSpan": [
+        131420,
+        131454
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "C582A6E927BFFB06F38A57D1CAA0FCCE158EE115035067351636659E8E0D945C"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "operation",
+      "action": "change",
+      "oldByteSpan": [
+        131432,
+        131453
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "2206872AE63A498AE3AA8F036F84C32BBD9251431EADB47F813B365129868066"
+    },
+    {
+      "case": "query-smoke",
+      "field": "consumers",
+      "action": "delete",
+      "oldByteSpan": [
+        766,
+        832
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "F357B34010E85760ABD1F9F64D935145ADA79850020E2B9803B4525A2E1095E7"
+    },
+    {
+      "case": "query-smoke",
+      "field": "consumers",
+      "action": "change",
+      "oldByteSpan": [
+        778,
+        831
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "DB1F64CD193D9A57E8AE7DC342588CDB3552AF42DB280F5DE261C979A7238290"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image",
+      "action": "delete",
+      "oldByteSpan": [
+        832,
+        953
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "A39B4442BC12973E1B34BF91652F0E2EB52DADAF9BA6951356136420BB82172D"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image",
+      "action": "change",
+      "oldByteSpan": [
+        840,
+        952
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "8C189022081A55DFA6807F59DFDF4ADF31A4BAC661E7843F9539D0AFA6A1CD54"
+    },
+    {
+      "case": "query-smoke",
+      "field": "arguments",
+      "action": "delete",
+      "oldByteSpan": [
+        953,
+        1085
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "C9A5E4CE85898FE42F40BA36E2C28BF1EA91EB24EEFF4502D43CD6B5B2B1B119"
+    },
+    {
+      "case": "query-smoke",
+      "field": "arguments",
+      "action": "change",
+      "oldByteSpan": [
+        965,
+        1084
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "31452CA4C5A5D1E475338F7BC1D9A9A18DC0EF23F10AF8138B982F88889C491D"
+    },
+    {
+      "case": "query-smoke",
+      "field": "expectedExit",
+      "action": "delete",
+      "oldByteSpan": [
+        1085,
+        1102
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "D91E78583CBCA21826164CA5D64AE5306282B5611A5C1F3DBDF84F387D0ABB36"
+    },
+    {
+      "case": "query-smoke",
+      "field": "expectedExit",
+      "action": "change",
+      "oldByteSpan": [
+        1100,
+        1101
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "2127ACA54693FF8B2B85FB8EB78742158D78428446D2591DABD74C169C8C835B"
+    },
+    {
+      "case": "query-smoke",
+      "field": "expectedStdout",
+      "action": "delete",
+      "oldByteSpan": [
+        1102,
+        1150
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "6CEBF424628BBC7A201F64191EF12235A8D41F24A5BCE0B811665FFE1FEDC097"
+    },
+    {
+      "case": "query-smoke",
+      "field": "expectedStdout",
+      "action": "change",
+      "oldByteSpan": [
+        1119,
+        1149
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "701F55B4CA3EBF58CFE899A2BB5425DFD509809B8A195B252A677F2BD6DD0D27"
+    },
+    {
+      "case": "reject-query-padding",
+      "field": "expectedStderr",
+      "action": "delete",
+      "oldByteSpan": [
+        84716,
+        84761
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "01DC33F73B766A21801982F9815C9C4A8B85CF55053F4DAE3816B1FC23F52D41"
+    },
+    {
+      "case": "reject-query-padding",
+      "field": "expectedStderr",
+      "action": "change",
+      "oldByteSpan": [
+        84733,
+        84760
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "B922741DA0CA72168D9345BDC7875C416FC24271DE19B51AB65D36A05E50424C"
+    },
+    {
+      "case": "query-smoke",
+      "field": "deadlineSeconds",
+      "action": "delete",
+      "oldByteSpan": [
+        1170,
+        1192
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "2ED6702F855D0421EB615A538CBDA902C47C4BF97F6187C65ABBB040ECE19CD9"
+    },
+    {
+      "case": "query-smoke",
+      "field": "deadlineSeconds",
+      "action": "change",
+      "oldByteSpan": [
+        1188,
+        1191
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "C695D329DD8E7806FC265BFB39DC85B090F58008ACE28C202B9A66957D854066"
+    },
+    {
+      "case": "query-smoke",
+      "field": "coverage",
+      "action": "delete",
+      "oldByteSpan": [
+        1191,
+        1237
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "8C61A773859BABE93F157ADA71DD8A00567646197443650EA2C799B144A7E495"
+    },
+    {
+      "case": "query-smoke",
+      "field": "coverage",
+      "action": "change",
+      "oldByteSpan": [
+        1203,
+        1237
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "5649BD090D4BF241803D2D2D449176CA7A7EA5E04D69A00686295955CD77A7D8"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "source",
+      "action": "delete",
+      "oldByteSpan": [
+        131454,
+        131502
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "2B6CA836225C77237B2317B5595A99BC0E34C3CFD41A09BA3CAA37E56D20F9B0"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "source",
+      "action": "change",
+      "oldByteSpan": [
+        131463,
+        131501
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "82E05B34ECFD5079793A1E82E815BDDC69D99B8B409355204BC34C6954D5513C"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "anchor",
+      "action": "delete",
+      "oldByteSpan": [
+        131502,
+        131589
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "1249AED1C4F7071F1BDF02CB9E2C6BCFC57FCC90788A3ED53667BB0BDF10CF88"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "anchor",
+      "action": "change",
+      "oldByteSpan": [
+        131511,
+        131588
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "D61CC247C81C17326A9F62B94630B20D45FC4A52ECC6392DFE2E79331E6ED21D"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "replacement",
+      "action": "delete",
+      "oldByteSpan": [
+        131589,
+        131678
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "F5A852DA2532781252FDB344A505E72C08D628E67C1AB4CDC988D049EA5B33DE"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "replacement",
+      "action": "change",
+      "oldByteSpan": [
+        131603,
+        131677
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "85FF491777B39972CF3A82968423FC62A7BF1A17A404F66874525276539F2A2A"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "proofLine",
+      "action": "delete",
+      "oldByteSpan": [
+        131678,
+        131779
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "653FEBAD92B02D343AF9CF35465761EEF7B0BAE57E8838D9FB56C54E7BF517B5"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "proofLine",
+      "action": "change",
+      "oldByteSpan": [
+        131690,
+        131778
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "B3D3ADF392B062BD95A6C4F0D80C0AD7824CD53FE72280BFC647857C525EECCC"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "expectedDiagnostic",
+      "action": "delete",
+      "oldByteSpan": [
+        131779,
+        131816
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "C670BFA47A70E8463CCA2BA1CB40577CB926309C7A9FFA3315AD407BF2788C06"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "expectedDiagnostic",
+      "action": "change",
+      "oldByteSpan": [
+        131800,
+        131815
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "1E71D6BC24229FB4550DAA74BBB77C6C1DCB13DC8F96B8368CB254DB5FA115BD"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "surface",
+      "action": "delete",
+      "oldByteSpan": [
+        131841,
+        131871
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "9CEACCF6444804B394491AF58A160EF5D0BA6DB987B0169ABE223F25DFEADD9D"
+    },
+    {
+      "case": "source-core-fuel",
+      "field": "surface",
+      "action": "change",
+      "oldByteSpan": [
+        131851,
+        131870
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "2044AD647A771FE04740991ADB3AFB0711A3EF929C5B19DA14D4C002244379BE"
+    },
+    {
+      "case": "stale-source-rejection",
+      "field": "append",
+      "action": "delete",
+      "oldByteSpan": [
+        133003,
+        133063
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "721BE406B4BB50CD907E86091E6942C66C16CC78EEF9E34F4F1A60F951E0C3FD"
+    },
+    {
+      "case": "stale-source-rejection",
+      "field": "append",
+      "action": "change",
+      "oldByteSpan": [
+        133012,
+        133062
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "9656EA1F3DD6D79DB963139005C3F0A809F71933CD7C5116FD06311DE6E2033E"
+    },
+    {
+      "case": "source-ffi-order",
+      "field": "mutantExpectedExit",
+      "action": "delete",
+      "oldByteSpan": [
+        131148,
+        131171
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "36483A5FB4AFAAC1D2A8F006CA59FCADFB559FEEB42AA9BFF3F954AA22349C97"
+    },
+    {
+      "case": "source-ffi-order",
+      "field": "mutantExpectedExit",
+      "action": "change",
+      "oldByteSpan": [
+        131169,
+        131170
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "60BA2ABE7F8D39EB4B84215A7E88C9ED9E352D930F2766B72A21D7216F72A9BF"
+    },
+    {
+      "case": "source-ffi-order",
+      "field": "mutantExpectedStdout",
+      "action": "delete",
+      "oldByteSpan": [
+        131171,
+        131222
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "FE871C77F7656178D00E95BE782A8CE9F42C7AF39E348CE682A4386C764F09EE"
+    },
+    {
+      "case": "source-ffi-order",
+      "field": "mutantExpectedStdout",
+      "action": "change",
+      "oldByteSpan": [
+        131194,
+        131221
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "C920938360E6C1C3BB65F4B7B84959AD15AC6F7147B3E74B684BFAF7DD8E9930"
+    },
+    {
+      "case": "source-ffi-order",
+      "field": "mutantExpectedStderr",
+      "action": "delete",
+      "oldByteSpan": [
+        131222,
+        131248
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "3705FB120837981FDA585D6545CC0C6186B6F227993E496295774C2CEE6CB50F"
+    },
+    {
+      "case": "source-ffi-order",
+      "field": "mutantExpectedStderr",
+      "action": "change",
+      "oldByteSpan": [
+        131245,
+        131247
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "03E7993F012318363E3E4238DC6BB9D71174ADDDDF416E0DE28F8F02762CDDA2"
+    },
+    {
+      "case": "source-ffi-order",
+      "field": "compileDeadlineSeconds",
+      "action": "delete",
+      "oldByteSpan": [
+        131248,
+        131277
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "25EF03862D151CCB062F08F726FB019573A6F82B4EA8BB66C1A9B55DD34EDF74"
+    },
+    {
+      "case": "source-ffi-order",
+      "field": "compileDeadlineSeconds",
+      "action": "change",
+      "oldByteSpan": [
+        131273,
+        131276
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "A5A37A4A97E0CFEAA60E70E564408C6F538B7DE4F07C7D962C4C5BFD9F5F17EE"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image.kind",
+      "action": "delete",
+      "oldByteSpan": [
+        841,
+        858
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "5F804E7DC82FFD626AE7EEC72B4E437D73AF9DA90593B01CDDAF0E758C40CD11"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image.kind",
+      "action": "change",
+      "oldByteSpan": [
+        848,
+        857
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "DA499A8293175D5401F2DF7283A8EE460292F8687C1E76E4C2DED5446BDA3151"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image.width",
+      "action": "delete",
+      "oldByteSpan": [
+        858,
+        870
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "F60044C85973F099731CBF4ACFBC7440C44EDD23E5A629BB0A64C3594902E17F"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image.width",
+      "action": "change",
+      "oldByteSpan": [
+        866,
+        869
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "3D48D0EA32FE1F36752A7C9B94ACA4629FCE6F203492BC2B7E711C4F7C875915"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image.inputLength",
+      "action": "delete",
+      "oldByteSpan": [
+        870,
+        888
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "A1D74B1CB69861037E12041294FF26A4BF7A9BD422A1B0D08048C83E887184AF"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image.inputLength",
+      "action": "change",
+      "oldByteSpan": [
+        884,
+        887
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "7952F6C83911EE0DA67443CD30AAA84C417D91365A2339EF8F40B2BC6E1B6E85"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image.registerCount",
+      "action": "delete",
+      "oldByteSpan": [
+        888,
+        907
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "0B3C0CBE6DFD39032B42A1324362F492C99C2B9A5F377779EE4DB8FAB3BC35BD"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image.registerCount",
+      "action": "change",
+      "oldByteSpan": [
+        904,
+        906
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "FA716CCDF99EFA26E7EC9A8091AAC80296E5C9E67056F4360E3735BDD077425D"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image.code",
+      "action": "delete",
+      "oldByteSpan": [
+        907,
+        940
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "57AA3960893D551D13EC7844449528FFA8131DEE1595B56B5AF9417F0E9D52D4"
+    },
+    {
+      "case": "query-smoke",
+      "field": "image.code",
+      "action": "change",
+      "oldByteSpan": [
+        914,
+        939
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "6F4928E223D3D6558F0F9CF7AB1A86574D99023DE836D9BB913C63A3149BECC2"
+    },
+    {
+      "case": "memory-identity-176",
+      "field": "image.memory",
+      "action": "delete",
+      "oldByteSpan": [
+        3792,
+        3869
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "1BDB761F5AFA8B6AE5CC70E394A2E507C1BAC261BA0A065D686B85DDF1A298AF"
+    },
+    {
+      "case": "memory-identity-176",
+      "field": "image.memory",
+      "action": "change",
+      "oldByteSpan": [
+        3802,
+        3869
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "87649E8CB2DE0113D403BE7153F53B3282E564E5F2D2EB59C408C1F120CD423F"
+    },
+    {
+      "case": "pq1-n9-full",
+      "field": "image.fixture",
+      "action": "delete",
+      "oldByteSpan": [
+        36035,
+        36055
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "5931A4E6B8CF5960F83240315B944D12466B6552BDEB2D0FABE7C16FAA6CC0DA"
+    },
+    {
+      "case": "pq1-n9-full",
+      "field": "image.fixture",
+      "action": "change",
+      "oldByteSpan": [
+        36045,
+        36054
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "2D4E275CF9ED38C88C0FE1183937B1FFEDE2F9CD1ABFF2028FF5BF1D683288A8"
+    },
+    {
+      "case": "pq1-n9-full",
+      "field": "image.sourceCommit",
+      "action": "delete",
+      "oldByteSpan": [
+        36067,
+        36125
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "1DC17CC86D5E2FCDD1F36DA5BD4E531E068E243EBAA5836881AD5A73E8353DA3"
+    },
+    {
+      "case": "pq1-n9-full",
+      "field": "image.sourceCommit",
+      "action": "change",
+      "oldByteSpan": [
+        36082,
+        36124
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "1B5C14CDDAE312819A56E844E6FB44D387081208EFFBFBCAF2D49048026B4F18"
+    },
+    {
+      "case": "pq1-n9-full",
+      "field": "image.programSha256",
+      "action": "delete",
+      "oldByteSpan": [
+        36125,
+        36208
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "D2F2D2922A01DA995434FC5B12ED90A92D9BA4ED06A186A23962178056446E5F"
+    },
+    {
+      "case": "pq1-n9-full",
+      "field": "image.programSha256",
+      "action": "change",
+      "oldByteSpan": [
+        36141,
+        36207
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "0AA1358EB799A2EEEF7D593724DFCE9C4E3F2E0AFA08E91A894E97C4C4D60AD5"
+    },
+    {
+      "case": "pq1-n9-full",
+      "field": "image.fixtureSha256",
+      "action": "delete",
+      "oldByteSpan": [
+        36208,
+        36291
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "AC6B1DBB344C4AC659C34554DBE37DA559672EF964B6823A34A4EA1BEAA0D9F0"
+    },
+    {
+      "case": "pq1-n9-full",
+      "field": "image.fixtureSha256",
+      "action": "change",
+      "oldByteSpan": [
+        36224,
+        36290
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "1A7A77FE3E71052DA66CFB6DE92843E40E2F220AFF40BD572FC36FB3BCF0C828"
+    },
+    {
+      "case": "pq1-n9-full",
+      "field": "image.expectedSha256",
+      "action": "delete",
+      "oldByteSpan": [
+        36290,
+        36374
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "47CE21D0CAB7DF3EB3A320232FA4A64D26567C3BB0694CBB450E2E87EAE24086"
+    },
+    {
+      "case": "pq1-n9-full",
+      "field": "image.expectedSha256",
+      "action": "change",
+      "oldByteSpan": [
+        36308,
+        36374
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "5F15A8EA772C3415C8301ED3A49C6CB181694DDAABD688C15AF6CFCC33B274E6"
+    },
+    {
+      "case": "reject-image-magic",
+      "field": "image.base",
+      "action": "delete",
+      "oldByteSpan": [
+        62194,
+        62318
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "378EDED4EAC3DE1012EE66D5A8A4F81BC149D0ED13C098EAC7BBCA2DB2EE4F36"
+    },
+    {
+      "case": "reject-image-magic",
+      "field": "image.base",
+      "action": "change",
+      "oldByteSpan": [
+        62201,
+        62317
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "E11B60EDF6D468A150AD4B00F7910BC146E59AECC739567E0576FBDAF22E2E43"
+    },
+    {
+      "case": "reject-image-magic",
+      "field": "image.mutation",
+      "action": "delete",
+      "oldByteSpan": [
+        62317,
+        62336
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "FE16252D8D4362FE404163EA37FAED4283B0AAE57EA6CC96629CCB78E2E6FCC5"
+    },
+    {
+      "case": "reject-image-magic",
+      "field": "image.mutation",
+      "action": "change",
+      "oldByteSpan": [
+        62329,
+        62336
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "3C7A5C20688792DC8C0402A66FCA9FBF71B3B1C99EDBB40EF71A751E03FAB6E3"
+    },
+    {
+      "case": "reject-file-cap",
+      "field": "image.bytes",
+      "action": "delete",
+      "oldByteSpan": [
+        75657,
+        75675
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "A6B8D0EA169A602CD6A63DE21FA6DAF5EE5F9F83A34F66BA56D7C1B5D7A8D76B"
+    },
+    {
+      "case": "reject-file-cap",
+      "field": "image.bytes",
+      "action": "change",
+      "oldByteSpan": [
+        75666,
+        75675
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "77C5F5397E82EFC818103649E8F253838B1CCEA62162B9748BC652ADA00E415C"
+    },
+    {
+      "case": "canonical-select-left",
+      "field": "image.fixturePath",
+      "action": "delete",
+      "oldByteSpan": [
+        86925,
+        86998
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "CC74676701D55D17FDC703F0985B4CC985883700F1D2B7040A58AD6B1A798319"
+    },
+    {
+      "case": "canonical-select-left",
+      "field": "image.fixturePath",
+      "action": "change",
+      "oldByteSpan": [
+        86939,
+        86997
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "C4F9E79E2F37FA1F4E8CD1744ED8B69ADEB1BE5327817D7D148A65D789647668"
+    },
+    {
+      "case": "canonical-select-left",
+      "field": "image.sourcePins",
+      "action": "delete",
+      "oldByteSpan": [
+        87163,
+        87434
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "ECDCE29C3B3AD2A51E41AA3849B454A276616885894B289DC3F32106685F6513"
+    },
+    {
+      "case": "canonical-select-left",
+      "field": "image.sourcePins",
+      "action": "change",
+      "oldByteSpan": [
+        87177,
+        87434
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "E1E3750918FC94E8BEE59E748B231F180FFA8E1AB0FB286E54A6D046DFDB3DE2"
+    },
+    {
+      "case": "canonical-select-left",
+      "field": "image.sourcePins.0.path",
+      "action": "delete",
+      "oldByteSpan": [
+        87179,
+        87227
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "E1F4AA44C6FEA01E72EBB269573C9C12065ABA67B8728F9791053340094436CF"
+    },
+    {
+      "case": "canonical-select-left",
+      "field": "image.sourcePins.0.path",
+      "action": "change",
+      "oldByteSpan": [
+        87186,
+        87226
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "14A90BEBE1642C74440EB14689E645B2C4037758B61ECCB6D24BA77545D4F3CB"
+    },
+    {
+      "case": "canonical-select-left",
+      "field": "image.sourcePins.0.sha256",
+      "action": "delete",
+      "oldByteSpan": [
+        87226,
+        87302
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "A6B3FAD2348C5B293914BD6377A13D90E8DB1417EF9F76109E16E3A2AA182C5A"
+    },
+    {
+      "case": "canonical-select-left",
+      "field": "image.sourcePins.0.sha256",
+      "action": "change",
+      "oldByteSpan": [
+        87236,
+        87302
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "0560614597665EC801A50B9977A218E2926006E5D514B73667DF6B98EAF6297F"
+    },
+    {
+      "case": "",
+      "field": "schema",
+      "action": "delete",
+      "oldByteSpan": [
+        4,
+        40
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "ED7BF1A110673FAC2F88823823A9C2135485E140C8955FE9D082184846FEC7C9"
+    },
+    {
+      "case": "",
+      "field": "schema",
+      "action": "change",
+      "oldByteSpan": [
+        14,
+        39
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "301C0DEE40090FB0CEE9D3D49746E6877EB1B2FC80183183827F643B8670A8FA"
+    },
+    {
+      "case": "",
+      "field": "status",
+      "action": "delete",
+      "oldByteSpan": [
+        43,
+        62
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "0130C01D58CCCF12AD10A1088A5DC343E1D480611F9A89CD1941BCD06A020310"
+    },
+    {
+      "case": "",
+      "field": "status",
+      "action": "change",
+      "oldByteSpan": [
+        53,
+        61
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "AA7D0E54D44E23DD372F12890A69D5CE8A06BAD8EB0839787569B33AFC422FD0"
+    },
+    {
+      "case": "",
+      "field": "producerSha256",
+      "action": "delete",
+      "oldByteSpan": [
+        65,
+        150
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "9F8E0F7A0AC46CAD33B8DFEDB55473A5D39D7A75AF4BD027F0070384D1F74BB1"
+    },
+    {
+      "case": "",
+      "field": "producerSha256",
+      "action": "change",
+      "oldByteSpan": [
+        83,
+        149
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "91B81B447636050981FD52A845F620967E3330F4548DC84466E59CD3EB1E4A77"
+    },
+    {
+      "case": "",
+      "field": "encoderSha256",
+      "action": "delete",
+      "oldByteSpan": [
+        153,
+        237
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "5A2AFECE1DFBEEB796E7F80FC8214D8116EED118439DB57EED08849CA301C4BE"
+    },
+    {
+      "case": "",
+      "field": "encoderSha256",
+      "action": "change",
+      "oldByteSpan": [
+        170,
+        236
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "B12D18B555A7C37AE64116BC3F314709E2080FB59B9D356DFF55C2112C3CC74C"
+    },
+    {
+      "case": "",
+      "field": "cases",
+      "action": "delete",
+      "oldByteSpan": [
+        236,
+        133235
+      ],
+      "newSpanLength": 0,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "594D55B7D140B95DFBBB1936596E3567A69A3FE554DE0AFB0961A267FDD7AB2B"
+    },
+    {
+      "case": "",
+      "field": "cases",
+      "action": "change",
+      "oldByteSpan": [
+        249,
+        133235
+      ],
+      "newSpanLength": 24,
+      "onlyIntendedSemanticChange": true,
+      "beforeSha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+      "afterSha256": "A1849670984A0C5C88233ED966B15DB9F1F840E9D37EA2C36C15A9BDCA54059E"
+    }
+  ]
+}

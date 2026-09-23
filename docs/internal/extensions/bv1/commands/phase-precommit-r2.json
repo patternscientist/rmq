@@ -1,0 +1,133 @@
+{
+  "stage": "phase-precommit-r2",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "platform": "Windows PowerShell 7",
+  "checks": [
+    {
+      "id": "trust",
+      "executable": "C:\\Users\\poin\\AppData\\Local\\OpenAI\\Codex\\bin\\6fdec9b372c2c0fd\\rg.exe",
+      "arguments": [
+        "-n",
+        "\\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\\b|import Mathlib",
+        "RMQ",
+        "lakefile.toml"
+      ],
+      "expectedExit": 1,
+      "passed": true,
+      "exit": 1,
+      "seconds": 2.19,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\phase-precommit-r2-trust.json.gz",
+      "sha256": "E7985C7CD3BF688DDD343B6436D66A23F4648C99F65604A7FDC7940D24C514E8",
+      "outputTail": []
+    },
+    {
+      "id": "native-trust",
+      "executable": "C:\\Users\\poin\\AppData\\Local\\OpenAI\\Codex\\bin\\6fdec9b372c2c0fd\\rg.exe",
+      "arguments": [
+        "-n",
+        "native_decide|Lean\\.ofReduceBool",
+        "RMQ"
+      ],
+      "expectedExit": 1,
+      "passed": true,
+      "exit": 1,
+      "seconds": 1.921,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\phase-precommit-r2-native-trust.json.gz",
+      "sha256": "993ABF75D1371778197A7D16D13A6EF860D21386C2DB42A5F95988419A295A82",
+      "outputTail": []
+    },
+    {
+      "id": "working-diff",
+      "executable": "C:\\Program Files\\Git\\cmd\\git.exe",
+      "arguments": [
+        "diff",
+        "--check"
+      ],
+      "expectedExit": 0,
+      "passed": true,
+      "exit": 0,
+      "seconds": 2.618,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\phase-precommit-r2-working-diff.json.gz",
+      "sha256": "D89861C04B553DFC878E51963933634646B993E3C36E709B56FDB8907DA0EB39",
+      "outputTail": [
+        "warning: in the working copy of 'docs/internal/WORKFLOW_DESIGN_DECISIONS.md', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'lakefile.toml', LF will be replaced by CRLF the next time Git touches it"
+      ]
+    },
+    {
+      "id": "range-diff",
+      "executable": "C:\\Program Files\\Git\\cmd\\git.exe",
+      "arguments": [
+        "diff",
+        "--check",
+        "0e6a00f654abc64f8b68988fa9675b9a839dca2f..HEAD"
+      ],
+      "expectedExit": 0,
+      "passed": true,
+      "exit": 0,
+      "seconds": 2.731,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\phase-precommit-r2-range-diff.json.gz",
+      "sha256": "807CC5071BCABD70147C2622D4F812D9AAE3853466811A1121E32B071C5FCB86",
+      "outputTail": []
+    },
+    {
+      "id": "design",
+      "executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "arguments": [
+        "-NoProfile",
+        "-File",
+        "scripts/design_decision_check.ps1",
+        "-Strict",
+        "-Base",
+        "0e6a00f654abc64f8b68988fa9675b9a839dca2f"
+      ],
+      "expectedExit": 0,
+      "passed": true,
+      "exit": 0,
+      "seconds": 7.581,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\phase-precommit-r2-design.json.gz",
+      "sha256": "571136FF0B2A2B23036182E65437A6CEFDE9770491C5AA93E072B6C6722DF632",
+      "outputTail": [
+        "DESIGN-CHECK: checked 57 changed files (11 code, 49 workflow, 2 neutral)"
+      ]
+    },
+    {
+      "id": "claims",
+      "executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "arguments": [
+        "-NoProfile",
+        "-File",
+        "scripts/claim_drift_scan.ps1",
+        "-Strict"
+      ],
+      "expectedExit": 0,
+      "passed": true,
+      "exit": 0,
+      "seconds": 31.704,
+      "deadlineSeconds": 300,
+      "ownership": "kill-on-close-job",
+      "outputArchive": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\commands\\phase-precommit-r2-claims.json.gz",
+      "sha256": "6690DD4F178C64CB249FD1A84B6987CEACDE4A56414133B79168ED5ED8D0EADC",
+      "outputTail": [
+        "CLAIM-DRIFT[required-current-readword-only-theorem-attribution][strong-current-readword-only-claim-must-name-the-strong-public-theorem][allowed] README.md:104: strong claim has its required theorem identity",
+        "CLAIM-DRIFT: scan complete (1601 hits, 0 strict failures)"
+      ]
+    }
+  ],
+  "expectedChecks": 6,
+  "executedChecks": 6,
+  "frozenMatrixSha256": "80BD59A314FD33D37076802954444DA24F65C87A2A91DE23BC668B6AF9CCEB24",
+  "frozenMatrixUnchanged": true,
+  "passed": true
+}

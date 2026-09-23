@@ -1,0 +1,79 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "fa79233f77acbfa0470ef6203131e66784c7b014",
+  "command": {
+    "arguments": [
+      "-NoLogo",
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "scripts/packed_native_validator_controls.ps1"
+    ],
+    "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+  },
+  "result": {
+    "Stage": "validator-durable-all-01",
+    "ExitCode": 1,
+    "Output": [
+      "NATIVE1-VALIDATOR-CONTROL PASS omitted-default",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-valid-argument",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-valid-environment",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-empty-argument",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-empty-environment",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-whitespace-argument",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-whitespace-environment",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-malformed-argument",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-malformed-environment",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-unknown",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-duplicate",
+      "NATIVE1-VALIDATOR-CONTROL PASS compare-golden",
+      "NATIVE1-VALIDATOR-CONTROL PASS compare-quiet",
+      "NATIVE1-VALIDATOR-CONTROL PASS compare-wrong-golden",
+      "NATIVE1-VALIDATOR-CONTROL PASS compare-malformed-hex",
+      "NATIVE1-VALIDATOR-CONTROL PASS compare-wrong-hex-length",
+      "NATIVE1-VALIDATOR-CONTROL PASS compare-fuel-limit",
+      "NATIVE1-VALIDATOR-CONTROLS-REPORT C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\docs\\internal\\extensions\\native1\\commands\\validator-controls-20260912T121837285.json",
+      "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_validator_controls.ps1:251",
+      "Line |",
+      " 251 |  … rSuccess) { throw ('validator controls failed: ' + $validatorFailure) …",
+      "     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | validator controls failed: incomplete bounded validator child: compare-fuel-format"
+    ],
+    "StandardOutput": [
+      "NATIVE1-VALIDATOR-CONTROL PASS omitted-default",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-valid-argument",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-valid-environment",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-empty-argument",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-empty-environment",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-whitespace-argument",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-whitespace-environment",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-malformed-argument",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-malformed-environment",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-unknown",
+      "NATIVE1-VALIDATOR-CONTROL PASS selector-duplicate",
+      "NATIVE1-VALIDATOR-CONTROL PASS compare-golden",
+      "NATIVE1-VALIDATOR-CONTROL PASS compare-quiet",
+      "NATIVE1-VALIDATOR-CONTROL PASS compare-wrong-golden",
+      "NATIVE1-VALIDATOR-CONTROL PASS compare-malformed-hex",
+      "NATIVE1-VALIDATOR-CONTROL PASS compare-wrong-hex-length",
+      "NATIVE1-VALIDATOR-CONTROL PASS compare-fuel-limit",
+      "NATIVE1-VALIDATOR-CONTROLS-REPORT C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\docs\\internal\\extensions\\native1\\commands\\validator-controls-20260912T121837285.json"
+    ],
+    "StandardError": [
+      "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_validator_controls.ps1:251",
+      "Line |",
+      " 251 |  … rSuccess) { throw ('validator controls failed: ' + $validatorFailure) …",
+      "     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | validator controls failed: incomplete bounded validator child: compare-fuel-format"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 383.066,
+    "DeadlineSeconds": 600,
+    "Ownership": "kill-on-close-job"
+  }
+}

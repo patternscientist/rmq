@@ -1,0 +1,41 @@
+{
+  "schema": "native1-command-v1",
+  "command": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/packed_native_hydrate.ps1 -DefaultRMQ",
+  "result": {
+    "Stage": "hydrate-default-03",
+    "ExitCode": 0,
+    "Output": [
+      "NATIVE1-DEFAULT-HYDRATE planned=491 modules=372 native=0 bytes=133498087",
+      "NATIVE1-DEFAULT-HYDRATE copied=50/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=100/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=150/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=200/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=250/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=300/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=350/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=400/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=450/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=491 receipt=C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\docs\\internal\\extensions\\native1\\commands\\hydrate-default-20260912T125020579.json"
+    ],
+    "StandardOutput": [
+      "NATIVE1-DEFAULT-HYDRATE planned=491 modules=372 native=0 bytes=133498087",
+      "NATIVE1-DEFAULT-HYDRATE copied=50/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=100/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=150/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=200/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=250/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=300/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=350/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=400/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=450/491",
+      "NATIVE1-DEFAULT-HYDRATE copied=491 receipt=C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\docs\\internal\\extensions\\native1\\commands\\hydrate-default-20260912T125020579.json"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 189.603,
+    "DeadlineSeconds": 1800,
+    "Ownership": "kill-on-close-job"
+  }
+}

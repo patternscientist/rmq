@@ -1,0 +1,17 @@
+{
+  "Stage": "runtime-selector-malformed",
+  "ExitCode": 1,
+  "Output": [
+    "uncaught exception: LB1-RUNTIME malformed selector channel"
+  ],
+  "StandardOutput": [],
+  "StandardError": [
+    "uncaught exception: LB1-RUNTIME malformed selector channel"
+  ],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 57.093,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

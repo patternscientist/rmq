@@ -1,0 +1,13 @@
+{
+  "Stage": "M25-prefixSafety-producer",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 7.117,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

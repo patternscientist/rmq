@@ -1,0 +1,76 @@
+{
+  "schema": "native1-route-results-v3",
+  "success": true,
+  "run": "20260912T095846357",
+  "selectorBound": true,
+  "selector": "smoke",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "toolchainVerificationSeconds": 34.8952181,
+  "buildManifestSha256": "B07F660A24BA5966D7CD5BDA3D2C7C7D90ECF6FDD4192DE0B709C486D5F006F9",
+  "registrySha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+  "expectedCases": [
+    "smoke"
+  ],
+  "executedCases": [
+    "smoke"
+  ],
+  "expectedCount": 1,
+  "executedCount": 1,
+  "results": [
+    {
+      "contract": {
+        "id": "smoke",
+        "kind": "smoke",
+        "operation": "native-exact-output",
+        "executable": "packed-rmq-route.exe",
+        "mode": "reads",
+        "program": "1 3 8\n8 3\n",
+        "fixture": "9 0 9 168 100\n",
+        "exit": 0,
+        "expected": "8 2\n0 1 0 0 0 1",
+        "outputChannel": "stdout",
+        "expectedOtherOutput": ""
+      },
+      "operation": "native-exact-output",
+      "pass": true,
+      "evidence": {
+        "expectedOtherOutput": "",
+        "outputChannel": "stdout",
+        "exactOtherOutput": true,
+        "expectedExit": 0,
+        "exactOutput": true,
+        "outputLines": 2,
+        "process": {
+          "Stage": "smoke",
+          "ExitCode": 0,
+          "Output": [
+            "8 2",
+            "0 1 0 0 0 1"
+          ],
+          "StandardOutput": [
+            "8 2",
+            "0 1 0 0 0 1"
+          ],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 2.934,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\packed-rmq-route.exe",
+          "InvokedArguments": [
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\replay\\smoke.program",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\replay\\smoke.fixture",
+            "reads"
+          ]
+        }
+      },
+      "id": "smoke",
+      "kind": "smoke"
+    }
+  ],
+  "unsupportedHosts": [
+    "Non-Windows execution not covered by this experiment"
+  ]
+}

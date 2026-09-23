@@ -1,0 +1,3019 @@
+{
+  "schema": "native1-route-controls-v3",
+  "success": true,
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "powershell": "7.6.5",
+  "runnerSha256": "D483F5764E34FFBBCD3C2DD0FE24D4CE3CC2EF4E0307C8751AF8C1A3E5401DEF",
+  "controlsSha256": "2720061FF3A2A47C77F221A6BF5831D0CF60EF1E27B8A045AE7C2EC529FDBE21",
+  "registrySha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+  "registryCases": [
+    "empty",
+    "whitespace",
+    "malformed",
+    "unknown",
+    "registry-source-pin-downgrade",
+    "registry-fixture-substitution",
+    "registry-stale-fixture-substitution",
+    "registry-missing-schema",
+    "registry-changed-schema",
+    "registry-empty-cases",
+    "registry-missing-cases",
+    "registry-duplicate-case",
+    "registry-extra-top-field",
+    "registry-extra-case-field",
+    "registry-duplicate-json-key",
+    "registry-format-change",
+    "registry-delete-id",
+    "registry-change-id",
+    "registry-delete-kind",
+    "registry-change-kind",
+    "registry-delete-operation",
+    "registry-change-operation",
+    "registry-delete-executable",
+    "registry-change-executable",
+    "registry-delete-mode",
+    "registry-change-mode",
+    "registry-delete-program",
+    "registry-change-program",
+    "registry-delete-fixture",
+    "registry-change-fixture",
+    "registry-delete-exit",
+    "registry-change-exit",
+    "registry-delete-expected",
+    "registry-change-expected",
+    "registry-delete-source",
+    "registry-change-source",
+    "registry-delete-anchor",
+    "registry-change-anchor",
+    "registry-delete-replacement",
+    "registry-change-replacement",
+    "registry-delete-proofLine",
+    "registry-change-proofLine",
+    "registry-delete-surface",
+    "registry-change-surface",
+    "registry-delete-append",
+    "registry-change-append",
+    "registry-delete-outputChannel",
+    "registry-change-outputChannel",
+    "registry-delete-expectedOtherOutput",
+    "registry-change-expectedOtherOutput",
+    "source-manifest-missing",
+    "artifact-manifest-empty",
+    "fixture-manifest-missing",
+    "valid-smoke",
+    "omitted-full"
+  ],
+  "registryCount": 55,
+  "expectedCases": [
+    "empty",
+    "whitespace",
+    "malformed",
+    "unknown",
+    "registry-source-pin-downgrade",
+    "registry-fixture-substitution",
+    "registry-stale-fixture-substitution",
+    "registry-missing-schema",
+    "registry-changed-schema",
+    "registry-empty-cases",
+    "registry-missing-cases",
+    "registry-duplicate-case",
+    "registry-extra-top-field",
+    "registry-extra-case-field",
+    "registry-duplicate-json-key",
+    "registry-format-change",
+    "registry-delete-id",
+    "registry-change-id",
+    "registry-delete-kind",
+    "registry-change-kind",
+    "registry-delete-operation",
+    "registry-change-operation",
+    "registry-delete-executable",
+    "registry-change-executable",
+    "registry-delete-mode",
+    "registry-change-mode",
+    "registry-delete-program",
+    "registry-change-program",
+    "registry-delete-fixture",
+    "registry-change-fixture",
+    "registry-delete-exit",
+    "registry-change-exit",
+    "registry-delete-expected",
+    "registry-change-expected",
+    "registry-delete-source",
+    "registry-change-source",
+    "registry-delete-anchor",
+    "registry-change-anchor",
+    "registry-delete-replacement",
+    "registry-change-replacement",
+    "registry-delete-proofLine",
+    "registry-change-proofLine",
+    "registry-delete-surface",
+    "registry-change-surface",
+    "registry-delete-append",
+    "registry-change-append",
+    "registry-delete-outputChannel",
+    "registry-change-outputChannel",
+    "registry-delete-expectedOtherOutput",
+    "registry-change-expectedOtherOutput",
+    "source-manifest-missing",
+    "artifact-manifest-empty",
+    "fixture-manifest-missing",
+    "valid-smoke",
+    "omitted-full"
+  ],
+  "executedCases": [
+    "empty",
+    "whitespace",
+    "malformed",
+    "unknown",
+    "registry-source-pin-downgrade",
+    "registry-fixture-substitution",
+    "registry-stale-fixture-substitution",
+    "registry-missing-schema",
+    "registry-changed-schema",
+    "registry-empty-cases",
+    "registry-missing-cases",
+    "registry-duplicate-case",
+    "registry-extra-top-field",
+    "registry-extra-case-field",
+    "registry-duplicate-json-key",
+    "registry-format-change",
+    "registry-delete-id",
+    "registry-change-id",
+    "registry-delete-kind",
+    "registry-change-kind",
+    "registry-delete-operation",
+    "registry-change-operation",
+    "registry-delete-executable",
+    "registry-change-executable",
+    "registry-delete-mode",
+    "registry-change-mode",
+    "registry-delete-program",
+    "registry-change-program",
+    "registry-delete-fixture",
+    "registry-change-fixture",
+    "registry-delete-exit",
+    "registry-change-exit",
+    "registry-delete-expected",
+    "registry-change-expected",
+    "registry-delete-source",
+    "registry-change-source",
+    "registry-delete-anchor",
+    "registry-change-anchor",
+    "registry-delete-replacement",
+    "registry-change-replacement",
+    "registry-delete-proofLine",
+    "registry-change-proofLine",
+    "registry-delete-surface",
+    "registry-change-surface",
+    "registry-delete-append",
+    "registry-change-append",
+    "registry-delete-outputChannel",
+    "registry-change-outputChannel",
+    "registry-delete-expectedOtherOutput",
+    "registry-change-expectedOtherOutput",
+    "source-manifest-missing",
+    "artifact-manifest-empty",
+    "fixture-manifest-missing",
+    "valid-smoke",
+    "omitted-full"
+  ],
+  "expectedCount": 55,
+  "executedCount": 55,
+  "results": [
+    {
+      "id": "empty",
+      "evidence": {
+        "selector": "",
+        "selectorBound": true,
+        "process": {
+          "Stage": "native1-control-empty",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:30",
+            "Line |",
+            "  30 |  … $taskExactIds -cnotcontains $Case) { throw 'invalid exact selector' }",
+            "     |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact selector"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:30",
+            "Line |",
+            "  30 |  … $taskExactIds -cnotcontains $Case) { throw 'invalid exact selector' }",
+            "     |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact selector"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 9.774,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            ""
+          ]
+        },
+        "verdict": "expected rejection",
+        "surface": "invalid exact selector"
+      },
+      "pass": true
+    },
+    {
+      "id": "whitespace",
+      "evidence": {
+        "selector": "   ",
+        "selectorBound": true,
+        "process": {
+          "Stage": "native1-control-whitespace",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:30",
+            "Line |",
+            "  30 |  … $taskExactIds -cnotcontains $Case) { throw 'invalid exact selector' }",
+            "     |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact selector"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:30",
+            "Line |",
+            "  30 |  … $taskExactIds -cnotcontains $Case) { throw 'invalid exact selector' }",
+            "     |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact selector"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 11.449,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "   "
+          ]
+        },
+        "verdict": "expected rejection",
+        "surface": "invalid exact selector"
+      },
+      "pass": true
+    },
+    {
+      "id": "malformed",
+      "evidence": {
+        "selector": "n9-full,n9-empty",
+        "selectorBound": true,
+        "process": {
+          "Stage": "native1-control-malformed",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:30",
+            "Line |",
+            "  30 |  … $taskExactIds -cnotcontains $Case) { throw 'invalid exact selector' }",
+            "     |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact selector"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:30",
+            "Line |",
+            "  30 |  … $taskExactIds -cnotcontains $Case) { throw 'invalid exact selector' }",
+            "     |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact selector"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 12.076,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "n9-full,n9-empty"
+          ]
+        },
+        "verdict": "expected rejection",
+        "surface": "invalid exact selector"
+      },
+      "pass": true
+    },
+    {
+      "id": "unknown",
+      "evidence": {
+        "selector": "unknown",
+        "selectorBound": true,
+        "process": {
+          "Stage": "native1-control-unknown",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:30",
+            "Line |",
+            "  30 |  … $taskExactIds -cnotcontains $Case) { throw 'invalid exact selector' }",
+            "     |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact selector"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:30",
+            "Line |",
+            "  30 |  … $taskExactIds -cnotcontains $Case) { throw 'invalid exact selector' }",
+            "     |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | invalid exact selector"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 11.718,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "unknown"
+          ]
+        },
+        "verdict": "expected rejection",
+        "surface": "invalid exact selector"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-source-pin-downgrade",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "902938D5189298B2BBE75E7DD55153AC9140D08A7B59F5378382F195C7D0DD2C",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-source-pin-downgrade",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 15.651,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-source-pin-downgrade"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-fixture-substitution",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "A7C83CA2021D24EC27B3B1CB64AEF2AC8E6E2B11AB7C06212C0EAD833459EBC3",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-fixture-substitution",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 8.999,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-fixture-substitution"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-stale-fixture-substitution",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "57E981E9769C8ABF0CCDB2CF189C80DBF5A37AB539299932B2F654F0BF18AE5C",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-stale-fixture-substitution",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 17.403,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-stale-fixture-substitution"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-missing-schema",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "F86B20AFB93DFF3F36B6BA45173B3B9998A5B4760E7207294724CBEF74639D7C",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-missing-schema",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 13.54,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-missing-schema"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-changed-schema",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "FADF45047E5FF624C6F6D5930F40F8005FA0966446D95F70F619271F32BF1C63",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-changed-schema",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.111,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-changed-schema"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-empty-cases",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "A964E213866F92615CB22A91A715FD987D4ED5D91C0C06B27222651636D84BDB",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-empty-cases",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 8.35,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-empty-cases"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-missing-cases",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "A7F83A4074F9F47D0B0647CC18566D89D834A7C9225A121FF376C460CA25C95A",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-missing-cases",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.93,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-missing-cases"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-duplicate-case",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "82183526083CCECE0ACDAE7BC8392D76D0EC7B53D21257349CAD89E49C30A1FA",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-duplicate-case",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 11.768,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-duplicate-case"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-extra-top-field",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "D792BB38A4199C3E5EAF0FDA5B0B0FBB1EB4EB001FF679E2D5E9D3EA41E5FC1B",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-extra-top-field",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.428,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-extra-top-field"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-extra-case-field",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "AA8D996CF44651C5106979A4A3EFA5D027CD44A2266AF10D6C8FCD30BADA2C8E",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-extra-case-field",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.008,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-extra-case-field"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-duplicate-json-key",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "EED2F6F2D18B7C80FA8CE15CF1B244C6E78817FF451A4EBF7202DEFBACB7FB76",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-duplicate-json-key",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.384,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-duplicate-json-key"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-format-change",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "61C7A36CDC8975ADC1059FC0A421F89A0F1D177AC2C415BC22CD420530D86AF0",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-format-change",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.478,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-format-change"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-id",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "AB56352CF88946926DE1683183F2F956158C74DBB03571EA5895BEDBA9F712F9",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-id",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 8.26,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-id"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-id",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "56B5C7566F830D9C5BA060578E01BBA82C67A19D13F3B2DE58E99D6776A00B09",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-id",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 8.475,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-id"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-kind",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "D918A92E864AB7D389D00DB4925051CF8A0D0B0274DEBEFE19089F4D38FC5EDC",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-kind",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.932,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-kind"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-kind",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "2C81AAD085E0749E11089D2F2E503BB513E7E789D28BC3A297757AE85B23D68B",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-kind",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 11.524,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-kind"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-operation",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "F6F09A3792D0AB23D1B7B5D1040B1882019D274EFCDA45E4C4E42D1BC9E7186E",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-operation",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.003,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-operation"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-operation",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "F82F848C56EFD9B2BFD4F6EBE51577E0F83623EED1D7749A4303B2B28F59CF01",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-operation",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 8.093,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-operation"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-executable",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "0BC65E994D24CBE8F02D3D9944766B3E237B1F4EFDB02CD53AD6A8A2A4313002",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-executable",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 8.516,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-executable"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-executable",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "657AE32A9727BB213C060418C4BDE16C559BD72EC7ADE5331A0E04B796A43DFD",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-executable",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.424,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-executable"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-mode",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "9B40579AAA6D1AF8B7CEEAD9DC4698EC9BB36C307E17AA3917AA49127306B29E",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-mode",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.284,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-mode"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-mode",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "82AF33F883CBBC7DA2C830E7523754EBA8FB211011DFA0D1D0C3B4CCAC535850",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-mode",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 8.419,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-mode"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-program",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "E07A5AD0B002C3CC61F104B4E6351B0FEC7027C56E2E31AF2126A10FCD6A2755",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-program",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.521,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-program"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-program",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "BDA3A1A9D08C5A78547FC3F02F1973F24C8E6A3D0625FF3AA9519B797F457759",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-program",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.517,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-program"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-fixture",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "89CDCB8A164318D36C0C66D7890CD942B33680F6267A580E0EB3E9AE4CBD4A35",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-fixture",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.959,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-fixture"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-fixture",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "74D3CFDE1021D294273A3BE46693F1A68844852F7797519CBAB1D104525EEDAD",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-fixture",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.178,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-fixture"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-exit",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "30B693CA9A84B2F14158036821220751025DB7B213F6B223F1CE9F8B4238A4AE",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-exit",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.909,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-exit"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-exit",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "0E57A51591218DBE6277C099A8C26E18F7ECC9332C48CD8EE5F6C85E4566AE9D",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-exit",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 9.984,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-exit"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-expected",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "F0A2A712452E0B94CC2FA4B66253E2D147869742AF9DE5AC5BB769B3D1A07303",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-expected",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.561,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-expected"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-expected",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "4DA8EA6F0EA373296AAD7AA708A609932DF095E11681A23C690C3EC6252ABD88",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-expected",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.134,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-expected"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-source",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "CEFFF81CD2ED9806FC4F4256B1C9E7367256C4931331382476871727D9F991CB",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-source",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.629,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-source"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-source",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "E2C7D4D3E79540EE571240829EC883934F6D2062B3C39C93451BF9C139B0EE0B",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-source",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.993,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-source"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-anchor",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "9BF19B1F9C7C7BA4ABBE20ED68EA23ABDAB673BFA8F67854C314E938C81C925A",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-anchor",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 5.522,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-anchor"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-anchor",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "D3B3F6C074FCE5874BBB3DDD440D29CCFA6B340A997A9D9BDD7674F9E0B187B7",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-anchor",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.259,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-anchor"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-replacement",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "50A52A4CA9672E28FFA23EC1B9B22910C1DE269CF1F7E7D80021FF6F2C529358",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-replacement",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 9.335,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-replacement"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-replacement",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "4B51796B09214B44D5C206E6313447ED26019C69FC4BC261038F93A6F9533058",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-replacement",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 8.191,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-replacement"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-proofLine",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "3B4BB2BCF585D3ED8E1D6138B86A17F851503C47592F662241A988325FB3DE6B",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-proofLine",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.301,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-proofLine"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-proofLine",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "08E33AE631A22B54876E22D7C009134DC279FCBB5276C8495C926D526845D95B",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-proofLine",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 8.46,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-proofLine"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-surface",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "8F7743A0A256D96BEFDB24F13B8DA690803C3FDD4FA1C9452296EE7B05516F98",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-surface",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 8.584,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-surface"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-surface",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "ABACA48C6661F453ACBB0E3A483C5AD0F4508438312A3F9EE1AC9CCC230C6E9A",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-surface",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.076,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-surface"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-append",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "63617005F168F643D49A09025F7EC15A4ACCA8EFF68E2D71F86EA79B787FCD7E",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-append",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.935,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-append"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-append",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "33E2CC4A49CE21062FE28BD6F6389529277D06871B2EE731306BB7C4976A138B",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-append",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 9.15,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-append"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-outputChannel",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "94772157634F23B43A3B22B8D0B261248CE49D9BA50439D668A3CF0E210D516B",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-outputChannel",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 9.044,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-outputChannel"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-outputChannel",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "FE906E84A3ACC1EE1D2A19BAAEACE788AB12A484223F0AC43B2385F726BC999F",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-outputChannel",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.532,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-outputChannel"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-delete-expectedOtherOutput",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "D33F90514E3D1D54D374F5D5D2E67E6D3B481A66FD287AA8F7A8D583CEF19CAB",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-delete-expectedOtherOutput",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 5.632,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-delete-expectedOtherOutput"
+      },
+      "pass": true
+    },
+    {
+      "id": "registry-change-expectedOtherOutput",
+      "evidence": {
+        "beforeSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "surface": "exact semantic registry mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "CC816DC2C39B2560E712776BD7106FCCD8918D0BF7335D8CB9D79013F5427C24",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-registry-change-expectedOtherOutput",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:17",
+            "Line |",
+            "  17 |    throw 'exact semantic registry mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact semantic registry mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.312,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "33609A968052FB37894CACD9721BE12AD1FBAFF0BF332A0287CD1AA38622F539",
+        "selectorBound": true,
+        "mutation": "registry-change-expectedOtherOutput"
+      },
+      "pass": true
+    },
+    {
+      "id": "source-manifest-missing",
+      "evidence": {
+        "beforeSha256": "B07F660A24BA5966D7CD5BDA3D2C7C7D90ECF6FDD4192DE0B709C486D5F006F9",
+        "surface": "build manifest shape",
+        "verdict": "expected rejection",
+        "mutatedSha256": "B55F32899C1B2C89DCDA3BB74E21AA49F79662DE573CF699E5B57F2E5E48A940",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-source-manifest-missing",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:49",
+            "Line |",
+            "  49 |      throw 'build manifest shape'",
+            "     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | build manifest shape"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:49",
+            "Line |",
+            "  49 |      throw 'build manifest shape'",
+            "     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | build manifest shape"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 8.154,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "B07F660A24BA5966D7CD5BDA3D2C7C7D90ECF6FDD4192DE0B709C486D5F006F9",
+        "selectorBound": true
+      },
+      "pass": true
+    },
+    {
+      "id": "artifact-manifest-empty",
+      "evidence": {
+        "beforeSha256": "B07F660A24BA5966D7CD5BDA3D2C7C7D90ECF6FDD4192DE0B709C486D5F006F9",
+        "surface": "build manifest shape",
+        "verdict": "expected rejection",
+        "mutatedSha256": "E359AF788B37A15D58DD692857F2A36D1B3FCB2F9F94DA8EDFC296225EE6D6C5",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-artifact-manifest-empty",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:49",
+            "Line |",
+            "  49 |      throw 'build manifest shape'",
+            "     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | build manifest shape"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:49",
+            "Line |",
+            "  49 |      throw 'build manifest shape'",
+            "     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | build manifest shape"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.819,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "B07F660A24BA5966D7CD5BDA3D2C7C7D90ECF6FDD4192DE0B709C486D5F006F9",
+        "selectorBound": true
+      },
+      "pass": true
+    },
+    {
+      "id": "fixture-manifest-missing",
+      "evidence": {
+        "beforeSha256": "C68F431557B40940A72BA1C3545E00750D65285736BC4A25F8E1104308351833",
+        "surface": "exact fixture manifest mismatch",
+        "verdict": "expected rejection",
+        "mutatedSha256": "2D51E2C4357D6E961E36E46727023F6E87AB7FE5CC50D3DEBB27BA09B8250E38",
+        "exactGitRestoration": true,
+        "process": {
+          "Stage": "native1-control-fixture-manifest-missing",
+          "ExitCode": 1,
+          "Output": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:75",
+            "Line |",
+            "  75 |    throw 'exact fixture manifest mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact fixture manifest mismatch"
+          ],
+          "StandardOutput": [],
+          "StandardError": [
+            "Exception: C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1:75",
+            "Line |",
+            "  75 |    throw 'exact fixture manifest mismatch'",
+            "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+            "     | exact fixture manifest mismatch"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 10.206,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "selector": "smoke",
+        "restoredSha256": "C68F431557B40940A72BA1C3545E00750D65285736BC4A25F8E1104308351833",
+        "selectorBound": true
+      },
+      "pass": true
+    },
+    {
+      "id": "valid-smoke",
+      "evidence": {
+        "selectorBound": true,
+        "process": {
+          "Stage": "native1-control-valid-smoke",
+          "ExitCode": 0,
+          "Output": [
+            "NATIVE1-ROUTE PASS smoke",
+            "NATIVE1-ROUTE-REPORT C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\docs\\internal\\extensions\\native1\\commands\\route-20260912T095846357.json"
+          ],
+          "StandardOutput": [
+            "NATIVE1-ROUTE PASS smoke",
+            "NATIVE1-ROUTE-REPORT C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\docs\\internal\\extensions\\native1\\commands\\route-20260912T095846357.json"
+          ],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 44.133,
+          "DeadlineSeconds": 900,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1",
+            "-Case",
+            "smoke"
+          ]
+        },
+        "routeReportSha256": "23A2C407B17E336388C1323CC28B3A48D0A02D757D6A89E07794A920AF08E6B8",
+        "expectedCases": "smoke",
+        "executedCases": [
+          "smoke"
+        ],
+        "verdict": "expected accept",
+        "routeReport": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\docs\\internal\\extensions\\native1\\commands\\route-20260912T095846357.json"
+      },
+      "pass": true
+    },
+    {
+      "id": "omitted-full",
+      "evidence": {
+        "selectorBound": false,
+        "process": {
+          "Stage": "native1-control-omitted-full",
+          "ExitCode": 0,
+          "Output": [
+            "NATIVE1-ROUTE PASS smoke",
+            "NATIVE1-ROUTE PASS n9-full",
+            "NATIVE1-ROUTE PASS n9-empty",
+            "NATIVE1-ROUTE PASS n9-range",
+            "NATIVE1-ROUTE PASS n9-corrupt",
+            "NATIVE1-ROUTE PASS n9-missing",
+            "NATIVE1-ROUTE PASS n12-interior",
+            "NATIVE1-ROUTE PASS n12-same",
+            "NATIVE1-ROUTE PASS n12-adjacent",
+            "NATIVE1-ROUTE PASS n9-no-reads",
+            "NATIVE1-ROUTE PASS malformed-instruction",
+            "NATIVE1-ROUTE PASS malformed-fixture",
+            "NATIVE1-ROUTE PASS cpp-n9-full",
+            "NATIVE1-ROUTE PASS cpp-malformed-instruction",
+            "NATIVE1-ROUTE PASS source-core-mutation",
+            "NATIVE1-ROUTE PASS stale-source-rejection",
+            "NATIVE1-ROUTE-REPORT C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\docs\\internal\\extensions\\native1\\commands\\route-20260912T095926516.json",
+            "warning: in the working copy of 'RMQ/Core/WordRAM/Native/Route.lean', LF will be replaced by CRLF the next time Git touches it"
+          ],
+          "StandardOutput": [
+            "NATIVE1-ROUTE PASS smoke",
+            "NATIVE1-ROUTE PASS n9-full",
+            "NATIVE1-ROUTE PASS n9-empty",
+            "NATIVE1-ROUTE PASS n9-range",
+            "NATIVE1-ROUTE PASS n9-corrupt",
+            "NATIVE1-ROUTE PASS n9-missing",
+            "NATIVE1-ROUTE PASS n12-interior",
+            "NATIVE1-ROUTE PASS n12-same",
+            "NATIVE1-ROUTE PASS n12-adjacent",
+            "NATIVE1-ROUTE PASS n9-no-reads",
+            "NATIVE1-ROUTE PASS malformed-instruction",
+            "NATIVE1-ROUTE PASS malformed-fixture",
+            "NATIVE1-ROUTE PASS cpp-n9-full",
+            "NATIVE1-ROUTE PASS cpp-malformed-instruction",
+            "NATIVE1-ROUTE PASS source-core-mutation",
+            "NATIVE1-ROUTE PASS stale-source-rejection",
+            "NATIVE1-ROUTE-REPORT C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\docs\\internal\\extensions\\native1\\commands\\route-20260912T095926516.json"
+          ],
+          "StandardError": [
+            "warning: in the working copy of 'RMQ/Core/WordRAM/Native/Route.lean', LF will be replaced by CRLF the next time Git touches it"
+          ],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 93.205,
+          "DeadlineSeconds": 900,
+          "Ownership": "kill-on-close-job",
+          "InvokedFilePath": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "InvokedArguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_route.ps1"
+          ]
+        },
+        "routeReportSha256": "5A31BDDA30A5026EDD27ED3374E4354B4AD5928C2A75591DB0BFCF780B1EB647",
+        "expectedCases": [
+          "smoke",
+          "n9-full",
+          "n9-empty",
+          "n9-range",
+          "n9-corrupt",
+          "n9-missing",
+          "n12-interior",
+          "n12-same",
+          "n12-adjacent",
+          "n9-no-reads",
+          "malformed-instruction",
+          "malformed-fixture",
+          "cpp-n9-full",
+          "cpp-malformed-instruction",
+          "source-core-mutation",
+          "stale-source-rejection"
+        ],
+        "executedCases": [
+          "smoke",
+          "n9-full",
+          "n9-empty",
+          "n9-range",
+          "n9-corrupt",
+          "n9-missing",
+          "n12-interior",
+          "n12-same",
+          "n12-adjacent",
+          "n9-no-reads",
+          "malformed-instruction",
+          "malformed-fixture",
+          "cpp-n9-full",
+          "cpp-malformed-instruction",
+          "source-core-mutation",
+          "stale-source-rejection"
+        ],
+        "verdict": "expected accept",
+        "routeReport": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\docs\\internal\\extensions\\native1\\commands\\route-20260912T095926516.json"
+      },
+      "pass": true
+    }
+  ],
+  "unsupportedHosts": [
+    "Non-Windows process boundary and native execution are not covered by this campaign"
+  ]
+}

@@ -383,7 +383,15 @@ structure PackedReviewerArchitectureCapstone
     let shape := SuccinctClassic.cartesianShape xs
     (packedReviewerHeaderBits shape).length =
       packedReviewerCellWidth shape.size
-  /-- Field 15 (`EG-CP-A03`): both decoded header fields fit the width. -/
+  /-- Field 15 (`EG-CP-A03`): the long count and the sparse count each fit the
+  cell width.
+
+  Corrected 2026-08-12: this said "both decoded header fields", but the packed
+  header stores exactly one field, `longCount`. `packedReviewerSparseCount` is
+  not decoded from the header at all -- the controller recovers it through the
+  charged K1 prelude, and `ReviewerMemory.lean` says so explicitly ("No second
+  header field is introduced"). The two inequalities below are unchanged and
+  correct; only the description was wrong. -/
   header_fields_fit :
     let shape := SuccinctClassic.cartesianShape xs
     longCount shape < 2 ^ packedReviewerCellWidth shape.size /\
@@ -491,9 +499,30 @@ structure PackedReviewerArchitectureCapstone
     let shape := SuccinctClassic.cartesianShape xs
     (packedReviewerRunAgainstMemory (packedReviewerMemory shape)
       shape.size left right).trace.length <= 427
-  /-- Field 27 (`EG-CP-A06`): the structural derivation of the exact numeral
-  `427 = 1 + 2*3 + 2*210` from the run's own fuel measure -- never a stored
-  numeral, input, hypothesis, or precomputed result. -/
+  /-- Field 27 (`EG-CP-A06`): the numeral `427 = 1 + 2*3 + 2*210` equated to the
+  decomposition of the run's own fuel measure.
+
+  **Scope, corrected 2026-08-12.** This field states four *extensional*
+  equalities about `packedReviewerControllerMeasure`. It does **not** by itself
+  establish that the measure is computed structurally rather than stored: a
+  counterfactual measure that returned `427` for a valid header would satisfy
+  all four conjuncts, since `1 + 2*3 + 2*210` *is* `427`. That the audited
+  measure is structural is a fact about its definition
+  (`ReviewerController.lean`, where it is assembled from controller-state
+  counters), verifiable by reading that definition -- not a consequence of this
+  proposition.
+
+  This docstring previously said the numeral is "never a stored numeral, input,
+  hypothesis, or precomputed result", which reads as an intensional guarantee
+  the field cannot carry. A fresh-blind audit exhibited the hard-coded
+  counterfactual. What the field genuinely contributes is that the *published*
+  numeral is the measure's decomposition rather than an independent constant
+  asserted alongside it; anti-substitution for the measure itself rests on the
+  definition and on `SA-M11`, which rejects a forged cap at the structural
+  surface.
+
+  The same distinction applies to field 32, whose content is likewise in its
+  elaboration rather than its proof. -/
   cap_structural_derivation :
     let shape := SuccinctClassic.cartesianShape xs
     left < right -> right <= shape.size ->
@@ -552,10 +581,39 @@ structure PackedReviewerArchitectureCapstone
     ¬ (left < right ∧ right <= shape.size) ->
       (SuccinctClassic.queryTraceResult xs left right).value = none
   /-- Field 32 (`EG-CP-A09`): the exact-type controller input boundary --
-  this equation elaborates only at
-  `Nat -> Nat -> Nat -> PackedReviewerControllerState`. -/
+  the ascription on this equation elaborates only at
+  `Nat -> Nat -> Nat -> PackedReviewerControllerState`.
+
+  **Read this field precisely.** It is an eta equation, closed by `rfl`. All of
+  its content is in the *elaboration*, not the proof: the statement typechecks
+  only if `packedReviewerController` has exactly that arity and those argument
+  types, which is what pins the controller's static interface -- in particular
+  it cannot take `xs`, a shape, an oracle, or any further argument, because such
+  a controller would not elaborate here. The ASCRIPTION is what does that:
+  without it the statement is a bare eta equation, and eta holds for a controller
+  of any larger arity: eta holds at every prefix of the arguments too. Measured
+  2026-09-08 on a four-input controller whose fourth argument changes the result:
+  the unascribed form accepted it (`lake env lean` exit 0, no errors) and the
+  ascribed form rejects it. An external audit found the field claiming an arity
+  it did not pin. (The wording avoids one word the proof-hygiene scan forbids
+  outright; that scan is deliberately blunt and prose is not worth loosening it.)
+
+  It is **not** the semantic no-hidden-input theorem, and it should not be cited
+  as one. It says nothing about the controller's behaviour; a controller of the
+  right type that consulted something it should not would satisfy this field. The
+  semantic content lives in the neighbouring fields -- field 33
+  (`controller_uniform_entry`: one guard and one uniform state at every size, so
+  no readiness or compatibility dispatch) and field 34
+  (`store_agreement_determinism`: equal replies on the run's trace determine the
+  complete run record, which is what actually forces the dynamic inputs to be
+  `n`, the endpoints, and prior probe replies).
+
+  Clarified 2026-08-09 after a fresh-blind audit observed that this field *reads*
+  like the no-hidden-input result. The field is sound; the way it invited being
+  cited was not. -/
   controller_exact_input_boundary :
-    @packedReviewerController =
+    (packedReviewerController :
+        Nat -> Nat -> Nat -> PackedReviewerControllerState) =
       (fun (n left right : Nat) => packedReviewerController n left right)
   /-- Field 33 (`EG-CP-A09`): the controller entry is one guard and one
   uniform state at every size -- no readiness or compatibility dispatch. -/

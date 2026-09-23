@@ -1,0 +1,33 @@
+{
+  "Stage": "pre1-RMQ.Core.Shape-r5",
+  "ExitCode": 0,
+  "Output": [
+    "✔ [1/2] Built RMQ.Core.ListLemmas",
+    "✔ [3/9] Built RMQ.Core.Spec",
+    "✔ [4/9] Built RMQ.Core.Window",
+    "✔ [5/9] Built RMQ.Core.Backend",
+    "✔ [6/9] Built RMQ.Core.LCA",
+    "✔ [7/9] Built RMQ.Core.Reduction",
+    "✔ [8/9] Built RMQ.Core.Cartesian",
+    "✔ [9/9] Built RMQ.Core.Shape",
+    "Build completed successfully."
+  ],
+  "StandardOutput": [
+    "✔ [1/2] Built RMQ.Core.ListLemmas",
+    "✔ [3/9] Built RMQ.Core.Spec",
+    "✔ [4/9] Built RMQ.Core.Window",
+    "✔ [5/9] Built RMQ.Core.Backend",
+    "✔ [6/9] Built RMQ.Core.LCA",
+    "✔ [7/9] Built RMQ.Core.Reduction",
+    "✔ [8/9] Built RMQ.Core.Cartesian",
+    "✔ [9/9] Built RMQ.Core.Shape",
+    "Build completed successfully."
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 95.384,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

@@ -1,0 +1,31 @@
+{
+  "Stage": "F01-DELETE-MEMORY-RECOVERY-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:37:2: error: Invalid field `memoryRecovery`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.PackedAllocationOptimality.memoryRecovery`",
+    "  packedAllocationOptimality_holds",
+    "has type",
+    "  PackedAllocationOptimality",
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:272:4: error: Invalid field `memoryRecovery`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.PackedAllocationOptimality.memoryRecovery`",
+    "  packedAllocationOptimality_holds",
+    "has type",
+    "  PackedAllocationOptimality"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:37:2: error: Invalid field `memoryRecovery`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.PackedAllocationOptimality.memoryRecovery`",
+    "  packedAllocationOptimality_holds",
+    "has type",
+    "  PackedAllocationOptimality",
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:272:4: error: Invalid field `memoryRecovery`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.PackedAllocationOptimality.memoryRecovery`",
+    "  packedAllocationOptimality_holds",
+    "has type",
+    "  PackedAllocationOptimality"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 19.619,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "fa79233f77acbfa0470ef6203131e66784c7b014",
+  "command": {
+    "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+    "arguments": [
+      "-NoLogo",
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "scripts/packed_native_contract_replay.ps1",
+      "-Case",
+      "baseline"
+    ]
+  },
+  "result": {
+    "Stage": "contract-baseline-02",
+    "ExitCode": 0,
+    "Output": [
+      "NATIVE1-CONTRACT PASS baseline"
+    ],
+    "StandardOutput": [
+      "NATIVE1-CONTRACT PASS baseline"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 31.464,
+    "DeadlineSeconds": 240,
+    "Ownership": "kill-on-close-job"
+  }
+}

@@ -1,0 +1,620 @@
+{
+  "schema": "native1-binary-replay-v1",
+  "startedUtc": "2026-09-12T12:59:16.4553118Z",
+  "completedUtc": "2026-09-12T13:01:50.7943537Z",
+  "pass": true,
+  "failure": null,
+  "registrySha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+  "runnerSha256": "36774810EB0BA670594D11D11DBD22924032CE8F67554027B5ED5F02CB80DCF6",
+  "buildManifestSha256": "A4C20BCAA5E35402293DB522CE8736A81BD84FBC67FC2648693475504E5E1069",
+  "producerRuntime": {
+    "path": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "version": "Python 3.12.14",
+    "sha256": "DD5F8D19F6755D6491EE7C4BEF2FE35DDD521334CC3CA3ED8FC93EBCADF135D0",
+    "runtimeDlls": [
+      {
+        "sha256": "5321BBA2D7F95C6BCA9A19FD8E0415CA850B2CF85C8C1711C605F9932E9C2826",
+        "path": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python3.dll"
+      },
+      {
+        "sha256": "BAA2A3924BC1309284D0A720CCD213F37002FBDA82D5761A61DDEE8C4C31F608",
+        "path": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python312.dll"
+      }
+    ],
+    "process": {
+      "Stage": "python-producer-identity",
+      "ExitCode": 0,
+      "Output": [
+        "Python 3.12.14"
+      ],
+      "StandardOutput": [
+        "Python 3.12.14"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 3.093,
+      "DeadlineSeconds": 30,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T12:59:16.5333152Z",
+      "CompletedUtc": "2026-09-12T12:59:19.9839235Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+      "InvokedArguments": [
+        "--version"
+      ]
+    }
+  },
+  "toolchainProbes": [
+    {
+      "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+      "arguments": [
+        "--version"
+      ],
+      "process": {
+        "Stage": "lean-identity",
+        "ExitCode": 0,
+        "Output": [
+          "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+        ],
+        "StandardOutput": [
+          "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.927,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "startedUtc": "2026-09-12T12:59:20.1824854Z",
+      "completedUtc": "2026-09-12T12:59:23.1490232Z",
+      "text": "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+    },
+    {
+      "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+      "arguments": [
+        "--version"
+      ],
+      "process": {
+        "Stage": "c-identity",
+        "ExitCode": 0,
+        "Output": [
+          "clang version 19.1.2",
+          "Target: x86_64-w64-windows-gnu",
+          "Thread model: posix",
+          "InstalledDir: C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin"
+        ],
+        "StandardOutput": [
+          "clang version 19.1.2",
+          "Target: x86_64-w64-windows-gnu",
+          "Thread model: posix",
+          "InstalledDir: C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.519,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "startedUtc": "2026-09-12T12:59:23.1674012Z",
+      "completedUtc": "2026-09-12T12:59:26.7540508Z",
+      "text": "clang version 19.1.2\nTarget: x86_64-w64-windows-gnu\nThread model: posix\nInstalledDir: C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin"
+    },
+    {
+      "file": "C:\\Users\\poin\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\rustc.exe",
+      "arguments": [
+        "-vV"
+      ],
+      "process": {
+        "Stage": "rust-identity",
+        "ExitCode": 0,
+        "Output": [
+          "rustc 1.89.0 (29483883e 2025-08-04)",
+          "binary: rustc",
+          "commit-hash: 29483883eed69d5fb4db01964cdf2af4d86e9cb2",
+          "commit-date: 2025-08-04",
+          "host: x86_64-pc-windows-msvc",
+          "release: 1.89.0",
+          "LLVM version: 20.1.7"
+        ],
+        "StandardOutput": [
+          "rustc 1.89.0 (29483883e 2025-08-04)",
+          "binary: rustc",
+          "commit-hash: 29483883eed69d5fb4db01964cdf2af4d86e9cb2",
+          "commit-date: 2025-08-04",
+          "host: x86_64-pc-windows-msvc",
+          "release: 1.89.0",
+          "LLVM version: 20.1.7"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.248,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "startedUtc": "2026-09-12T12:59:26.7548643Z",
+      "completedUtc": "2026-09-12T12:59:30.0454130Z",
+      "text": "rustc 1.89.0 (29483883e 2025-08-04)\nbinary: rustc\ncommit-hash: 29483883eed69d5fb4db01964cdf2af4d86e9cb2\ncommit-date: 2025-08-04\nhost: x86_64-pc-windows-msvc\nrelease: 1.89.0\nLLVM version: 20.1.7"
+    },
+    {
+      "file": "C:\\Users\\poin\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+      "arguments": [
+        "-vV"
+      ],
+      "process": {
+        "Stage": "cargo-identity",
+        "ExitCode": 0,
+        "Output": [
+          "cargo 1.89.0 (c24e10642 2025-06-23)",
+          "release: 1.89.0",
+          "commit-hash: c24e1064277fe51ab72011e2612e556ac56addf7",
+          "commit-date: 2025-06-23",
+          "host: x86_64-pc-windows-msvc",
+          "libgit2: 1.9.0 (sys:0.20.2 vendored)",
+          "libcurl: 8.12.1-DEV (sys:0.4.80+curl-8.12.1 vendored ssl:Schannel)",
+          "os: Windows 10.0.26200 (Windows 11 Professional) [64-bit]"
+        ],
+        "StandardOutput": [
+          "cargo 1.89.0 (c24e10642 2025-06-23)",
+          "release: 1.89.0",
+          "commit-hash: c24e1064277fe51ab72011e2612e556ac56addf7",
+          "commit-date: 2025-06-23",
+          "host: x86_64-pc-windows-msvc",
+          "libgit2: 1.9.0 (sys:0.20.2 vendored)",
+          "libcurl: 8.12.1-DEV (sys:0.4.80+curl-8.12.1 vendored ssl:Schannel)",
+          "os: Windows 10.0.26200 (Windows 11 Professional) [64-bit]"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.336,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "startedUtc": "2026-09-12T12:59:30.0467684Z",
+      "completedUtc": "2026-09-12T12:59:33.4193375Z",
+      "text": "cargo 1.89.0 (c24e10642 2025-06-23)\nrelease: 1.89.0\ncommit-hash: c24e1064277fe51ab72011e2612e556ac56addf7\ncommit-date: 2025-06-23\nhost: x86_64-pc-windows-msvc\nlibgit2: 1.9.0 (sys:0.20.2 vendored)\nlibcurl: 8.12.1-DEV (sys:0.4.80+curl-8.12.1 vendored ssl:Schannel)\nos: Windows 10.0.26200 (Windows 11 Professional) [64-bit]"
+    },
+    {
+      "file": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin\\clang.exe",
+      "arguments": [
+        "--version"
+      ],
+      "process": {
+        "Stage": "cpp-identity",
+        "ExitCode": 0,
+        "Output": [
+          "clang version 19.1.5",
+          "Target: x86_64-pc-windows-msvc",
+          "Thread model: posix",
+          "InstalledDir: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin"
+        ],
+        "StandardOutput": [
+          "clang version 19.1.5",
+          "Target: x86_64-pc-windows-msvc",
+          "Thread model: posix",
+          "InstalledDir: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.962,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "startedUtc": "2026-09-12T12:59:33.4199376Z",
+      "completedUtc": "2026-09-12T12:59:37.4422370Z",
+      "text": "clang version 19.1.5\nTarget: x86_64-pc-windows-msvc\nThread model: posix\nInstalledDir: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin"
+    },
+    {
+      "file": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin\\clang.exe",
+      "arguments": [
+        "-###",
+        "-std=c++17",
+        "native/packed-rmq/examples/native.cpp",
+        "-o",
+        ".lake/native1/binary-build/identity-discovery-only.exe"
+      ],
+      "process": {
+        "Stage": "cpp-effective-dependencies",
+        "ExitCode": 0,
+        "Output": [
+          "clang version 19.1.5",
+          "Target: x86_64-pc-windows-msvc",
+          "Thread model: posix",
+          "InstalledDir: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin",
+          " \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\bin\\\\clang.exe\" \"-cc1\" \"-triple\" \"x86_64-pc-windows-msvc19.50.35729\" \"-emit-obj\" \"-mincremental-linker-compatible\" \"-dumpdir\" \".lake/native1/binary-build/identity-discovery-only.exe-\" \"-disable-free\" \"-clear-ast-before-backend\" \"-disable-llvm-verifier\" \"-discard-value-names\" \"-main-file-name\" \"native.cpp\" \"-mrelocation-model\" \"pic\" \"-pic-level\" \"2\" \"-mframe-pointer=none\" \"-relaxed-aliasing\" \"-fmath-errno\" \"-ffp-contract=on\" \"-fno-rounding-math\" \"-mconstructor-aliases\" \"-funwind-tables=2\" \"-target-cpu\" \"x86-64\" \"-tune-cpu\" \"generic\" \"-fdebug-compilation-dir=C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\" \"-fcoverage-compilation-dir=C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\" \"-resource-dir\" \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\" \"-internal-isystem\" \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\atlmfc\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\ucrt\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\shared\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\um\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\winrt\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\cppwinrt\" \"-std=c++17\" \"-fdeprecated-macro\" \"-ferror-limit\" \"19\" \"-fno-use-cxa-atexit\" \"-fms-extensions\" \"-fms-compatibility\" \"-fms-compatibility-version=19.50.35729\" \"-fskip-odr-check-in-gmf\" \"-fdelayed-template-parsing\" \"-fcxx-exceptions\" \"-fexceptions\" \"-faddrsig\" \"-o\" \"C:\\\\Users\\\\poin\\\\AppData\\\\Local\\\\Temp\\\\native-964981.o\" \"-x\" \"c++\" \"native/packed-rmq/examples/native.cpp\"",
+          " \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\bin\\\\Hostx64\\\\x64\\\\link.exe\" \"-out:.lake/native1/binary-build/identity-discovery-only.exe\" \"-defaultlib:libcmt\" \"-defaultlib:oldnames\" \"-libpath:C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\lib\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\atlmfc\\\\lib\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Lib\\\\10.0.26100.0\\\\ucrt\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Lib\\\\10.0.26100.0\\\\um\\\\x64\" \"-libpath:C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\\\\lib\\\\windows\" \"-nologo\" \"C:\\\\Users\\\\poin\\\\AppData\\\\Local\\\\Temp\\\\native-964981.o\""
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "clang version 19.1.5",
+          "Target: x86_64-pc-windows-msvc",
+          "Thread model: posix",
+          "InstalledDir: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin",
+          " \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\bin\\\\clang.exe\" \"-cc1\" \"-triple\" \"x86_64-pc-windows-msvc19.50.35729\" \"-emit-obj\" \"-mincremental-linker-compatible\" \"-dumpdir\" \".lake/native1/binary-build/identity-discovery-only.exe-\" \"-disable-free\" \"-clear-ast-before-backend\" \"-disable-llvm-verifier\" \"-discard-value-names\" \"-main-file-name\" \"native.cpp\" \"-mrelocation-model\" \"pic\" \"-pic-level\" \"2\" \"-mframe-pointer=none\" \"-relaxed-aliasing\" \"-fmath-errno\" \"-ffp-contract=on\" \"-fno-rounding-math\" \"-mconstructor-aliases\" \"-funwind-tables=2\" \"-target-cpu\" \"x86-64\" \"-tune-cpu\" \"generic\" \"-fdebug-compilation-dir=C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\" \"-fcoverage-compilation-dir=C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\" \"-resource-dir\" \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\" \"-internal-isystem\" \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\atlmfc\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\ucrt\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\shared\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\um\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\winrt\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\cppwinrt\" \"-std=c++17\" \"-fdeprecated-macro\" \"-ferror-limit\" \"19\" \"-fno-use-cxa-atexit\" \"-fms-extensions\" \"-fms-compatibility\" \"-fms-compatibility-version=19.50.35729\" \"-fskip-odr-check-in-gmf\" \"-fdelayed-template-parsing\" \"-fcxx-exceptions\" \"-fexceptions\" \"-faddrsig\" \"-o\" \"C:\\\\Users\\\\poin\\\\AppData\\\\Local\\\\Temp\\\\native-964981.o\" \"-x\" \"c++\" \"native/packed-rmq/examples/native.cpp\"",
+          " \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\bin\\\\Hostx64\\\\x64\\\\link.exe\" \"-out:.lake/native1/binary-build/identity-discovery-only.exe\" \"-defaultlib:libcmt\" \"-defaultlib:oldnames\" \"-libpath:C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\lib\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\atlmfc\\\\lib\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Lib\\\\10.0.26100.0\\\\ucrt\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Lib\\\\10.0.26100.0\\\\um\\\\x64\" \"-libpath:C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\\\\lib\\\\windows\" \"-nologo\" \"C:\\\\Users\\\\poin\\\\AppData\\\\Local\\\\Temp\\\\native-964981.o\""
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 5.776,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "startedUtc": "2026-09-12T12:59:37.4988793Z",
+      "completedUtc": "2026-09-12T12:59:43.3053962Z",
+      "text": "clang version 19.1.5\nTarget: x86_64-pc-windows-msvc\nThread model: posix\nInstalledDir: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin\n \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\bin\\\\clang.exe\" \"-cc1\" \"-triple\" \"x86_64-pc-windows-msvc19.50.35729\" \"-emit-obj\" \"-mincremental-linker-compatible\" \"-dumpdir\" \".lake/native1/binary-build/identity-discovery-only.exe-\" \"-disable-free\" \"-clear-ast-before-backend\" \"-disable-llvm-verifier\" \"-discard-value-names\" \"-main-file-name\" \"native.cpp\" \"-mrelocation-model\" \"pic\" \"-pic-level\" \"2\" \"-mframe-pointer=none\" \"-relaxed-aliasing\" \"-fmath-errno\" \"-ffp-contract=on\" \"-fno-rounding-math\" \"-mconstructor-aliases\" \"-funwind-tables=2\" \"-target-cpu\" \"x86-64\" \"-tune-cpu\" \"generic\" \"-fdebug-compilation-dir=C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\" \"-fcoverage-compilation-dir=C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\" \"-resource-dir\" \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\" \"-internal-isystem\" \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\atlmfc\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\ucrt\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\shared\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\um\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\winrt\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\cppwinrt\" \"-std=c++17\" \"-fdeprecated-macro\" \"-ferror-limit\" \"19\" \"-fno-use-cxa-atexit\" \"-fms-extensions\" \"-fms-compatibility\" \"-fms-compatibility-version=19.50.35729\" \"-fskip-odr-check-in-gmf\" \"-fdelayed-template-parsing\" \"-fcxx-exceptions\" \"-fexceptions\" \"-faddrsig\" \"-o\" \"C:\\\\Users\\\\poin\\\\AppData\\\\Local\\\\Temp\\\\native-964981.o\" \"-x\" \"c++\" \"native/packed-rmq/examples/native.cpp\"\n \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\bin\\\\Hostx64\\\\x64\\\\link.exe\" \"-out:.lake/native1/binary-build/identity-discovery-only.exe\" \"-defaultlib:libcmt\" \"-defaultlib:oldnames\" \"-libpath:C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\lib\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\atlmfc\\\\lib\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Lib\\\\10.0.26100.0\\\\ucrt\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Lib\\\\10.0.26100.0\\\\um\\\\x64\" \"-libpath:C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\\\\lib\\\\windows\" \"-nologo\" \"C:\\\\Users\\\\poin\\\\AppData\\\\Local\\\\Temp\\\\native-964981.o\""
+    }
+  ],
+  "toolchainIdentitySeconds": 64.6444257,
+  "selectorBound": true,
+  "selector": "pq1-n9-full",
+  "expected": [
+    "pq1-n9-full/packed-rmq-native.exe",
+    "pq1-n9-full/packed-rmq-native-cpp.exe"
+  ],
+  "executed": [
+    "pq1-n9-full/packed-rmq-native.exe",
+    "pq1-n9-full/packed-rmq-native-cpp.exe"
+  ],
+  "results": [
+    {
+      "raw": {
+        "schema": "native1-raw-process-v1",
+        "startedUtc": "2026-09-12T13:00:54.820027+00:00",
+        "completedUtc": "2026-09-12T13:01:22.485992+00:00",
+        "durationSeconds": 27.65700000000652,
+        "deadlineSeconds": 180.0,
+        "outputLimitBytes": 4194304,
+        "executable": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\packed-rmq-native.exe",
+        "arguments": [
+          "query",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\pq1-n9-full.bin",
+          "000000000000000000000000000000000000000000",
+          "090000000000000000000000000000000000000000",
+          "837572",
+          "1"
+        ],
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdoutBase64": "aGFsdGVkIDgKMTM1NjgKMjY2IDQ2MDcgMjQ2MSAyMzE1IDM5MTggMQowIDkKMSAxNwoyIDc1CjMgMTI3NQo0IDAKNSAwCjYgMTY4CjcgMTgyCjggNQo5IDI1CjEwIDEKMTEgMjUKMTIgMQoxMyA5CjE0IDEKMTUgNAoxNiA1CjE3IDgKMTggMQoxOSA0CjIwIDIKMjEgMQoyMiAxNgoyMyAxCjI0IDUKMjUgMQoyNiA5CjI3IDUKMjggMgoyOSAxOAozMCAzCjMxIDcKMzIgMwozMyAwCjM0IDEKMzUgNQozNiA5CjM3IDEzCjM4IDkzCjM5IDk0CjQwIDEzMAo0MSAxMzMKNDIgMTcKNDMgMTgKNDQgNQo0NSA0CjQ2IDYwCjQ3IDUKNDggNQo0OSAxCjUwIDY1CjUxIDUKNTIgNQo1MyAxCjU0IDcwCjU1IDUKNTYgNQo1NyAxCjU4IDc1CjU5IDUKNjAgNQo2MSAxCjYyIDgwCjYzIDEyNQo2NCA1CjY1IDI1CjY2IDIwNQo2NyAxMjUKNjggNQo2OSAyNQo3MCAzMzAKNzEgMTI1CjcyIDUKNzMgMjUKNzQgNDU1Cjc1IDEyNQo3NiA1Cjc3IDI1Cjc4IDU4MAo3OSAyCjgwIDEKODEgMgo4MiA1ODIKODMgMgo4NCAxCjg1IDIKODYgNTg0Cjg3IDEKODggMQo4OSAzCjkwIDU4NQo5MSAwCjkyIDUKOTMgMAo5NCA1ODUKOTUgMTIKOTYgNAo5NyAzCjk4IDU5Nwo5OSAxMgoxMDAgNAoxMDEgMwoxMDIgNjA5CjEwMyA5CjEwNCA0CjEwNSAxMwoxMDYgNjE4CjEwNyAwCjEwOCA1CjEwOSAwCjExMCAzNQoxMTEgNQoxMTIgNQoxMTMgMQoxMTQgNDAKMTE1IDIwCjExNiA1CjExNyA0CjExOCAxNwoxMTkgMTgKMTIwIDUKMTIxIDIzCjEyMiAwCjEyMyAwCjEyNCAwCjEyNSAwCjEyNiAxMjE0CjEyNyA0MAoxMjggNQoxMjkgOAoxMzAgMTI1NAoxMzEgOAoxMzIgMgoxMzMgNAoxMzQgMAoxMzUgMQoxMzYgNjE4CjEzNyA1CjEzOCAxCjEzOSAxCjE0MCA0CjE0MSA2MjMKMTQyIDkKMTQzIDIKMTQ0IDUKMTQ1IDQKMTQ2IDY0MQoxNDcgOQoxNDggMgoxNDkgOQoxNTAgNAoxNTEgNjU5CjE1MiA5CjE1MyAyCjE1NCAxMwoxNTUgODAKMTU2IDY3NwoxNTcgNQoxNTggMQoxNTkgOTMKMTYwIDEKMTYxIDEwNzcKMTYyIDIKMTYzIDEKMTY0IDk0CjE2NSAzNgoxNjYgMTA3OQoxNjcgNwoxNjggMgoxNjkgMTMwCjE3MCAzCjE3MSAxMjA1CjE3MiAzCjE3MyAxCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc1IDQ2NzgxODk0NTk2MDQyMjM5NzcwNjI0MAoxNzUgNDY3ODE4OTQ1OTYwNDIyMzk3NzA2MjQwCjE3NiAxNDY0NDAxNDk3ODAzMDAxNzI1Nzg5NTY2MzE5NjUwMTUzOTk3NjYwMTM3MTkzNDcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NSA0Njc4MTg5NDU5NjA0MjIzOTc3MDYyNDAKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgwIDM2NTMwNjM2MjAxMTI0NzU1MjIwMDA3MDU4MDgzMTYyMjQzNTA1NzY3OTAwMDkyODI1NgoxODAgMzY1MzA2MzYyMDExMjQ3NTUyMjAwMDcwNTgwODMxNjIyNDM1MDU3Njc5MDAwOTI4MjU2CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3Mgo=",
+        "stderrBase64": ""
+      },
+      "normalExpectationMatches": true,
+      "prepare": {
+        "Stage": "pq1-n9-full-prepare",
+        "ExitCode": 0,
+        "Output": [
+          "{\"imageSha256\":\"13A28D376144FE4A45C939598A9028F06FAEA2CE1B64B4575FF42C0224DD491E\",\"imageBytes\":70854686,\"width\":168,\"instructions\":837572,\"memoryWords\":182,\"declaredNumericWords\":2847581,\"independentImageInspection\":true}"
+        ],
+        "StandardOutput": [
+          "{\"imageSha256\":\"13A28D376144FE4A45C939598A9028F06FAEA2CE1B64B4575FF42C0224DD491E\",\"imageBytes\":70854686,\"width\":168,\"instructions\":837572,\"memoryWords\":182,\"declaredNumericWords\":2847581,\"independentImageInspection\":true}"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 27.596,
+        "DeadlineSeconds": 180,
+        "Ownership": "kill-on-close-job",
+        "StartedUtc": "2026-09-12T13:00:24.7790344Z",
+        "CompletedUtc": "2026-09-12T13:00:52.4041966Z",
+        "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+        "InvokedArguments": [
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_cases.py",
+          "prepare",
+          "--registry",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_cases.json",
+          "--case",
+          "pq1-n9-full",
+          "--output",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\pq1-n9-full.bin"
+        ]
+      },
+      "expectedExit": 0,
+      "expectedStderr": "",
+      "id": "pq1-n9-full/packed-rmq-native.exe",
+      "image": {
+        "imageSha256": "13A28D376144FE4A45C939598A9028F06FAEA2CE1B64B4575FF42C0224DD491E",
+        "imageBytes": 70854686,
+        "width": 168,
+        "instructions": 837572,
+        "memoryWords": 182,
+        "declaredNumericWords": 2847581,
+        "independentImageInspection": true
+      },
+      "process": {
+        "Stage": "pq1-n9-full/packed-rmq-native.exe",
+        "ExitCode": 0,
+        "Output": [
+          "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T13:00:54.820027+00:00\",\"completedUtc\":\"2026-09-12T13:01:22.485992+00:00\",\"durationSeconds\":27.65700000000652,\"deadlineSeconds\":180.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\replay\\\\pq1-n9-full.bin\",\"000000000000000000000000000000000000000000\",\"090000000000000000000000000000000000000000\",\"837572\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMTM1NjgKMjY2IDQ2MDcgMjQ2MSAyMzE1IDM5MTggMQowIDkKMSAxNwoyIDc1CjMgMTI3NQo0IDAKNSAwCjYgMTY4CjcgMTgyCjggNQo5IDI1CjEwIDEKMTEgMjUKMTIgMQoxMyA5CjE0IDEKMTUgNAoxNiA1CjE3IDgKMTggMQoxOSA0CjIwIDIKMjEgMQoyMiAxNgoyMyAxCjI0IDUKMjUgMQoyNiA5CjI3IDUKMjggMgoyOSAxOAozMCAzCjMxIDcKMzIgMwozMyAwCjM0IDEKMzUgNQozNiA5CjM3IDEzCjM4IDkzCjM5IDk0CjQwIDEzMAo0MSAxMzMKNDIgMTcKNDMgMTgKNDQgNQo0NSA0CjQ2IDYwCjQ3IDUKNDggNQo0OSAxCjUwIDY1CjUxIDUKNTIgNQo1MyAxCjU0IDcwCjU1IDUKNTYgNQo1NyAxCjU4IDc1CjU5IDUKNjAgNQo2MSAxCjYyIDgwCjYzIDEyNQo2NCA1CjY1IDI1CjY2IDIwNQo2NyAxMjUKNjggNQo2OSAyNQo3MCAzMzAKNzEgMTI1CjcyIDUKNzMgMjUKNzQgNDU1Cjc1IDEyNQo3NiA1Cjc3IDI1Cjc4IDU4MAo3OSAyCjgwIDEKODEgMgo4MiA1ODIKODMgMgo4NCAxCjg1IDIKODYgNTg0Cjg3IDEKODggMQo4OSAzCjkwIDU4NQo5MSAwCjkyIDUKOTMgMAo5NCA1ODUKOTUgMTIKOTYgNAo5NyAzCjk4IDU5Nwo5OSAxMgoxMDAgNAoxMDEgMwoxMDIgNjA5CjEwMyA5CjEwNCA0CjEwNSAxMwoxMDYgNjE4CjEwNyAwCjEwOCA1CjEwOSAwCjExMCAzNQoxMTEgNQoxMTIgNQoxMTMgMQoxMTQgNDAKMTE1IDIwCjExNiA1CjExNyA0CjExOCAxNwoxMTkgMTgKMTIwIDUKMTIxIDIzCjEyMiAwCjEyMyAwCjEyNCAwCjEyNSAwCjEyNiAxMjE0CjEyNyA0MAoxMjggNQoxMjkgOAoxMzAgMTI1NAoxMzEgOAoxMzIgMgoxMzMgNAoxMzQgMAoxMzUgMQoxMzYgNjE4CjEzNyA1CjEzOCAxCjEzOSAxCjE0MCA0CjE0MSA2MjMKMTQyIDkKMTQzIDIKMTQ0IDUKMTQ1IDQKMTQ2IDY0MQoxNDcgOQoxNDggMgoxNDkgOQoxNTAgNAoxNTEgNjU5CjE1MiA5CjE1MyAyCjE1NCAxMwoxNTUgODAKMTU2IDY3NwoxNTcgNQoxNTggMQoxNTkgOTMKMTYwIDEKMTYxIDEwNzcKMTYyIDIKMTYzIDEKMTY0IDk0CjE2NSAzNgoxNjYgMTA3OQoxNjcgNwoxNjggMgoxNjkgMTMwCjE3MCAzCjE3MSAxMjA1CjE3MiAzCjE3MyAxCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc1IDQ2NzgxODk0NTk2MDQyMjM5NzcwNjI0MAoxNzUgNDY3ODE4OTQ1OTYwNDIyMzk3NzA2MjQwCjE3NiAxNDY0NDAxNDk3ODAzMDAxNzI1Nzg5NTY2MzE5NjUwMTUzOTk3NjYwMTM3MTkzNDcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NSA0Njc4MTg5NDU5NjA0MjIzOTc3MDYyNDAKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgwIDM2NTMwNjM2MjAxMTI0NzU1MjIwMDA3MDU4MDgzMTYyMjQzNTA1NzY3OTAwMDkyODI1NgoxODAgMzY1MzA2MzYyMDExMjQ3NTUyMjAwMDcwNTgwODMxNjIyNDM1MDU3Njc5MDAwOTI4MjU2CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3Mgo=\",\"stderrBase64\":\"\"}"
+        ],
+        "StandardOutput": [
+          "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T13:00:54.820027+00:00\",\"completedUtc\":\"2026-09-12T13:01:22.485992+00:00\",\"durationSeconds\":27.65700000000652,\"deadlineSeconds\":180.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\replay\\\\pq1-n9-full.bin\",\"000000000000000000000000000000000000000000\",\"090000000000000000000000000000000000000000\",\"837572\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMTM1NjgKMjY2IDQ2MDcgMjQ2MSAyMzE1IDM5MTggMQowIDkKMSAxNwoyIDc1CjMgMTI3NQo0IDAKNSAwCjYgMTY4CjcgMTgyCjggNQo5IDI1CjEwIDEKMTEgMjUKMTIgMQoxMyA5CjE0IDEKMTUgNAoxNiA1CjE3IDgKMTggMQoxOSA0CjIwIDIKMjEgMQoyMiAxNgoyMyAxCjI0IDUKMjUgMQoyNiA5CjI3IDUKMjggMgoyOSAxOAozMCAzCjMxIDcKMzIgMwozMyAwCjM0IDEKMzUgNQozNiA5CjM3IDEzCjM4IDkzCjM5IDk0CjQwIDEzMAo0MSAxMzMKNDIgMTcKNDMgMTgKNDQgNQo0NSA0CjQ2IDYwCjQ3IDUKNDggNQo0OSAxCjUwIDY1CjUxIDUKNTIgNQo1MyAxCjU0IDcwCjU1IDUKNTYgNQo1NyAxCjU4IDc1CjU5IDUKNjAgNQo2MSAxCjYyIDgwCjYzIDEyNQo2NCA1CjY1IDI1CjY2IDIwNQo2NyAxMjUKNjggNQo2OSAyNQo3MCAzMzAKNzEgMTI1CjcyIDUKNzMgMjUKNzQgNDU1Cjc1IDEyNQo3NiA1Cjc3IDI1Cjc4IDU4MAo3OSAyCjgwIDEKODEgMgo4MiA1ODIKODMgMgo4NCAxCjg1IDIKODYgNTg0Cjg3IDEKODggMQo4OSAzCjkwIDU4NQo5MSAwCjkyIDUKOTMgMAo5NCA1ODUKOTUgMTIKOTYgNAo5NyAzCjk4IDU5Nwo5OSAxMgoxMDAgNAoxMDEgMwoxMDIgNjA5CjEwMyA5CjEwNCA0CjEwNSAxMwoxMDYgNjE4CjEwNyAwCjEwOCA1CjEwOSAwCjExMCAzNQoxMTEgNQoxMTIgNQoxMTMgMQoxMTQgNDAKMTE1IDIwCjExNiA1CjExNyA0CjExOCAxNwoxMTkgMTgKMTIwIDUKMTIxIDIzCjEyMiAwCjEyMyAwCjEyNCAwCjEyNSAwCjEyNiAxMjE0CjEyNyA0MAoxMjggNQoxMjkgOAoxMzAgMTI1NAoxMzEgOAoxMzIgMgoxMzMgNAoxMzQgMAoxMzUgMQoxMzYgNjE4CjEzNyA1CjEzOCAxCjEzOSAxCjE0MCA0CjE0MSA2MjMKMTQyIDkKMTQzIDIKMTQ0IDUKMTQ1IDQKMTQ2IDY0MQoxNDcgOQoxNDggMgoxNDkgOQoxNTAgNAoxNTEgNjU5CjE1MiA5CjE1MyAyCjE1NCAxMwoxNTUgODAKMTU2IDY3NwoxNTcgNQoxNTggMQoxNTkgOTMKMTYwIDEKMTYxIDEwNzcKMTYyIDIKMTYzIDEKMTY0IDk0CjE2NSAzNgoxNjYgMTA3OQoxNjcgNwoxNjggMgoxNjkgMTMwCjE3MCAzCjE3MSAxMjA1CjE3MiAzCjE3MyAxCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc1IDQ2NzgxODk0NTk2MDQyMjM5NzcwNjI0MAoxNzUgNDY3ODE4OTQ1OTYwNDIyMzk3NzA2MjQwCjE3NiAxNDY0NDAxNDk3ODAzMDAxNzI1Nzg5NTY2MzE5NjUwMTUzOTk3NjYwMTM3MTkzNDcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NSA0Njc4MTg5NDU5NjA0MjIzOTc3MDYyNDAKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgwIDM2NTMwNjM2MjAxMTI0NzU1MjIwMDA3MDU4MDgzMTYyMjQzNTA1NzY3OTAwMDkyODI1NgoxODAgMzY1MzA2MzYyMDExMjQ3NTUyMjAwMDcwNTgwODMxNjIyNDM1MDU3Njc5MDAwOTI4MjU2CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3Mgo=\",\"stderrBase64\":\"\"}"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 29.969,
+        "DeadlineSeconds": 210,
+        "Ownership": "kill-on-close-job",
+        "StartedUtc": "2026-09-12T13:00:52.7377954Z",
+        "CompletedUtc": "2026-09-12T13:01:22.7523400Z",
+        "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+        "InvokedArguments": [
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_cases.py",
+          "capture",
+          "--executable",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\packed-rmq-native.exe",
+          "--scratch",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay",
+          "--deadline",
+          "180",
+          "--output-limit",
+          "4194304",
+          "--",
+          "query",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\pq1-n9-full.bin",
+          "000000000000000000000000000000000000000000",
+          "090000000000000000000000000000000000000000",
+          "837572",
+          "1"
+        ]
+      },
+      "pass": true,
+      "expectedStdout": "halted 8\n13568\n266 4607 2461 2315 3918 1\n0 9\n1 17\n2 75\n3 1275\n4 0\n5 0\n6 168\n7 182\n8 5\n9 25\n10 1\n11 25\n12 1\n13 9\n14 1\n15 4\n16 5\n17 8\n18 1\n19 4\n20 2\n21 1\n22 16\n23 1\n24 5\n25 1\n26 9\n27 5\n28 2\n29 18\n30 3\n31 7\n32 3\n33 0\n34 1\n35 5\n36 9\n37 13\n38 93\n39 94\n40 130\n41 133\n42 17\n43 18\n44 5\n45 4\n46 60\n47 5\n48 5\n49 1\n50 65\n51 5\n52 5\n53 1\n54 70\n55 5\n56 5\n57 1\n58 75\n59 5\n60 5\n61 1\n62 80\n63 125\n64 5\n65 25\n66 205\n67 125\n68 5\n69 25\n70 330\n71 125\n72 5\n73 25\n74 455\n75 125\n76 5\n77 25\n78 580\n79 2\n80 1\n81 2\n82 582\n83 2\n84 1\n85 2\n86 584\n87 1\n88 1\n89 3\n90 585\n91 0\n92 5\n93 0\n94 585\n95 12\n96 4\n97 3\n98 597\n99 12\n100 4\n101 3\n102 609\n103 9\n104 4\n105 13\n106 618\n107 0\n108 5\n109 0\n110 35\n111 5\n112 5\n113 1\n114 40\n115 20\n116 5\n117 4\n118 17\n119 18\n120 5\n121 23\n122 0\n123 0\n124 0\n125 0\n126 1214\n127 40\n128 5\n129 8\n130 1254\n131 8\n132 2\n133 4\n134 0\n135 1\n136 618\n137 5\n138 1\n139 1\n140 4\n141 623\n142 9\n143 2\n144 5\n145 4\n146 641\n147 9\n148 2\n149 9\n150 4\n151 659\n152 9\n153 2\n154 13\n155 80\n156 677\n157 5\n158 1\n159 93\n160 1\n161 1077\n162 2\n163 1\n164 94\n165 36\n166 1079\n167 7\n168 2\n169 130\n170 3\n171 1205\n172 3\n173 1\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n175 467818945960422397706240\n175 467818945960422397706240\n176 1464401497803001725789566319650153997660137193472\n174 10932589051700477593671932755857768448\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n175 467818945960422397706240\n176 1464401497803001725789566319650153997660137193472\n176 1464401497803001725789566319650153997660137193472\n174 10932589051700477593671932755857768448\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n181 25592150928346931469762172\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n180 365306362011247552200070580831622435057679000928256\n180 365306362011247552200070580831622435057679000928256\n178 1024\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n178 1024\n178 1024\n178 1024\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n178 1024\n178 1024\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n181 25592150928346931469762172\n174 10932589051700477593671932755857768448\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n181 25592150928346931469762172\n"
+    },
+    {
+      "raw": {
+        "schema": "native1-raw-process-v1",
+        "startedUtc": "2026-09-12T13:01:26.032841+00:00",
+        "completedUtc": "2026-09-12T13:01:50.560300+00:00",
+        "durationSeconds": 24.531999999991967,
+        "deadlineSeconds": 180.0,
+        "outputLimitBytes": 4194304,
+        "executable": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\packed-rmq-native-cpp.exe",
+        "arguments": [
+          "query",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\pq1-n9-full.bin",
+          "000000000000000000000000000000000000000000",
+          "090000000000000000000000000000000000000000",
+          "837572",
+          "1"
+        ],
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdoutBase64": "aGFsdGVkIDgKMTM1NjgKMjY2IDQ2MDcgMjQ2MSAyMzE1IDM5MTggMQowIDkKMSAxNwoyIDc1CjMgMTI3NQo0IDAKNSAwCjYgMTY4CjcgMTgyCjggNQo5IDI1CjEwIDEKMTEgMjUKMTIgMQoxMyA5CjE0IDEKMTUgNAoxNiA1CjE3IDgKMTggMQoxOSA0CjIwIDIKMjEgMQoyMiAxNgoyMyAxCjI0IDUKMjUgMQoyNiA5CjI3IDUKMjggMgoyOSAxOAozMCAzCjMxIDcKMzIgMwozMyAwCjM0IDEKMzUgNQozNiA5CjM3IDEzCjM4IDkzCjM5IDk0CjQwIDEzMAo0MSAxMzMKNDIgMTcKNDMgMTgKNDQgNQo0NSA0CjQ2IDYwCjQ3IDUKNDggNQo0OSAxCjUwIDY1CjUxIDUKNTIgNQo1MyAxCjU0IDcwCjU1IDUKNTYgNQo1NyAxCjU4IDc1CjU5IDUKNjAgNQo2MSAxCjYyIDgwCjYzIDEyNQo2NCA1CjY1IDI1CjY2IDIwNQo2NyAxMjUKNjggNQo2OSAyNQo3MCAzMzAKNzEgMTI1CjcyIDUKNzMgMjUKNzQgNDU1Cjc1IDEyNQo3NiA1Cjc3IDI1Cjc4IDU4MAo3OSAyCjgwIDEKODEgMgo4MiA1ODIKODMgMgo4NCAxCjg1IDIKODYgNTg0Cjg3IDEKODggMQo4OSAzCjkwIDU4NQo5MSAwCjkyIDUKOTMgMAo5NCA1ODUKOTUgMTIKOTYgNAo5NyAzCjk4IDU5Nwo5OSAxMgoxMDAgNAoxMDEgMwoxMDIgNjA5CjEwMyA5CjEwNCA0CjEwNSAxMwoxMDYgNjE4CjEwNyAwCjEwOCA1CjEwOSAwCjExMCAzNQoxMTEgNQoxMTIgNQoxMTMgMQoxMTQgNDAKMTE1IDIwCjExNiA1CjExNyA0CjExOCAxNwoxMTkgMTgKMTIwIDUKMTIxIDIzCjEyMiAwCjEyMyAwCjEyNCAwCjEyNSAwCjEyNiAxMjE0CjEyNyA0MAoxMjggNQoxMjkgOAoxMzAgMTI1NAoxMzEgOAoxMzIgMgoxMzMgNAoxMzQgMAoxMzUgMQoxMzYgNjE4CjEzNyA1CjEzOCAxCjEzOSAxCjE0MCA0CjE0MSA2MjMKMTQyIDkKMTQzIDIKMTQ0IDUKMTQ1IDQKMTQ2IDY0MQoxNDcgOQoxNDggMgoxNDkgOQoxNTAgNAoxNTEgNjU5CjE1MiA5CjE1MyAyCjE1NCAxMwoxNTUgODAKMTU2IDY3NwoxNTcgNQoxNTggMQoxNTkgOTMKMTYwIDEKMTYxIDEwNzcKMTYyIDIKMTYzIDEKMTY0IDk0CjE2NSAzNgoxNjYgMTA3OQoxNjcgNwoxNjggMgoxNjkgMTMwCjE3MCAzCjE3MSAxMjA1CjE3MiAzCjE3MyAxCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc1IDQ2NzgxODk0NTk2MDQyMjM5NzcwNjI0MAoxNzUgNDY3ODE4OTQ1OTYwNDIyMzk3NzA2MjQwCjE3NiAxNDY0NDAxNDk3ODAzMDAxNzI1Nzg5NTY2MzE5NjUwMTUzOTk3NjYwMTM3MTkzNDcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NSA0Njc4MTg5NDU5NjA0MjIzOTc3MDYyNDAKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgwIDM2NTMwNjM2MjAxMTI0NzU1MjIwMDA3MDU4MDgzMTYyMjQzNTA1NzY3OTAwMDkyODI1NgoxODAgMzY1MzA2MzYyMDExMjQ3NTUyMjAwMDcwNTgwODMxNjIyNDM1MDU3Njc5MDAwOTI4MjU2CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3Mgo=",
+        "stderrBase64": ""
+      },
+      "normalExpectationMatches": true,
+      "prepare": {
+        "Stage": "pq1-n9-full-prepare",
+        "ExitCode": 0,
+        "Output": [
+          "{\"imageSha256\":\"13A28D376144FE4A45C939598A9028F06FAEA2CE1B64B4575FF42C0224DD491E\",\"imageBytes\":70854686,\"width\":168,\"instructions\":837572,\"memoryWords\":182,\"declaredNumericWords\":2847581,\"independentImageInspection\":true}"
+        ],
+        "StandardOutput": [
+          "{\"imageSha256\":\"13A28D376144FE4A45C939598A9028F06FAEA2CE1B64B4575FF42C0224DD491E\",\"imageBytes\":70854686,\"width\":168,\"instructions\":837572,\"memoryWords\":182,\"declaredNumericWords\":2847581,\"independentImageInspection\":true}"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 27.596,
+        "DeadlineSeconds": 180,
+        "Ownership": "kill-on-close-job",
+        "StartedUtc": "2026-09-12T13:00:24.7790344Z",
+        "CompletedUtc": "2026-09-12T13:00:52.4041966Z",
+        "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+        "InvokedArguments": [
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_cases.py",
+          "prepare",
+          "--registry",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_cases.json",
+          "--case",
+          "pq1-n9-full",
+          "--output",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\pq1-n9-full.bin"
+        ]
+      },
+      "expectedExit": 0,
+      "expectedStderr": "",
+      "id": "pq1-n9-full/packed-rmq-native-cpp.exe",
+      "image": {
+        "imageSha256": "13A28D376144FE4A45C939598A9028F06FAEA2CE1B64B4575FF42C0224DD491E",
+        "imageBytes": 70854686,
+        "width": 168,
+        "instructions": 837572,
+        "memoryWords": 182,
+        "declaredNumericWords": 2847581,
+        "independentImageInspection": true
+      },
+      "process": {
+        "Stage": "pq1-n9-full/packed-rmq-native-cpp.exe",
+        "ExitCode": 0,
+        "Output": [
+          "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T13:01:26.032841+00:00\",\"completedUtc\":\"2026-09-12T13:01:50.560300+00:00\",\"durationSeconds\":24.531999999991967,\"deadlineSeconds\":180.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native-cpp.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\replay\\\\pq1-n9-full.bin\",\"000000000000000000000000000000000000000000\",\"090000000000000000000000000000000000000000\",\"837572\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMTM1NjgKMjY2IDQ2MDcgMjQ2MSAyMzE1IDM5MTggMQowIDkKMSAxNwoyIDc1CjMgMTI3NQo0IDAKNSAwCjYgMTY4CjcgMTgyCjggNQo5IDI1CjEwIDEKMTEgMjUKMTIgMQoxMyA5CjE0IDEKMTUgNAoxNiA1CjE3IDgKMTggMQoxOSA0CjIwIDIKMjEgMQoyMiAxNgoyMyAxCjI0IDUKMjUgMQoyNiA5CjI3IDUKMjggMgoyOSAxOAozMCAzCjMxIDcKMzIgMwozMyAwCjM0IDEKMzUgNQozNiA5CjM3IDEzCjM4IDkzCjM5IDk0CjQwIDEzMAo0MSAxMzMKNDIgMTcKNDMgMTgKNDQgNQo0NSA0CjQ2IDYwCjQ3IDUKNDggNQo0OSAxCjUwIDY1CjUxIDUKNTIgNQo1MyAxCjU0IDcwCjU1IDUKNTYgNQo1NyAxCjU4IDc1CjU5IDUKNjAgNQo2MSAxCjYyIDgwCjYzIDEyNQo2NCA1CjY1IDI1CjY2IDIwNQo2NyAxMjUKNjggNQo2OSAyNQo3MCAzMzAKNzEgMTI1CjcyIDUKNzMgMjUKNzQgNDU1Cjc1IDEyNQo3NiA1Cjc3IDI1Cjc4IDU4MAo3OSAyCjgwIDEKODEgMgo4MiA1ODIKODMgMgo4NCAxCjg1IDIKODYgNTg0Cjg3IDEKODggMQo4OSAzCjkwIDU4NQo5MSAwCjkyIDUKOTMgMAo5NCA1ODUKOTUgMTIKOTYgNAo5NyAzCjk4IDU5Nwo5OSAxMgoxMDAgNAoxMDEgMwoxMDIgNjA5CjEwMyA5CjEwNCA0CjEwNSAxMwoxMDYgNjE4CjEwNyAwCjEwOCA1CjEwOSAwCjExMCAzNQoxMTEgNQoxMTIgNQoxMTMgMQoxMTQgNDAKMTE1IDIwCjExNiA1CjExNyA0CjExOCAxNwoxMTkgMTgKMTIwIDUKMTIxIDIzCjEyMiAwCjEyMyAwCjEyNCAwCjEyNSAwCjEyNiAxMjE0CjEyNyA0MAoxMjggNQoxMjkgOAoxMzAgMTI1NAoxMzEgOAoxMzIgMgoxMzMgNAoxMzQgMAoxMzUgMQoxMzYgNjE4CjEzNyA1CjEzOCAxCjEzOSAxCjE0MCA0CjE0MSA2MjMKMTQyIDkKMTQzIDIKMTQ0IDUKMTQ1IDQKMTQ2IDY0MQoxNDcgOQoxNDggMgoxNDkgOQoxNTAgNAoxNTEgNjU5CjE1MiA5CjE1MyAyCjE1NCAxMwoxNTUgODAKMTU2IDY3NwoxNTcgNQoxNTggMQoxNTkgOTMKMTYwIDEKMTYxIDEwNzcKMTYyIDIKMTYzIDEKMTY0IDk0CjE2NSAzNgoxNjYgMTA3OQoxNjcgNwoxNjggMgoxNjkgMTMwCjE3MCAzCjE3MSAxMjA1CjE3MiAzCjE3MyAxCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc1IDQ2NzgxODk0NTk2MDQyMjM5NzcwNjI0MAoxNzUgNDY3ODE4OTQ1OTYwNDIyMzk3NzA2MjQwCjE3NiAxNDY0NDAxNDk3ODAzMDAxNzI1Nzg5NTY2MzE5NjUwMTUzOTk3NjYwMTM3MTkzNDcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NSA0Njc4MTg5NDU5NjA0MjIzOTc3MDYyNDAKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgwIDM2NTMwNjM2MjAxMTI0NzU1MjIwMDA3MDU4MDgzMTYyMjQzNTA1NzY3OTAwMDkyODI1NgoxODAgMzY1MzA2MzYyMDExMjQ3NTUyMjAwMDcwNTgwODMxNjIyNDM1MDU3Njc5MDAwOTI4MjU2CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3Mgo=\",\"stderrBase64\":\"\"}"
+        ],
+        "StandardOutput": [
+          "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T13:01:26.032841+00:00\",\"completedUtc\":\"2026-09-12T13:01:50.560300+00:00\",\"durationSeconds\":24.531999999991967,\"deadlineSeconds\":180.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native-cpp.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\replay\\\\pq1-n9-full.bin\",\"000000000000000000000000000000000000000000\",\"090000000000000000000000000000000000000000\",\"837572\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMTM1NjgKMjY2IDQ2MDcgMjQ2MSAyMzE1IDM5MTggMQowIDkKMSAxNwoyIDc1CjMgMTI3NQo0IDAKNSAwCjYgMTY4CjcgMTgyCjggNQo5IDI1CjEwIDEKMTEgMjUKMTIgMQoxMyA5CjE0IDEKMTUgNAoxNiA1CjE3IDgKMTggMQoxOSA0CjIwIDIKMjEgMQoyMiAxNgoyMyAxCjI0IDUKMjUgMQoyNiA5CjI3IDUKMjggMgoyOSAxOAozMCAzCjMxIDcKMzIgMwozMyAwCjM0IDEKMzUgNQozNiA5CjM3IDEzCjM4IDkzCjM5IDk0CjQwIDEzMAo0MSAxMzMKNDIgMTcKNDMgMTgKNDQgNQo0NSA0CjQ2IDYwCjQ3IDUKNDggNQo0OSAxCjUwIDY1CjUxIDUKNTIgNQo1MyAxCjU0IDcwCjU1IDUKNTYgNQo1NyAxCjU4IDc1CjU5IDUKNjAgNQo2MSAxCjYyIDgwCjYzIDEyNQo2NCA1CjY1IDI1CjY2IDIwNQo2NyAxMjUKNjggNQo2OSAyNQo3MCAzMzAKNzEgMTI1CjcyIDUKNzMgMjUKNzQgNDU1Cjc1IDEyNQo3NiA1Cjc3IDI1Cjc4IDU4MAo3OSAyCjgwIDEKODEgMgo4MiA1ODIKODMgMgo4NCAxCjg1IDIKODYgNTg0Cjg3IDEKODggMQo4OSAzCjkwIDU4NQo5MSAwCjkyIDUKOTMgMAo5NCA1ODUKOTUgMTIKOTYgNAo5NyAzCjk4IDU5Nwo5OSAxMgoxMDAgNAoxMDEgMwoxMDIgNjA5CjEwMyA5CjEwNCA0CjEwNSAxMwoxMDYgNjE4CjEwNyAwCjEwOCA1CjEwOSAwCjExMCAzNQoxMTEgNQoxMTIgNQoxMTMgMQoxMTQgNDAKMTE1IDIwCjExNiA1CjExNyA0CjExOCAxNwoxMTkgMTgKMTIwIDUKMTIxIDIzCjEyMiAwCjEyMyAwCjEyNCAwCjEyNSAwCjEyNiAxMjE0CjEyNyA0MAoxMjggNQoxMjkgOAoxMzAgMTI1NAoxMzEgOAoxMzIgMgoxMzMgNAoxMzQgMAoxMzUgMQoxMzYgNjE4CjEzNyA1CjEzOCAxCjEzOSAxCjE0MCA0CjE0MSA2MjMKMTQyIDkKMTQzIDIKMTQ0IDUKMTQ1IDQKMTQ2IDY0MQoxNDcgOQoxNDggMgoxNDkgOQoxNTAgNAoxNTEgNjU5CjE1MiA5CjE1MyAyCjE1NCAxMwoxNTUgODAKMTU2IDY3NwoxNTcgNQoxNTggMQoxNTkgOTMKMTYwIDEKMTYxIDEwNzcKMTYyIDIKMTYzIDEKMTY0IDk0CjE2NSAzNgoxNjYgMTA3OQoxNjcgNwoxNjggMgoxNjkgMTMwCjE3MCAzCjE3MSAxMjA1CjE3MiAzCjE3MyAxCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc1IDQ2NzgxODk0NTk2MDQyMjM5NzcwNjI0MAoxNzUgNDY3ODE4OTQ1OTYwNDIyMzk3NzA2MjQwCjE3NiAxNDY0NDAxNDk3ODAzMDAxNzI1Nzg5NTY2MzE5NjUwMTUzOTk3NjYwMTM3MTkzNDcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NSA0Njc4MTg5NDU5NjA0MjIzOTc3MDYyNDAKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgwIDM2NTMwNjM2MjAxMTI0NzU1MjIwMDA3MDU4MDgzMTYyMjQzNTA1NzY3OTAwMDkyODI1NgoxODAgMzY1MzA2MzYyMDExMjQ3NTUyMjAwMDcwNTgwODMxNjIyNDM1MDU3Njc5MDAwOTI4MjU2CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3Mgo=\",\"stderrBase64\":\"\"}"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 27.851,
+        "DeadlineSeconds": 210,
+        "Ownership": "kill-on-close-job",
+        "StartedUtc": "2026-09-12T13:01:22.8778008Z",
+        "CompletedUtc": "2026-09-12T13:01:50.7632804Z",
+        "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+        "InvokedArguments": [
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_cases.py",
+          "capture",
+          "--executable",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\packed-rmq-native-cpp.exe",
+          "--scratch",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay",
+          "--deadline",
+          "180",
+          "--output-limit",
+          "4194304",
+          "--",
+          "query",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\pq1-n9-full.bin",
+          "000000000000000000000000000000000000000000",
+          "090000000000000000000000000000000000000000",
+          "837572",
+          "1"
+        ]
+      },
+      "pass": true,
+      "expectedStdout": "halted 8\n13568\n266 4607 2461 2315 3918 1\n0 9\n1 17\n2 75\n3 1275\n4 0\n5 0\n6 168\n7 182\n8 5\n9 25\n10 1\n11 25\n12 1\n13 9\n14 1\n15 4\n16 5\n17 8\n18 1\n19 4\n20 2\n21 1\n22 16\n23 1\n24 5\n25 1\n26 9\n27 5\n28 2\n29 18\n30 3\n31 7\n32 3\n33 0\n34 1\n35 5\n36 9\n37 13\n38 93\n39 94\n40 130\n41 133\n42 17\n43 18\n44 5\n45 4\n46 60\n47 5\n48 5\n49 1\n50 65\n51 5\n52 5\n53 1\n54 70\n55 5\n56 5\n57 1\n58 75\n59 5\n60 5\n61 1\n62 80\n63 125\n64 5\n65 25\n66 205\n67 125\n68 5\n69 25\n70 330\n71 125\n72 5\n73 25\n74 455\n75 125\n76 5\n77 25\n78 580\n79 2\n80 1\n81 2\n82 582\n83 2\n84 1\n85 2\n86 584\n87 1\n88 1\n89 3\n90 585\n91 0\n92 5\n93 0\n94 585\n95 12\n96 4\n97 3\n98 597\n99 12\n100 4\n101 3\n102 609\n103 9\n104 4\n105 13\n106 618\n107 0\n108 5\n109 0\n110 35\n111 5\n112 5\n113 1\n114 40\n115 20\n116 5\n117 4\n118 17\n119 18\n120 5\n121 23\n122 0\n123 0\n124 0\n125 0\n126 1214\n127 40\n128 5\n129 8\n130 1254\n131 8\n132 2\n133 4\n134 0\n135 1\n136 618\n137 5\n138 1\n139 1\n140 4\n141 623\n142 9\n143 2\n144 5\n145 4\n146 641\n147 9\n148 2\n149 9\n150 4\n151 659\n152 9\n153 2\n154 13\n155 80\n156 677\n157 5\n158 1\n159 93\n160 1\n161 1077\n162 2\n163 1\n164 94\n165 36\n166 1079\n167 7\n168 2\n169 130\n170 3\n171 1205\n172 3\n173 1\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n175 467818945960422397706240\n175 467818945960422397706240\n176 1464401497803001725789566319650153997660137193472\n174 10932589051700477593671932755857768448\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n175 467818945960422397706240\n176 1464401497803001725789566319650153997660137193472\n176 1464401497803001725789566319650153997660137193472\n174 10932589051700477593671932755857768448\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n181 25592150928346931469762172\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n180 365306362011247552200070580831622435057679000928256\n180 365306362011247552200070580831622435057679000928256\n178 1024\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n178 1024\n178 1024\n178 1024\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n177 187075337965678258293451821629957609819702944595968\n178 1024\n178 1024\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n181 25592150928346931469762172\n174 10932589051700477593671932755857768448\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n181 25592150928346931469762172\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n174 10932589051700477593671932755857768448\n181 25592150928346931469762172\n"
+    }
+  ],
+  "commands": [
+    {
+      "Stage": "python-producer-identity",
+      "ExitCode": 0,
+      "Output": [
+        "Python 3.12.14"
+      ],
+      "StandardOutput": [
+        "Python 3.12.14"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 3.093,
+      "DeadlineSeconds": 30,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T12:59:16.5333152Z",
+      "CompletedUtc": "2026-09-12T12:59:19.9839235Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+      "InvokedArguments": [
+        "--version"
+      ]
+    },
+    {
+      "Stage": "pq1-n9-full-prepare",
+      "ExitCode": 0,
+      "Output": [
+        "{\"imageSha256\":\"13A28D376144FE4A45C939598A9028F06FAEA2CE1B64B4575FF42C0224DD491E\",\"imageBytes\":70854686,\"width\":168,\"instructions\":837572,\"memoryWords\":182,\"declaredNumericWords\":2847581,\"independentImageInspection\":true}"
+      ],
+      "StandardOutput": [
+        "{\"imageSha256\":\"13A28D376144FE4A45C939598A9028F06FAEA2CE1B64B4575FF42C0224DD491E\",\"imageBytes\":70854686,\"width\":168,\"instructions\":837572,\"memoryWords\":182,\"declaredNumericWords\":2847581,\"independentImageInspection\":true}"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 27.596,
+      "DeadlineSeconds": 180,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:00:24.7790344Z",
+      "CompletedUtc": "2026-09-12T13:00:52.4041966Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+      "InvokedArguments": [
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_cases.py",
+        "prepare",
+        "--registry",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_cases.json",
+        "--case",
+        "pq1-n9-full",
+        "--output",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\pq1-n9-full.bin"
+      ]
+    },
+    {
+      "Stage": "pq1-n9-full/packed-rmq-native.exe",
+      "ExitCode": 0,
+      "Output": [
+        "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T13:00:54.820027+00:00\",\"completedUtc\":\"2026-09-12T13:01:22.485992+00:00\",\"durationSeconds\":27.65700000000652,\"deadlineSeconds\":180.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\replay\\\\pq1-n9-full.bin\",\"000000000000000000000000000000000000000000\",\"090000000000000000000000000000000000000000\",\"837572\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMTM1NjgKMjY2IDQ2MDcgMjQ2MSAyMzE1IDM5MTggMQowIDkKMSAxNwoyIDc1CjMgMTI3NQo0IDAKNSAwCjYgMTY4CjcgMTgyCjggNQo5IDI1CjEwIDEKMTEgMjUKMTIgMQoxMyA5CjE0IDEKMTUgNAoxNiA1CjE3IDgKMTggMQoxOSA0CjIwIDIKMjEgMQoyMiAxNgoyMyAxCjI0IDUKMjUgMQoyNiA5CjI3IDUKMjggMgoyOSAxOAozMCAzCjMxIDcKMzIgMwozMyAwCjM0IDEKMzUgNQozNiA5CjM3IDEzCjM4IDkzCjM5IDk0CjQwIDEzMAo0MSAxMzMKNDIgMTcKNDMgMTgKNDQgNQo0NSA0CjQ2IDYwCjQ3IDUKNDggNQo0OSAxCjUwIDY1CjUxIDUKNTIgNQo1MyAxCjU0IDcwCjU1IDUKNTYgNQo1NyAxCjU4IDc1CjU5IDUKNjAgNQo2MSAxCjYyIDgwCjYzIDEyNQo2NCA1CjY1IDI1CjY2IDIwNQo2NyAxMjUKNjggNQo2OSAyNQo3MCAzMzAKNzEgMTI1CjcyIDUKNzMgMjUKNzQgNDU1Cjc1IDEyNQo3NiA1Cjc3IDI1Cjc4IDU4MAo3OSAyCjgwIDEKODEgMgo4MiA1ODIKODMgMgo4NCAxCjg1IDIKODYgNTg0Cjg3IDEKODggMQo4OSAzCjkwIDU4NQo5MSAwCjkyIDUKOTMgMAo5NCA1ODUKOTUgMTIKOTYgNAo5NyAzCjk4IDU5Nwo5OSAxMgoxMDAgNAoxMDEgMwoxMDIgNjA5CjEwMyA5CjEwNCA0CjEwNSAxMwoxMDYgNjE4CjEwNyAwCjEwOCA1CjEwOSAwCjExMCAzNQoxMTEgNQoxMTIgNQoxMTMgMQoxMTQgNDAKMTE1IDIwCjExNiA1CjExNyA0CjExOCAxNwoxMTkgMTgKMTIwIDUKMTIxIDIzCjEyMiAwCjEyMyAwCjEyNCAwCjEyNSAwCjEyNiAxMjE0CjEyNyA0MAoxMjggNQoxMjkgOAoxMzAgMTI1NAoxMzEgOAoxMzIgMgoxMzMgNAoxMzQgMAoxMzUgMQoxMzYgNjE4CjEzNyA1CjEzOCAxCjEzOSAxCjE0MCA0CjE0MSA2MjMKMTQyIDkKMTQzIDIKMTQ0IDUKMTQ1IDQKMTQ2IDY0MQoxNDcgOQoxNDggMgoxNDkgOQoxNTAgNAoxNTEgNjU5CjE1MiA5CjE1MyAyCjE1NCAxMwoxNTUgODAKMTU2IDY3NwoxNTcgNQoxNTggMQoxNTkgOTMKMTYwIDEKMTYxIDEwNzcKMTYyIDIKMTYzIDEKMTY0IDk0CjE2NSAzNgoxNjYgMTA3OQoxNjcgNwoxNjggMgoxNjkgMTMwCjE3MCAzCjE3MSAxMjA1CjE3MiAzCjE3MyAxCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc1IDQ2NzgxODk0NTk2MDQyMjM5NzcwNjI0MAoxNzUgNDY3ODE4OTQ1OTYwNDIyMzk3NzA2MjQwCjE3NiAxNDY0NDAxNDk3ODAzMDAxNzI1Nzg5NTY2MzE5NjUwMTUzOTk3NjYwMTM3MTkzNDcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NSA0Njc4MTg5NDU5NjA0MjIzOTc3MDYyNDAKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgwIDM2NTMwNjM2MjAxMTI0NzU1MjIwMDA3MDU4MDgzMTYyMjQzNTA1NzY3OTAwMDkyODI1NgoxODAgMzY1MzA2MzYyMDExMjQ3NTUyMjAwMDcwNTgwODMxNjIyNDM1MDU3Njc5MDAwOTI4MjU2CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3Mgo=\",\"stderrBase64\":\"\"}"
+      ],
+      "StandardOutput": [
+        "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T13:00:54.820027+00:00\",\"completedUtc\":\"2026-09-12T13:01:22.485992+00:00\",\"durationSeconds\":27.65700000000652,\"deadlineSeconds\":180.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\replay\\\\pq1-n9-full.bin\",\"000000000000000000000000000000000000000000\",\"090000000000000000000000000000000000000000\",\"837572\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMTM1NjgKMjY2IDQ2MDcgMjQ2MSAyMzE1IDM5MTggMQowIDkKMSAxNwoyIDc1CjMgMTI3NQo0IDAKNSAwCjYgMTY4CjcgMTgyCjggNQo5IDI1CjEwIDEKMTEgMjUKMTIgMQoxMyA5CjE0IDEKMTUgNAoxNiA1CjE3IDgKMTggMQoxOSA0CjIwIDIKMjEgMQoyMiAxNgoyMyAxCjI0IDUKMjUgMQoyNiA5CjI3IDUKMjggMgoyOSAxOAozMCAzCjMxIDcKMzIgMwozMyAwCjM0IDEKMzUgNQozNiA5CjM3IDEzCjM4IDkzCjM5IDk0CjQwIDEzMAo0MSAxMzMKNDIgMTcKNDMgMTgKNDQgNQo0NSA0CjQ2IDYwCjQ3IDUKNDggNQo0OSAxCjUwIDY1CjUxIDUKNTIgNQo1MyAxCjU0IDcwCjU1IDUKNTYgNQo1NyAxCjU4IDc1CjU5IDUKNjAgNQo2MSAxCjYyIDgwCjYzIDEyNQo2NCA1CjY1IDI1CjY2IDIwNQo2NyAxMjUKNjggNQo2OSAyNQo3MCAzMzAKNzEgMTI1CjcyIDUKNzMgMjUKNzQgNDU1Cjc1IDEyNQo3NiA1Cjc3IDI1Cjc4IDU4MAo3OSAyCjgwIDEKODEgMgo4MiA1ODIKODMgMgo4NCAxCjg1IDIKODYgNTg0Cjg3IDEKODggMQo4OSAzCjkwIDU4NQo5MSAwCjkyIDUKOTMgMAo5NCA1ODUKOTUgMTIKOTYgNAo5NyAzCjk4IDU5Nwo5OSAxMgoxMDAgNAoxMDEgMwoxMDIgNjA5CjEwMyA5CjEwNCA0CjEwNSAxMwoxMDYgNjE4CjEwNyAwCjEwOCA1CjEwOSAwCjExMCAzNQoxMTEgNQoxMTIgNQoxMTMgMQoxMTQgNDAKMTE1IDIwCjExNiA1CjExNyA0CjExOCAxNwoxMTkgMTgKMTIwIDUKMTIxIDIzCjEyMiAwCjEyMyAwCjEyNCAwCjEyNSAwCjEyNiAxMjE0CjEyNyA0MAoxMjggNQoxMjkgOAoxMzAgMTI1NAoxMzEgOAoxMzIgMgoxMzMgNAoxMzQgMAoxMzUgMQoxMzYgNjE4CjEzNyA1CjEzOCAxCjEzOSAxCjE0MCA0CjE0MSA2MjMKMTQyIDkKMTQzIDIKMTQ0IDUKMTQ1IDQKMTQ2IDY0MQoxNDcgOQoxNDggMgoxNDkgOQoxNTAgNAoxNTEgNjU5CjE1MiA5CjE1MyAyCjE1NCAxMwoxNTUgODAKMTU2IDY3NwoxNTcgNQoxNTggMQoxNTkgOTMKMTYwIDEKMTYxIDEwNzcKMTYyIDIKMTYzIDEKMTY0IDk0CjE2NSAzNgoxNjYgMTA3OQoxNjcgNwoxNjggMgoxNjkgMTMwCjE3MCAzCjE3MSAxMjA1CjE3MiAzCjE3MyAxCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc1IDQ2NzgxODk0NTk2MDQyMjM5NzcwNjI0MAoxNzUgNDY3ODE4OTQ1OTYwNDIyMzk3NzA2MjQwCjE3NiAxNDY0NDAxNDk3ODAzMDAxNzI1Nzg5NTY2MzE5NjUwMTUzOTk3NjYwMTM3MTkzNDcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NSA0Njc4MTg5NDU5NjA0MjIzOTc3MDYyNDAKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgwIDM2NTMwNjM2MjAxMTI0NzU1MjIwMDA3MDU4MDgzMTYyMjQzNTA1NzY3OTAwMDkyODI1NgoxODAgMzY1MzA2MzYyMDExMjQ3NTUyMjAwMDcwNTgwODMxNjIyNDM1MDU3Njc5MDAwOTI4MjU2CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3Mgo=\",\"stderrBase64\":\"\"}"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 29.969,
+      "DeadlineSeconds": 210,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:00:52.7377954Z",
+      "CompletedUtc": "2026-09-12T13:01:22.7523400Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+      "InvokedArguments": [
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_cases.py",
+        "capture",
+        "--executable",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\packed-rmq-native.exe",
+        "--scratch",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay",
+        "--deadline",
+        "180",
+        "--output-limit",
+        "4194304",
+        "--",
+        "query",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\pq1-n9-full.bin",
+        "000000000000000000000000000000000000000000",
+        "090000000000000000000000000000000000000000",
+        "837572",
+        "1"
+      ]
+    },
+    {
+      "Stage": "pq1-n9-full/packed-rmq-native-cpp.exe",
+      "ExitCode": 0,
+      "Output": [
+        "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T13:01:26.032841+00:00\",\"completedUtc\":\"2026-09-12T13:01:50.560300+00:00\",\"durationSeconds\":24.531999999991967,\"deadlineSeconds\":180.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native-cpp.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\replay\\\\pq1-n9-full.bin\",\"000000000000000000000000000000000000000000\",\"090000000000000000000000000000000000000000\",\"837572\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMTM1NjgKMjY2IDQ2MDcgMjQ2MSAyMzE1IDM5MTggMQowIDkKMSAxNwoyIDc1CjMgMTI3NQo0IDAKNSAwCjYgMTY4CjcgMTgyCjggNQo5IDI1CjEwIDEKMTEgMjUKMTIgMQoxMyA5CjE0IDEKMTUgNAoxNiA1CjE3IDgKMTggMQoxOSA0CjIwIDIKMjEgMQoyMiAxNgoyMyAxCjI0IDUKMjUgMQoyNiA5CjI3IDUKMjggMgoyOSAxOAozMCAzCjMxIDcKMzIgMwozMyAwCjM0IDEKMzUgNQozNiA5CjM3IDEzCjM4IDkzCjM5IDk0CjQwIDEzMAo0MSAxMzMKNDIgMTcKNDMgMTgKNDQgNQo0NSA0CjQ2IDYwCjQ3IDUKNDggNQo0OSAxCjUwIDY1CjUxIDUKNTIgNQo1MyAxCjU0IDcwCjU1IDUKNTYgNQo1NyAxCjU4IDc1CjU5IDUKNjAgNQo2MSAxCjYyIDgwCjYzIDEyNQo2NCA1CjY1IDI1CjY2IDIwNQo2NyAxMjUKNjggNQo2OSAyNQo3MCAzMzAKNzEgMTI1CjcyIDUKNzMgMjUKNzQgNDU1Cjc1IDEyNQo3NiA1Cjc3IDI1Cjc4IDU4MAo3OSAyCjgwIDEKODEgMgo4MiA1ODIKODMgMgo4NCAxCjg1IDIKODYgNTg0Cjg3IDEKODggMQo4OSAzCjkwIDU4NQo5MSAwCjkyIDUKOTMgMAo5NCA1ODUKOTUgMTIKOTYgNAo5NyAzCjk4IDU5Nwo5OSAxMgoxMDAgNAoxMDEgMwoxMDIgNjA5CjEwMyA5CjEwNCA0CjEwNSAxMwoxMDYgNjE4CjEwNyAwCjEwOCA1CjEwOSAwCjExMCAzNQoxMTEgNQoxMTIgNQoxMTMgMQoxMTQgNDAKMTE1IDIwCjExNiA1CjExNyA0CjExOCAxNwoxMTkgMTgKMTIwIDUKMTIxIDIzCjEyMiAwCjEyMyAwCjEyNCAwCjEyNSAwCjEyNiAxMjE0CjEyNyA0MAoxMjggNQoxMjkgOAoxMzAgMTI1NAoxMzEgOAoxMzIgMgoxMzMgNAoxMzQgMAoxMzUgMQoxMzYgNjE4CjEzNyA1CjEzOCAxCjEzOSAxCjE0MCA0CjE0MSA2MjMKMTQyIDkKMTQzIDIKMTQ0IDUKMTQ1IDQKMTQ2IDY0MQoxNDcgOQoxNDggMgoxNDkgOQoxNTAgNAoxNTEgNjU5CjE1MiA5CjE1MyAyCjE1NCAxMwoxNTUgODAKMTU2IDY3NwoxNTcgNQoxNTggMQoxNTkgOTMKMTYwIDEKMTYxIDEwNzcKMTYyIDIKMTYzIDEKMTY0IDk0CjE2NSAzNgoxNjYgMTA3OQoxNjcgNwoxNjggMgoxNjkgMTMwCjE3MCAzCjE3MSAxMjA1CjE3MiAzCjE3MyAxCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc1IDQ2NzgxODk0NTk2MDQyMjM5NzcwNjI0MAoxNzUgNDY3ODE4OTQ1OTYwNDIyMzk3NzA2MjQwCjE3NiAxNDY0NDAxNDk3ODAzMDAxNzI1Nzg5NTY2MzE5NjUwMTUzOTk3NjYwMTM3MTkzNDcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NSA0Njc4MTg5NDU5NjA0MjIzOTc3MDYyNDAKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgwIDM2NTMwNjM2MjAxMTI0NzU1MjIwMDA3MDU4MDgzMTYyMjQzNTA1NzY3OTAwMDkyODI1NgoxODAgMzY1MzA2MzYyMDExMjQ3NTUyMjAwMDcwNTgwODMxNjIyNDM1MDU3Njc5MDAwOTI4MjU2CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3Mgo=\",\"stderrBase64\":\"\"}"
+      ],
+      "StandardOutput": [
+        "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T13:01:26.032841+00:00\",\"completedUtc\":\"2026-09-12T13:01:50.560300+00:00\",\"durationSeconds\":24.531999999991967,\"deadlineSeconds\":180.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native-cpp.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\replay\\\\pq1-n9-full.bin\",\"000000000000000000000000000000000000000000\",\"090000000000000000000000000000000000000000\",\"837572\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMTM1NjgKMjY2IDQ2MDcgMjQ2MSAyMzE1IDM5MTggMQowIDkKMSAxNwoyIDc1CjMgMTI3NQo0IDAKNSAwCjYgMTY4CjcgMTgyCjggNQo5IDI1CjEwIDEKMTEgMjUKMTIgMQoxMyA5CjE0IDEKMTUgNAoxNiA1CjE3IDgKMTggMQoxOSA0CjIwIDIKMjEgMQoyMiAxNgoyMyAxCjI0IDUKMjUgMQoyNiA5CjI3IDUKMjggMgoyOSAxOAozMCAzCjMxIDcKMzIgMwozMyAwCjM0IDEKMzUgNQozNiA5CjM3IDEzCjM4IDkzCjM5IDk0CjQwIDEzMAo0MSAxMzMKNDIgMTcKNDMgMTgKNDQgNQo0NSA0CjQ2IDYwCjQ3IDUKNDggNQo0OSAxCjUwIDY1CjUxIDUKNTIgNQo1MyAxCjU0IDcwCjU1IDUKNTYgNQo1NyAxCjU4IDc1CjU5IDUKNjAgNQo2MSAxCjYyIDgwCjYzIDEyNQo2NCA1CjY1IDI1CjY2IDIwNQo2NyAxMjUKNjggNQo2OSAyNQo3MCAzMzAKNzEgMTI1CjcyIDUKNzMgMjUKNzQgNDU1Cjc1IDEyNQo3NiA1Cjc3IDI1Cjc4IDU4MAo3OSAyCjgwIDEKODEgMgo4MiA1ODIKODMgMgo4NCAxCjg1IDIKODYgNTg0Cjg3IDEKODggMQo4OSAzCjkwIDU4NQo5MSAwCjkyIDUKOTMgMAo5NCA1ODUKOTUgMTIKOTYgNAo5NyAzCjk4IDU5Nwo5OSAxMgoxMDAgNAoxMDEgMwoxMDIgNjA5CjEwMyA5CjEwNCA0CjEwNSAxMwoxMDYgNjE4CjEwNyAwCjEwOCA1CjEwOSAwCjExMCAzNQoxMTEgNQoxMTIgNQoxMTMgMQoxMTQgNDAKMTE1IDIwCjExNiA1CjExNyA0CjExOCAxNwoxMTkgMTgKMTIwIDUKMTIxIDIzCjEyMiAwCjEyMyAwCjEyNCAwCjEyNSAwCjEyNiAxMjE0CjEyNyA0MAoxMjggNQoxMjkgOAoxMzAgMTI1NAoxMzEgOAoxMzIgMgoxMzMgNAoxMzQgMAoxMzUgMQoxMzYgNjE4CjEzNyA1CjEzOCAxCjEzOSAxCjE0MCA0CjE0MSA2MjMKMTQyIDkKMTQzIDIKMTQ0IDUKMTQ1IDQKMTQ2IDY0MQoxNDcgOQoxNDggMgoxNDkgOQoxNTAgNAoxNTEgNjU5CjE1MiA5CjE1MyAyCjE1NCAxMwoxNTUgODAKMTU2IDY3NwoxNTcgNQoxNTggMQoxNTkgOTMKMTYwIDEKMTYxIDEwNzcKMTYyIDIKMTYzIDEKMTY0IDk0CjE2NSAzNgoxNjYgMTA3OQoxNjcgNwoxNjggMgoxNjkgMTMwCjE3MCAzCjE3MSAxMjA1CjE3MiAzCjE3MyAxCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc1IDQ2NzgxODk0NTk2MDQyMjM5NzcwNjI0MAoxNzUgNDY3ODE4OTQ1OTYwNDIyMzk3NzA2MjQwCjE3NiAxNDY0NDAxNDk3ODAzMDAxNzI1Nzg5NTY2MzE5NjUwMTUzOTk3NjYwMTM3MTkzNDcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NSA0Njc4MTg5NDU5NjA0MjIzOTc3MDYyNDAKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc2IDE0NjQ0MDE0OTc4MDMwMDE3MjU3ODk1NjYzMTk2NTAxNTM5OTc2NjAxMzcxOTM0NzIKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgwIDM2NTMwNjM2MjAxMTI0NzU1MjIwMDA3MDU4MDgzMTYyMjQzNTA1NzY3OTAwMDkyODI1NgoxODAgMzY1MzA2MzYyMDExMjQ3NTUyMjAwMDcwNTgwODMxNjIyNDM1MDU3Njc5MDAwOTI4MjU2CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3OCAxMDI0CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3NyAxODcwNzUzMzc5NjU2NzgyNTgyOTM0NTE4MjE2Mjk5NTc2MDk4MTk3MDI5NDQ1OTU5NjgKMTc3IDE4NzA3NTMzNzk2NTY3ODI1ODI5MzQ1MTgyMTYyOTk1NzYwOTgxOTcwMjk0NDU5NTk2OAoxNzcgMTg3MDc1MzM3OTY1Njc4MjU4MjkzNDUxODIxNjI5OTU3NjA5ODE5NzAyOTQ0NTk1OTY4CjE3OCAxMDI0CjE3OCAxMDI0CjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3MgoxODEgMjU1OTIxNTA5MjgzNDY5MzE0Njk3NjIxNzIKMTgxIDI1NTkyMTUwOTI4MzQ2OTMxNDY5NzYyMTcyCjE3NCAxMDkzMjU4OTA1MTcwMDQ3NzU5MzY3MTkzMjc1NTg1Nzc2ODQ0OAoxNzQgMTA5MzI1ODkwNTE3MDA0Nzc1OTM2NzE5MzI3NTU4NTc3Njg0NDgKMTc0IDEwOTMyNTg5MDUxNzAwNDc3NTkzNjcxOTMyNzU1ODU3NzY4NDQ4CjE4MSAyNTU5MjE1MDkyODM0NjkzMTQ2OTc2MjE3Mgo=\",\"stderrBase64\":\"\"}"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 27.851,
+      "DeadlineSeconds": 210,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:01:22.8778008Z",
+      "CompletedUtc": "2026-09-12T13:01:50.7632804Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+      "InvokedArguments": [
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_cases.py",
+        "capture",
+        "--executable",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\packed-rmq-native-cpp.exe",
+        "--scratch",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay",
+        "--deadline",
+        "180",
+        "--output-limit",
+        "4194304",
+        "--",
+        "query",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\pq1-n9-full.bin",
+        "000000000000000000000000000000000000000000",
+        "090000000000000000000000000000000000000000",
+        "837572",
+        "1"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,370 @@
+{
+  "version": "PRE1-R1-VERIFIERS-RECEIPT-V1",
+  "head": "ece8ae5606f48befdd03b2c6a33af1e7371733c3",
+  "startedUtc": "2026-09-14T10:06:21Z",
+  "secondsTogether": 93,
+  "archives": {
+    "command": "python -B docs/internal/extensions/pre1/repair-r1/verify_receipt_archives.py --committed HEAD",
+    "exit": 0,
+    "result": {
+      "schema": "rmq.pre1.repair-r1.receipt-archives.v1.result",
+      "mode": "committed",
+      "source": "commit ece8ae5606f48befdd03b2c6a33af1e7371733c3",
+      "baseCommit": "84ae12f6f6bad99fd3215c5bdd5b2a93e3779897",
+      "baseBlobsUnderRoot": 55,
+      "requiredArchives": 2,
+      "unselectedScannerTextFiles": 2,
+      "zipContainersWithMemberResultLines": 3,
+      "attributesChecked": "exact committed bytes and check-attr --source",
+      "verifiedArchives": 2,
+      "manifestEntries": 2,
+      "exit": 0,
+      "failureCodes": [],
+      "failureCount": 0,
+      "result": "PASS (2 of 2 required archives verified; 2 manifest entries; 0 extra archives; 2 unselected scanner-text files and 3 zip containers present and unchanged; base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897)"
+    },
+    "stdout": [
+      "RECEIPT-ARCHIVES: source commit ece8ae5606f48befdd03b2c6a33af1e7371733c3",
+      "RECEIPT-ARCHIVES: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 55 blobs under docs/internal/extensions/pre1/; 1 contain claim-scanner result lines; 1 named; 2 mention scanner text without a result line; 3 zip containers hold result lines inside members",
+      "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz -> docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md (named) blob b8a7abc83d9347f00198836ac2c011805b0ec6e3 sha256 2B35DD0386D202EA7D73D28C4754791B43232D4E6CE591E6DAB7C543393EEA52 bytes 88646 archive sha256 E8F77103CE5AB4E15734AF6E09564D3FE8A6BDA8C2463C2776471E8A02D0FDBD bytes 33919 result-lines 0 summary-pattern-lines 2 referring-files 6",
+      "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz -> docs/internal/extensions/pre1/evidence/author-final-checks-summary.json (result-line) blob f52767d9b690ecc444b9e181e56fb6a411f93dbd sha256 5590C0FB372BDDCE4B29BAB621E9F86B16C1F8E3F251BC5889BEF8181301B4BB bytes 4453 archive sha256 DB44F7AC0D2DBFE58CAB93CCF20B0BF1ABD14B71625C458AC72F66822FD45E39 bytes 1199 result-lines 1 summary-pattern-lines 1 referring-files 0",
+      "RECEIPT-ARCHIVES: RESULT: PASS (2 of 2 required archives verified; 2 manifest entries; 0 extra archives; 2 unselected scanner-text files and 3 zip containers present and unchanged; base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897)"
+    ]
+  },
+  "rewords": {
+    "command": "python -B docs/internal/extensions/pre1/repair-r1/verify_rewords.py --committed HEAD",
+    "exit": 0,
+    "result": {
+      "schema": "rmq.pre1.repair-r1.rewords.v1.result",
+      "mode": "committed",
+      "baseCommit": "84ae12f6f6bad99fd3215c5bdd5b2a93e3779897",
+      "source": "commit ece8ae5606f48befdd03b2c6a33af1e7371733c3",
+      "baseMarkdownBlobs": 10,
+      "requiredRewords": 5,
+      "verifiedFiles": 2,
+      "managedFiles": 2,
+      "manifestEntries": 5,
+      "patternLinesUnderRoot": 0,
+      "addedLinesChecked": 18,
+      "exit": 0,
+      "failureCodes": [],
+      "failureCount": 0,
+      "result": "PASS (2 of 2 files verified; 5 recorded lines; 0 pattern lines under the root; 18 changed text paths in the range checked; base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897)"
+    },
+    "stdout": [
+      "REWORDS: source commit ece8ae5606f48befdd03b2c6a33af1e7371733c3",
+      "REWORDS: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 10 Markdown blobs under docs/internal/extensions/pre1/; 5 pattern lines in 2 files",
+      "REWORDS: ok docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md: 3 recorded lines replaced; other 492 base lines identical; appended tail 0 bytes",
+      "REWORDS: ok docs/internal/extensions/pre1/REPORT.md: 2 recorded lines replaced; other 1659 base lines identical; appended tail 0 bytes",
+      "REWORDS: RESULT: PASS (2 of 2 files verified; 5 recorded lines; 0 pattern lines under the root; 18 changed text paths in the range checked; base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897)"
+    ]
+  },
+  "preservation": {
+    "command": "python -B docs/internal/extensions/pre1/repair-r1/check_preservation.py --head HEAD",
+    "exit": 0,
+    "result": {
+      "schema": "rmq.pre1.repair-r1.preservation.v1",
+      "base": "84ae12f6f6bad99fd3215c5bdd5b2a93e3779897",
+      "head": "ece8ae5606f48befdd03b2c6a33af1e7371733c3",
+      "failureCodes": [],
+      "failureCount": 0,
+      "details": {
+        "nameStatus": [
+          "A docs/internal/extensions/pre1/.gitattributes",
+          "A docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz",
+          "A docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz",
+          "A docs/internal/extensions/pre1/repair-r1/.gitattributes",
+          "A docs/internal/extensions/pre1/repair-r1/ACCEPTANCE_MATRIX.md",
+          "A docs/internal/extensions/pre1/repair-r1/RECEIPT_ARCHIVES.json",
+          "A docs/internal/extensions/pre1/repair-r1/REWORDS.json",
+          "A docs/internal/extensions/pre1/repair-r1/build_repair.py",
+          "A docs/internal/extensions/pre1/repair-r1/check_preservation.py",
+          "A docs/internal/extensions/pre1/repair-r1/claim_scan_detector.py",
+          "A docs/internal/extensions/pre1/repair-r1/repair_control_helper.py",
+          "A docs/internal/extensions/pre1/repair-r1/repair_controls.json",
+          "A docs/internal/extensions/pre1/repair-r1/run_checker_modes.ps1",
+          "A docs/internal/extensions/pre1/repair-r1/run_claim_scans.ps1",
+          "A docs/internal/extensions/pre1/repair-r1/run_repair_controls.ps1",
+          "A docs/internal/extensions/pre1/repair-r1/verify_receipt_archives.py",
+          "A docs/internal/extensions/pre1/repair-r1/verify_rewords.py",
+          "D docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md",
+          "D docs/internal/extensions/pre1/evidence/author-final-checks-summary.json",
+          "M docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+          "M docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md",
+          "M docs/internal/extensions/pre1/REPORT.md"
+        ],
+        "protected": {
+          "RMQ": {
+            "base": "52a4d6cb7d9b3fc66494cfaad2cacabecb5d7089",
+            "head": "52a4d6cb7d9b3fc66494cfaad2cacabecb5d7089"
+          },
+          "scripts": {
+            "base": "12654be15c002a70f5648e9f2f8d44e6ea15d3f3",
+            "head": "12654be15c002a70f5648e9f2f8d44e6ea15d3f3"
+          },
+          "lakefile.toml": {
+            "base": "216c45274a0244445a3629d80a32aa49a71c18a9",
+            "head": "216c45274a0244445a3629d80a32aa49a71c18a9"
+          },
+          "lean-toolchain": {
+            "base": "b9994064fbbb081ca94a50384ff5951b50ea5b42",
+            "head": "b9994064fbbb081ca94a50384ff5951b50ea5b42"
+          },
+          "RMQ.lean": {
+            "base": "cdc7d2282a5bfb547c55960f54f89e198dc03c47",
+            "head": "cdc7d2282a5bfb547c55960f54f89e198dc03c47"
+          },
+          "docs/DIGESTION_LOG.md": {
+            "base": "16526f9fec5926edb8eff419c91417a51cbc9bf6",
+            "head": "16526f9fec5926edb8eff419c91417a51cbc9bf6"
+          },
+          "docs/FAMILY_SUMMARY.md": {
+            "base": "96f0a2230ef3f0fa83efcc310b02cc8982116946",
+            "head": "96f0a2230ef3f0fa83efcc310b02cc8982116946"
+          },
+          "docs/internal/CLAIM_DRIFT_POLICY.json": {
+            "base": "491791898dca137d2a7d94126b87402545ccaa9d",
+            "head": "491791898dca137d2a7d94126b87402545ccaa9d"
+          }
+        },
+        "laneBlobsOutsideScopeUnchanged": 52,
+        "ledgers": {
+          "docs/internal/WORKFLOW_DESIGN_DECISIONS.md": "appended 11481 bytes",
+          "docs/internal/DESIGN_DECISIONS.md": "unchanged"
+        },
+        "frozenRows": {
+          "REQ-PRE-CONTRACT": [
+            "66:3B62C7B8B5097FE118F5CBD0B315C9C7635C590D99964460B96D0DEC85CE2289",
+            "732:EBCF5A8FC946288E69A7199EA98EA2890E452ADAEA7ED2FB279DC9FCC3400B68"
+          ],
+          "REQ-PRE-INPUT": [
+            "67:9C14FEF0E4CA9FE8B1F20B9C5F5A1589038486B4D8A5370B50A1DC706B729F79",
+            "733:E6E18985966D6D4770C0129CC9F793EBB8A49332CD94889F8FC3ED4942CCA1A5"
+          ],
+          "REQ-PRE-MACHINE": [
+            "68:F47A6CE5264E3F56FC8986F5540F6B6DE6C3A393E090B7BCFCA7E80873AF9E39",
+            "734:2C83EA02740168500A71C4874EFFB41466D63AF186057A899B6C2163A0720E13"
+          ],
+          "REQ-PRE-EXACT": [
+            "69:34D9F1690D377345D7613934E266879FF110937F8FBD482F93D06A145D6B65F4",
+            "735:96168E27E7066D680D8130061F3071B80B84153A2D20FCA9556763C433250D1E"
+          ],
+          "REQ-PRE-COST": [
+            "70:CE9AFA3D7C2F159240D359B84DE80A73E0C5B61E419FE70DCB2D719A1B951C61",
+            "736:F623DB22B105F99D734CE29AE531922D60FE411523BAF50C0F11D75F85DB4900"
+          ],
+          "REQ-PRE-JOIN": [
+            "71:87E11BBB79F9EF2099F207EC895144C5ED7C9B25A769BAF64B561A8707D95DAE",
+            "737:2010323B12472E4AE52A26B84D70C07E33E1921D5C8B154F6DD7DCBFBD5E9928"
+          ],
+          "CHK-PRE-CONTROLS": [
+            "72:D7DBA36F66B516F62C335623974F76273F15CD07AA937FE97BE064B0EFCE2F9E",
+            "738:EB57BBC971CF821996A48137F026134E5683C0180634D455E670ECA0AD24E493"
+          ],
+          "REPLAY-EXACT-REGISTRY": [
+            "73:339E05378F56C3C3DC82379933A11851FD162C62DD5F911B2BCF439FD547BA22",
+            "760:B215E8E4830F5FDF1B2D35605931706EC9A8A75E3028F116CBAE4B12803987C4"
+          ],
+          "REPLAY-SELECTOR-NONVACUITY": [
+            "74:233B5DB369277E4D01FA134FBBE28D28332D7557E888344A66F6451AA833FC68",
+            "761:5FDC44753B3494B218DCAE4B38A95A75AE29D0B9F9F2AF869DFB828E7499BE73"
+          ],
+          "REPLAY-SUBPROCESS-DEADLINE": [
+            "75:6EAA02BC5ADC3D90FCA47AD2D3F98D4F1F71769C26FFB7E5C7EBA8802086B8EA",
+            "762:2924B56080E324080865EA2BC65755221EBA321DA12612561AFB2EFD93665C74"
+          ],
+          "INV-STORE-IDENTITY": [
+            "117:C0DB752A84EE43870793AE4F71A07F6B5ED2753AA0A93EA3F478DC07FF819B73",
+            "739:1A8D7E0A29AFAA3959D690E05C9CD4650ECE168B5EE276A3ADB15B21A8CF7B32"
+          ],
+          "INV-VALUE-DEPENDENCY": [
+            "129:DEFD35955CA28FADBBE8F97E05A64ACD919075D1C10A139497B7204838F93D95",
+            "740:F0566F1BF174772460CF83AB5056AA5205453D48819175972D8F97AFB7B71842"
+          ],
+          "INV-SEMANTIC-NONVACUITY": [
+            "141:08E9F72489FFB1261E9979E57FB651001F4C68F1D6C7B46187B78C77F02CDFFB",
+            "741:9E47F4895280925BB383F83C30873F9CBD3D1ADA08F27390F25AA47F77F4AC5D"
+          ],
+          "INV-TRACE-EXECUTION": [
+            "150:5292424C3ECFD99F1ED9F13AE07619BB4C55088F1BFC188EDA522EC2CBB560C9",
+            "742:9095A50EB8E980BBED8353063FF2DFAF72F0D259D6213DC0BA36B1909F4F5272"
+          ],
+          "INV-STORE-AGREEMENT": [
+            "159:B58230F088D9ED4C7B7481AC37EA6207D72A9814670EEF6046B9513D59DA92C7",
+            "743:428E67D59558107367CF5408FC19AB0419A3797576509D03422EC2766DF22598"
+          ],
+          "INV-READ-BACKING": [
+            "168:84D1CC23C85A5F9E3B5B83CA03555A900A3B6DBBEC954B2E8EEC3C28E8BB7EAC",
+            "744:E05D7A779CB58AD0EEE04940E7E225C6CC8F08075E0E5AD60F9DBBE86B73FC6C"
+          ],
+          "INV-WORD-WIDTH": [
+            "177:214C287B2BAB64A0A793713766B58E19344C7C7C659B42879B40A0282B532007",
+            "745:935285DE6DFC8C2DC30536FB76F29CA19FC6DBDE9C873BD44CD8933D5A9040CF"
+          ],
+          "INV-ADDRESS-WIDTH": [
+            "188:6BE8FDDDBBCB3FF3C70C23DC003165B0F90A05B3BDF5A5FC43C3AA03D0A8C06D",
+            "746:944AD7BBCC35E8656F458F7514A6933AE0B7F9272FED0882374E39D90C90FD6D"
+          ],
+          "INV-INSTRUCTION-ATOMICITY": [
+            "200:50AA4C05D1B22DBE127738457F2453197C663817F0DA26F0C137C0A0650BF504",
+            "747:5715E32EABEE1C0C3AC4D6991244F340E2AB2CE1BCFE8CF32059DF45C586A2C9"
+          ],
+          "INV-PROGRAM-ACCOUNTING": [
+            "211:DEC1293C910F26C895E98C66E2CBB3F184F8AD37047E202E73B71AA068F37DF1",
+            "748:088C559CFCD3B0420813192ECDBF1049E35D61D5B1AC099F96CFB6773481A8B9"
+          ],
+          "INV-ORACLE-INDEPENDENCE": [
+            "221:A902941BDBB00A5254DC87F3A3CC703E5D19A9AE5CC66FB18E3478BB87EC3EE4",
+            "749:0D70E9D392DA28C3B1F3552A288BCA08E0223A660BFA36FCB5480B049B7A07E9"
+          ],
+          "INV-VALIDATION-REACH": [
+            "231:95B8F20BE080E9043CEDD8503BD32E01B8A1C40EBB63FC51E59FE6267A696A7C",
+            "750:A7406C1813F7EDFB72A85B15C3AC432C992362BD712E76B106B5914CA75026F5"
+          ],
+          "INV-ALL-SIZE": [
+            "240:EAF33C70429627AEEC5AC4081F4027F6DDFDDA3497575DA2D328F7BFA188914F",
+            "751:1543F4B3EF311ACECB17B7F54E73877B3D80F9029847B81655194B0C4EDAD380"
+          ],
+          "INV-PROOF-SEPARATION": [
+            "249:4DB21972BA5ACAA4AA706DEDF9C985FAA1381EDF1342925A0844BC59D820A9DB",
+            "752:B27A428138C200E9F718253149A31AF1B02ACD67B950BC42B105D5481B5C1107"
+          ],
+          "INV-NO-SYNTHETIC": [
+            "258:F553CDCEC5C5431BE0B97DA460D0B2ADA819F5FECC0479B7C7A0A8E7E5F7F048",
+            "753:564C676E2BEA9F4464A48B23F09E24544AED96AB25ED85D4469FCFF5804757B3"
+          ],
+          "INV-CATEGORY-SEPARATION": [
+            "267:770F13D28993D6D27690D063CFFB3FE9ED89917B6995AF6711E8B1436EEF85D0",
+            "754:0DF3749B620C1298518F15A299000CC6EE21889ECCF93B0B6CB10D52F13409CB"
+          ],
+          "INV-PUBLIC-COMPOSITION": [
+            "278:F7242FF4B8DF07F133AEA94930D16E5BE98369CB0A40C1167412751A2701C286",
+            "755:73E05E6AFBF41E14A7CD974B52A1F2B3BC1CC56601B3E6D491A04E161D7C4E01"
+          ],
+          "INV-CERTIFICATE-ANTI-BYPASS": [
+            "290:A11C37A91C02824611DA6636D7B179116E00B0CBBDDA636126BFBA0338B08CE6",
+            "756:43E1BA48DC5B26BA64EBD9152C86CD0A04ED3AC853E8C732E78CF79A20F9FF6C"
+          ],
+          "INV-MUTATION-REPRODUCIBILITY": [
+            "305:7BABCEDE16EE7695C50A21801E4E1B0579A36297F5CD0D3CD0C2D75FFC0C5FE7",
+            "757:F74DC08CF773F0B1F47B35C3D95AA0ADA686BA40B129B627D0917738E255C2EB"
+          ],
+          "INV-GLOBAL-PHYSICAL-MACHINE": [
+            "316:ABE5789CDDE4E0615400B428C478FB3F2B55EBFF4B1998301D48FA15E0635EB8",
+            "758:2146E7C76B2A1EB9CFA9ADC847F5423FA13ADB8E53B237082EF5CA34CFE412B2"
+          ],
+          "INV-WIDTH-SCALING": [
+            "328:A69B27F0C6EBF10D6B7B45847EE396F72FC5B17314CFC5B0A276A8C14FDFD0FC",
+            "759:7D830CDEB2773EF157FE1EA511D8E7842ED07DB0B6E4662195C035DAB3DBEFED"
+          ]
+        },
+        "checkerInputs": {
+          "scripts/preprocessing_builder_gate.ps1": "61eb6f612c1ef84f1ff40961da76356bf0dcd4a6",
+          "scripts/owned_process_tree.ps1": "71b2704e9b77af3b55d4b97c626207013938b5b0",
+          "scripts/preprocessing_builder_replay.ps1": "e052d9cca4222ebdfa6e48b97bef5e083e42843f",
+          "docs/internal/extensions/pre1/builder_cases.json": "6e1af778d75f6a3b3d8e91929e8288e9f89adbbf",
+          "docs/internal/extensions/pre1/builder_manifest.json": "cdb685ca943f38b9a727559677290b8794e4b2fe",
+          "docs/internal/extensions/pre1/contract_cases.json": "8c95728686e569aaec1f0cfeb7d94c66b3208f6a",
+          "docs/internal/extensions/pre1/primitive_manifest.json": "88443b4a8bc49e89e2a01b8b4d144ca2d461ff5a",
+          "scripts/preprocessing_builder_firewall.ps1": "27c45086a1ed82531dddb3782624844694e00b3e",
+          "scripts/preprocessing_contract_firewall.ps1": "63b8fb96dfcaf7475d47abd8a2a6f02f5b727310",
+          "scripts/preprocessing_contract_replay.ps1": "593f4f1a935c4fb8ca8ab31b8c9c772265a9b559",
+          "scripts/preprocessing_builder_check.lean": "4f86a31e156130c7e51b9efd6e557b9ad24fd3c5",
+          "RMQ/Validation/PreprocessingContract.lean": "2b89b95aa619c2c7927fe756afc6f4cd1c5b299b",
+          "RMQ/Validation/Preprocessing.lean": "357d646ec8d701a93609657bf187f4db72a0e085",
+          "RMQ/Core/WordRAM/Construction": "cbe49ffa2c71df7beb94c5bd8421df4ff9560a8d",
+          "lakefile.toml": "216c45274a0244445a3629d80a32aa49a71c18a9",
+          "lean-toolchain": "b9994064fbbb081ca94a50384ff5951b50ea5b42",
+          "RMQ": "52a4d6cb7d9b3fc66494cfaad2cacabecb5d7089",
+          "scripts/preprocessing_contract_gate.ps1": "f83d41824db3d785e65fd83cf9bbf6de9dfd1d70",
+          "scripts/preprocessing_contract_check.lean": "c42c4a99d7e07df45e8bb336437c5c21d97b4b45",
+          "RMQ/Core/WordRAM/Construction/Primitive.lean": "7f44d513249a2e4650a8af799e87cc32238741ff",
+          "RMQ/Core/WordRAM/Construction/Input.lean": "53afec2a48fbd6ce18622153c468926591b53d82",
+          "RMQ/Core/WordRAM/Construction/Model.lean": "d1687b7cebe1278482801cd8c390bbb77bd8b3a9"
+        },
+        "checkerTokenHits": [
+          {
+            "path": "scripts/preprocessing_builder_gate.ps1",
+            "line": 20,
+            "token": "BUILDER_STAGE_LOG",
+            "class": "comment"
+          },
+          {
+            "path": "scripts/preprocessing_builder_gate.ps1",
+            "line": 23,
+            "token": "BUILDER_STAGE_LOG",
+            "class": "comment"
+          },
+          {
+            "path": "scripts/preprocessing_builder_replay.ps1",
+            "line": 29,
+            "token": "BUILDER_STAGE_LOG",
+            "class": "comment"
+          }
+        ],
+        "checkerDocPaths": [
+          {
+            "path": "scripts/preprocessing_builder_replay.ps1",
+            "line": 40,
+            "docPath": "docs/internal/extensions/pre1/builder_cases.json"
+          },
+          {
+            "path": "scripts/preprocessing_builder_replay.ps1",
+            "line": 105,
+            "docPath": "docs/internal/extensions/pre1/builder_manifest.json"
+          },
+          {
+            "path": "scripts/preprocessing_builder_replay.ps1",
+            "line": 135,
+            "docPath": "docs/internal/extensions/pre1/contract_cases.json"
+          },
+          {
+            "path": "scripts/preprocessing_builder_replay.ps1",
+            "line": 138,
+            "docPath": "docs/internal/extensions/pre1/primitive_manifest.json"
+          },
+          {
+            "path": "scripts/preprocessing_builder_replay.ps1",
+            "line": 902,
+            "docPath": "docs/internal/extensions/pre1/builder_manifest.json"
+          },
+          {
+            "path": "scripts/preprocessing_builder_replay.ps1",
+            "line": 903,
+            "docPath": "docs/internal/extensions/pre1/primitive_manifest.json"
+          },
+          {
+            "path": "scripts/preprocessing_builder_firewall.ps1",
+            "line": 173,
+            "docPath": "docs/internal/extensions/pre1/builder_manifest.json"
+          },
+          {
+            "path": "scripts/preprocessing_contract_replay.ps1",
+            "line": 28,
+            "docPath": "docs/internal/extensions/pre1/contract_cases.json"
+          },
+          {
+            "path": "scripts/preprocessing_contract_replay.ps1",
+            "line": 542,
+            "docPath": "docs/internal/extensions/pre1/primitive_manifest.json"
+          },
+          {
+            "path": "scripts/preprocessing_contract_firewall.ps1",
+            "line": 69,
+            "docPath": "docs/internal/extensions/pre1/primitive_manifest.json"
+          }
+        ],
+        "leanFilesScanned": 452,
+        "leanFileReads": []
+      }
+    },
+    "stdout": [
+      "PRESERVATION: range 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897..ece8ae5606f48befdd03b2c6a33af1e7371733c3",
+      "PRESERVATION: 22 changed paths; 0 outside the write scope; 0 required changes missing",
+      "PRESERVATION: 8 protected ids checked; 52 lane blobs outside the write scope unchanged",
+      "PRESERVATION: 31 inherited IDs, 62 base rows compared",
+      "PRESERVATION: 22 checker inputs unchanged-checked; 3 token hits in checker scripts (0 in code); 10 docs paths in code; 452 Lean files scanned, 0 file-system reads",
+      "PRESERVATION: RESULT: PASS (22 changed paths inside the write scope; base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897; head ece8ae5606f48befdd03b2c6a33af1e7371733c3)"
+    ]
+  }
+}

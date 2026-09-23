@@ -1,0 +1,13 @@
+{
+  "Stage": "restored-status",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 2.628,
+  "DeadlineSeconds": 120,
+  "Ownership": "kill-on-close-job"
+}

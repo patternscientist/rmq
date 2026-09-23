@@ -1,0 +1,33 @@
+{
+    "Version":  "opt1-r1-preservation-process-v1",
+    "CandidateRef":  "aecf4a580c591e8f694a3699e19e843198089194",
+    "RepoRoot":  "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+    "SelfTestOnly":  true,
+    "Python":  "C:\\Python314\\python.exe",
+    "PythonSHA256":  "7CA24F26D6E3F463419EE4F537DDD3ACD312C38FE45E678CCE08572F26A8BD1A",
+    "CheckerSHA256":  "AB47AF51D7074C00B1A3A8C73CA5321EC5447B284C0EDEBA04CE2A5D8954A38A",
+    "SupervisorSHA256":  "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+    "DeadlineSeconds":  180,
+    "OutputLimitBytes":  8388608,
+    "Result":  {
+                   "Stage":  "opt1-r1-preservation",
+                   "ExitCode":  0,
+                   "Output":  [
+                                  "OPT1-R1-PRESERVATION PASS selftest=True controls=17/17"
+                              ],
+                   "StandardOutput":  [
+                                          "OPT1-R1-PRESERVATION PASS selftest=True controls=17/17"
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  4.277,
+                   "DeadlineSeconds":  180,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

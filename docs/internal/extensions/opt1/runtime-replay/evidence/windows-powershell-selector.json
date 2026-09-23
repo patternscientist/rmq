@@ -1,0 +1,702 @@
+{
+    "InitialSelectorPresent":  false,
+    "ExitCode":  0,
+    "Stages":  [
+                   {
+                       "Name":  "selector-present-omitted",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoLogo",
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075401Z-20b52ce98fb54f8fbd36be1a182817f1\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_runtime.ps1",
+                                         "-Mode",
+                                         "omitted",
+                                         "-Initial",
+                                         "present"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-present-omitted",
+                                      "ExitCode":  0,
+                                      "Output":  [
+                                                     "OPT1-SELECTOR PROBE PASS bound=False selected=27 ids=C01-ZERO-BRANCH,C02-NONZERO-BRANCH,C03-ZERO-LOOP,C04-ONE-LOOP,C05-REPEATED-LOAD,C06-NESTED-LOOP,C07-EARLY-HALT,C08-FAILED-LOAD,C09-EMPTY-BODY-BOUNDARY,C10-NESTED-SEQUENCE,C11-INITIALLY-HALTED,C12-INITIALLY-FAULTED,C13-EMPTY-BRANCHES,Q01-EMPTY,Q02-SINGLE,Q03-LEFTMOST-TIE,Q04-REVERSED,Q05-OUT-OF-RANGE,Q06-DIFFERENT-BLOCKS,Q07-SAME-BLOCK,Q08-ADJACENT-BLOCKS,Q09-MALFORMED-METADATA,Q10-WORD-MAX,N01-JUMP,N02-COUNTER,N03-BUDGET,N04-FRESH-COLLISION",
+                                                     "OPT1-BOUNDARY ENV PASS initial=present"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-SELECTOR PROBE PASS bound=False selected=27 ids=C01-ZERO-BRANCH,C02-NONZERO-BRANCH,C03-ZERO-LOOP,C04-ONE-LOOP,C05-REPEATED-LOAD,C06-NESTED-LOOP,C07-EARLY-HALT,C08-FAILED-LOAD,C09-EMPTY-BODY-BOUNDARY,C10-NESTED-SEQUENCE,C11-INITIALLY-HALTED,C12-INITIALLY-FAULTED,C13-EMPTY-BRANCHES,Q01-EMPTY,Q02-SINGLE,Q03-LEFTMOST-TIE,Q04-REVERSED,Q05-OUT-OF-RANGE,Q06-DIFFERENT-BLOCKS,Q07-SAME-BLOCK,Q08-ADJACENT-BLOCKS,Q09-MALFORMED-METADATA,Q10-WORD-MAX,N01-JUMP,N02-COUNTER,N03-BUDGET,N04-FRESH-COLLISION",
+                                                             "OPT1-BOUNDARY ENV PASS initial=present"
+                                                         ],
+                                      "StandardError":  [
+
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  5.993,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-present-valid",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoLogo",
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075401Z-20b52ce98fb54f8fbd36be1a182817f1\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_runtime.ps1",
+                                         "-Mode",
+                                         "valid",
+                                         "-Initial",
+                                         "present"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-present-valid",
+                                      "ExitCode":  0,
+                                      "Output":  [
+                                                     "OPT1-SELECTOR PROBE PASS bound=True selected=1 ids=C01-ZERO-BRANCH",
+                                                     "OPT1-BOUNDARY ENV PASS initial=present"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-SELECTOR PROBE PASS bound=True selected=1 ids=C01-ZERO-BRANCH",
+                                                             "OPT1-BOUNDARY ENV PASS initial=present"
+                                                         ],
+                                      "StandardError":  [
+
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  7.385,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-present-empty",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoLogo",
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075401Z-20b52ce98fb54f8fbd36be1a182817f1\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_runtime.ps1",
+                                         "-Mode",
+                                         "empty",
+                                         "-Initial",
+                                         "present"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-present-empty",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-BOUNDARY ENV PASS initial=present",
+                                                     "OPT1-SELECTOR: explicitly empty selector"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-BOUNDARY ENV PASS initial=present"
+                                                         ],
+                                      "StandardError":  [
+                                                            "OPT1-SELECTOR: explicitly empty selector"
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  7.028,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-present-whitespace",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoLogo",
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075401Z-20b52ce98fb54f8fbd36be1a182817f1\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_runtime.ps1",
+                                         "-Mode",
+                                         "whitespace",
+                                         "-Initial",
+                                         "present"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-present-whitespace",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-BOUNDARY ENV PASS initial=present",
+                                                     "OPT1-SELECTOR: explicitly empty selector"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-BOUNDARY ENV PASS initial=present"
+                                                         ],
+                                      "StandardError":  [
+                                                            "OPT1-SELECTOR: explicitly empty selector"
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  9.286,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-present-malformed",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoLogo",
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075401Z-20b52ce98fb54f8fbd36be1a182817f1\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_runtime.ps1",
+                                         "-Mode",
+                                         "malformed",
+                                         "-Initial",
+                                         "present"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-present-malformed",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-BOUNDARY ENV PASS initial=present",
+                                                     "OPT1-SELECTOR: malformed selector"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-BOUNDARY ENV PASS initial=present"
+                                                         ],
+                                      "StandardError":  [
+                                                            "OPT1-SELECTOR: malformed selector"
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  6.186,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-present-zero",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoLogo",
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075401Z-20b52ce98fb54f8fbd36be1a182817f1\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_runtime.ps1",
+                                         "-Mode",
+                                         "zero",
+                                         "-Initial",
+                                         "present"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-present-zero",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-BOUNDARY ENV PASS initial=present",
+                                                     "OPT1-SELECTOR: malformed selector"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-BOUNDARY ENV PASS initial=present"
+                                                         ],
+                                      "StandardError":  [
+                                                            "OPT1-SELECTOR: malformed selector"
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  6.155,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-present-unknown",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoLogo",
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075401Z-20b52ce98fb54f8fbd36be1a182817f1\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_runtime.ps1",
+                                         "-Mode",
+                                         "unknown",
+                                         "-Initial",
+                                         "present"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-present-unknown",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-BOUNDARY ENV PASS initial=present",
+                                                     "OPT1-SELECTOR: unknown selector C99-UNKNOWN"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-BOUNDARY ENV PASS initial=present"
+                                                         ],
+                                      "StandardError":  [
+                                                            "OPT1-SELECTOR: unknown selector C99-UNKNOWN"
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  6.549,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-present-duplicate",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoLogo",
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075401Z-20b52ce98fb54f8fbd36be1a182817f1\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_runtime.ps1",
+                                         "-Mode",
+                                         "duplicate",
+                                         "-Initial",
+                                         "present"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-present-duplicate",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-BOUNDARY: duplicate parameter rejected",
+                                                     "OPT1-BOUNDARY ENV PASS initial=present"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-BOUNDARY: duplicate parameter rejected",
+                                                             "OPT1-BOUNDARY ENV PASS initial=present"
+                                                         ],
+                                      "StandardError":  [
+
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  6.1,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-absent-omitted",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoLogo",
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075401Z-20b52ce98fb54f8fbd36be1a182817f1\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_runtime.ps1",
+                                         "-Mode",
+                                         "omitted",
+                                         "-Initial",
+                                         "absent"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-absent-omitted",
+                                      "ExitCode":  0,
+                                      "Output":  [
+                                                     "OPT1-SELECTOR PROBE PASS bound=False selected=27 ids=C01-ZERO-BRANCH,C02-NONZERO-BRANCH,C03-ZERO-LOOP,C04-ONE-LOOP,C05-REPEATED-LOAD,C06-NESTED-LOOP,C07-EARLY-HALT,C08-FAILED-LOAD,C09-EMPTY-BODY-BOUNDARY,C10-NESTED-SEQUENCE,C11-INITIALLY-HALTED,C12-INITIALLY-FAULTED,C13-EMPTY-BRANCHES,Q01-EMPTY,Q02-SINGLE,Q03-LEFTMOST-TIE,Q04-REVERSED,Q05-OUT-OF-RANGE,Q06-DIFFERENT-BLOCKS,Q07-SAME-BLOCK,Q08-ADJACENT-BLOCKS,Q09-MALFORMED-METADATA,Q10-WORD-MAX,N01-JUMP,N02-COUNTER,N03-BUDGET,N04-FRESH-COLLISION",
+                                                     "OPT1-BOUNDARY ENV PASS initial=absent"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-SELECTOR PROBE PASS bound=False selected=27 ids=C01-ZERO-BRANCH,C02-NONZERO-BRANCH,C03-ZERO-LOOP,C04-ONE-LOOP,C05-REPEATED-LOAD,C06-NESTED-LOOP,C07-EARLY-HALT,C08-FAILED-LOAD,C09-EMPTY-BODY-BOUNDARY,C10-NESTED-SEQUENCE,C11-INITIALLY-HALTED,C12-INITIALLY-FAULTED,C13-EMPTY-BRANCHES,Q01-EMPTY,Q02-SINGLE,Q03-LEFTMOST-TIE,Q04-REVERSED,Q05-OUT-OF-RANGE,Q06-DIFFERENT-BLOCKS,Q07-SAME-BLOCK,Q08-ADJACENT-BLOCKS,Q09-MALFORMED-METADATA,Q10-WORD-MAX,N01-JUMP,N02-COUNTER,N03-BUDGET,N04-FRESH-COLLISION",
+                                                             "OPT1-BOUNDARY ENV PASS initial=absent"
+                                                         ],
+                                      "StandardError":  [
+
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  5.968,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-absent-valid",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoLogo",
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075401Z-20b52ce98fb54f8fbd36be1a182817f1\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_runtime.ps1",
+                                         "-Mode",
+                                         "valid",
+                                         "-Initial",
+                                         "absent"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-absent-valid",
+                                      "ExitCode":  0,
+                                      "Output":  [
+                                                     "OPT1-SELECTOR PROBE PASS bound=True selected=1 ids=C01-ZERO-BRANCH",
+                                                     "OPT1-BOUNDARY ENV PASS initial=absent"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-SELECTOR PROBE PASS bound=True selected=1 ids=C01-ZERO-BRANCH",
+                                                             "OPT1-BOUNDARY ENV PASS initial=absent"
+                                                         ],
+                                      "StandardError":  [
+
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  6.6,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-absent-empty",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoLogo",
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075401Z-20b52ce98fb54f8fbd36be1a182817f1\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_runtime.ps1",
+                                         "-Mode",
+                                         "empty",
+                                         "-Initial",
+                                         "absent"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-absent-empty",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-BOUNDARY ENV PASS initial=absent",
+                                                     "OPT1-SELECTOR: explicitly empty selector"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-BOUNDARY ENV PASS initial=absent"
+                                                         ],
+                                      "StandardError":  [
+                                                            "OPT1-SELECTOR: explicitly empty selector"
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  9.301,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-absent-whitespace",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoLogo",
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075401Z-20b52ce98fb54f8fbd36be1a182817f1\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_runtime.ps1",
+                                         "-Mode",
+                                         "whitespace",
+                                         "-Initial",
+                                         "absent"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-absent-whitespace",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-BOUNDARY ENV PASS initial=absent",
+                                                     "OPT1-SELECTOR: explicitly empty selector"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-BOUNDARY ENV PASS initial=absent"
+                                                         ],
+                                      "StandardError":  [
+                                                            "OPT1-SELECTOR: explicitly empty selector"
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  5.93,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-absent-malformed",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoLogo",
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075401Z-20b52ce98fb54f8fbd36be1a182817f1\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_runtime.ps1",
+                                         "-Mode",
+                                         "malformed",
+                                         "-Initial",
+                                         "absent"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-absent-malformed",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-BOUNDARY ENV PASS initial=absent",
+                                                     "OPT1-SELECTOR: malformed selector"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-BOUNDARY ENV PASS initial=absent"
+                                                         ],
+                                      "StandardError":  [
+                                                            "OPT1-SELECTOR: malformed selector"
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  6.897,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-absent-zero",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoLogo",
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075401Z-20b52ce98fb54f8fbd36be1a182817f1\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_runtime.ps1",
+                                         "-Mode",
+                                         "zero",
+                                         "-Initial",
+                                         "absent"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-absent-zero",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-BOUNDARY ENV PASS initial=absent",
+                                                     "OPT1-SELECTOR: malformed selector"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-BOUNDARY ENV PASS initial=absent"
+                                                         ],
+                                      "StandardError":  [
+                                                            "OPT1-SELECTOR: malformed selector"
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  5.891,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-absent-unknown",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoLogo",
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075401Z-20b52ce98fb54f8fbd36be1a182817f1\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_runtime.ps1",
+                                         "-Mode",
+                                         "unknown",
+                                         "-Initial",
+                                         "absent"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-absent-unknown",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-BOUNDARY ENV PASS initial=absent",
+                                                     "OPT1-SELECTOR: unknown selector C99-UNKNOWN"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-BOUNDARY ENV PASS initial=absent"
+                                                         ],
+                                      "StandardError":  [
+                                                            "OPT1-SELECTOR: unknown selector C99-UNKNOWN"
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  9.17,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-absent-duplicate",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoLogo",
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-runtime-replay\\20260912T075401Z-20b52ce98fb54f8fbd36be1a182817f1\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_runtime.ps1",
+                                         "-Mode",
+                                         "duplicate",
+                                         "-Initial",
+                                         "absent"
+                                     ],
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-absent-duplicate",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-BOUNDARY: duplicate parameter rejected",
+                                                     "OPT1-BOUNDARY ENV PASS initial=absent"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-BOUNDARY: duplicate parameter rejected",
+                                                             "OPT1-BOUNDARY ENV PASS initial=absent"
+                                                         ],
+                                      "StandardError":  [
+
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  8.122,
+                                      "DeadlineSeconds":  30,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   }
+               ],
+    "Registry":  "v1",
+    "TrackedMutations":  0
+}

@@ -1,0 +1,27 @@
+{
+  "Label": "design-phase",
+  "Command": [
+    "powershell",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "scripts/design_decision_check.ps1",
+    "-Strict",
+    "-Base",
+    "ac5af8e416f906391dc117f083a883acc053a268"
+  ],
+  "ExitCode": 1,
+  "Passed": false,
+  "DurationSeconds": 4.561,
+  "OutputSHA256": "1a23a385e54f942941008db21b8bd583d49629a29b1c210dfd6ee961da995c45",
+  "OutputBytes": 267,
+  "OutputSummary": [
+    "DESIGN-CHECK: code/public/repository-sensitive paths changed; update docs/internal/DESIGN_DECISIONS.md",
+    "  code: docs/FAMILY_SUMMARY.md",
+    "DESIGN-CHECK: checked 21 changed files (1 code, 17 workflow, 3 neutral)",
+    "DESIGN-CHECK: strict mode found 1 missing design-log updates"
+  ],
+  "Stderr": "",
+  "Scope": "final combined report/checker tree before local refreeze commit"
+}

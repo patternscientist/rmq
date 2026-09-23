@@ -1,0 +1,659 @@
+{
+  "version": "PRE1-R1-CHECKER-MODES-SET-V1",
+  "pwsh": {
+    "version": "PRE1-R1-CHECKER-MODES-RECEIPT-V1",
+    "head": "e977053d8355d0d429da33d71a42251cfa5e964a",
+    "cleanBefore": true,
+    "host": "POINPAD",
+    "os": "Microsoft Windows NT 10.0.26200.0",
+    "shell": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+    "shellVersion": "7.6.6",
+    "mutex": "not taken by this runner (no Lean build and no campaign)",
+    "pins": {
+      "builderReplayExpectedRegistrySha256": "0bc1fba4b974e05cd94830ff0d6038d6927d33b5928bb65587fc9a2dc166ffe7",
+      "contractReplayExpectedRegistrySha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+      "builderCasesNormalizedSha256": "0bc1fba4b974e05cd94830ff0d6038d6927d33b5928bb65587fc9a2dc166ffe7",
+      "contractCasesNormalizedSha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+      "builderManifestNormalizedSha256": "bba201c4ec55722b827e8941e1de0e7e9d5c10c2647e311eb79d3c5991aa0daa",
+      "primitiveManifestNormalizedSha256": "a1d31f0bc4b1d732a331d4bac3b1b2103e3be9812fd0b1eb2e9769c45931fcfa",
+      "contractFirewallNormalizedSha256": "1f6903d5ae753fb49ac0d21611ba82aeb61fe9c8aced63e2c6469473b5f28786",
+      "contractReplayNormalizedSha256": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c"
+    },
+    "modes": [
+      {
+        "name": "builder-firewall",
+        "command": "scripts/preprocessing_builder_firewall.ps1",
+        "startedUtc": "2026-09-14T07:32:38.3830376Z",
+        "exit": 0,
+        "seconds": 13.818,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE1-BUILDER-FIREWALL PASS: layered closure over the contract guard, 17 modules",
+        "markerLines": 1,
+        "stdoutLines": 1,
+        "stderrLines": 0,
+        "stdout": [
+          "PRE1-BUILDER-FIREWALL PASS: layered closure over the contract guard, 17 modules"
+        ],
+        "stderr": [],
+        "verdict": "PASS"
+      },
+      {
+        "name": "contract-firewall",
+        "command": "scripts/preprocessing_contract_firewall.ps1",
+        "startedUtc": "2026-09-14T07:32:52.2836799Z",
+        "exit": 0,
+        "seconds": 3.376,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE1-FIREWALL PASS: exact Std-only primitive closure and frozen evaluator bytes",
+        "markerLines": 1,
+        "stdoutLines": 1,
+        "stderrLines": 0,
+        "stdout": [
+          "PRE1-FIREWALL PASS: exact Std-only primitive closure and frozen evaluator bytes"
+        ],
+        "stderr": [],
+        "verdict": "PASS"
+      },
+      {
+        "name": "builder-selector-probe",
+        "command": "scripts/preprocessing_builder_replay.ps1 -SelectorProbeOnly",
+        "startedUtc": "2026-09-14T07:32:55.6818213Z",
+        "exit": 0,
+        "seconds": 2.882,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE-BUILDER-SELECTOR-PROBE: selected=52 ids=",
+        "markerLines": 1,
+        "stdoutLines": 1,
+        "stderrLines": 0,
+        "stdout": [
+          "PRE-BUILDER-SELECTOR-PROBE: selected=52 ids=B01_FIREWALL_IMPORT,B02_CLOSURE_BYTES,B03_LAYERED_CONTRACT_GUARD,B04_HEADERFIRST_WEAKEN,B05_TAIL_WEAKEN,B06_WORD_MISSING_WEAKEN,B07_COMPARISON_MISSING_WEAKEN,B08_WORD_RECEIPT_WEAKEN,B09_COMPARISON_RECEIPT_WEAKEN,B10_EXTENT_SIBLING,B11_EXTENT_DELETE,B12_ACCEPT_COMMENT,B13_TOY_PIN_DRIFT,B14_HEADERFIRST_CONSUMER,B15_ARRAYRUN_FINAL_WEAKEN,B16_PROGRAM_PARAMETER,B17_PROGRAMWORD_PARAMETER,B18_EFFICIENTBUILD_RELOCATION,B19_L_KEY_NUMERAL,B20_L_WORD_NUMERAL,B21_B_NUMERAL,B22_BPRIME_NUMERAL,B23_P0_NUMERAL,B24_P1_NUMERAL,B25_P2_NUMERAL,B26_P3_NUMERAL,B27_P4_NUMERAL,B28_P5_NUMERAL,B29_P6_NUMERAL,B30_P7_NUMERAL,B31_P8_NUMERAL,B32_P9_NUMERAL,B33_D_NUMERAL,B34_C_NUMERAL,B35_COMPILE_REALIZES_WEAKEN,B36_COMPILE_SAFE_WEAKEN,B37_RUN_WRITE_AT_WEAKEN,B38_RUN_LOAD_AT_WEAKEN,B39_WRITES_REPLAY_SIBLING,B40_RUN_AGREE_KEYS_WEAKEN,B41_FUEL_EXTENSION_WEAKEN,B42_SAFETY_SHIFT_ARM_WEAKEN,B43_CARTESIAN_QUADRATIC_RESCAN,B44_PROGRAM_SEMANTIC_IMPORT,B45_RUNFACTS_WORK_WEAKEN,B46_RUNFACTS_WORKSPACE_CW_WEAKEN,B47_RUNFACTS_WORKSPACE_DW_WEAKEN,B48_RUNFACTS_NOINPUTWRITES_WEAKEN,B49_RUNFACTS_REGISTERBANK_WEAKEN,B50_CAPSTONE_CW_NUMERAL,B51_CAPSTONE_DW_NUMERAL,B52_CAPSTONE_ACCEPT_COMMENT"
+        ],
+        "stderr": [],
+        "verdict": "PASS"
+      },
+      {
+        "name": "builder-registry-selftest",
+        "command": "scripts/preprocessing_builder_replay.ps1 -RegistrySelfTestOnly",
+        "startedUtc": "2026-09-14T07:32:58.5897729Z",
+        "exit": 0,
+        "seconds": 5.435,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE-BUILDER-REPLAY: PASS mode=registry-selftest executed=0 registry=52 evidence=",
+        "markerLines": 1,
+        "stdoutLines": 1,
+        "stderrLines": 0,
+        "stdout": [
+          "PRE-BUILDER-REPLAY: PASS mode=registry-selftest executed=0 registry=52 evidence=<OutDir>\\evidence-builder-registry-selftest\\20260914-003301-07204e82588a44b8887deb869b00f505"
+        ],
+        "stderr": [],
+        "report": {
+          "verdict": "PASS",
+          "mode": "registry-selftest",
+          "registrySha256": "67d48c7ac3f7f180cb26992f4c6d764842f794ac3bd5fb08c13fce604d3a731f",
+          "registryContentSha256": "0bc1fba4b974e05cd94830ff0d6038d6927d33b5928bb65587fc9a2dc166ffe7",
+          "runnerSha256": "efb4666bc339f267dd963cd77680ef2224853c195bc601d724595cc5c5bd57bb",
+          "registryExpectedCount": 52,
+          "selectedExpectedCount": 52,
+          "executedCount": 0,
+          "selfTests": 42,
+          "selfTestCategories": [
+            "matcher",
+            "registry"
+          ],
+          "platform": "Microsoft Windows NT 10.0.26200.0",
+          "powershell": "7.6.6"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "name": "builder-selector-selftest",
+        "command": "scripts/preprocessing_builder_replay.ps1 -SelectorBoundarySelfTestOnly",
+        "startedUtc": "2026-09-14T07:33:04.1653827Z",
+        "exit": 0,
+        "seconds": 31.408,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE-BUILDER-REPLAY: PASS mode=selector-selftest executed=0 registry=52 evidence=",
+        "markerLines": 1,
+        "stdoutLines": 1,
+        "stderrLines": 0,
+        "stdout": [
+          "PRE-BUILDER-REPLAY: PASS mode=selector-selftest executed=0 registry=52 evidence=<OutDir>\\evidence-builder-selector-selftest\\20260914-003306-a93a157cbdbb42f483a16ba846c69c07"
+        ],
+        "stderr": [],
+        "report": {
+          "verdict": "PASS",
+          "mode": "selector-selftest",
+          "registrySha256": "67d48c7ac3f7f180cb26992f4c6d764842f794ac3bd5fb08c13fce604d3a731f",
+          "registryContentSha256": "0bc1fba4b974e05cd94830ff0d6038d6927d33b5928bb65587fc9a2dc166ffe7",
+          "runnerSha256": "efb4666bc339f267dd963cd77680ef2224853c195bc601d724595cc5c5bd57bb",
+          "registryExpectedCount": 52,
+          "selectedExpectedCount": 52,
+          "executedCount": 0,
+          "selfTests": 9,
+          "selfTestCategories": [
+            "selector"
+          ],
+          "platform": "Microsoft Windows NT 10.0.26200.0",
+          "powershell": "7.6.6"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "name": "builder-deadline-selftest",
+        "command": "scripts/preprocessing_builder_replay.ps1 -DeadlineSelfTestOnly",
+        "startedUtc": "2026-09-14T07:33:35.6296733Z",
+        "exit": 0,
+        "seconds": 52.636,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE-BUILDER-REPLAY: PASS mode=deadline-selftest executed=0 registry=52 evidence=",
+        "markerLines": 1,
+        "stdoutLines": 4,
+        "stderrLines": 0,
+        "stdout": [
+          "OWNED-PROCESS application-path regression PASS [M1R5R2-SCALAR-APPLICATION-PATH] duplicate aliases selected one path",
+          "OWNED-PROCESS deterministic production-plan PASS (Windows kill-on-close job; POSIX setsid/negative-pgid termination)",
+          "OWNED-PROCESS COLLECTION SELF-TEST PASS (5 alive-query cases; zero-handle and empty-job barriers)",
+          "PRE-BUILDER-REPLAY: PASS mode=deadline-selftest executed=0 registry=52 evidence=<OutDir>\\evidence-builder-deadline-selftest\\20260914-003338-32df8de7a2ff4b569cf460ab08997280"
+        ],
+        "stderr": [],
+        "report": {
+          "verdict": "PASS",
+          "mode": "deadline-selftest",
+          "registrySha256": "67d48c7ac3f7f180cb26992f4c6d764842f794ac3bd5fb08c13fce604d3a731f",
+          "registryContentSha256": "0bc1fba4b974e05cd94830ff0d6038d6927d33b5928bb65587fc9a2dc166ffe7",
+          "runnerSha256": "efb4666bc339f267dd963cd77680ef2224853c195bc601d724595cc5c5bd57bb",
+          "registryExpectedCount": 52,
+          "selectedExpectedCount": 52,
+          "executedCount": 0,
+          "selfTests": 3,
+          "selfTestCategories": [
+            "deadline"
+          ],
+          "platform": "Microsoft Windows NT 10.0.26200.0",
+          "powershell": "7.6.6"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "name": "contract-selector-probe",
+        "command": "scripts/preprocessing_contract_replay.ps1 -SelectorProbeOnly",
+        "startedUtc": "2026-09-14T07:34:28.3362996Z",
+        "exit": 0,
+        "seconds": 2.923,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE-SELECTOR-PROBE: selected=18 ids=",
+        "markerLines": 1,
+        "stdoutLines": 1,
+        "stderrLines": 0,
+        "stdout": [
+          "PRE-SELECTOR-PROBE: selected=18 ids=C01_REFLECTION,C02_CAP,C03_CONSTANTS,C04_HEADER,C05_POINTWISE,C06_ORACLE,C07_UNIFORM,C08_STORE_VALUE,C09_FRESH_RESERVE,C10_CODE_ACCOUNTING,C11_FIELD_DELETE,C12_FIELD_WEAKEN,C13_SIBLING,C14_ACCEPT_COMMENT,C15_CODE_ALIAS,C16_CODE_COUNT,C17_FIREWALL_IMPORT,C18_PRIMITIVE_BYTES"
+        ],
+        "stderr": [],
+        "verdict": "PASS"
+      },
+      {
+        "name": "contract-registry-selftest",
+        "command": "scripts/preprocessing_contract_replay.ps1 -RegistrySelfTestOnly",
+        "startedUtc": "2026-09-14T07:34:31.2863859Z",
+        "exit": 0,
+        "seconds": 5.201,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE-CONTRACT-REPLAY: PASS mode=registry-selftest executed=0 registry=18 evidence=",
+        "markerLines": 1,
+        "stdoutLines": 1,
+        "stderrLines": 0,
+        "stdout": [
+          "PRE-CONTRACT-REPLAY: PASS mode=registry-selftest executed=0 registry=18 evidence=<OutDir>\\evidence-contract-registry-selftest\\20260914-003433-d3a90cc869c94eef80c46a5af54c4d2f"
+        ],
+        "stderr": [],
+        "report": {
+          "verdict": "PASS",
+          "mode": "registry-selftest",
+          "registrySha256": "85eaffcd86e95c0f8468a76596c1153bb0a6b986f5b3a977b40926e1776e6c97",
+          "registryContentSha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+          "runnerSha256": "12bb6e8a802f9a60151b75609e182002ea2d70582168980a7683eff64dfb6322",
+          "registryExpectedCount": 18,
+          "selectedExpectedCount": 18,
+          "executedCount": 0,
+          "selfTests": 16,
+          "selfTestCategories": [
+            "matcher",
+            "registry"
+          ],
+          "platform": "Microsoft Windows NT 10.0.26200.0",
+          "powershell": "7.6.6"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "name": "contract-selector-selftest",
+        "command": "scripts/preprocessing_contract_replay.ps1 -SelectorBoundarySelfTestOnly",
+        "startedUtc": "2026-09-14T07:34:36.5204908Z",
+        "exit": 0,
+        "seconds": 31.135,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE-CONTRACT-REPLAY: PASS mode=selector-selftest executed=0 registry=18 evidence=",
+        "markerLines": 1,
+        "stdoutLines": 1,
+        "stderrLines": 0,
+        "stdout": [
+          "PRE-CONTRACT-REPLAY: PASS mode=selector-selftest executed=0 registry=18 evidence=<OutDir>\\evidence-contract-selector-selftest\\20260914-003439-5aac8c535eb3492191f459c891dc48b0"
+        ],
+        "stderr": [],
+        "report": {
+          "verdict": "PASS",
+          "mode": "selector-selftest",
+          "registrySha256": "85eaffcd86e95c0f8468a76596c1153bb0a6b986f5b3a977b40926e1776e6c97",
+          "registryContentSha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+          "runnerSha256": "12bb6e8a802f9a60151b75609e182002ea2d70582168980a7683eff64dfb6322",
+          "registryExpectedCount": 18,
+          "selectedExpectedCount": 18,
+          "executedCount": 0,
+          "selfTests": 9,
+          "selfTestCategories": [
+            "selector"
+          ],
+          "platform": "Microsoft Windows NT 10.0.26200.0",
+          "powershell": "7.6.6"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "name": "contract-deadline-selftest",
+        "command": "scripts/preprocessing_contract_replay.ps1 -DeadlineSelfTestOnly -SleeperDeadlineSeconds 45",
+        "startedUtc": "2026-09-14T07:35:07.7141257Z",
+        "exit": 0,
+        "seconds": 52.783,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE-CONTRACT-REPLAY: PASS mode=deadline-selftest executed=0 registry=18 evidence=",
+        "markerLines": 1,
+        "stdoutLines": 4,
+        "stderrLines": 0,
+        "stdout": [
+          "OWNED-PROCESS application-path regression PASS [M1R5R2-SCALAR-APPLICATION-PATH] duplicate aliases selected one path",
+          "OWNED-PROCESS deterministic production-plan PASS (Windows kill-on-close job; POSIX setsid/negative-pgid termination)",
+          "OWNED-PROCESS COLLECTION SELF-TEST PASS (5 alive-query cases; zero-handle and empty-job barriers)",
+          "PRE-CONTRACT-REPLAY: PASS mode=deadline-selftest executed=0 registry=18 evidence=<OutDir>\\evidence-contract-deadline-selftest\\20260914-003510-678b2478b4c2456587e2f12f108c29a2"
+        ],
+        "stderr": [],
+        "report": {
+          "verdict": "PASS",
+          "mode": "deadline-selftest",
+          "registrySha256": "85eaffcd86e95c0f8468a76596c1153bb0a6b986f5b3a977b40926e1776e6c97",
+          "registryContentSha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+          "runnerSha256": "12bb6e8a802f9a60151b75609e182002ea2d70582168980a7683eff64dfb6322",
+          "registryExpectedCount": 18,
+          "selectedExpectedCount": 18,
+          "executedCount": 0,
+          "selfTests": 3,
+          "selfTestCategories": [
+            "deadline"
+          ],
+          "platform": "Microsoft Windows NT 10.0.26200.0",
+          "powershell": "7.6.6"
+        },
+        "verdict": "PASS"
+      }
+    ],
+    "stateUnchanged": true,
+    "result": "PASS"
+  },
+  "ps51": {
+    "version": "PRE1-R1-CHECKER-MODES-RECEIPT-V1",
+    "head": "e977053d8355d0d429da33d71a42251cfa5e964a",
+    "cleanBefore": true,
+    "host": "POINPAD",
+    "os": "Microsoft Windows NT 10.0.26200.0",
+    "shell": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "shellVersion": "5.1.26100.9444",
+    "mutex": "not taken by this runner (no Lean build and no campaign)",
+    "pins": {
+      "builderReplayExpectedRegistrySha256": "0bc1fba4b974e05cd94830ff0d6038d6927d33b5928bb65587fc9a2dc166ffe7",
+      "contractReplayExpectedRegistrySha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+      "builderCasesNormalizedSha256": "0bc1fba4b974e05cd94830ff0d6038d6927d33b5928bb65587fc9a2dc166ffe7",
+      "contractCasesNormalizedSha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+      "builderManifestNormalizedSha256": "bba201c4ec55722b827e8941e1de0e7e9d5c10c2647e311eb79d3c5991aa0daa",
+      "primitiveManifestNormalizedSha256": "a1d31f0bc4b1d732a331d4bac3b1b2103e3be9812fd0b1eb2e9769c45931fcfa",
+      "contractFirewallNormalizedSha256": "1f6903d5ae753fb49ac0d21611ba82aeb61fe9c8aced63e2c6469473b5f28786",
+      "contractReplayNormalizedSha256": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c"
+    },
+    "modes": [
+      {
+        "name": "builder-firewall",
+        "command": "scripts/preprocessing_builder_firewall.ps1",
+        "startedUtc": "2026-09-14T07:36:56.5445598Z",
+        "exit": 0,
+        "seconds": 6.717,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE1-BUILDER-FIREWALL PASS: layered closure over the contract guard, 17 modules",
+        "markerLines": 1,
+        "stdoutLines": 1,
+        "stderrLines": 0,
+        "stdout": [
+          "PRE1-BUILDER-FIREWALL PASS: layered closure over the contract guard, 17 modules"
+        ],
+        "stderr": [],
+        "verdict": "PASS"
+      },
+      {
+        "name": "contract-firewall",
+        "command": "scripts/preprocessing_contract_firewall.ps1",
+        "startedUtc": "2026-09-14T07:37:03.3467245Z",
+        "exit": 0,
+        "seconds": 2.454,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE1-FIREWALL PASS: exact Std-only primitive closure and frozen evaluator bytes",
+        "markerLines": 1,
+        "stdoutLines": 1,
+        "stderrLines": 0,
+        "stdout": [
+          "PRE1-FIREWALL PASS: exact Std-only primitive closure and frozen evaluator bytes"
+        ],
+        "stderr": [],
+        "verdict": "PASS"
+      },
+      {
+        "name": "builder-selector-probe",
+        "command": "scripts/preprocessing_builder_replay.ps1 -SelectorProbeOnly",
+        "startedUtc": "2026-09-14T07:37:05.8340673Z",
+        "exit": 0,
+        "seconds": 2.343,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE-BUILDER-SELECTOR-PROBE: selected=52 ids=",
+        "markerLines": 1,
+        "stdoutLines": 1,
+        "stderrLines": 0,
+        "stdout": [
+          "PRE-BUILDER-SELECTOR-PROBE: selected=52 ids=B01_FIREWALL_IMPORT,B02_CLOSURE_BYTES,B03_LAYERED_CONTRACT_GUARD,B04_HEADERFIRST_WEAKEN,B05_TAIL_WEAKEN,B06_WORD_MISSING_WEAKEN,B07_COMPARISON_MISSING_WEAKEN,B08_WORD_RECEIPT_WEAKEN,B09_COMPARISON_RECEIPT_WEAKEN,B10_EXTENT_SIBLING,B11_EXTENT_DELETE,B12_ACCEPT_COMMENT,B13_TOY_PIN_DRIFT,B14_HEADERFIRST_CONSUMER,B15_ARRAYRUN_FINAL_WEAKEN,B16_PROGRAM_PARAMETER,B17_PROGRAMWORD_PARAMETER,B18_EFFICIENTBUILD_RELOCATION,B19_L_KEY_NUMERAL,B20_L_WORD_NUMERAL,B21_B_NUMERAL,B22_BPRIME_NUMERAL,B23_P0_NUMERAL,B24_P1_NUMERAL,B25_P2_NUMERAL,B26_P3_NUMERAL,B27_P4_NUMERAL,B28_P5_NUMERAL,B29_P6_NUMERAL,B30_P7_NUMERAL,B31_P8_NUMERAL,B32_P9_NUMERAL,B33_D_NUMERAL,B34_C_NUMERAL,B35_COMPILE_REALIZES_WEAKEN,B36_COMPILE_SAFE_WEAKEN,B37_RUN_WRITE_AT_WEAKEN,B38_RUN_LOAD_AT_WEAKEN,B39_WRITES_REPLAY_SIBLING,B40_RUN_AGREE_KEYS_WEAKEN,B41_FUEL_EXTENSION_WEAKEN,B42_SAFETY_SHIFT_ARM_WEAKEN,B43_CARTESIAN_QUADRATIC_RESCAN,B44_PROGRAM_SEMANTIC_IMPORT,B45_RUNFACTS_WORK_WEAKEN,B46_RUNFACTS_WORKSPACE_CW_WEAKEN,B47_RUNFACTS_WORKSPACE_DW_WEAKEN,B48_RUNFACTS_NOINPUTWRITES_WEAKEN,B49_RUNFACTS_REGISTERBANK_WEAKEN,B50_CAPSTONE_CW_NUMERAL,B51_CAPSTONE_DW_NUMERAL,B52_CAPSTONE_ACCEPT_COMMENT"
+        ],
+        "stderr": [],
+        "verdict": "PASS"
+      },
+      {
+        "name": "builder-registry-selftest",
+        "command": "scripts/preprocessing_builder_replay.ps1 -RegistrySelfTestOnly",
+        "startedUtc": "2026-09-14T07:37:08.2134671Z",
+        "exit": 0,
+        "seconds": 3.98,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE-BUILDER-REPLAY: PASS mode=registry-selftest executed=0 registry=52 evidence=",
+        "markerLines": 1,
+        "stdoutLines": 1,
+        "stderrLines": 0,
+        "stdout": [
+          "PRE-BUILDER-REPLAY: PASS mode=registry-selftest executed=0 registry=52 evidence=<OutDir>\\evidence-builder-registry-selftest\\20260914-003710-b07579a28230484691a75a23251be6f1"
+        ],
+        "stderr": [],
+        "report": {
+          "verdict": "PASS",
+          "mode": "registry-selftest",
+          "registrySha256": "67d48c7ac3f7f180cb26992f4c6d764842f794ac3bd5fb08c13fce604d3a731f",
+          "registryContentSha256": "0bc1fba4b974e05cd94830ff0d6038d6927d33b5928bb65587fc9a2dc166ffe7",
+          "runnerSha256": "efb4666bc339f267dd963cd77680ef2224853c195bc601d724595cc5c5bd57bb",
+          "registryExpectedCount": 52,
+          "selectedExpectedCount": 52,
+          "executedCount": 0,
+          "selfTests": 42,
+          "selfTestCategories": [
+            "matcher",
+            "registry"
+          ],
+          "platform": "Microsoft Windows NT 10.0.26200.0",
+          "powershell": "5.1.26100.9444"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "name": "builder-selector-selftest",
+        "command": "scripts/preprocessing_builder_replay.ps1 -SelectorBoundarySelfTestOnly",
+        "startedUtc": "2026-09-14T07:37:12.3815091Z",
+        "exit": 0,
+        "seconds": 25.86,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE-BUILDER-REPLAY: PASS mode=selector-selftest executed=0 registry=52 evidence=",
+        "markerLines": 1,
+        "stdoutLines": 1,
+        "stderrLines": 0,
+        "stdout": [
+          "PRE-BUILDER-REPLAY: PASS mode=selector-selftest executed=0 registry=52 evidence=<OutDir>\\evidence-builder-selector-selftest\\20260914-003714-4e2ad36cd6b7479ba4852abce3552275"
+        ],
+        "stderr": [],
+        "report": {
+          "verdict": "PASS",
+          "mode": "selector-selftest",
+          "registrySha256": "67d48c7ac3f7f180cb26992f4c6d764842f794ac3bd5fb08c13fce604d3a731f",
+          "registryContentSha256": "0bc1fba4b974e05cd94830ff0d6038d6927d33b5928bb65587fc9a2dc166ffe7",
+          "runnerSha256": "efb4666bc339f267dd963cd77680ef2224853c195bc601d724595cc5c5bd57bb",
+          "registryExpectedCount": 52,
+          "selectedExpectedCount": 52,
+          "executedCount": 0,
+          "selfTests": 9,
+          "selfTestCategories": [
+            "selector"
+          ],
+          "platform": "Microsoft Windows NT 10.0.26200.0",
+          "powershell": "5.1.26100.9444"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "name": "builder-deadline-selftest",
+        "command": "scripts/preprocessing_builder_replay.ps1 -DeadlineSelfTestOnly",
+        "startedUtc": "2026-09-14T07:37:38.2956045Z",
+        "exit": 0,
+        "seconds": 50.848,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE-BUILDER-REPLAY: PASS mode=deadline-selftest executed=0 registry=52 evidence=",
+        "markerLines": 1,
+        "stdoutLines": 4,
+        "stderrLines": 0,
+        "stdout": [
+          "OWNED-PROCESS application-path regression PASS [M1R5R2-SCALAR-APPLICATION-PATH] duplicate aliases selected one path",
+          "OWNED-PROCESS deterministic production-plan PASS (Windows kill-on-close job; POSIX setsid/negative-pgid termination)",
+          "OWNED-PROCESS COLLECTION SELF-TEST PASS (5 alive-query cases; zero-handle and empty-job barriers)",
+          "PRE-BUILDER-REPLAY: PASS mode=deadline-selftest executed=0 registry=52 evidence=<OutDir>\\evidence-builder-deadline-selftest\\20260914-003740-0ca3da01450742d2a66d3e3ac7ab3116"
+        ],
+        "stderr": [],
+        "report": {
+          "verdict": "PASS",
+          "mode": "deadline-selftest",
+          "registrySha256": "67d48c7ac3f7f180cb26992f4c6d764842f794ac3bd5fb08c13fce604d3a731f",
+          "registryContentSha256": "0bc1fba4b974e05cd94830ff0d6038d6927d33b5928bb65587fc9a2dc166ffe7",
+          "runnerSha256": "efb4666bc339f267dd963cd77680ef2224853c195bc601d724595cc5c5bd57bb",
+          "registryExpectedCount": 52,
+          "selectedExpectedCount": 52,
+          "executedCount": 0,
+          "selfTests": 3,
+          "selfTestCategories": [
+            "deadline"
+          ],
+          "platform": "Microsoft Windows NT 10.0.26200.0",
+          "powershell": "5.1.26100.9444"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "name": "contract-selector-probe",
+        "command": "scripts/preprocessing_contract_replay.ps1 -SelectorProbeOnly",
+        "startedUtc": "2026-09-14T07:38:29.1862698Z",
+        "exit": 0,
+        "seconds": 2.439,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE-SELECTOR-PROBE: selected=18 ids=",
+        "markerLines": 1,
+        "stdoutLines": 1,
+        "stderrLines": 0,
+        "stdout": [
+          "PRE-SELECTOR-PROBE: selected=18 ids=C01_REFLECTION,C02_CAP,C03_CONSTANTS,C04_HEADER,C05_POINTWISE,C06_ORACLE,C07_UNIFORM,C08_STORE_VALUE,C09_FRESH_RESERVE,C10_CODE_ACCOUNTING,C11_FIELD_DELETE,C12_FIELD_WEAKEN,C13_SIBLING,C14_ACCEPT_COMMENT,C15_CODE_ALIAS,C16_CODE_COUNT,C17_FIREWALL_IMPORT,C18_PRIMITIVE_BYTES"
+        ],
+        "stderr": [],
+        "verdict": "PASS"
+      },
+      {
+        "name": "contract-registry-selftest",
+        "command": "scripts/preprocessing_contract_replay.ps1 -RegistrySelfTestOnly",
+        "startedUtc": "2026-09-14T07:38:31.6574310Z",
+        "exit": 0,
+        "seconds": 3.433,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE-CONTRACT-REPLAY: PASS mode=registry-selftest executed=0 registry=18 evidence=",
+        "markerLines": 1,
+        "stdoutLines": 1,
+        "stderrLines": 0,
+        "stdout": [
+          "PRE-CONTRACT-REPLAY: PASS mode=registry-selftest executed=0 registry=18 evidence=<OutDir>\\evidence-contract-registry-selftest\\20260914-003833-b66025f4147a42a9825851f6f0fd25f4"
+        ],
+        "stderr": [],
+        "report": {
+          "verdict": "PASS",
+          "mode": "registry-selftest",
+          "registrySha256": "85eaffcd86e95c0f8468a76596c1153bb0a6b986f5b3a977b40926e1776e6c97",
+          "registryContentSha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+          "runnerSha256": "12bb6e8a802f9a60151b75609e182002ea2d70582168980a7683eff64dfb6322",
+          "registryExpectedCount": 18,
+          "selectedExpectedCount": 18,
+          "executedCount": 0,
+          "selfTests": 16,
+          "selfTestCategories": [
+            "matcher",
+            "registry"
+          ],
+          "platform": "Microsoft Windows NT 10.0.26200.0",
+          "powershell": "5.1.26100.9444"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "name": "contract-selector-selftest",
+        "command": "scripts/preprocessing_contract_replay.ps1 -SelectorBoundarySelfTestOnly",
+        "startedUtc": "2026-09-14T07:38:35.1358169Z",
+        "exit": 0,
+        "seconds": 25.269,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE-CONTRACT-REPLAY: PASS mode=selector-selftest executed=0 registry=18 evidence=",
+        "markerLines": 1,
+        "stdoutLines": 1,
+        "stderrLines": 0,
+        "stdout": [
+          "PRE-CONTRACT-REPLAY: PASS mode=selector-selftest executed=0 registry=18 evidence=<OutDir>\\evidence-contract-selector-selftest\\20260914-003837-da1b971a82e6422cb0eca5918ebc9679"
+        ],
+        "stderr": [],
+        "report": {
+          "verdict": "PASS",
+          "mode": "selector-selftest",
+          "registrySha256": "85eaffcd86e95c0f8468a76596c1153bb0a6b986f5b3a977b40926e1776e6c97",
+          "registryContentSha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+          "runnerSha256": "12bb6e8a802f9a60151b75609e182002ea2d70582168980a7683eff64dfb6322",
+          "registryExpectedCount": 18,
+          "selectedExpectedCount": 18,
+          "executedCount": 0,
+          "selfTests": 9,
+          "selfTestCategories": [
+            "selector"
+          ],
+          "platform": "Microsoft Windows NT 10.0.26200.0",
+          "powershell": "5.1.26100.9444"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "name": "contract-deadline-selftest",
+        "command": "scripts/preprocessing_contract_replay.ps1 -DeadlineSelfTestOnly -SleeperDeadlineSeconds 45",
+        "startedUtc": "2026-09-14T07:39:00.4534788Z",
+        "exit": 0,
+        "seconds": 50.795,
+        "deadline": 1200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "marker": "PRE-CONTRACT-REPLAY: PASS mode=deadline-selftest executed=0 registry=18 evidence=",
+        "markerLines": 1,
+        "stdoutLines": 4,
+        "stderrLines": 0,
+        "stdout": [
+          "OWNED-PROCESS application-path regression PASS [M1R5R2-SCALAR-APPLICATION-PATH] duplicate aliases selected one path",
+          "OWNED-PROCESS deterministic production-plan PASS (Windows kill-on-close job; POSIX setsid/negative-pgid termination)",
+          "OWNED-PROCESS COLLECTION SELF-TEST PASS (5 alive-query cases; zero-handle and empty-job barriers)",
+          "PRE-CONTRACT-REPLAY: PASS mode=deadline-selftest executed=0 registry=18 evidence=<OutDir>\\evidence-contract-deadline-selftest\\20260914-003902-9b8b52f70b644a849766584be9faae00"
+        ],
+        "stderr": [],
+        "report": {
+          "verdict": "PASS",
+          "mode": "deadline-selftest",
+          "registrySha256": "85eaffcd86e95c0f8468a76596c1153bb0a6b986f5b3a977b40926e1776e6c97",
+          "registryContentSha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+          "runnerSha256": "12bb6e8a802f9a60151b75609e182002ea2d70582168980a7683eff64dfb6322",
+          "registryExpectedCount": 18,
+          "selectedExpectedCount": 18,
+          "executedCount": 0,
+          "selfTests": 3,
+          "selfTestCategories": [
+            "deadline"
+          ],
+          "platform": "Microsoft Windows NT 10.0.26200.0",
+          "powershell": "5.1.26100.9444"
+        },
+        "verdict": "PASS"
+      }
+    ],
+    "stateUnchanged": true,
+    "result": "PASS"
+  }
+}

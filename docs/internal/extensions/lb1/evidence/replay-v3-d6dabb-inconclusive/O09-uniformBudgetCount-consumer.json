@@ -1,0 +1,27 @@
+{
+  "Stage": "O09-uniformBudgetCount-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:58:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.uniformBudgetCount",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (n B : Nat), UniformAllocationBudget n B → shapeCount n ≤ 2 ^ (B + 1) - 1 : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:58:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.uniformBudgetCount",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (n B : Nat), UniformAllocationBudget n B → shapeCount n ≤ 2 ^ (B + 1) - 1 : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 31.899,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

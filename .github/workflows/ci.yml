@@ -14,7 +14,16 @@ jobs:
         with:
           # The strict design-decision scan diffs against HEAD~1 on push
           # events; the default depth-1 checkout cannot resolve that base.
-          fetch-depth: 2
+          # 0, not 2: per-commit certification below walks the pushed range,
+          # and depth 2 makes anything past HEAD~1 unresolvable.
+          fetch-depth: 0
+          # Annotated tags, explicitly. actions/checkout fetches with
+          # --no-tags when fetch-depth > 0 and fetch-tags is unset, so
+          # tag_annotation_check.ps1 found no annotated tags and failed
+          # -- correctly, since 'nothing was checked' is not a pass. The
+          # repair belongs here, not in the checker: its header says CI
+          # must not pass -AllowNoTags.
+          fetch-tags: true
 
       - name: Install tools
         run: |
@@ -30,8 +39,17 @@ jobs:
           lake --version
 
       - name: Run repository gate
-        shell: pwsh
-        run: ./scripts/gate.ps1
+        # bash, not pwsh, so the stack limit can be raised first. The packed-query
+        # replay runs its runtime fixtures with `lean --run`, whose interpreter
+        # recursion needs far more than Linux's default 8 MiB main-thread stack
+        # (it fails with "deep recursion was detected at 'interpreter'"); Windows
+        # reserves a large stack for lean.exe, so the local gate never saw this.
+        # Children inherit the limit. 1 GiB is the value measured to work.
+        shell: bash
+        run: |
+          ulimit -s 1048576
+          echo "stack limit: $(ulimit -s) KB"
+          pwsh -NoLogo -NoProfile -File ./scripts/gate.ps1
 
       - name: Run strict claim-drift scan
         if: always()
@@ -42,9 +60,93 @@ jobs:
         if: always()
         shell: pwsh
         run: |
+          # PER-COMMIT, not aggregate. The repository states that every commit
+          # carries its own design-log update; running the check once over a
+          # whole range does not enforce that, because one commit's
+          # DESIGN_DECISIONS.md satisfies the membership test for every
+          # code-sensitive file in the range. WDD-20260816-043 records a commit
+          # that breached the invariant and passed CI for exactly this reason.
+          # `--depth=0` is not valid git ("depth 0 is not a positive number"), so
+          # the pull-request branch never ran. And `HEAD~1..HEAD` is a fixed
+          # ONE-COMMIT window: a push of three commits certified only the tip, which
+          # is the same blind spot this step was added to close. `fetch-depth: 0`
+          # above makes the full history available; the push range comes from the
+          # event, guarding the all-zeros SHA git uses for a new branch.
           if ("${{ github.event_name }}" -eq "pull_request") {
-            git fetch origin "${{ github.base_ref }}" --depth=1
-            ./scripts/design_decision_check.ps1 -Base "origin/${{ github.base_ref }}" -Strict
+            git fetch origin "${{ github.base_ref }}"
+            $range = "origin/${{ github.base_ref }}..HEAD"
+          } elseif ("${{ github.event.before }}" -and
+                    "${{ github.event.before }}" -notmatch '^0{40}$') {
+            $range = "${{ github.event.before }}..HEAD"
           } else {
-            ./scripts/design_decision_check.ps1 -Base "HEAD~1" -Strict
+            $range = "HEAD~1..HEAD"
           }
+          # --no-merges. `design_decision_check.ps1` REFUSES a merge commit, because
+          # a merge's first-parent diff carries the merged branch's design log and
+          # would certify anything the merge itself introduced. That refusal is
+          # right, but `git rev-list` enumerates merges -- so without this flag the
+          # step could never pass on a pull request, where actions/checkout builds
+          # `refs/pull/N/merge` and HEAD IS a merge commit, nor on any push
+          # containing one.
+          #
+          # Residual, stated because it is real: content introduced by a merge
+          # alone -- a conflict resolution present in neither parent -- is then
+          # never certified by anything. That is the same trade DD-20260816-122
+          # already accepted when it chose refusal over judging a merge by the
+          # union of its parents.
+          $commits = @(git rev-list --reverse --no-merges $range)
+          if ($commits.Count -eq 0) {
+            Write-Host "DESIGN-CHECK: no commits in $range; nothing to certify"
+            exit 1
+          }
+          $bad = 0
+          foreach ($c in $commits) {
+            Write-Host "--- $c $(git log -1 --format=%s $c)"
+            ./scripts/design_decision_check.ps1 -Base "$c~1" -Head $c -Strict
+            if ($LASTEXITCODE -ne 0) { $bad++ }
+          }
+          if ($bad -gt 0) {
+            Write-Host "DESIGN-CHECK: $bad of $($commits.Count) commit(s) failed per-commit certification"
+            exit 1
+          }
+          Write-Host "DESIGN-CHECK: all $($commits.Count) commit(s) certified individually"
+
+  owned-process-windows:
+    # The repository gate's process-ownership layer has two implementations --
+    # a POSIX setsid process group and a Windows kill-on-close job -- and only
+    # the POSIX one was ever exercised by CI, because every job here runs
+    # ubuntu.  The Windows path shipped to `audit-v1-rc-2` without a
+    # descendant-death barrier: it closed the job and waited on the root alone,
+    # so a grandchild could still be alive when a caller asserted the tree was
+    # dead.  The 2026-08-12 fresh-blind audit hit exactly that on the required
+    # Windows gate path.
+    #
+    # This job is deliberately small: it runs only the ownership self-tests, so
+    # it needs no Lean build and costs a minute, while covering the code path
+    # that a green ubuntu run says nothing about.  `-AllowInconclusive` must
+    # never be passed here; an inconclusive barrier run exits nonzero on
+    # purpose.
+    name: Owned-process ownership (Windows)
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Owned-process self-test (Windows job ownership + descendant barrier)
+        shell: pwsh
+        run: ./scripts/owned_process_tree.ps1 -SelfTest
+
+  owned-process-posix:
+    # The POSIX twin of the job above, run standalone for the same reason: the
+    # aggregate gate reaches these assertions only after a full Lean build, so a
+    # regression in either ownership implementation should be visible in a
+    # minute rather than behind twenty.
+    name: Owned-process ownership (POSIX)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Owned-process self-test (setsid group + descendant barrier)
+        shell: pwsh
+        run: ./scripts/owned_process_tree.ps1 -SelfTest

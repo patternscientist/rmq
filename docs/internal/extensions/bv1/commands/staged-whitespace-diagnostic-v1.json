@@ -1,0 +1,224 @@
+{
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "checks": [
+    {
+      "label": "default",
+      "diagnosticOnly": true,
+      "exit": 2,
+      "stdoutBytes": 53967001,
+      "stderr": "",
+      "counts": {
+        "new blank line at EOF.": 38,
+        "trailing whitespace.": 303202
+      },
+      "paths": 313,
+      "log": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\.lake\\bv1-staged-whitespace-default.txt",
+      "sha256": "04863CECA51240A7CD20EBCAD372AFAFB11698BE495913CE1E84F23C7ACA8983"
+    },
+    {
+      "label": "cr-at-eol-diagnostic",
+      "diagnosticOnly": true,
+      "exit": 2,
+      "stdoutBytes": 6845,
+      "stderr": "",
+      "counts": {
+        "new blank line at EOF.": 38
+      },
+      "paths": 38,
+      "log": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\.lake\\bv1-staged-whitespace-cr-at-eol-diagnostic.txt",
+      "sha256": "BF2EC47DAC0524AA81A2868F0882903AA84EFD1158C0CBA43C1667C18937A363",
+      "details": [
+        {
+          "path": "RMQ/Core/WordRAM/Bitvector/Capstone.lean",
+          "line": 237,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/CHECKOUT_BYTES_DISPOSITION.md",
+          "line": 16,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/CHECKOUT_BYTES_LAKEFILE_DISPOSITION.md",
+          "line": 23,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/COORDINATOR_ROUTE_DISPOSITION.md",
+          "line": 39,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/capacity-without-code.constructor.lean",
+          "line": 237,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/capacity-without-scratch.constructor.lean",
+          "line": 237,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/delete-accessCorrect.constructor.lean",
+          "line": 231,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/harmless-comment.constructor.lean",
+          "line": 238,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/public-proposition-True.constructor.lean",
+          "line": 160,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/sibling-completeCapacity.constructor.lean",
+          "line": 238,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/sibling-readerCorrect.constructor.lean",
+          "line": 230,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/sibling-selectSafety.constructor.lean",
+          "line": 237,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/unchanged.constructor.lean",
+          "line": 237,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-accessCorrect.constructor.lean",
+          "line": 237,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-accessExecution.constructor.lean",
+          "line": 230,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-accessSafety.constructor.lean",
+          "line": 234,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-categoryBounds.constructor.lean",
+          "line": 235,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-categoryPartition.constructor.lean",
+          "line": 233,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-completeCapacity.constructor.lean",
+          "line": 231,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-finiteScratch.constructor.lean",
+          "line": 235,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-memoryWordsFit.constructor.lean",
+          "line": 236,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-overheadLittleO.constructor.lean",
+          "line": 237,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-programLengths.constructor.lean",
+          "line": 234,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-rankCorrect.constructor.lean",
+          "line": 235,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-rankExecution.constructor.lean",
+          "line": 230,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-rankSafety.constructor.lean",
+          "line": 234,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-readerCorrect.constructor.lean",
+          "line": 228,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-readerGeometry.constructor.lean",
+          "line": 234,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-selectCorrect.constructor.lean",
+          "line": 236,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-selectExecution.constructor.lean",
+          "line": 230,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-selectSafety.constructor.lean",
+          "line": 234,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-sourceBudgets.constructor.lean",
+          "line": 234,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-stepsBound.constructor.lean",
+          "line": 236,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-suppliedMemoryAgreement.constructor.lean",
+          "line": 232,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-validArgumentFits.constructor.lean",
+          "line": 237,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/weaken-widthBounds.constructor.lean",
+          "line": 235,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "docs/internal/extensions/bv1/controls/public_mutations/snapshots/97405C70ED3B60CED72874D6DF622D2E9BBA0BD8F04808A3F98ED34EE1CEB770/Capstone.lean",
+          "line": 237,
+          "issue": "new blank line at EOF."
+        },
+        {
+          "path": "scripts/packed_bitvector_validation_controls.ps1",
+          "line": 130,
+          "issue": "new blank line at EOF."
+        }
+      ]
+    }
+  ]
+}

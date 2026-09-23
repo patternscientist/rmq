@@ -1,0 +1,45 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9",
+  "command": {
+    "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "arguments": [
+      "-j",
+      "1",
+      "RMQ/Core/WordRAM/Native/Machine/CodeFacts.lean"
+    ]
+  },
+  "result": {
+    "Stage": "machine-codefacts-01",
+    "ExitCode": 1,
+    "Output": [
+      "RMQ/Core/WordRAM/Native/Machine/CodeFacts.lean:20:67: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached",
+      "Note: Use `set_option maxHeartbeats <num>` to set the limit.",
+      "Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.",
+      "RMQ/Core/WordRAM/Native/Machine/CodeFacts.lean:62:31: warning: This simp argument is unused:",
+      "  List.all_eq_true",
+      "Hint: Omit it from the simp argument list.",
+      "  simp [decodeInstruction, hs, L̵i̵s̵t̵.̵a̵l̵l̵_̵e̵q̵_̵t̵r̵u̵e̵,̵ ̵hc, hp]",
+      "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`"
+    ],
+    "StandardOutput": [
+      "RMQ/Core/WordRAM/Native/Machine/CodeFacts.lean:20:67: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached",
+      "Note: Use `set_option maxHeartbeats <num>` to set the limit.",
+      "Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.",
+      "RMQ/Core/WordRAM/Native/Machine/CodeFacts.lean:62:31: warning: This simp argument is unused:",
+      "  List.all_eq_true",
+      "Hint: Omit it from the simp argument list.",
+      "  simp [decodeInstruction, hs, L̵i̵s̵t̵.̵a̵l̵l̵_̵e̵q̵_̵t̵r̵u̵e̵,̵ ̵hc, hp]",
+      "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 79.841,
+    "DeadlineSeconds": 90,
+    "Ownership": "kill-on-close-job"
+  }
+}

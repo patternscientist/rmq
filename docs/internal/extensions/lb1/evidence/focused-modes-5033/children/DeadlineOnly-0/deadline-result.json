@@ -1,0 +1,18 @@
+{
+  "Stage": "deadline-descendant",
+  "ExitCode": -1,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": true,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [
+    33224,
+    1668,
+    3892,
+    30892
+  ],
+  "DurationSeconds": 30.151,
+  "DeadlineSeconds": 30,
+  "Ownership": "kill-on-close-job"
+}

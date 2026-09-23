@@ -1,0 +1,16 @@
+{
+  "Label": "whitespace",
+  "Command": [
+    "git",
+    "diff",
+    "--check"
+  ],
+  "ExitCode": 0,
+  "Passed": true,
+  "DurationSeconds": 0.298,
+  "OutputSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "OutputBytes": 0,
+  "OutputSummary": [],
+  "Stderr": "",
+  "Scope": "final combined report/checker tree before local refreeze commit"
+}

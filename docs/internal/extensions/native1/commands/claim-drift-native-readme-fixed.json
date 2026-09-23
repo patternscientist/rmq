@@ -1,0 +1,36 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "command": {
+    "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+    "arguments": [
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "scripts/claim_drift_scan.ps1",
+      "-Strict",
+      "-Path",
+      "native/packed-rmq/README.md"
+    ]
+  },
+  "result": {
+    "Stage": "claim-drift-native-readme-fixed",
+    "ExitCode": 0,
+    "Output": [
+      "CLAIM-DRIFT: scan complete (1 hits, 0 strict failures)"
+    ],
+    "StandardOutput": [
+      "CLAIM-DRIFT: scan complete (1 hits, 0 strict failures)"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 7.815,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  }
+}

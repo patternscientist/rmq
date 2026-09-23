@@ -1,8 +1,24 @@
 % Primary-source bibliography for paper/rmq.tex.
-% Field policy: only fields verified against the source, the repository's
-% accepted claim maps, or an explicit web check recorded in
-% RELATED_WORK_LEDGER.md are included. Where a field (pages, volume, DOI)
-% could not be verified, it is omitted rather than guessed.
+%
+% Field policy.  Every field carries one of four receipts, and the receipt
+% tiers here are the same four RELATED_WORK_LEDGER.md uses:
+%
+%   source    -- checked against the paper itself (PDF or publisher record)
+%   web       -- an explicit web check recorded in RELATED_WORK_LEDGER.md
+%   repo-doc  -- pinned by an accepted repository claim map
+%   background-- NOT independently re-verified in this repository
+%
+% Where a field (pages, volume, DOI) has none of these, it is omitted rather
+% than guessed.
+%
+% The `background' tier is stated plainly because the previous version of this
+% header named only the first three and thereby licensed nothing for the tier
+% that most entries actually rest on.  That gap is not cosmetic: the one
+% outright factual error found in this bibliography -- an invented
+% `/HOL' fragment in the ZhanHaslbeck18 title, corrected 2026-08-12 -- sat on
+% a `background' receipt the header did not admit existed.  A policy that does
+% not name its weakest tier cannot flag entries that depend on it.
+% See paper/NOVELTY_LOG.md sections 5.7 and 5.11.
 
 @article{Vuillemin80,
   author  = {Jean Vuillemin},
@@ -201,7 +217,7 @@
 @inproceedings{ZhanHaslbeck18,
   author    = {Bohua Zhan and Maximilian P. L. Haslbeck},
   title     = {Verifying Asymptotic Time Complexity of Imperative Programs in
-               {Isabelle/HOL}},
+               Isabelle},
   booktitle = {Proceedings of the 9th International Joint Conference on
                Automated Reasoning ({IJCAR} 2018)},
   year      = {2018}
@@ -222,4 +238,140 @@
   title        = {Archive of Formal Proofs},
   howpublished = {\url{https://isa-afp.org}},
   note         = {Accessed 2026-08-05}
+}
+
+@article{Sadakane07,
+  author  = {Kunihiko Sadakane},
+  title   = {Succinct data structures for flexible text retrieval systems},
+  journal = {Journal of Discrete Algorithms},
+  volume  = {5},
+  number  = {1},
+  pages   = {12--22},
+  year    = {2007},
+  doi     = {10.1016/j.jda.2006.03.011}
+}
+
+@inproceedings{FischerHeun07,
+  author    = {Johannes Fischer and Volker Heun},
+  title     = {A New Succinct Representation of {RMQ}-Information and
+               Improvements in the Enhanced Suffix Array},
+  booktitle = {Combinatorics, Algorithms, Probabilistic and Experimental
+               Methodologies ({ESCAPE} 2007)},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {4614},
+  pages     = {459--470},
+  year      = {2007},
+  doi       = {10.1007/978-3-540-74450-4_41}
+}
+
+@article{GalMiltersen07,
+  author  = {Anna G\'{a}l and Peter Bro Miltersen},
+  title   = {The cell probe complexity of succinct data structures},
+  journal = {Theoretical Computer Science},
+  volume  = {379},
+  number  = {3},
+  pages   = {405--417},
+  year    = {2007},
+  doi     = {10.1016/j.tcs.2007.02.047}
+}
+
+@article{TAG18,
+  author  = {Akira Tanaka and Reynald Affeldt and Jacques Garrigue},
+  title   = {Safe Low-level Code Generation in {Coq} Using Monomorphization
+             and Monadification},
+  journal = {Journal of Information Processing},
+  volume  = {26},
+  pages   = {54--72},
+  year    = {2018},
+  doi     = {10.2197/ipsjjip.26.54}
+}
+
+@article{CookReckhow73,
+  author  = {Stephen A. Cook and Robert A. Reckhow},
+  title   = {Time Bounded Random Access Machines},
+  journal = {Journal of Computer and System Sciences},
+  volume  = {7},
+  number  = {4},
+  pages   = {354--375},
+  year    = {1973},
+  doi     = {10.1016/S0022-0000(73)80029-7}
+}
+
+@article{FredmanWillard93,
+  author  = {Michael L. Fredman and Dan E. Willard},
+  title   = {Surpassing the Information Theoretic Bound with Fusion Trees},
+  journal = {Journal of Computer and System Sciences},
+  volume  = {47},
+  number  = {3},
+  pages   = {424--436},
+  year    = {1993},
+  doi     = {10.1016/0022-0000(93)90040-4}
+}
+
+@inproceedings{BMM97,
+  author    = {Andrej Brodnik and Peter Bro Miltersen and J. Ian Munro},
+  title     = {Trans-Dichotomous Algorithms without Multiplication---Some Upper
+               and Lower Bounds},
+  booktitle = {Algorithms and Data Structures},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {1272},
+  pages     = {426--439},
+  year      = {1997},
+  doi       = {10.1007/3-540-63307-3_80},
+  note      = {Also BRICS Report RS-97-12}
+}
+
+@article{AHNR98,
+  author  = {Arne Andersson and Torben Hagerup and Stefan Nilsson and
+             Rajeev Raman},
+  title   = {Sorting in Linear Time?},
+  journal = {Journal of Computer and System Sciences},
+  volume  = {57},
+  number  = {1},
+  pages   = {74--93},
+  year    = {1998},
+  doi     = {10.1006/jcss.1998.1580}
+}
+
+@article{HMP01,
+  author  = {Torben Hagerup and Peter Bro Miltersen and Rasmus Pagh},
+  title   = {Deterministic Dictionaries},
+  journal = {Journal of Algorithms},
+  volume  = {41},
+  number  = {1},
+  pages   = {69--85},
+  year    = {2001},
+  doi     = {10.1006/jagm.2001.1171}
+}
+
+@inproceedings{PatrascuThorup14,
+  author    = {Mihai P{\u{a}}tra{\c{s}}cu and Mikkel Thorup},
+  title     = {Dynamic Integer Sets with Optimal Rank, Select, and Predecessor
+               Search},
+  booktitle = {Proceedings of the 55th Annual {IEEE} Symposium on Foundations of
+               Computer Science ({FOCS} 2014)},
+  pages     = {166--175},
+  year      = {2014},
+  doi       = {10.1109/FOCS.2014.26},
+  note      = {Also arXiv:1408.3045}
+}
+
+@book{MehlhornSanders08,
+  author    = {Kurt Mehlhorn and Peter Sanders},
+  title     = {Algorithms and Data Structures: The Basic Toolbox},
+  publisher = {Springer},
+  year      = {2008},
+  doi       = {10.1007/978-3-540-77978-0}
+}
+
+@article{AMT99,
+  author  = {Arne Andersson and Peter Bro Miltersen and Mikkel Thorup},
+  title   = {Fusion Trees Can Be Implemented with {AC}$^0$ Instructions Only},
+  journal = {Theoretical Computer Science},
+  volume  = {215},
+  number  = {1--2},
+  pages   = {337--344},
+  year    = {1999},
+  doi     = {10.1016/S0304-3975(98)00172-8},
+  note    = {Preliminary version: BRICS Report RS-96-30, 1996}
 }

@@ -1,0 +1,64 @@
+{
+  "stage": "controller-public-selectors-r15",
+  "evidenceTag": "campaign-final-v1-20260912131342256-3b473507",
+  "utc": "2026-09-12T13:23:35.0866786Z",
+  "executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+  "arguments": [
+    "-NoProfile",
+    "-File",
+    "scripts/packed_bitvector_public_controls.ps1",
+    "-ReplaySelectors",
+    "-DeadlineSeconds",
+    "180",
+    "-CampaignDeadlineSeconds",
+    "2700",
+    "-EvidenceTag",
+    "campaign-final-v1-20260912131342256-3b473507"
+  ],
+  "result": {
+    "Stage": "controller-public-selectors-r15",
+    "ExitCode": 0,
+    "Output": [
+      "BV1-PUBLIC-SELECTOR-CONTROL omitted True",
+      "BV1-PUBLIC-SELECTOR-CONTROL valid True",
+      "BV1-PUBLIC-SELECTOR-CONTROL empty True",
+      "BV1-PUBLIC-SELECTOR-CONTROL whitespace True",
+      "BV1-PUBLIC-SELECTOR-CONTROL malformed True",
+      "BV1-PUBLIC-SELECTOR-CONTROL unknown True",
+      "BV1-PUBLIC-SELECTOR-CONTROL padded True",
+      "BV1-PUBLIC-SELECTOR-CONTROL incompatible True",
+      "BV1-PUBLIC-REPLAY version=1 executed=8 expected=8 passed=True unchanged=True fixtures=True statusRestored=True whitespace=True",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied"
+    ],
+    "StandardOutput": [
+      "BV1-PUBLIC-SELECTOR-CONTROL omitted True",
+      "BV1-PUBLIC-SELECTOR-CONTROL valid True",
+      "BV1-PUBLIC-SELECTOR-CONTROL empty True",
+      "BV1-PUBLIC-SELECTOR-CONTROL whitespace True",
+      "BV1-PUBLIC-SELECTOR-CONTROL malformed True",
+      "BV1-PUBLIC-SELECTOR-CONTROL unknown True",
+      "BV1-PUBLIC-SELECTOR-CONTROL padded True",
+      "BV1-PUBLIC-SELECTOR-CONTROL incompatible True",
+      "BV1-PUBLIC-REPLAY version=1 executed=8 expected=8 passed=True unchanged=True fixtures=True statusRestored=True whitespace=True"
+    ],
+    "StandardError": [
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 592.664,
+    "DeadlineSeconds": 3000,
+    "Ownership": "kill-on-close-job"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "version": "opt1-r2-relocation-controls-v1",
+  "cases": [
+    {"id": "X01-EXACT-RELOCATION", "verdict": "ACCEPT", "code": null},
+    {"id": "X02-UNENUMERATED-DELETION", "verdict": "REJECT", "code": "AMENDMENT_IDENTITY"},
+    {"id": "X03-OTHER-BLOB-CHANGED", "verdict": "REJECT", "code": "AMENDMENT_IDENTITY"},
+    {"id": "X04-ADDITION-OUTSIDE-R2", "verdict": "REJECT", "code": "AMENDMENT_IDENTITY"},
+    {"id": "X05-ORIGINAL-BESIDE-ARCHIVE", "verdict": "REJECT", "code": "RELOCATION_ORIGINAL_PRESENT"},
+    {"id": "X06-ARCHIVE-WRONG-BYTES", "verdict": "REJECT", "code": "RELOCATION_BYTES"},
+    {"id": "X07-ATTRIBUTES-NOT-APPEND-ONLY", "verdict": "REJECT", "code": "GITATTRIBUTES_APPEND"},
+    {"id": "X08-ARCHIVE-MISSING", "verdict": "REJECT", "code": "RELOCATION_ARCHIVE_MISSING"},
+    {"id": "X09-PACKED-MODE-CHANGED", "verdict": "REJECT", "code": "AMENDMENT_IDENTITY"},
+    {"id": "X10-ADDITION-UNDER-REPAIR-R1", "verdict": "REJECT", "code": "AMENDMENT_IDENTITY"}
+  ]
+}

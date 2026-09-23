@@ -1,0 +1,9 @@
+{
+  "HygieneExit": 1,
+  "Passed": true,
+  "NativeMatches": 0,
+  "NativeExit": 1,
+  "PriorAttempt": "Python subprocess could not launch rg due to Windows access denial; no result inferred. Shell scans passed.",
+  "Scope": "Required whole RMQ and lakefile scans after runner-only repair; source unchanged",
+  "HygieneMatches": 0
+}

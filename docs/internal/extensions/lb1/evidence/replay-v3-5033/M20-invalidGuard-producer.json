@@ -1,0 +1,13 @@
+{
+  "Stage": "M20-invalidGuard-producer",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 7.249,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

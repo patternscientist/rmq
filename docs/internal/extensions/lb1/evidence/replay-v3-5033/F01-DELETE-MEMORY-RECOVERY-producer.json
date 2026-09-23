@@ -1,0 +1,13 @@
+{
+  "Stage": "F01-DELETE-MEMORY-RECOVERY-producer",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 4.783,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

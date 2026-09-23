@@ -1,0 +1,13 @@
+{
+  "Stage": "S02-SIBLING-RUN-producer",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 4.774,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

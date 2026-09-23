@@ -1,0 +1,513 @@
+{
+  "Version": "opt1-r1-runtime-v1",
+  "ExpectedCount": 53,
+  "Cases": [
+    {
+      "ID": "R1RT-ACCEPT-STDOUT",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Stderr": [],
+      "Exit": 1,
+      "Expected": "ACCEPT",
+      "Prefix": ""
+    },
+    {
+      "ID": "R1RT-ACCEPT-STDERR",
+      "Kind": "classifier",
+      "Stdout": [],
+      "Stderr": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Exit": 1,
+      "Expected": "ACCEPT",
+      "Prefix": ""
+    },
+    {
+      "ID": "R1RT-ACCEPT-BLANK-SEPARATORS",
+      "Kind": "classifier",
+      "Stdout": [
+        "",
+        "uncaught exception: N01-JUMP: compiler observation mismatch",
+        ""
+      ],
+      "Stderr": [
+        ""
+      ],
+      "Exit": 1,
+      "Expected": "ACCEPT",
+      "Prefix": ""
+    },
+    {
+      "ID": "R1RT-MIXED-OUT-ERR",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Stderr": [
+        "uncaught exception: independent coordinator failure"
+      ],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-MIXED-ERR-OUT",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: independent coordinator failure"
+      ],
+      "Stderr": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-MIXED-STDOUT",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch",
+        "uncaught exception: independent coordinator failure"
+      ],
+      "Stderr": [],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-MIXED-STDERR",
+      "Kind": "classifier",
+      "Stdout": [],
+      "Stderr": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch",
+        "uncaught exception: independent coordinator failure"
+      ],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-MIXED-BOTH",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch",
+        "uncaught exception: independent coordinator failure"
+      ],
+      "Stderr": [
+        "uncaught exception: independent coordinator failure"
+      ],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-HOLDOUT-STDOUT",
+      "Kind": "classifier",
+      "Stdout": [
+        "fatal signal from unrelated worker 73",
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Stderr": [],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-HOLDOUT-STDERR",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Stderr": [
+        "fatal signal from unrelated worker 73"
+      ],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-UNRELATED-ONLY",
+      "Kind": "classifier",
+      "Stdout": [],
+      "Stderr": [
+        "uncaught exception: independent coordinator failure"
+      ],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-DUPLICATE-STDOUT",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch",
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Stderr": [],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-DUPLICATE-STDERR",
+      "Kind": "classifier",
+      "Stdout": [],
+      "Stderr": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch",
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-DUPLICATE-CROSS",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Stderr": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-WRONG-SURFACE",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: N02-COUNTER: compiler observation mismatch"
+      ],
+      "Stderr": [],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-WRONG-CASE",
+      "Kind": "classifier",
+      "Stdout": [
+        "UNCAUGHT EXCEPTION: N01-JUMP: COMPILER OBSERVATION MISMATCH"
+      ],
+      "Stderr": [],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-WRONG-PREFIX",
+      "Kind": "classifier",
+      "Stdout": [
+        "caught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Stderr": [],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-PAD-LEFT",
+      "Kind": "classifier",
+      "Stdout": [
+        " uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Stderr": [],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-PAD-RIGHT",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch "
+      ],
+      "Stderr": [],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-WHITESPACE-EXTRA",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Stderr": [
+        " \t"
+      ],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-BLANK-ONLY",
+      "Kind": "classifier",
+      "Stdout": [
+        ""
+      ],
+      "Stderr": [
+        ""
+      ],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-NO-OUTPUT",
+      "Kind": "classifier",
+      "Stdout": [],
+      "Stderr": [],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-SUCCESS-CASE",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch",
+        "OPT1 CASE C01-ZERO-BRANCH PASS steps=3 reads=0"
+      ],
+      "Stderr": [],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-SUCCESS-SUMMARY",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Stderr": [
+        "OPT1 PASS executed=1 expected=1 registry=v1"
+      ],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-HOLDOUT-SUCCESS",
+      "Kind": "classifier",
+      "Stdout": [
+        "success: operation completed",
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Stderr": [],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-RESOURCE-STACK",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch",
+        "stack overflow"
+      ],
+      "Stderr": [],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-RESOURCE-HEARTBEATS",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Stderr": [
+        "maximum heartbeats exceeded"
+      ],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-HOLDOUT-RESOURCE",
+      "Kind": "classifier",
+      "Stdout": [
+        "allocation failed: unavailable memory",
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Stderr": [],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-RESOURCE-ONLY",
+      "Kind": "classifier",
+      "Stdout": [
+        "deep recursion"
+      ],
+      "Stderr": [],
+      "Exit": 1,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-EXIT-ZERO",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Stderr": [],
+      "Exit": 0,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-EXIT-SEVEN",
+      "Kind": "classifier",
+      "Stdout": [
+        "uncaught exception: N01-JUMP: compiler observation mismatch"
+      ],
+      "Stderr": [],
+      "Exit": 7,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-VERDICT:"
+    },
+    {
+      "ID": "R1RT-TIMEOUT-EXPECTED",
+      "Kind": "timeout",
+      "EmitExpected": true,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-PROCESS:"
+    },
+    {
+      "ID": "R1RT-TIMEOUT-ABSENT",
+      "Kind": "timeout",
+      "EmitExpected": false,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-PROCESS:"
+    },
+    {
+      "ID": "R1RT-OVERFLOW-EXPECTED",
+      "Kind": "overflow",
+      "EmitExpected": true,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-PROCESS:"
+    },
+    {
+      "ID": "R1RT-OVERFLOW-ABSENT",
+      "Kind": "overflow",
+      "EmitExpected": false,
+      "Expected": "REJECT",
+      "Prefix": "OPT1-PROCESS:"
+    },
+    {
+      "ID": "R1RT-BOUNDARY-OMITTED",
+      "Kind": "boundary",
+      "Mode": "omitted",
+      "Expected": "ACCEPT"
+    },
+    {
+      "ID": "R1RT-BOUNDARY-VALID",
+      "Kind": "boundary",
+      "Mode": "valid",
+      "Expected": "ACCEPT"
+    },
+    {
+      "ID": "R1RT-BOUNDARY-EMPTY",
+      "Kind": "boundary",
+      "Mode": "empty",
+      "Expected": "REJECT"
+    },
+    {
+      "ID": "R1RT-BOUNDARY-WHITESPACE",
+      "Kind": "boundary",
+      "Mode": "whitespace",
+      "Expected": "REJECT"
+    },
+    {
+      "ID": "R1RT-BOUNDARY-PADDED",
+      "Kind": "boundary",
+      "Mode": "padded",
+      "Expected": "REJECT"
+    },
+    {
+      "ID": "R1RT-BOUNDARY-MALFORMED",
+      "Kind": "boundary",
+      "Mode": "malformed",
+      "Expected": "REJECT"
+    },
+    {
+      "ID": "R1RT-BOUNDARY-UNKNOWN",
+      "Kind": "boundary",
+      "Mode": "unknown",
+      "Expected": "REJECT"
+    },
+    {
+      "ID": "R1RT-BOUNDARY-ZERO",
+      "Kind": "boundary",
+      "Mode": "zero",
+      "Expected": "REJECT"
+    },
+    {
+      "ID": "R1RT-BOUNDARY-DUPLICATE",
+      "Kind": "boundary",
+      "Mode": "duplicate",
+      "Expected": "REJECT"
+    },
+    {
+      "ID": "R1RT-BOUNDARY-CONTRADICTORY",
+      "Kind": "boundary",
+      "Mode": "contradictory",
+      "Expected": "REJECT"
+    },
+    {
+      "ID": "R1RT-BOUNDARY-SELECTOR-STARTUP",
+      "Kind": "boundary",
+      "Mode": "selector-startup",
+      "Expected": "REJECT"
+    },
+    {
+      "ID": "R1RT-BOUNDARY-REGISTRY-SELFTEST",
+      "Kind": "boundary",
+      "Mode": "registry-selftest",
+      "Expected": "ACCEPT"
+    },
+    {
+      "ID": "R1RT-REGISTRY-LITERAL-POSITIVE",
+      "Kind": "registry",
+      "Mode": "literal-positive",
+      "Expected": "ACCEPT"
+    },
+    {
+      "ID": "R1RT-REGISTRY-LITERAL-MIDDLE-OMITTED",
+      "Kind": "registry",
+      "Mode": "literal-middle-omitted",
+      "Expected": "REJECT"
+    },
+    {
+      "ID": "R1RT-REGISTRY-LITERAL-MIDDLE-DUPLICATE",
+      "Kind": "registry",
+      "Mode": "literal-middle-duplicate",
+      "Expected": "REJECT"
+    },
+    {
+      "ID": "R1RT-REGISTRY-MARKDOWN-MIDDLE-OMITTED",
+      "Kind": "registry",
+      "Mode": "markdown-middle-omitted",
+      "Expected": "REJECT"
+    },
+    {
+      "ID": "R1RT-REGISTRY-SOURCE-MIDDLE-DUPLICATE",
+      "Kind": "registry",
+      "Mode": "source-middle-duplicate",
+      "Expected": "REJECT"
+    },
+    {
+      "ID": "R1RT-REGISTRY-SOURCE-POSITIVE",
+      "Kind": "registry",
+      "Mode": "source-positive",
+      "Expected": "ACCEPT"
+    }
+  ]
+}

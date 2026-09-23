@@ -1,0 +1,38 @@
+{
+  "schema": "native1-hash-buffer-development-v1",
+  "purpose": "read-only full-byte SHA256 equivalence and bounded host timing; not a cold-cache comparison or full inventory",
+  "scriptSHA256": "66FA7AD3E0DFFA2F660648ECEE555139D7777E572D5A282493214BF3A4DD5777",
+  "script": "$ErrorActionPreference='Stop'\n$taskFile='C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/lib/lean/libLean.a'\n$taskExpected='9A8BCDE682EAC2413F5BF2B211AA04631581A7404FD39857CF589BA0AA0C080F'\n$taskRows=@()\nforeach($taskMethod in @('buffered-1m-sequential','stock-Get-FileHash')) {\n  $taskStart=[DateTime]::UtcNow.ToString('o'); $taskWatch=[Diagnostics.Stopwatch]::StartNew()\n  if($taskMethod -ceq 'buffered-1m-sequential') {\n    $taskStream=New-Object IO.FileStream($taskFile,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read,1048576,[IO.FileOptions]::SequentialScan)\n    $taskSha=[Security.Cryptography.SHA256]::Create()\n    try {$taskHash=[BitConverter]::ToString($taskSha.ComputeHash($taskStream)).Replace('-','')}\n    finally {$taskSha.Dispose();$taskStream.Dispose()}\n  } else {$taskHash=(Get-FileHash -LiteralPath $taskFile -Algorithm SHA256).Hash}\n  $taskWatch.Stop()\n  $taskRow=[ordered]@{method=$taskMethod;file=$taskFile;bytes=(Get-Item -LiteralPath $taskFile).Length;expectedSHA256=$taskExpected;actualSHA256=$taskHash;accepted=($taskHash -ceq $taskExpected);startedUTC=$taskStart;completedUTC=[DateTime]::UtcNow.ToString('o');seconds=$taskWatch.Elapsed.TotalSeconds;shell=$PSVersionTable.PSVersion.ToString();pid=$PID}\n  $taskRows+=,$taskRow\n  $taskRow|ConvertTo-Json -Depth 5 -Compress|Write-Output\n  [IO.File]::WriteAllText((Join-Path $PSScriptRoot 'hash-buffer-benchmark-result.json'),($taskRows|ConvertTo-Json -Depth 5),[Text.UTF8Encoding]::new($false))\n  if(!$taskRow.accepted){throw 'full-byte SHA256 mismatch'}\n}\n",
+  "rows": [
+    {
+      "method": "buffered-1m-sequential",
+      "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/lib/lean/libLean.a",
+      "bytes": 149042606,
+      "expectedSHA256": "9A8BCDE682EAC2413F5BF2B211AA04631581A7404FD39857CF589BA0AA0C080F",
+      "actualSHA256": "9A8BCDE682EAC2413F5BF2B211AA04631581A7404FD39857CF589BA0AA0C080F",
+      "accepted": true,
+      "startedUTC": "2026-09-12T12:42:59.0057824Z",
+      "completedUTC": "2026-09-12T12:43:00.1780458Z",
+      "seconds": 1.0113646,
+      "shell": "5.1.26100.9444",
+      "pid": 2988
+    },
+    {
+      "method": "stock-Get-FileHash",
+      "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/lib/lean/libLean.a",
+      "bytes": 149042606,
+      "expectedSHA256": "9A8BCDE682EAC2413F5BF2B211AA04631581A7404FD39857CF589BA0AA0C080F",
+      "actualSHA256": "9A8BCDE682EAC2413F5BF2B211AA04631581A7404FD39857CF589BA0AA0C080F",
+      "accepted": true,
+      "startedUTC": "2026-09-12T12:43:00.4383064Z",
+      "completedUTC": "2026-09-12T12:43:01.9503540Z",
+      "seconds": 1.5097163,
+      "shell": "5.1.26100.9444",
+      "pid": 2988
+    }
+  ],
+  "notes": [
+    "Buffered method ran first; stock method may benefit from warm cache.",
+    "The host stock method did not reproduce the much slower root build; no production helper edit followed this benchmark."
+  ]
+}

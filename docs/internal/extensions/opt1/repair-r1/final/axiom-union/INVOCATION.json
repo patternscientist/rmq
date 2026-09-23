@@ -1,0 +1,14 @@
+{
+  "Fixture": "C:/Users/poin/.codex/worktrees/ccb1/RMQ/.lake/r1/r1-lf",
+  "FixtureHead": "f7cf20da8ae52c1f8295e5cedd4326bb8d44cbb3",
+  "Command": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe -NoProfile -ExecutionPolicy Bypass -File scripts/packed_optimized_axiom_check.ps1",
+  "ExitCode": 0,
+  "Output": [
+    "OPT1-AXIOMS: expected=93 found=93 pass=True",
+    "OPT1-AXIOMS: dependencies=Classical.choice,propext,Quot.sound"
+  ],
+  "CopiedReceipts": [
+    "20260913T0055245605662Z-axioms.json"
+  ],
+  "Note": "Run in the private LF fixture so the historical composition-development directory of the lead checkout is not written; the fixture cache holds exactly the 263 canonical artifacts"
+}

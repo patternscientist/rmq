@@ -1,9 +1,141 @@
 # Word-RAM Review Packet
 
-This packet isolates the current machine-model claim from stronger runtime or
-compiler claims. The canonical RMQ result uses a traced payload-access model
-with checked storage, provenance, and width properties. It is deliberately not
-presented as a complete conventional word-RAM semantics.
+This packet separates three things: the accepted primitive-machine query
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, the earlier traced
+payload-access theorem with its `210` charged-trace bound, and
+compiled-runtime claims, which neither theorem makes.
+
+## Packed primitive query (accepted)
+
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, imported through `RMQPaper`,
+has the exact proposition
+`RMQ.SuccinctFinal.PackedWordRAM.FullyChargedPackedQueryCapstone`. Its producer
+is `fullyChargedPackedQueryCapstone_holds` in
+`RMQ/Core/WordRAM/Packed/Capstone.lean`, and its axioms are `propext`,
+`Classical.choice` and `Quot.sound`. The theorem has no canonical safety,
+correctness, readiness, successful-read or route premise. Status: ACCEPTED,
+following the replay campaign, both-host aggregate gates and independent audit;
+the coordinator record is `docs/internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md`.
+
+### Machine
+
+The machine state is a register file, a program counter and a status
+(running, halted with a value, or fault); memory is a list of natural numbers.
+There are nine instruction forms: `load`, `constant`, `move`, `arithmetic`
+(add, sub, mul, div, mod, shl, shr, and, or, xor), `comparison` (lt, le, eq),
+`jump`, `jumpRegister`, `branchZero` and `halt`. Each executed instruction is
+one step and belongs to one of six categories (memory read, register write,
+arithmetic, comparison, branch, control); the step count is the sum of the six
+category counts. This is an arithmetic word-RAM: multiplication, division,
+remainder, variable shifts and bitwise operations are unit-cost word
+operations. Addition, multiplication, Boolean operations and shifts by a
+register-held distance are the multiplication model of the word-RAM
+literature; integer division and remainder go beyond it and are an explicit
+additional assumption, which the span decoder uses (DD-20260911-PQ1-018
+records the sources). Rank, select, popcount, local scans and whole controller steps are
+not primitive operations. The evaluator computes with natural numbers, but for
+representable endpoints the certificate proves, on every executed transition,
+that the result fits `wordWidth n` bits, that subtraction does not underflow,
+that divisors are nonzero and that shift amounts are below the width. On these
+runs the natural-number evaluator therefore coincides with `w(n)`-bit
+arithmetic. A load from a missing address faults the machine.
+
+### Allocation and space
+
+For each ordinary `xs : List Int`, `buildMemory xs` is one numeric allocation:
+174 metadata words (sizes, widths, counts, layout parameters and segment
+descriptors serialized from the shape) followed by the existing packed
+allocation of the canonical payload, densely repacked into `wordWidth n`-bit
+words. Here
+`wordWidth n = 32 + 8 * packedReviewerCellWidth n` and
+`log2(n+2)+1 ≤ wordWidth n ≤ 192*(log2(n+2)+1)`. The run takes that memory,
+the fixed `queryProgram`, `queryBudget` and `initialState xs.length left right`.
+No input values, Cartesian shape, semantic store callback or answer are
+machine inputs; query-dependent data come only from the endpoints, the size
+and charged loads. The allocation satisfies
+`(buildMemory xs).length * wordWidth n ≤ 2*n + allocationRho n` with checked
+`LittleOLinear allocationRho`. The complete statement also counts the literal
+flattened instruction encoding and 8,271 registers plus three control words,
+and stays at most `2*n + queryCompleteRho n` with checked
+`LittleOLinear queryCompleteRho`; every register outside that bank is proved
+to stay zero. The code and scratch part is roughly 1.68 to 4.2 million words
+of `wordWidth n` bits, which exceeds `n` for every `n` below about `2^28`, so
+it is lower order only asymptotically.
+
+### Program, budget and width
+
+`queryProgram`, the program of
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, is one closed program of
+837,572 instructions, independent of `xs` and `n`, and `queryBudget = 837572`.
+It is loop-free: it contains forward jumps only and no `jumpRegister`. For
+every list and every representable endpoint pair the run halts within at most
+837,572 steps. Because the program is loop-free, that budget is its length
+rather than a measured cost: the committed valid-query fixtures observe 6,003
+steps (`n = 1`) to 16,358 steps (`n = 24`), and every representable invalid
+input stops within six guard steps (certificate field `invalidGuardSteps`;
+`queryRun_invalid_steps` gives exactly four when `left >= right`, otherwise
+six (when `right > n`)). The budget is not claimed tight. Every encoded
+field of every instruction, including dormant branch arms and the appended
+halt, fits `wordWidth n` for every `n`. Every stored word, allocated or
+first-missing address, executed operand, arithmetic result, receipt address
+and reply, and the state after every fuel prefix fit the same width.
+
+### Inputs and correctness
+
+Every valid half-open range is representable, and for it the run returns the
+packet `scanWindow xs left (right - left) + 1`, the leftmost minimum. The
+certificate field `specResult` states this on the run itself, without going
+through `queryNat` or the RC6 reference value.
+Representable invalid, empty or reversed ranges halt with packet `0` and make
+no memory read. The total wrapper `queryNat` equals
+`if ValidRange xs left right then some (scanWindow xs left (right - left)) else none`
+for all natural endpoints, because endpoints outside the word domain are
+rejected by the value-level check `encodeInputs` before any machine step. That
+outer check is uncharged, and no instruction bound is claimed for parsing
+unbounded integers.
+
+### Reads and provenance
+
+For a valid range, the ordered load receipts of the run are exactly the 174
+metadata loads followed by the physical expansion of the canonical logical
+trace of the same query: one load for each present logical read, two when its
+stored bit span crosses a word boundary, and none for a logically absent or
+dead read or a zero-length span.
+Repeated logical reads repeat their loads. A representable invalid range makes
+no load at all. Each receipt is positionally backed: its transition's
+pre-state is the run's state at that index, the instruction is the program's
+load at that program counter, and the reply is `buildMemory xs` at the
+address. A failed load faults the machine and the canonical run halts, so
+canonical runs perform no failing load (certificate field `noFailedLoads`;
+`queryRun_reads_reply` proves it for every endpoint pair). Any supplied memory that agrees with
+`buildMemory xs` at every read address produces the identical run: result,
+steps and trace.
+
+### Relation to the other theorems
+
+The instruction bound is a model theorem about this machine; Lean runtime is
+not measured or bounded. It is distinct from the `210` charged-trace
+certificate below, which counts ticks on the logical controller trace, and
+from the `427` packed-probe bound, which counts structural probes with free
+computation between them; it reinterprets neither. Preprocessing time and
+space are unbounded and unclaimed.
+
+### Evidence
+
+`RMQ/Validation/PackedQueryContract.lean` independently states each
+certificate field as an expected-type consumer of the public alias.
+`scripts/packed_query_replay.ps1` weakens one field at a time, requires the
+named consumer to fail, restores the tree, and runs the numeric-memory runtime
+fixtures; the aggregate gate invokes it on a clean committed tree. The theorem
+and the consumer check today. The replay campaign, both-host aggregate gates
+and independent audit passed on the repaired source. Coordinator acceptance
+is recorded in `docs/internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md`;
+the frozen matrix retains the original requirements and appends their closure.
+
+## Earlier trace-model boundary
+
+The following sections describe the earlier `210` charged-trace theorem. Its
+charge policy is unchanged by the separate accepted primitive machine.
 
 ## Machine Objects
 
@@ -92,17 +224,18 @@ capstone's own checked type does not contain the readWord-only conjunct.
 
 ## Uncharged Boundary
 
-The event language does not currently charge controller dispatch,
+The event language of this theorem does not charge controller dispatch,
 input/register access, option tests, arithmetic, branches, fixed-width decode,
 local BP scans, candidate merges, trace assembly, or the public validity guard.
 The checked `210` result is therefore a charged-trace theorem. It is not a claim
 about compiled Lean time or a complete conventional word-RAM instruction
 count.
 
-The next machine-level strengthening should define a compact small-step
-controller semantics and prove that it simulates this same payload-backed
-execution while charging those operations. That extension should refine the
-current theorem rather than create a sibling query algorithm.
+The accepted theorem `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` at the top of
+this packet charges those operations for a different execution: its primitive
+run returns the same answers and its ordered loads expand the same logical
+trace, but over a densely repacked allocation. Its 837,572-step budget does
+not reinterpret the `210` trace weight.
 
 ## Compatibility
 
@@ -120,8 +253,10 @@ lake env lean scripts/wordram_axiom_check.lean
 lake env lean scripts/headline_axiom_check.lean
 lake exe rmq_succinct_classic_cost_harness
 powershell -ExecutionPolicy Bypass -File scripts/review_wordram.ps1
+pwsh -NoProfile -File scripts/packed_query_replay.ps1   # clean committed tree
 ```
 
-The cost harness reports model events, not wall-clock benchmarks. The axiom
-inventories and review script are curated regression checks; the theorem types
-remain the authoritative evidence.
+The cost harness reports model events, not wall-clock benchmarks, and the
+replay's runtime fixtures report primitive steps and reads. The axiom
+inventories, review script and replay are curated regression checks; the
+theorem types remain the authoritative evidence.

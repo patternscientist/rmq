@@ -355,12 +355,20 @@ theorem bpChunkedCrossBlockCloseCostedWithRankSeed_value_eq
 /--
 Literal cost bound for the chunked cross-block consumer: two rank seeds,
 two 37-read chunked fringes, one bounded interior replay.
+
+The left close position carries no in-range hypothesis, and that asymmetry with
+`hrightCloseBound` is real rather than an oversight: the cost bound holds for any
+`leftClose`, because the left fringe is charged through a chunk-count bound that
+does not depend on the position being in range. An unused
+`_hleftCloseBound : leftClose < shape.bpCode.length` premise stood here until
+2026-08-09 and was removed for overstating what the proof needs -- a decorative
+hypothesis makes a theorem look weaker than it is and misleads anyone reasoning
+about where the bound comes from.
 -/
 theorem bpChunkedCrossBlockCloseCostedWithRankSeed_cost_le_principled
     (shape : Cartesian.CartesianShape)
     (rankCloseCosted : Nat -> Costed Nat)
     (leftClose rightClose rankCost : Nat)
-    (_hleftCloseBound : leftClose < shape.bpCode.length)
     (hrightCloseBound : rightClose < shape.bpCode.length)
     (hrankCost : forall pos, (rankCloseCosted pos).cost <= rankCost) :
     (bpChunkedCrossBlockCloseCostedWithRankSeed

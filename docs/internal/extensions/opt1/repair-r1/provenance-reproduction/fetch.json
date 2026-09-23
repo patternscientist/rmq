@@ -1,0 +1,19 @@
+{
+  "Stage": "fetch",
+  "ExitCode": 0,
+  "Output": [
+    "From C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+    " * branch            aecf4a580c591e8f694a3699e19e843198089194 -> FETCH_HEAD"
+  ],
+  "StandardOutput": [],
+  "StandardError": [
+    "From C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+    " * branch            aecf4a580c591e8f694a3699e19e843198089194 -> FETCH_HEAD"
+  ],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 8.014,
+  "DeadlineSeconds": 120,
+  "Ownership": "kill-on-close-job"
+}

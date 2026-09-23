@@ -1,0 +1,620 @@
+{
+  "schema": "native1-binary-replay-v1",
+  "startedUtc": "2026-09-12T13:16:37.0431143Z",
+  "completedUtc": "2026-09-12T13:17:09.4927484Z",
+  "pass": true,
+  "failure": null,
+  "registrySha256": "2D38A1002C1E8A72DF5E164144EC4E8F5410511F2C585831AEFBBC0D1BD4C637",
+  "runnerSha256": "36774810EB0BA670594D11D11DBD22924032CE8F67554027B5ED5F02CB80DCF6",
+  "buildManifestSha256": "A4C20BCAA5E35402293DB522CE8736A81BD84FBC67FC2648693475504E5E1069",
+  "producerRuntime": {
+    "path": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "version": "Python 3.12.14",
+    "sha256": "DD5F8D19F6755D6491EE7C4BEF2FE35DDD521334CC3CA3ED8FC93EBCADF135D0",
+    "runtimeDlls": [
+      {
+        "path": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python3.dll",
+        "sha256": "5321BBA2D7F95C6BCA9A19FD8E0415CA850B2CF85C8C1711C605F9932E9C2826"
+      },
+      {
+        "path": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python312.dll",
+        "sha256": "BAA2A3924BC1309284D0A720CCD213F37002FBDA82D5761A61DDEE8C4C31F608"
+      }
+    ],
+    "process": {
+      "Stage": "python-producer-identity",
+      "ExitCode": 0,
+      "Output": [
+        "Python 3.12.14"
+      ],
+      "StandardOutput": [
+        "Python 3.12.14"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 1.754,
+      "DeadlineSeconds": 30,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:16:37.0782527Z",
+      "CompletedUtc": "2026-09-12T13:16:38.9816031Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+      "InvokedArguments": [
+        "--version"
+      ]
+    }
+  },
+  "toolchainProbes": [
+    {
+      "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+      "arguments": [
+        "--version"
+      ],
+      "process": {
+        "Stage": "lean-identity",
+        "ExitCode": 0,
+        "Output": [
+          "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+        ],
+        "StandardOutput": [
+          "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.087,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "startedUtc": "2026-09-12T13:16:39.1031575Z",
+      "completedUtc": "2026-09-12T13:16:40.2175518Z",
+      "text": "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+    },
+    {
+      "file": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+      "arguments": [
+        "--version"
+      ],
+      "process": {
+        "Stage": "c-identity",
+        "ExitCode": 0,
+        "Output": [
+          "clang version 19.1.2",
+          "Target: x86_64-w64-windows-gnu",
+          "Thread model: posix",
+          "InstalledDir: C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin"
+        ],
+        "StandardOutput": [
+          "clang version 19.1.2",
+          "Target: x86_64-w64-windows-gnu",
+          "Thread model: posix",
+          "InstalledDir: C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.132,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "startedUtc": "2026-09-12T13:16:40.2247903Z",
+      "completedUtc": "2026-09-12T13:16:41.3783916Z",
+      "text": "clang version 19.1.2\nTarget: x86_64-w64-windows-gnu\nThread model: posix\nInstalledDir: C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin"
+    },
+    {
+      "file": "C:\\Users\\poin\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\rustc.exe",
+      "arguments": [
+        "-vV"
+      ],
+      "process": {
+        "Stage": "rust-identity",
+        "ExitCode": 0,
+        "Output": [
+          "rustc 1.89.0 (29483883e 2025-08-04)",
+          "binary: rustc",
+          "commit-hash: 29483883eed69d5fb4db01964cdf2af4d86e9cb2",
+          "commit-date: 2025-08-04",
+          "host: x86_64-pc-windows-msvc",
+          "release: 1.89.0",
+          "LLVM version: 20.1.7"
+        ],
+        "StandardOutput": [
+          "rustc 1.89.0 (29483883e 2025-08-04)",
+          "binary: rustc",
+          "commit-hash: 29483883eed69d5fb4db01964cdf2af4d86e9cb2",
+          "commit-date: 2025-08-04",
+          "host: x86_64-pc-windows-msvc",
+          "release: 1.89.0",
+          "LLVM version: 20.1.7"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.066,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "startedUtc": "2026-09-12T13:16:41.3790048Z",
+      "completedUtc": "2026-09-12T13:16:42.4659738Z",
+      "text": "rustc 1.89.0 (29483883e 2025-08-04)\nbinary: rustc\ncommit-hash: 29483883eed69d5fb4db01964cdf2af4d86e9cb2\ncommit-date: 2025-08-04\nhost: x86_64-pc-windows-msvc\nrelease: 1.89.0\nLLVM version: 20.1.7"
+    },
+    {
+      "file": "C:\\Users\\poin\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+      "arguments": [
+        "-vV"
+      ],
+      "process": {
+        "Stage": "cargo-identity",
+        "ExitCode": 0,
+        "Output": [
+          "cargo 1.89.0 (c24e10642 2025-06-23)",
+          "release: 1.89.0",
+          "commit-hash: c24e1064277fe51ab72011e2612e556ac56addf7",
+          "commit-date: 2025-06-23",
+          "host: x86_64-pc-windows-msvc",
+          "libgit2: 1.9.0 (sys:0.20.2 vendored)",
+          "libcurl: 8.12.1-DEV (sys:0.4.80+curl-8.12.1 vendored ssl:Schannel)",
+          "os: Windows 10.0.26200 (Windows 11 Professional) [64-bit]"
+        ],
+        "StandardOutput": [
+          "cargo 1.89.0 (c24e10642 2025-06-23)",
+          "release: 1.89.0",
+          "commit-hash: c24e1064277fe51ab72011e2612e556ac56addf7",
+          "commit-date: 2025-06-23",
+          "host: x86_64-pc-windows-msvc",
+          "libgit2: 1.9.0 (sys:0.20.2 vendored)",
+          "libcurl: 8.12.1-DEV (sys:0.4.80+curl-8.12.1 vendored ssl:Schannel)",
+          "os: Windows 10.0.26200 (Windows 11 Professional) [64-bit]"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.101,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "startedUtc": "2026-09-12T13:16:42.4668868Z",
+      "completedUtc": "2026-09-12T13:16:43.5912381Z",
+      "text": "cargo 1.89.0 (c24e10642 2025-06-23)\nrelease: 1.89.0\ncommit-hash: c24e1064277fe51ab72011e2612e556ac56addf7\ncommit-date: 2025-06-23\nhost: x86_64-pc-windows-msvc\nlibgit2: 1.9.0 (sys:0.20.2 vendored)\nlibcurl: 8.12.1-DEV (sys:0.4.80+curl-8.12.1 vendored ssl:Schannel)\nos: Windows 10.0.26200 (Windows 11 Professional) [64-bit]"
+    },
+    {
+      "file": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin\\clang.exe",
+      "arguments": [
+        "--version"
+      ],
+      "process": {
+        "Stage": "cpp-identity",
+        "ExitCode": 0,
+        "Output": [
+          "clang version 19.1.5",
+          "Target: x86_64-pc-windows-msvc",
+          "Thread model: posix",
+          "InstalledDir: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin"
+        ],
+        "StandardOutput": [
+          "clang version 19.1.5",
+          "Target: x86_64-pc-windows-msvc",
+          "Thread model: posix",
+          "InstalledDir: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.173,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "startedUtc": "2026-09-12T13:16:43.5915965Z",
+      "completedUtc": "2026-09-12T13:16:44.7873097Z",
+      "text": "clang version 19.1.5\nTarget: x86_64-pc-windows-msvc\nThread model: posix\nInstalledDir: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin"
+    },
+    {
+      "file": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin\\clang.exe",
+      "arguments": [
+        "-###",
+        "-std=c++17",
+        "native/packed-rmq/examples/native.cpp",
+        "-o",
+        ".lake/native1/binary-build/identity-discovery-only.exe"
+      ],
+      "process": {
+        "Stage": "cpp-effective-dependencies",
+        "ExitCode": 0,
+        "Output": [
+          "clang version 19.1.5",
+          "Target: x86_64-pc-windows-msvc",
+          "Thread model: posix",
+          "InstalledDir: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin",
+          " \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\bin\\\\clang.exe\" \"-cc1\" \"-triple\" \"x86_64-pc-windows-msvc19.50.35729\" \"-emit-obj\" \"-mincremental-linker-compatible\" \"-dumpdir\" \".lake/native1/binary-build/identity-discovery-only.exe-\" \"-disable-free\" \"-clear-ast-before-backend\" \"-disable-llvm-verifier\" \"-discard-value-names\" \"-main-file-name\" \"native.cpp\" \"-mrelocation-model\" \"pic\" \"-pic-level\" \"2\" \"-mframe-pointer=none\" \"-relaxed-aliasing\" \"-fmath-errno\" \"-ffp-contract=on\" \"-fno-rounding-math\" \"-mconstructor-aliases\" \"-funwind-tables=2\" \"-target-cpu\" \"x86-64\" \"-tune-cpu\" \"generic\" \"-fdebug-compilation-dir=C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\" \"-fcoverage-compilation-dir=C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\" \"-resource-dir\" \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\" \"-internal-isystem\" \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\atlmfc\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\ucrt\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\shared\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\um\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\winrt\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\cppwinrt\" \"-std=c++17\" \"-fdeprecated-macro\" \"-ferror-limit\" \"19\" \"-fno-use-cxa-atexit\" \"-fms-extensions\" \"-fms-compatibility\" \"-fms-compatibility-version=19.50.35729\" \"-fskip-odr-check-in-gmf\" \"-fdelayed-template-parsing\" \"-fcxx-exceptions\" \"-fexceptions\" \"-faddrsig\" \"-o\" \"C:\\\\Users\\\\poin\\\\AppData\\\\Local\\\\Temp\\\\native-cd397f.o\" \"-x\" \"c++\" \"native/packed-rmq/examples/native.cpp\"",
+          " \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\bin\\\\Hostx64\\\\x64\\\\link.exe\" \"-out:.lake/native1/binary-build/identity-discovery-only.exe\" \"-defaultlib:libcmt\" \"-defaultlib:oldnames\" \"-libpath:C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\lib\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\atlmfc\\\\lib\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Lib\\\\10.0.26100.0\\\\ucrt\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Lib\\\\10.0.26100.0\\\\um\\\\x64\" \"-libpath:C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\\\\lib\\\\windows\" \"-nologo\" \"C:\\\\Users\\\\poin\\\\AppData\\\\Local\\\\Temp\\\\native-cd397f.o\""
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "clang version 19.1.5",
+          "Target: x86_64-pc-windows-msvc",
+          "Thread model: posix",
+          "InstalledDir: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin",
+          " \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\bin\\\\clang.exe\" \"-cc1\" \"-triple\" \"x86_64-pc-windows-msvc19.50.35729\" \"-emit-obj\" \"-mincremental-linker-compatible\" \"-dumpdir\" \".lake/native1/binary-build/identity-discovery-only.exe-\" \"-disable-free\" \"-clear-ast-before-backend\" \"-disable-llvm-verifier\" \"-discard-value-names\" \"-main-file-name\" \"native.cpp\" \"-mrelocation-model\" \"pic\" \"-pic-level\" \"2\" \"-mframe-pointer=none\" \"-relaxed-aliasing\" \"-fmath-errno\" \"-ffp-contract=on\" \"-fno-rounding-math\" \"-mconstructor-aliases\" \"-funwind-tables=2\" \"-target-cpu\" \"x86-64\" \"-tune-cpu\" \"generic\" \"-fdebug-compilation-dir=C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\" \"-fcoverage-compilation-dir=C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\" \"-resource-dir\" \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\" \"-internal-isystem\" \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\atlmfc\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\ucrt\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\shared\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\um\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\winrt\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\cppwinrt\" \"-std=c++17\" \"-fdeprecated-macro\" \"-ferror-limit\" \"19\" \"-fno-use-cxa-atexit\" \"-fms-extensions\" \"-fms-compatibility\" \"-fms-compatibility-version=19.50.35729\" \"-fskip-odr-check-in-gmf\" \"-fdelayed-template-parsing\" \"-fcxx-exceptions\" \"-fexceptions\" \"-faddrsig\" \"-o\" \"C:\\\\Users\\\\poin\\\\AppData\\\\Local\\\\Temp\\\\native-cd397f.o\" \"-x\" \"c++\" \"native/packed-rmq/examples/native.cpp\"",
+          " \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\bin\\\\Hostx64\\\\x64\\\\link.exe\" \"-out:.lake/native1/binary-build/identity-discovery-only.exe\" \"-defaultlib:libcmt\" \"-defaultlib:oldnames\" \"-libpath:C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\lib\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\atlmfc\\\\lib\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Lib\\\\10.0.26100.0\\\\ucrt\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Lib\\\\10.0.26100.0\\\\um\\\\x64\" \"-libpath:C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\\\\lib\\\\windows\" \"-nologo\" \"C:\\\\Users\\\\poin\\\\AppData\\\\Local\\\\Temp\\\\native-cd397f.o\""
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.004,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "startedUtc": "2026-09-12T13:16:44.8013553Z",
+      "completedUtc": "2026-09-12T13:16:46.8193980Z",
+      "text": "clang version 19.1.5\nTarget: x86_64-pc-windows-msvc\nThread model: posix\nInstalledDir: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin\n \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\bin\\\\clang.exe\" \"-cc1\" \"-triple\" \"x86_64-pc-windows-msvc19.50.35729\" \"-emit-obj\" \"-mincremental-linker-compatible\" \"-dumpdir\" \".lake/native1/binary-build/identity-discovery-only.exe-\" \"-disable-free\" \"-clear-ast-before-backend\" \"-disable-llvm-verifier\" \"-discard-value-names\" \"-main-file-name\" \"native.cpp\" \"-mrelocation-model\" \"pic\" \"-pic-level\" \"2\" \"-mframe-pointer=none\" \"-relaxed-aliasing\" \"-fmath-errno\" \"-ffp-contract=on\" \"-fno-rounding-math\" \"-mconstructor-aliases\" \"-funwind-tables=2\" \"-target-cpu\" \"x86-64\" \"-tune-cpu\" \"generic\" \"-fdebug-compilation-dir=C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\" \"-fcoverage-compilation-dir=C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\" \"-resource-dir\" \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\" \"-internal-isystem\" \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\atlmfc\\\\include\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\ucrt\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\shared\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\um\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\winrt\" \"-internal-isystem\" \"C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Include\\\\10.0.26100.0\\\\cppwinrt\" \"-std=c++17\" \"-fdeprecated-macro\" \"-ferror-limit\" \"19\" \"-fno-use-cxa-atexit\" \"-fms-extensions\" \"-fms-compatibility\" \"-fms-compatibility-version=19.50.35729\" \"-fskip-odr-check-in-gmf\" \"-fdelayed-template-parsing\" \"-fcxx-exceptions\" \"-fexceptions\" \"-faddrsig\" \"-o\" \"C:\\\\Users\\\\poin\\\\AppData\\\\Local\\\\Temp\\\\native-cd397f.o\" \"-x\" \"c++\" \"native/packed-rmq/examples/native.cpp\"\n \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\bin\\\\Hostx64\\\\x64\\\\link.exe\" \"-out:.lake/native1/binary-build/identity-discovery-only.exe\" \"-defaultlib:libcmt\" \"-defaultlib:oldnames\" \"-libpath:C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\lib\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\18\\\\BuildTools\\\\VC\\\\Tools\\\\MSVC\\\\14.50.35717\\\\atlmfc\\\\lib\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Lib\\\\10.0.26100.0\\\\ucrt\\\\x64\" \"-libpath:C:\\\\Program Files (x86)\\\\Windows Kits\\\\10\\\\Lib\\\\10.0.26100.0\\\\um\\\\x64\" \"-libpath:C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Tools\\\\Llvm\\\\x64\\\\lib\\\\clang\\\\19\\\\lib\\\\windows\" \"-nologo\" \"C:\\\\Users\\\\poin\\\\AppData\\\\Local\\\\Temp\\\\native-cd397f.o\""
+    }
+  ],
+  "toolchainIdentitySeconds": 26.8932915,
+  "selectorBound": true,
+  "selector": "query-smoke",
+  "expected": [
+    "query-smoke/packed-rmq-native.exe",
+    "query-smoke/packed-rmq-native-cpp.exe"
+  ],
+  "executed": [
+    "query-smoke/packed-rmq-native.exe",
+    "query-smoke/packed-rmq-native-cpp.exe"
+  ],
+  "results": [
+    {
+      "normalExpectationMatches": true,
+      "image": {
+        "imageSha256": "C27D76DC6F6B7033CF596E1CBEE1B0B38B88007EBFF68D996E38A67563B5CDAC",
+        "imageBytes": 146,
+        "width": 168,
+        "instructions": 2,
+        "memoryWords": 0,
+        "declaredNumericWords": 5,
+        "independentImageInspection": true
+      },
+      "process": {
+        "Stage": "query-smoke/packed-rmq-native.exe",
+        "ExitCode": 0,
+        "Output": [
+          "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T13:17:08.034736+00:00\",\"completedUtc\":\"2026-09-12T13:17:08.126062+00:00\",\"durationSeconds\":0.09399999999732245,\"deadlineSeconds\":180.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\replay\\\\query-smoke.bin\",\"000000000000000000000000000000000000000000\",\"000000000000000000000000000000000000000000\",\"100\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMgowIDEgMCAwIDAgMQoK\",\"stderrBase64\":\"\"}"
+        ],
+        "StandardOutput": [
+          "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T13:17:08.034736+00:00\",\"completedUtc\":\"2026-09-12T13:17:08.126062+00:00\",\"durationSeconds\":0.09399999999732245,\"deadlineSeconds\":180.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\replay\\\\query-smoke.bin\",\"000000000000000000000000000000000000000000\",\"000000000000000000000000000000000000000000\",\"100\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMgowIDEgMCAwIDAgMQoK\",\"stderrBase64\":\"\"}"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.143,
+        "DeadlineSeconds": 210,
+        "Ownership": "kill-on-close-job",
+        "StartedUtc": "2026-09-12T13:17:07.1268356Z",
+        "CompletedUtc": "2026-09-12T13:17:08.2888089Z",
+        "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+        "InvokedArguments": [
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_cases.py",
+          "capture",
+          "--executable",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\packed-rmq-native.exe",
+          "--scratch",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay",
+          "--deadline",
+          "180",
+          "--output-limit",
+          "4194304",
+          "--",
+          "query",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\query-smoke.bin",
+          "000000000000000000000000000000000000000000",
+          "000000000000000000000000000000000000000000",
+          "100",
+          "1"
+        ]
+      },
+      "expectedStdout": "halted 8\n2\n0 1 0 0 0 1\n\n",
+      "expectedExit": 0,
+      "raw": {
+        "schema": "native1-raw-process-v1",
+        "startedUtc": "2026-09-12T13:17:08.034736+00:00",
+        "completedUtc": "2026-09-12T13:17:08.126062+00:00",
+        "durationSeconds": 0.09399999999732245,
+        "deadlineSeconds": 180.0,
+        "outputLimitBytes": 4194304,
+        "executable": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\packed-rmq-native.exe",
+        "arguments": [
+          "query",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\query-smoke.bin",
+          "000000000000000000000000000000000000000000",
+          "000000000000000000000000000000000000000000",
+          "100",
+          "1"
+        ],
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdoutBase64": "aGFsdGVkIDgKMgowIDEgMCAwIDAgMQoK",
+        "stderrBase64": ""
+      },
+      "pass": true,
+      "expectedStderr": "",
+      "id": "query-smoke/packed-rmq-native.exe",
+      "prepare": {
+        "Stage": "query-smoke-prepare",
+        "ExitCode": 0,
+        "Output": [
+          "{\"imageSha256\":\"C27D76DC6F6B7033CF596E1CBEE1B0B38B88007EBFF68D996E38A67563B5CDAC\",\"imageBytes\":146,\"width\":168,\"instructions\":2,\"memoryWords\":0,\"declaredNumericWords\":5,\"independentImageInspection\":true}"
+        ],
+        "StandardOutput": [
+          "{\"imageSha256\":\"C27D76DC6F6B7033CF596E1CBEE1B0B38B88007EBFF68D996E38A67563B5CDAC\",\"imageBytes\":146,\"width\":168,\"instructions\":2,\"memoryWords\":0,\"declaredNumericWords\":5,\"independentImageInspection\":true}"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.093,
+        "DeadlineSeconds": 180,
+        "Ownership": "kill-on-close-job",
+        "StartedUtc": "2026-09-12T13:17:05.9643684Z",
+        "CompletedUtc": "2026-09-12T13:17:07.0770494Z",
+        "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+        "InvokedArguments": [
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_cases.py",
+          "prepare",
+          "--registry",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_cases.json",
+          "--case",
+          "query-smoke",
+          "--output",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\query-smoke.bin"
+        ]
+      }
+    },
+    {
+      "normalExpectationMatches": true,
+      "image": {
+        "imageSha256": "C27D76DC6F6B7033CF596E1CBEE1B0B38B88007EBFF68D996E38A67563B5CDAC",
+        "imageBytes": 146,
+        "width": 168,
+        "instructions": 2,
+        "memoryWords": 0,
+        "declaredNumericWords": 5,
+        "independentImageInspection": true
+      },
+      "process": {
+        "Stage": "query-smoke/packed-rmq-native-cpp.exe",
+        "ExitCode": 0,
+        "Output": [
+          "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T13:17:09.231736+00:00\",\"completedUtc\":\"2026-09-12T13:17:09.311383+00:00\",\"durationSeconds\":0.07799999999406282,\"deadlineSeconds\":180.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native-cpp.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\replay\\\\query-smoke.bin\",\"000000000000000000000000000000000000000000\",\"000000000000000000000000000000000000000000\",\"100\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMgowIDEgMCAwIDAgMQoK\",\"stderrBase64\":\"\"}"
+        ],
+        "StandardOutput": [
+          "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T13:17:09.231736+00:00\",\"completedUtc\":\"2026-09-12T13:17:09.311383+00:00\",\"durationSeconds\":0.07799999999406282,\"deadlineSeconds\":180.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native-cpp.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\replay\\\\query-smoke.bin\",\"000000000000000000000000000000000000000000\",\"000000000000000000000000000000000000000000\",\"100\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMgowIDEgMCAwIDAgMQoK\",\"stderrBase64\":\"\"}"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.124,
+        "DeadlineSeconds": 210,
+        "Ownership": "kill-on-close-job",
+        "StartedUtc": "2026-09-12T13:17:08.3397204Z",
+        "CompletedUtc": "2026-09-12T13:17:09.4817216Z",
+        "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+        "InvokedArguments": [
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_cases.py",
+          "capture",
+          "--executable",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\packed-rmq-native-cpp.exe",
+          "--scratch",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay",
+          "--deadline",
+          "180",
+          "--output-limit",
+          "4194304",
+          "--",
+          "query",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\query-smoke.bin",
+          "000000000000000000000000000000000000000000",
+          "000000000000000000000000000000000000000000",
+          "100",
+          "1"
+        ]
+      },
+      "expectedStdout": "halted 8\n2\n0 1 0 0 0 1\n\n",
+      "expectedExit": 0,
+      "raw": {
+        "schema": "native1-raw-process-v1",
+        "startedUtc": "2026-09-12T13:17:09.231736+00:00",
+        "completedUtc": "2026-09-12T13:17:09.311383+00:00",
+        "durationSeconds": 0.07799999999406282,
+        "deadlineSeconds": 180.0,
+        "outputLimitBytes": 4194304,
+        "executable": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\packed-rmq-native-cpp.exe",
+        "arguments": [
+          "query",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\query-smoke.bin",
+          "000000000000000000000000000000000000000000",
+          "000000000000000000000000000000000000000000",
+          "100",
+          "1"
+        ],
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdoutBase64": "aGFsdGVkIDgKMgowIDEgMCAwIDAgMQoK",
+        "stderrBase64": ""
+      },
+      "pass": true,
+      "expectedStderr": "",
+      "id": "query-smoke/packed-rmq-native-cpp.exe",
+      "prepare": {
+        "Stage": "query-smoke-prepare",
+        "ExitCode": 0,
+        "Output": [
+          "{\"imageSha256\":\"C27D76DC6F6B7033CF596E1CBEE1B0B38B88007EBFF68D996E38A67563B5CDAC\",\"imageBytes\":146,\"width\":168,\"instructions\":2,\"memoryWords\":0,\"declaredNumericWords\":5,\"independentImageInspection\":true}"
+        ],
+        "StandardOutput": [
+          "{\"imageSha256\":\"C27D76DC6F6B7033CF596E1CBEE1B0B38B88007EBFF68D996E38A67563B5CDAC\",\"imageBytes\":146,\"width\":168,\"instructions\":2,\"memoryWords\":0,\"declaredNumericWords\":5,\"independentImageInspection\":true}"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.093,
+        "DeadlineSeconds": 180,
+        "Ownership": "kill-on-close-job",
+        "StartedUtc": "2026-09-12T13:17:05.9643684Z",
+        "CompletedUtc": "2026-09-12T13:17:07.0770494Z",
+        "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+        "InvokedArguments": [
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_cases.py",
+          "prepare",
+          "--registry",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_cases.json",
+          "--case",
+          "query-smoke",
+          "--output",
+          "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\query-smoke.bin"
+        ]
+      }
+    }
+  ],
+  "commands": [
+    {
+      "Stage": "python-producer-identity",
+      "ExitCode": 0,
+      "Output": [
+        "Python 3.12.14"
+      ],
+      "StandardOutput": [
+        "Python 3.12.14"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 1.754,
+      "DeadlineSeconds": 30,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:16:37.0782527Z",
+      "CompletedUtc": "2026-09-12T13:16:38.9816031Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+      "InvokedArguments": [
+        "--version"
+      ]
+    },
+    {
+      "Stage": "query-smoke-prepare",
+      "ExitCode": 0,
+      "Output": [
+        "{\"imageSha256\":\"C27D76DC6F6B7033CF596E1CBEE1B0B38B88007EBFF68D996E38A67563B5CDAC\",\"imageBytes\":146,\"width\":168,\"instructions\":2,\"memoryWords\":0,\"declaredNumericWords\":5,\"independentImageInspection\":true}"
+      ],
+      "StandardOutput": [
+        "{\"imageSha256\":\"C27D76DC6F6B7033CF596E1CBEE1B0B38B88007EBFF68D996E38A67563B5CDAC\",\"imageBytes\":146,\"width\":168,\"instructions\":2,\"memoryWords\":0,\"declaredNumericWords\":5,\"independentImageInspection\":true}"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 1.093,
+      "DeadlineSeconds": 180,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:17:05.9643684Z",
+      "CompletedUtc": "2026-09-12T13:17:07.0770494Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+      "InvokedArguments": [
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_cases.py",
+        "prepare",
+        "--registry",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_cases.json",
+        "--case",
+        "query-smoke",
+        "--output",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\query-smoke.bin"
+      ]
+    },
+    {
+      "Stage": "query-smoke/packed-rmq-native.exe",
+      "ExitCode": 0,
+      "Output": [
+        "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T13:17:08.034736+00:00\",\"completedUtc\":\"2026-09-12T13:17:08.126062+00:00\",\"durationSeconds\":0.09399999999732245,\"deadlineSeconds\":180.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\replay\\\\query-smoke.bin\",\"000000000000000000000000000000000000000000\",\"000000000000000000000000000000000000000000\",\"100\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMgowIDEgMCAwIDAgMQoK\",\"stderrBase64\":\"\"}"
+      ],
+      "StandardOutput": [
+        "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T13:17:08.034736+00:00\",\"completedUtc\":\"2026-09-12T13:17:08.126062+00:00\",\"durationSeconds\":0.09399999999732245,\"deadlineSeconds\":180.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\replay\\\\query-smoke.bin\",\"000000000000000000000000000000000000000000\",\"000000000000000000000000000000000000000000\",\"100\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMgowIDEgMCAwIDAgMQoK\",\"stderrBase64\":\"\"}"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 1.143,
+      "DeadlineSeconds": 210,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:17:07.1268356Z",
+      "CompletedUtc": "2026-09-12T13:17:08.2888089Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+      "InvokedArguments": [
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_cases.py",
+        "capture",
+        "--executable",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\packed-rmq-native.exe",
+        "--scratch",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay",
+        "--deadline",
+        "180",
+        "--output-limit",
+        "4194304",
+        "--",
+        "query",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\query-smoke.bin",
+        "000000000000000000000000000000000000000000",
+        "000000000000000000000000000000000000000000",
+        "100",
+        "1"
+      ]
+    },
+    {
+      "Stage": "query-smoke/packed-rmq-native-cpp.exe",
+      "ExitCode": 0,
+      "Output": [
+        "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T13:17:09.231736+00:00\",\"completedUtc\":\"2026-09-12T13:17:09.311383+00:00\",\"durationSeconds\":0.07799999999406282,\"deadlineSeconds\":180.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native-cpp.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\replay\\\\query-smoke.bin\",\"000000000000000000000000000000000000000000\",\"000000000000000000000000000000000000000000\",\"100\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMgowIDEgMCAwIDAgMQoK\",\"stderrBase64\":\"\"}"
+      ],
+      "StandardOutput": [
+        "{\"schema\":\"native1-raw-process-v1\",\"startedUtc\":\"2026-09-12T13:17:09.231736+00:00\",\"completedUtc\":\"2026-09-12T13:17:09.311383+00:00\",\"durationSeconds\":0.07799999999406282,\"deadlineSeconds\":180.0,\"outputLimitBytes\":4194304,\"executable\":\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\packed-rmq-native-cpp.exe\",\"arguments\":[\"query\",\"C:\\\\Users\\\\poin\\\\.codex\\\\worktrees\\\\1817\\\\RMQ\\\\.lake\\\\native1\\\\binary-build\\\\replay\\\\query-smoke.bin\",\"000000000000000000000000000000000000000000\",\"000000000000000000000000000000000000000000\",\"100\",\"1\"],\"exitCode\":0,\"timedOut\":false,\"outputLimitExceeded\":false,\"stdoutBase64\":\"aGFsdGVkIDgKMgowIDEgMCAwIDAgMQoK\",\"stderrBase64\":\"\"}"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 1.124,
+      "DeadlineSeconds": 210,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T13:17:08.3397204Z",
+      "CompletedUtc": "2026-09-12T13:17:09.4817216Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+      "InvokedArguments": [
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_cases.py",
+        "capture",
+        "--executable",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\packed-rmq-native-cpp.exe",
+        "--scratch",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay",
+        "--deadline",
+        "180",
+        "--output-limit",
+        "4194304",
+        "--",
+        "query",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary-build\\replay\\query-smoke.bin",
+        "000000000000000000000000000000000000000000",
+        "000000000000000000000000000000000000000000",
+        "100",
+        "1"
+      ]
+    }
+  ]
+}

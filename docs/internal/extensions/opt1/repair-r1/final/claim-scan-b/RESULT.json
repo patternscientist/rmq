@@ -1,0 +1,24 @@
+{
+  "Version": "opt1-r1-claim-scan-receipt-v1",
+  "Head": "f7cf20da8ae52c1f8295e5cedd4326bb8d44cbb3",
+  "ReportSHA256AtScan": "b79a760047c69ed0b5c5e3031500228b2a990ddcc92e8e508803c05946d29e4c",
+  "MatrixSHA256AtScan": "e0b1d67a6a9d6300672c8959982f6b9a47565e9c2e19ad480af55caca4f675f1",
+  "Command": [
+    "scripts/claim_drift_scan.ps1",
+    "-Strict"
+  ],
+  "RootsAndPolicy": "unchanged production defaults (README.md, artifact, docs, paper; docs/internal/CLAIM_DRIFT_POLICY.json)",
+  "StartedUTC": "2026-09-13T04:53:52.7206941Z",
+  "FinishedUTC": "2026-09-13T04:59:00.8522189Z",
+  "ExitCode": 1,
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "DurationSeconds": 307.809,
+  "DeadlineSeconds": 1200,
+  "Ownership": "kill-on-close-job",
+  "SummaryLines": [
+    "CLAIM-DRIFT: strict mode found 7 unapproved sensitive matches"
+  ],
+  "HitLines": 3287,
+  "StandardError": []
+}

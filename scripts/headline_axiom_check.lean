@@ -3,6 +3,19 @@ import RMQ
 import RMQ.Core.EncodingLowerBound
 import RMQ.Headlines
 import RMQ.Core.SuccinctFinal
+import RMQ.Validation.PackedQueryContract
+
+#print axioms RMQ.Headlines.succinctRMQFullyChargedPackedQuery
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.publicContract
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.checkC24
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.checkC30
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.checkC31
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.checkC32
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.checkC33
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.pinInstructionCategory
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.pinQueryNat
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.fitsRejectsOversizedRegister
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.ContractChecks.fitsAcceptsLargestImmediate
 
 /-!
 Concise trust-base check for the public headline path.
@@ -200,6 +213,12 @@ example :
 #print axioms RMQ.Headlines.concreteSuccinctBPTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStoreObstruction
 #print axioms RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery
 
+-- Packed cell-probe architecture (Stage A). The producer is also audited from
+-- `scripts/axiom_check.lean`, but it is the paper's headline claim and is now
+-- exported from `RMQPaper`, so its trust story belongs in the headline
+-- inventory a reviewer runs: one command, one screenful.
+#print axioms RMQ.Headlines.succinctRMQPackedCellProbeArchitecture
+
 
 /-!
 Frozen public expected type for the reviewer-native M1 paper theorem.
@@ -325,6 +344,161 @@ example : M1ReviewerNativeExpectedPaperType :=
   RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem
 
 end M1PublicExpectedTypeCheck
+
+/-!
+Frozen public expected type for the packed cell-probe architecture headline.
+
+`RMQ.Headlines.succinctRMQPackedCellProbeArchitecture` is an `abbrev`, so its
+type is whatever `PackedReviewerArchitectureCapstone` currently says.  Weaken a
+field of that 39-field structure -- `427` to `999`, or drop field 39 -- and the
+alias weakens with it silently, while `#print axioms` above still reports the
+same three standard axioms.  Axiom checking reports the trust base, never the
+statement; only a type can pin a statement.
+
+The proposition below is written independently of the structure: it names the
+underlying definitions directly and never mentions
+`PackedReviewerArchitectureCapstone`.  The `example` uses the headline value as
+its entire proof, projecting the fields it needs; it reconstructs nothing.
+
+It pins exactly the three readings the manuscript's Section 9 theorem
+publishes, and nothing more:
+
+  1. complete allocated capacity `2n + rho n`, with `rho` little-o linear;
+  2. at most `427` attempted aligned probes into that same memory;
+  3. a valid half-open query is actually answered, with an index that is the
+     leftmost argmin and agrees with the reference decoder.
+
+Verified to fail closed: changing the cap to `428`, or weakening the third
+conjunct's `LeftmostArgMin` to `True`, both stop this file compiling.
+-/
+namespace PackedCellProbePublicExpectedTypeCheck
+
+-- EG-CP-PUBLIC-TYPE-PIN-ANCHOR
+def PackedCellProbeExpectedPaperType : Prop :=
+  RMQ.SuccinctSpace.LittleOLinear RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRho /\
+  forall (xs : List Int) (left right : Nat),
+    ((RMQ.SuccinctFinal.PackedCellProbe.packedReviewerMemory
+          (RMQ.SuccinctClassic.cartesianShape xs)).length *
+        RMQ.SuccinctFinal.PackedCellProbe.packedReviewerCellWidth
+          (RMQ.SuccinctClassic.cartesianShape xs).size <=
+      2 * (RMQ.SuccinctClassic.cartesianShape xs).size +
+        RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRho
+          (RMQ.SuccinctClassic.cartesianShape xs).size) /\
+    ((RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRunAgainstMemory
+          (RMQ.SuccinctFinal.PackedCellProbe.packedReviewerMemory
+            (RMQ.SuccinctClassic.cartesianShape xs))
+          (RMQ.SuccinctClassic.cartesianShape xs).size left right).trace.length <= 427) /\
+    (left < right -> right <= (RMQ.SuccinctClassic.cartesianShape xs).size ->
+      exists index : Nat,
+        (RMQ.SuccinctFinal.PackedCellProbe.packedReviewerRunAgainstMemory
+            (RMQ.SuccinctFinal.PackedCellProbe.packedReviewerMemory
+              (RMQ.SuccinctClassic.cartesianShape xs))
+            (RMQ.SuccinctClassic.cartesianShape xs).size left right).terminal =
+          some (some index) /\
+        (RMQ.SuccinctClassic.queryTraceResult xs left right).value = some index /\
+        RMQ.LeftmostArgMin xs left right index)
+
+example : PackedCellProbeExpectedPaperType :=
+  ⟨(RMQ.Headlines.succinctRMQPackedCellProbeArchitecture [] 0 0).rho_little_o,
+   fun xs left right =>
+     ⟨(RMQ.Headlines.succinctRMQPackedCellProbeArchitecture xs left right).allocation_two_n_plus_rho,
+      (RMQ.Headlines.succinctRMQPackedCellProbeArchitecture xs left right).derived_cap_le_427,
+      (RMQ.Headlines.succinctRMQPackedCellProbeArchitecture xs left right).valid_answer_is_index⟩⟩
+
+end PackedCellProbePublicExpectedTypeCheck
+
+/-!
+Persistent counterfactuals for the encoding lower bound's `query_exact`.
+
+The lower bound reads "any encoding answering RMQ exactly needs at least this
+many bits". Its force rests entirely on `query_exact` describing a decoder that
+really answers RMQ. If that field were satisfiable by something trivial, the
+theorem would still be true and would still be about nothing.
+
+Two directions are needed and only one was covered. Non-vacuity of the
+HYPOTHESIS is already established inside the theorem itself: the third conjunct
+of `exactRMQ_tight_fixed_length_payload_space_bound` exhibits an encoding at
+`2 * n` bits, so the quantifier ranges over something. What was missing is the
+other direction -- that the hypothesis is not trivially satisfiable.
+
+`null_decoder_impossible` and `wrong_answer_impossible` supply it: a decoder
+that answers nothing, and a decoder that answers something wrong, each
+contradict `query_exact`. Together with the existing witness they bracket the
+hypothesis: inhabited, and not cheaply inhabited.
+
+The final `example` discharges every premise of `null_decoder_impossible`
+concretely at `n = 1` except two: the null decoder itself, and **the existence
+of an `ExactRMQShapeEncoding`, which it assumes**. An earlier version of this
+comment said the null decoder was "the only unmet premise"; that is false, and
+DD-20260816-112 records it.
+
+**Scope, stated precisely.** These counterfactuals quantify over
+`ExactRMQShapeEncoding`. `exactRMQ_tight_fixed_length_payload_space_bound`
+quantifies over `ExactRMQStateEncoding` -- a different structure with its own
+`query_exact` field. They are connected only by
+`exactRMQShapeEncoding_of_stateEncoding`, whose `query_exact := encoding.query_exact`
+makes the coupling hold by construction. So these theorems establish that
+`ExactRMQShapeEncoding.query_exact` is not trivially satisfiable, and reach the
+cited lower bound only through that bridge. Retargeting them at
+`ExactRMQStateEncoding` is open work, not something this file has done. A counterfactual whose premises were jointly unsatisfiable
+would prove nothing while looking like a proof.
+
+Verified to fail closed: weakening `wrong_answer_impossible`'s wrong answer
+from `+ 1` to `+ 0` stops this file compiling.
+-/
+namespace ExactRMQQueryExactNonTriviality
+
+-- EG-LB-QUERY-EXACT-COUNTERFACTUAL-ANCHOR
+
+/-- The `n = 1` shape family is inhabited. -/
+theorem singleton_mem_shapesOfSize_one :
+    RMQ.Cartesian.CartesianShape.node .empty .empty ∈ RMQ.Cartesian.shapesOfSize 1 :=
+  RMQ.Cartesian.shapeOfSize_mem_shapesOfSize
+    (show RMQ.Cartesian.ShapeOfSize 1
+        (RMQ.Cartesian.CartesianShape.node .empty .empty) from
+      .node .empty .empty)
+
+/-- `query_exact` forces an answer on every valid window. -/
+theorem query_ne_none
+    {n bits : Nat} (encoding : RMQ.EncodingLowerBound.ExactRMQShapeEncoding n bits)
+    {shape : RMQ.Cartesian.CartesianShape}
+    (hmem : List.Mem shape (RMQ.Cartesian.shapesOfSize n))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) :
+    encoding.query (encoding.encode shape) left (left + len) = none -> False := by
+  rw [encoding.query_exact hmem hlen hbound]
+  exact fun h => Option.noConfusion h
+
+/-- A decoder that answers nothing cannot inhabit the structure. -/
+theorem null_decoder_impossible
+    {n bits : Nat} (encoding : RMQ.EncodingLowerBound.ExactRMQShapeEncoding n bits)
+    (hnull : forall bs l r, encoding.query bs l r = none)
+    {shape : RMQ.Cartesian.CartesianShape}
+    (hmem : List.Mem shape (RMQ.Cartesian.shapesOfSize n))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) : False :=
+  query_ne_none encoding hmem hlen hbound (hnull _ _ _)
+
+/-- A decoder that returns a WRONG answer cannot inhabit the structure either:
+`query_exact` pins the value, not merely the presence of one. -/
+theorem wrong_answer_impossible
+    {n bits : Nat} (encoding : RMQ.EncodingLowerBound.ExactRMQShapeEncoding n bits)
+    {shape : RMQ.Cartesian.CartesianShape}
+    (hmem : List.Mem shape (RMQ.Cartesian.shapesOfSize n))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n)
+    (hwrong :
+      encoding.query (encoding.encode shape) left (left + len) =
+        some (RMQ.scanWindow (encoding.sample shape) left len + 1)) : False := by
+  rw [encoding.query_exact hmem hlen hbound] at hwrong
+  have hvalue := Option.some.inj hwrong
+  omega
+
+/-- Non-vacuity, checked rather than argued: every premise of
+`null_decoder_impossible` except `hnull` is discharged concretely at `n = 1`. -/
+example {bits : Nat} (encoding : RMQ.EncodingLowerBound.ExactRMQShapeEncoding 1 bits)
+    (hnull : forall bs l r, encoding.query bs l r = none) : False :=
+  null_decoder_impossible encoding hnull singleton_mem_shapesOfSize_one
+    (show 0 < 1 by omega) (show 0 + 1 <= 1 by omega)
+
+end ExactRMQQueryExactNonTriviality
 
 /-!
 Typed M1 anti-bypass checks.  The positive examples ascribe the exact guarded,
@@ -460,3 +634,128 @@ example {shape : RMQ.Cartesian.CartesianShape} {left right : Nat}
   h.requires_certificate_weight_le_210
 
 end M1CertificateAntiBypassCheck
+
+/-!
+Expected-type pins for the three remaining standalone headline aliases.
+
+RC-3 `P2-3`'s disposition names four aliases: the standalone lower bound, the
+List-Int store, the reviewer readWord bound, and the packed architecture. Only
+the packed one existed (`PackedCellProbePublicExpectedTypeCheck` above,
+DD-20260816-108); this file recorded that item as complete while three quarters
+of it was unwritten.
+
+Each `Prop` below is written from the paper's wording, WITHOUT naming the alias
+or the theorem it abbreviates, so a weakening of the underlying statement stops
+this file elaborating rather than silently retargeting the alias. Each is
+inhabited from the alias alone.
+
+Each pin also says what it does NOT pin. A pin over a conjunction that quietly
+drops conjuncts is the same defect as a green check standing in for an
+unestablished property, one level down.
+-/
+
+namespace ExactRMQLowerBoundPublicExpectedTypeCheck
+
+/-!
+`RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`.
+
+Pinned: the doubled lower bound on any exact fixed-length state encoding, and
+the matching `2*n` witness -- together these are what makes the bound TIGHT, and
+either alone is weak enough to be uninteresting.
+
+NOT pinned: the uniform-budget conjunct (the middle one). It generalises the
+first rather than adding a public claim, and pinning it would fix a quantifier
+shape the paper does not commit to.
+-/
+
+-- EG-P2-3-LOWER-BOUND-TYPE-PIN-ANCHOR
+def ExactRMQLowerBoundExpectedPaperType : Prop :=
+  forall n : Nat,
+    (forall {bits : Nat},
+      RMQ.EncodingLowerBound.ExactRMQStateEncoding n bits ->
+        RMQ.EncodingLowerBound.doubledLogSlackLower n <= 2 * bits) /\
+      (exists encoding : RMQ.EncodingLowerBound.ExactRMQStateEncoding n (2 * n),
+        forall {shape : RMQ.Cartesian.CartesianShape},
+          List.Mem shape (RMQ.Cartesian.shapesOfSize n) ->
+            (encoding.payloadView).payloadBitCount (encoding.buildState shape) =
+              2 * n)
+
+example : ExactRMQLowerBoundExpectedPaperType :=
+  fun n =>
+    ⟨(RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack n).1,
+     match (RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack n).2.2 with
+     | ⟨encoding, h⟩ => ⟨encoding, fun hmem => (h hmem).1⟩⟩
+
+end ExactRMQLowerBoundPublicExpectedTypeCheck
+
+namespace ListIntSuccinctStorePublicExpectedTypeCheck
+
+/-!
+`RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`.
+
+Pinned: the little-o overhead, the `2n + o(n)` payload length, and the constant
+query-cost cap -- the space half and the time half of the manuscript sentence.
+
+NOT pinned: the invalid-range, scan-window, leftmost-argmin and
+no-synthetic-execution conjuncts. Their exactness content is already pinned at
+the same `queryCosted` level by `M1ReviewerNativeExpectedPaperType` above, so
+restating it here would duplicate that pin rather than guard this one.
+
+This comment read "Each has its own headline alias and its own ledger row" and
+that was measured false (DD-20260816-120): of the four, only invalid-range has
+its own `- Declaration:` name in the ledger. The exclusions were right; the
+reason was not, and the reason is what a reader checks.
+-/
+
+-- EG-P2-3-LIST-INT-TYPE-PIN-ANCHOR
+def ListIntSuccinctStoreExpectedPaperType : Prop :=
+  RMQ.SuccinctSpace.LittleOLinear RMQ.SuccinctClassic.overhead /\
+    forall xs : List Int,
+      ((RMQ.SuccinctClassic.buildPayload xs).length <=
+          2 * xs.length + RMQ.SuccinctClassic.overhead xs.length) /\
+        (forall left right : Nat,
+          (RMQ.SuccinctClassic.queryCosted xs left right).cost <=
+            RMQ.SuccinctClassic.queryCost)
+
+example : ListIntSuccinctStoreExpectedPaperType :=
+  ⟨RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory.1,
+   fun xs =>
+     ⟨(RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory.2
+         xs).1,
+      (RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory.2
+         xs).2.1⟩⟩
+
+end ListIntSuccinctStorePublicExpectedTypeCheck
+
+namespace ReviewerReadWordPublicExpectedTypeCheck
+
+/-!
+`RMQ.Headlines.succinctRMQReviewerSuccessfulReadWordFits`.
+
+Pinned: every SUCCESSFUL logical read of the canonical global read store returns
+a word no wider than the declared reviewer word width. The whole statement; it
+has no conjuncts to drop.
+
+The hypothesis is the point. A version quantified over all reads rather than
+successful ones would be false, and a version with a vacuous hypothesis would be
+useless -- so the `= some word` premise is written out here rather than inherited
+from the alias.
+-/
+
+-- EG-P2-3-READWORD-TYPE-PIN-ANCHOR
+def ReviewerReadWordExpectedPaperType : Prop :=
+  forall (shape : RMQ.Cartesian.CartesianShape) {segment index : Nat}
+      {word : List Bool},
+    (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        segment index = some word ->
+      word.length <=
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerWordBits shape.size
+
+-- The three implicit binders are named rather than left to inference: with
+-- `fun shape hread`, Lean binds `hread` to `segment` and reports a Nat/Prop
+-- mismatch that reads like a statement error rather than a binder one.
+example : ReviewerReadWordExpectedPaperType :=
+  fun shape {_segment _index _word} hread =>
+    RMQ.Headlines.succinctRMQReviewerSuccessfulReadWordFits shape hread
+
+end ReviewerReadWordPublicExpectedTypeCheck

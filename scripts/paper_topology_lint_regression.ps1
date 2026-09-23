@@ -4,11 +4,41 @@
 param(
   [string]$OnlyCase = '',
   [ValidateRange(30, 3600)]
-  [int]$StageDeadlineSeconds = 300,
+  # 300 -> 900 on 2026-08-16. DERIVATION, not a chosen number:
+  #
+  #   measured slow path on the supported Windows runner   ~298.1 s
+  #   (2026-08-15 fresh-blind audit, focused warm-cache rerun of
+  #    `compatibility-as-current-anchor`: intended reject, exit 0, 298.145 s)
+  #   neighbouring cases on the same run                    297.4 s, 299.9 s
+  #   coordinator hardware, same cases                      120-180 s
+  #   => observed spread across supported hardware is ~2.5x
+  #   => budget = 300 s worst observed x 3 = 900 s
+  #
+  # At 300 s the margin on the auditor's machine was 1.855 s and SIX fixtures
+  # timed out, failing the required aggregate with the correct semantic verdicts
+  # underneath. The verdicts were never wrong; the budget was sized to one
+  # machine.
+  #
+  # This is the second deadline in this file sized that way: the sleeper bound
+  # was 5 s against a 20 s twin (fixed 2026-08-13). Fixing the sleeper without
+  # asking what else here was chosen rather than derived is what left this one.
+  # Any future change to this value replaces the table above with new
+  # measurements -- do not adjust it to make a run pass.
+  [int]$StageDeadlineSeconds = 900,
   [ValidateRange(4096, 16777216)]
   [int]$StageOutputLimitBytes = 4194304,
   [ValidateRange(1, 30)]
-  [int]$SelfTestDeadlineSeconds = 5,
+  # 5 -> 20 on 2026-08-13, matching the M1 twin in
+  # scripts/m1_certificate_mutation_regression.ps1.  The sleeper this bounds must
+  # complete TWO sequential PowerShell startups -- its own, then the grandchild
+  # it spawns via Start-Process -- before it can write the PID receipt the
+  # assertion requires.  Five seconds races that on a loaded machine, and the
+  # failure surfaces as "sleeper child PID receipt was not written", which reads
+  # like a broken harness rather than a deadline too tight for its own fixture.
+  # Observed on the first full gate run that reached this stage: the M1 deadline
+  # control had always failed earlier and hidden it.  A self-test that races its
+  # own setup measures the machine, not the property.
+  [int]$SelfTestDeadlineSeconds = 20,
   [switch]$SelectorBoundaryProbeOnly,
   [switch]$SelectorSelfTestOnly,
   [switch]$DeadlineSelfTestOnly,
@@ -514,8 +544,29 @@ if ($executedCount -ne $selectedCases.Count -or
   exit 1
 }
 
+# A REJECT leg is only informative when the ACCEPT baseline holds.
+#
+# Every REJECT case asserts that the production lint exits non-zero on a mutated
+# tree. If that lint is red for an unrelated reason -- an unbuilt `.lake`, say,
+# where it reports `unknown module prefix 'RMQ'` -- every REJECT leg passes
+# without distinguishing THE MUTATION FIRED from EVERYTHING IS BROKEN. A fresh
+# audit hit exactly that in a `git archive` extraction and correctly declined to
+# treat its own `PASS [A02] REJECT` line as evidence.
+#
+# The suite fails closed in that state, because the ACCEPT cases fail loudly and
+# the run exits 1 above. What it did not do was SAY so, and a single
+# `PASS [...] REJECT` line quoted out of a red run reads like evidence. The
+# verdict now states the dependency.
+if ($acceptCount -lt 1) {
+  Write-Host (
+    'PAPER-TOPOLOGY-REGRESSION: FAIL [accept-baseline] no ACCEPT case executed, so ' +
+    'every REJECT result is uninformative -- a lint that is red for any reason ' +
+    'satisfies all of them')
+  exit 1
+}
+
 Write-Host (
   'PAPER-TOPOLOGY-REGRESSION PASS ' +
   "($executedCount executed; $rejectCount reject; $acceptCount accept; " +
-  'tracked/index/hashes unchanged; no owned process survives)')
+  'tracked/index/hashes unchanged; no owned process survives; REJECT legs are conditional on the ACCEPT baseline above)')
 exit 0

@@ -1,0 +1,21 @@
+{
+  "Stage": "S03-SIBLING-BUDGET-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:57:0: error: maximum recursion depth has been reached",
+    "use `set_option maxRecDepth <num>` to increase limit",
+    "use `set_option diagnostics true` to get diagnostic information"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:57:0: error: maximum recursion depth has been reached",
+    "use `set_option maxRecDepth <num>` to increase limit",
+    "use `set_option diagnostics true` to get diagnostic information"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 16.226,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

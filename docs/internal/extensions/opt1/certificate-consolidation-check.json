@@ -1,0 +1,8 @@
+{
+  "SourceCommit": "bbbe652fa41fa40bf2530b5e2f09c4c225c0e896",
+  "ReceiptSHA256": "451e108122b077310137e8a2ca206062bb83274ec01a3ce7387fedc271ea66eb",
+  "RawStageLogsCompared": 486,
+  "RawCaseRecordsCompared": 80,
+  "ExactTextAndSHA256": true,
+  "SummaryAndExecutedAnd80ParsedCasesEqualRawFiles": true
+}

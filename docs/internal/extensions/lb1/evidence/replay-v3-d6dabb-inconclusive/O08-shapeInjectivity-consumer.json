@@ -1,0 +1,33 @@
+{
+  "Stage": "O08-shapeInjectivity-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:55:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.shapeInjectivity",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (n : Nat) (first second : CartesianShape),",
+    "    first ∈ shapesOfSize n →",
+    "      second ∈ shapesOfSize n →",
+    "        allocationBits first.representative = allocationBits second.representative → first = second : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:55:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.shapeInjectivity",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (n : Nat) (first second : CartesianShape),",
+    "    first ∈ shapesOfSize n →",
+    "      second ∈ shapesOfSize n →",
+    "        allocationBits first.representative = allocationBits second.representative → first = second : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 25.638,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

@@ -1,0 +1,31 @@
+{
+  "Stage": "M21-stepBound-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:172:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.stepBound",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    (run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right)).steps ≤",
+    "      queryBudget : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:172:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.stepBound",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    (run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right)).steps ≤",
+    "      queryBudget : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 26.758,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

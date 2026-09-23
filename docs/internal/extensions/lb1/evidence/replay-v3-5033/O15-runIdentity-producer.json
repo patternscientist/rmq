@@ -1,0 +1,13 @@
+{
+  "Stage": "O15-runIdentity-producer",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 7.606,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

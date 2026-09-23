@@ -1,0 +1,17 @@
+{
+  "Stage": "regression-49-head",
+  "ExitCode": 0,
+  "Output": [
+    "f7cf20da8ae52c1f8295e5cedd4326bb8d44cbb3"
+  ],
+  "StandardOutput": [
+    "f7cf20da8ae52c1f8295e5cedd4326bb8d44cbb3"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 1.816,
+  "DeadlineSeconds": 60,
+  "Ownership": "kill-on-close-job"
+}

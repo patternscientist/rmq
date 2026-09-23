@@ -97,6 +97,54 @@ if ($readWordAttribution.Count -ne 1 -or
   Write-Host "CLAIM-POLICY-REGRESSION: FAIL [r1r3-bad14d0-readword-attribution-config]"
   exit 1
 }
+# Policy v28 (PQ1). The attribution term is paragraph-scoped: its multiline
+# pattern spans the paragraph holding 837,572 or "fully charged", so its line
+# allowance sees exactly that paragraph. A file-wide requiredAttributions entry
+# was rejected because one alias anywhere would excuse every later paragraph.
+$pq1AttributionTerm = @(
+  $policyObject.terms |
+    Where-Object id -eq 'required-pq1-fully-charged-attribution'
+)
+if ($pq1AttributionTerm.Count -ne 1 -or
+    -not [bool]$pq1AttributionTerm[0].strict -or
+    [string]$pq1AttributionTerm[0].scope -ne 'current-fact-surface' -or
+    -not [bool]$pq1AttributionTerm[0].multiline -or
+    [string]$pq1AttributionTerm[0].pattern -notmatch '837,\?572' -or
+    [string]$pq1AttributionTerm[0].pattern -notmatch 'fully\[- \]charged' -or
+    [string]$pq1AttributionTerm[0].allowedLineRegex -notmatch 'succinctRMQFullyChargedPackedQuery' -or
+    -not [string]::IsNullOrEmpty([string]$pq1AttributionTerm[0].allowedPathRegex) -or
+    $null -ne $pq1AttributionTerm[0].PSObject.Properties['allowedPathLinePairs']) {
+  Write-Host "CLAIM-POLICY-REGRESSION: FAIL [pq1-attribution-config]"
+  exit 1
+}
+$pq1AttachmentTerm = @(
+  $policyObject.terms |
+    Where-Object id -eq 'forbidden-pq1-charge-on-trace-or-probe-theorem'
+)
+if ($pq1AttachmentTerm.Count -ne 1 -or
+    -not [bool]$pq1AttachmentTerm[0].strict -or
+    [string]$pq1AttachmentTerm[0].scope -ne 'current-fact-surface' -or
+    -not [bool]$pq1AttachmentTerm[0].multiline -or
+    [string]$pq1AttachmentTerm[0].pattern -notmatch 'PackedCellProbeArchitecture' -or
+    [string]$pq1AttachmentTerm[0].pattern -notmatch 'succinctRMQWholeQueryGlobalWordTrace' -or
+    [string]$pq1AttachmentTerm[0].pattern -notmatch 'ReviewerMachine\(\?:WellFormed\|RequiredFacts\)' -or
+    -not [string]::IsNullOrEmpty([string]$pq1AttachmentTerm[0].allowedPathRegex) -or
+    -not [string]::IsNullOrEmpty([string]$pq1AttachmentTerm[0].allowedLineRegex) -or
+    $null -ne $pq1AttachmentTerm[0].PSObject.Properties['allowedPathLinePairs']) {
+  Write-Host "CLAIM-POLICY-REGRESSION: FAIL [pq1-attachment-config]"
+  exit 1
+}
+$wordRamCountTerm = @(
+  $policyObject.terms |
+    Where-Object id -eq 'forbidden-wordram-instruction-count'
+)
+if ($wordRamCountTerm.Count -ne 1 -or
+    -not [bool]$wordRamCountTerm[0].strict -or
+    [string]$wordRamCountTerm[0].status -cne 'the-210-charged-trace-and-427-packed-probe-bounds-are-not-word-ram-instruction-counts-and-the-separate-pq1-instruction-bound-is-stated-as-at-most-837572') {
+  Write-Host "CLAIM-POLICY-REGRESSION: FAIL [pq1-wordram-count-scope-config]"
+  exit 1
+}
+Write-Host "CLAIM-POLICY-REGRESSION: PASS [pq1-policy-config] attribution, attachment and rescoped instruction-count terms"
 Write-Host "CLAIM-POLICY-REGRESSION: PASS [r1r2-48147cb-current-surface-registry]"
 Write-Host "CLAIM-POLICY-REGRESSION: PASS [p1r1-exact-current-surface-registry] 18 exact paths"
 
@@ -279,7 +327,23 @@ $fixtures = @(
   @{ id = "compatibility-role"; reject = $false; allowedMatch = $true; text = "Compatibility companion: The canonical reviewer route uses a 2^128 activation threshold." },
   @{ id = "proof-only-role"; reject = $false; allowedMatch = $true; text = "Proof-only witness: The hypothetical canonical query has a 2 ^ 128 activation premise; this is not an execution premise." },
   @{ id = "canonical-paper-alias"; reject = $false; text = "RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile" },
-  @{ id = "legacy-paper-alias"; reject = $false; text = "RMQ.Headlines.succinctRMQLegacy196727InterpretedTwoNPlusOConstantQuery" }
+  @{ id = "legacy-paper-alias"; reject = $false; text = "RMQ.Headlines.succinctRMQLegacy196727InterpretedTwoNPlusOConstantQuery" },
+
+  # Policy v28 (PQ1). The 837,572 primitive-instruction bound and the words
+  # "fully charged" belong to RMQ.Headlines.succinctRMQFullyChargedPackedQuery
+  # only. An unattributed paragraph fails; attribution counts only inside the
+  # same paragraph; and the words may not be attached to a 210 trace or 427
+  # probe theorem name even when the PQ1 alias is also present.
+  @{ id = "pq1-unattributed-instruction-bound-rejected"; relativePath = "README.md"; reject = $true; termId = "required-pq1-fully-charged-attribution"; text = "The packed primitive query halts within at most 837,572 instructions." },
+  @{ id = "pq1-unattributed-fully-charged-prose-rejected"; relativePath = "docs/ROADMAP.md"; reject = $true; termId = "required-pq1-fully-charged-attribution"; text = "The canonical reviewer route is now fully charged." },
+  @{ id = "pq1-attribution-in-other-paragraph-rejected"; relativePath = "docs/WORD_RAM_REVIEW_PACKET.md"; reject = $true; termId = "required-pq1-fully-charged-attribution"; text = "RMQ.Headlines.succinctRMQFullyChargedPackedQuery is the candidate theorem.`n`nIts packed run halts within at most 837,572 instructions." },
+  @{ id = "pq1-alias-attributed-instruction-bound-accepted"; relativePath = "README.md"; reject = $false; allowedMatch = $true; termId = "required-pq1-fully-charged-attribution"; text = "RMQ.Headlines.succinctRMQFullyChargedPackedQuery proves that the packed primitive run halts within at most 837,572 instructions." },
+  @{ id = "pq1-core-theorem-same-paragraph-accepted"; relativePath = "docs/WORD_RAM_REVIEW_PACKET.md"; reject = $false; allowedMatch = $true; termId = "required-pq1-fully-charged-attribution"; text = "The fully charged packed query is a candidate.`nIts producer is RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds." },
+  @{ id = "pq1-charge-on-probe-alias-rejected"; relativePath = "docs/PAPER_THEOREM_MAP.md"; reject = $true; termId = "forbidden-pq1-charge-on-trace-or-probe-theorem"; text = "RMQ.Headlines.succinctRMQPackedCellProbeArchitecture is fully charged; see RMQ.Headlines.succinctRMQFullyChargedPackedQuery." },
+  @{ id = "pq1-budget-on-trace-alias-cross-line-rejected"; relativePath = "artifact/CLAIMS.md"; reject = $true; termId = "forbidden-pq1-charge-on-trace-or-probe-theorem"; text = "RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe gives the`n837,572 instruction budget of RMQ.Headlines.succinctRMQFullyChargedPackedQuery." },
+  @{ id = "pq1-contrasted-numerals-accepted"; relativePath = "README.md"; reject = $false; termId = "forbidden-pq1-charge-on-trace-or-probe-theorem"; text = "RMQ.Headlines.succinctRMQFullyChargedPackedQuery bounds its own packed run by at most 837,572 primitive instructions; the 210 trace and 427 probe bounds are separate quantities." },
+  @{ id = "wordram-count-on-trace-rejected"; relativePath = "README.md"; reject = $true; termId = "forbidden-wordram-instruction-count"; text = "The canonical query executes in 210 word-RAM instructions." },
+  @{ id = "wordram-pq1-at-most-bound-accepted"; relativePath = "README.md"; reject = $false; termId = "forbidden-wordram-instruction-count"; text = "RMQ.Headlines.succinctRMQFullyChargedPackedQuery: the packed run halts within at most 837,572 primitive instructions." }
 )
 
 $expectedFixtureIds = @'
@@ -403,10 +467,20 @@ compatibility-role
 proof-only-role
 canonical-paper-alias
 legacy-paper-alias
+pq1-unattributed-instruction-bound-rejected
+pq1-unattributed-fully-charged-prose-rejected
+pq1-attribution-in-other-paragraph-rejected
+pq1-alias-attributed-instruction-bound-accepted
+pq1-core-theorem-same-paragraph-accepted
+pq1-charge-on-probe-alias-rejected
+pq1-budget-on-trace-alias-cross-line-rejected
+pq1-contrasted-numerals-accepted
+wordram-count-on-trace-rejected
+wordram-pq1-at-most-bound-accepted
 '@ -split "\r?\n" | Where-Object { $_ }
 
-$expectedRejectCount = 82
-$expectedAcceptCount = 38
+$expectedRejectCount = 88
+$expectedAcceptCount = 42
 $expectedContextCount = 16
 $expectedContextFixtureIds = @(
   "policy-path-allowance",
@@ -745,10 +819,23 @@ function Invoke-StrictClaimScan {
     [string]$WorkingDirectory = $repoRoot
   )
 
+  # `-ShowAllowed` is REQUIRED here; it is not a debugging convenience.
+  #
+  # On 2026-08-16 the scanner stopped printing `[allowed]` lines by default, to
+  # close a contamination channel: a required strict run was emitting prior audit
+  # reports at a fresh-blind auditor. That change is correct. But 23 fixtures in
+  # this file assert an `[allowed]` line to prove a policy ALLOWANCE fired -- the
+  # positive half of the regression -- so suppressing it turned them red, and the
+  # aggregate gate with them.
+  #
+  # The tempting repair is to drop `RequireAllowed` from those fixtures. That
+  # would be a silent downgrade: each would decay into "the scanner exited 0",
+  # which all 23 satisfy vacuously, and this file would go green having stopped
+  # testing the thing it exists to test.
   return Invoke-BoundedProcess -FilePath $shellPath `
     -Arguments @(
       "-NoLogo", "-NoProfile", "-ExecutionPolicy", "Bypass",
-      "-File", $resolvedScannerPath, "-Strict",
+      "-File", $resolvedScannerPath, "-Strict", "-ShowAllowed",
       "-PolicyPath", $resolvedPolicyPath, "-Path", $Path
     ) -WorkingDirectory $WorkingDirectory -TimeoutMs $scannerStageTimeoutMs
 }

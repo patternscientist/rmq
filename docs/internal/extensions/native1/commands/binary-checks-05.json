@@ -1,0 +1,90 @@
+{
+    "stage":  "binary-checks-05",
+    "platform":  "Microsoft Windows NT 10.0.26200.0",
+    "head":  "2d6b026c053c38ca8b8cdf3ec04f8b5fe6eff661",
+    "pins":  [
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Limbs.lean",
+                     "sha256":  "06D057D0DE50E263E701D2D5FEA1A4B0E1F6C3DD9A6BFDB6F2F9EDE71A7803F1"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Machine.lean",
+                     "sha256":  "F5286E6B52A5C5A73571BBF831E7CA9C5D731F7F5998F3ABA724E17F7AB94B3D"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Binary/Codec.lean",
+                     "sha256":  "E46F05148BB2F4D1D25C848EC804B0E2E0881EFB536F988A90AB9CB7371C11F7"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Binary.lean",
+                     "sha256":  "C50741D0A9AED1797919F405E8F7440410C0CD13DD2B9F299D0E6AB5E959AE16"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Binary/Bounds.lean",
+                     "sha256":  "1ADF9BE737AD6C86AAC6E5FBA75ED3384876AA029CCEFBBD76CDA03DF70C339E"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Binary/Checks.lean",
+                     "sha256":  "DCD29EDFBC3B8A15F93EB2B32D2AAF422E457ECD3C6DA772DB60108FD0E602DB"
+                 }
+             ],
+    "result":  {
+                   "Stage":  "binary-checks-05",
+                   "ExitCode":  1,
+                   "Output":  [
+                                  "RMQ/Core/WordRAM/Native/Binary/Checks.lean:174:78: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached",
+                                  "Note: Use `set_option maxHeartbeats \u003cnum\u003e` to set the limit.",
+                                  "Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedImageRoundtrip\u0027 depends on axioms: [propext, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedImageInjectivity\u0027 depends on axioms: [propext, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedRawInjectivity\u0027 depends on axioms: [propext, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedImageSoundness\u0027 depends on axioms: [propext, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedImageValidity\u0027 depends on axioms: [propext, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedImageFields\u0027 depends on axioms: [propext, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedImageTruncation\u0027 depends on axioms: [propext, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedSupportedRoundtrip\u0027 depends on axioms: [propext, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedSupportedRefinement\u0027 depends on axioms: [propext, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedReferenceImage\u0027 depends on axioms: [propext,",
+                                  " Classical.choice,",
+                                  " Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedImageFraming\u0027 depends on axioms: [propext, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedImageBits\u0027 depends on axioms: [propext,",
+                                  " Classical.choice,",
+                                  " Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.scalarMinimalWidth\u0027 depends on axioms: [propext, Quot.sound]"
+                              ],
+                   "StandardOutput":  [
+                                          "RMQ/Core/WordRAM/Native/Binary/Checks.lean:174:78: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached",
+                                          "Note: Use `set_option maxHeartbeats \u003cnum\u003e` to set the limit.",
+                                          "Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedImageRoundtrip\u0027 depends on axioms: [propext, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedImageInjectivity\u0027 depends on axioms: [propext, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedRawInjectivity\u0027 depends on axioms: [propext, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedImageSoundness\u0027 depends on axioms: [propext, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedImageValidity\u0027 depends on axioms: [propext, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedImageFields\u0027 depends on axioms: [propext, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedImageTruncation\u0027 depends on axioms: [propext, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedSupportedRoundtrip\u0027 depends on axioms: [propext, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedSupportedRefinement\u0027 depends on axioms: [propext, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedReferenceImage\u0027 depends on axioms: [propext,",
+                                          " Classical.choice,",
+                                          " Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedImageFraming\u0027 depends on axioms: [propext, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedImageBits\u0027 depends on axioms: [propext,",
+                                          " Classical.choice,",
+                                          " Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.scalarMinimalWidth\u0027 depends on axioms: [propext, Quot.sound]"
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  75.384,
+                   "DeadlineSeconds":  120,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

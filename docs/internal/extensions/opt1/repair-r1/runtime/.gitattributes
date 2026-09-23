@@ -1,0 +1,11 @@
+# Pin only this explicitly named, new runtime repair registry.
+/REGISTRY.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/frozen-reproduction/RESULT.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/evidence/frozen-raw-reproduction.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/evidence/development-full-1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/evidence/development-overflow-failure.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/evidence/final-runtime-repair.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/evidence/final-runtime-wrapper.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/review/RESULT.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/review/PARENT_SCRIPT_BEFORE.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/review/fixed-controls.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

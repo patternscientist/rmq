@@ -1,5 +1,20 @@
 # Paper Theorem Map
 
+## Packed primitive query (accepted)
+
+`RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`
+in `RMQ/Core/WordRAM/Packed/Capstone.lean` is exported as
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` from `RMQPaper`.
+It fixes one `buildMemory`/`wordWidth`/`queryProgram`/`initialState`/`run`
+chain for complete `2n + o(n)` data/code/scratch capacity, exact answers and
+invalid rejection, fitting words at every prefix, and a fixed 837,572-step
+budget equal to the length of the loop-free `queryProgram`. Every
+certificate field has an independently checked public expected-type consumer
+in `RMQ/Validation/PackedQueryContract.lean`. Status: ACCEPTED, following the replay campaign, both-host aggregate gates and independent audit. The word model, the uncharged outer word-domain check and the
+asymptotic-only absorption of code and scratch storage are stated in
+`docs/WORD_RAM_REVIEW_PACKET.md`; the earlier 210 and 427 models remain
+separate.
+
 ## Canonical Reviewer Route
 
 The current paper route is uniform for every size. Its primary anchors are:
@@ -66,8 +81,13 @@ same-trace `nonSyntheticWeight <= 210` fact literally. The exact 41-case replay
 expects 40 semantic rejections and one packet-only expected accept.
 The capacity is linear and the query-independent reviewer width has an explicit
 all-size logarithmic bound while covering stored/returned words, addresses, and
-primitive operands/results. The principled charged-trace cost is exactly `210`;
-earlier checked cost and dispatch rows live only in the explicit
+primitive operands/results. The principled charged-trace **budget** is `210`,
+and every guarded execution costs **at most** it: the theorem is an inequality
+(`..._cost_le_...`), and an invalid range is `Costed.pure none` at cost `0`, so
+there is no honest reading under which every execution costs `210`. This
+sentence previously said the cost "is exactly `210`" -- corrected 2026-08-12,
+since it contradicted the attainment disclaimer later in this same file.
+Earlier checked cost and dispatch rows live only in the explicit
 [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md)
 and are not the current reviewer path.
 
@@ -173,8 +193,11 @@ Controller dispatch, arithmetic, branching, decoding, local scanning, and
 candidate merging are documentary uncharged omissions because they are not
 events in the current trace. The current theorem does not predeclare them as a checked
 instruction vocabulary. Thus `210` is not a conventional word-RAM runtime
-theorem; E1 must define a richer machine and prove that it simulates this same
-execution.
+theorem. The former E1 plan, a richer machine proved to simulate this same
+execution, is superseded by the separate accepted theorem
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` above: it charges every
+primitive instruction of its own distinct execution and does not reinterpret
+`210`.
 
 The whole-query footprint remains a safe final-layout overapproximation. Inside
 the canonical interior component, the stronger dynamic footprint is exact: it
@@ -222,7 +245,9 @@ Scope, stated because each part is easy to over-read:
 - This is a **cell-probe** result. Computation between probes is free;
   controller dispatch, decoding, arithmetic, comparisons and branching are
   uncharged. It is not word-RAM instruction time, not preprocessing time, and
-  not measured runtime.
+  not measured runtime. The accepted construction at the top of this file charges those
+  operations for its own distinct execution and does not reinterpret this
+  probe bound.
 - The `210` inside `427 = 1 + 2*3 + 2*210` is the packed controller's own
   structural fuel, proved in
   `RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerWholeProtocol.lean`. It is
@@ -236,6 +261,8 @@ Scope, stated because each part is easy to over-read:
 The public theorem map does not assert compiled Lean execution performance, compiler
 correctness, full CPU semantics, production serialization, or an exact/minimal
 dynamic read-set characterization. See `docs/PAPER_MODEL_ADEQUACY.md` for the
-model-adequacy scope. It does not assert word-RAM query time, preprocessing
-complexity for the succinct construction, or that either `210` or `427` is
-attained or minimal.
+model-adequacy scope. For the `210` and `427` theorems it does not assert
+word-RAM query time. For no theorem does it assert preprocessing complexity
+for the succinct construction, or the attainment or minimality of `210`,
+`427`, or the 837,572-step budget of the candidate
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`.

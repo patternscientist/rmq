@@ -1,0 +1,351 @@
+{
+  "version": "PRE1-R1-CLAIM-SCANS-SET-V1",
+  "pwsh": {
+    "version": "PRE1-R1-CLAIM-SCANS-RECEIPT-V1",
+    "head": "e977053d8355d0d429da33d71a42251cfa5e964a",
+    "cleanBefore": true,
+    "stateBeforeSha256": "45513E8839647E84E6BAEC02994D41B22987485805E191F343F6C4FC3337B3C5",
+    "host": "POINPAD",
+    "os": "Microsoft Windows NT 10.0.26200.0",
+    "shell": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+    "runnerPowerShell": "7.6.6",
+    "scanner": {
+      "path": "scripts/claim_drift_scan.ps1",
+      "blob": "62badf7e071447a3f3a3f8db0d47a3970b918ad5",
+      "liveSha256": "5310DBA1242B3ED4A0B054A15B1B6911C056C228B2711F3D958EAB539BB3F6F7"
+    },
+    "policy": {
+      "path": "docs/internal/CLAIM_DRIFT_POLICY.json",
+      "blob": "491791898dca137d2a7d94126b87402545ccaa9d",
+      "liveSha256": "4096C7A708DF686F0AC7B62D935B22C13C1F1212494A3B39FD2ADD127AD43CD9"
+    },
+    "detectorSha256": "CDBCBC8816E094A9BA20D49410EB78F9C724F40153267D36697615AD087C8C76",
+    "runnerSha256": "0A3CE98812903458B103008FD519DE3A8CE72D2F87F3D5CD9646AD14C7B97AF8",
+    "python": "C:\\Python314\\python.exe",
+    "mutex": "not taken by this runner (each run expected under five minutes)",
+    "runs": [
+      {
+        "name": "strict",
+        "command": "scripts/claim_drift_scan.ps1 -Strict",
+        "startedUtc": "2026-09-14T07:26:50.4263612Z",
+        "exit": 0,
+        "seconds": 20.838,
+        "deadline": 3600,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "stdoutLines": 1120,
+        "stdoutSha256": "9D20919BEABD026F7D4C9594E714B01F371C58FB52A2F60E300398B4378A3315",
+        "stderrLines": 0,
+        "stderrSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+      },
+      {
+        "name": "records",
+        "command": "scripts/claim_drift_scan.ps1 -Strict -IncludeProcessRecords",
+        "startedUtc": "2026-09-14T07:27:11.8032925Z",
+        "exit": 0,
+        "seconds": 20.515,
+        "deadline": 3600,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "stdoutLines": 1459,
+        "stdoutSha256": "D95710662DE59B5889FB54D4B9763C223B66A6B22373E14763358A263C093D6F",
+        "stderrLines": 0,
+        "stderrSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+      },
+      {
+        "name": "selftest",
+        "command": "scripts/claim_drift_scan.ps1 -SelfTest",
+        "startedUtc": "2026-09-14T07:27:33.0386360Z",
+        "exit": 0,
+        "seconds": 28.333,
+        "deadline": 7200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "stdoutLines": 4,
+        "stdoutSha256": "AFC8D26BB2626064238C5F8E6BEB60CA8722CC7121D0015A399ECE05242EFD91",
+        "stderrLines": 0,
+        "stderrSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+      }
+    ],
+    "detector": {
+      "exit": 0,
+      "seconds": 2.423,
+      "deadline": 300,
+      "timedOut": false,
+      "stderrLines": 0,
+      "result": {
+        "schema": "rmq.pre1.repair-r1.claim-scan-detector.v1",
+        "summaryPatternRegex": "scan complete \\([0-9]+ hits",
+        "summaryPatternFlags": "IGNORECASE",
+        "default": {
+          "label": "default",
+          "path": "<scratch>\\scan-e977053-pwsh\\strict.stdout.log",
+          "bytes": 3557112,
+          "sha256": "9D20919BEABD026F7D4C9594E714B01F371C58FB52A2F60E300398B4378A3315",
+          "decodeReplacements": 0,
+          "lines": 1120,
+          "exit": 0,
+          "resultLines": 1119,
+          "resultLinesWithPattern": [],
+          "patternLines": 1,
+          "summaryLines": [
+            {
+              "logLine": 1120,
+              "hits": 1633,
+              "strictFailures": 0
+            }
+          ],
+          "strictFailureLines": [],
+          "lastNonemptyLogLine": 1120,
+          "firstParserMatch": {
+            "logLine": 1120,
+            "value": 1633,
+            "source": "scanner summary line"
+          },
+          "problems": []
+        },
+        "records": {
+          "label": "records",
+          "path": "<scratch>\\scan-e977053-pwsh\\records.stdout.log",
+          "bytes": 3683688,
+          "sha256": "D95710662DE59B5889FB54D4B9763C223B66A6B22373E14763358A263C093D6F",
+          "decodeReplacements": 0,
+          "lines": 1459,
+          "exit": 0,
+          "resultLines": 1458,
+          "resultLinesWithPattern": [],
+          "patternLines": 1,
+          "summaryLines": [
+            {
+              "logLine": 1459,
+              "hits": 2064,
+              "strictFailures": 0
+            }
+          ],
+          "strictFailureLines": [],
+          "lastNonemptyLogLine": 1459,
+          "firstParserMatch": {
+            "logLine": 1459,
+            "value": 2064,
+            "source": "scanner summary line"
+          },
+          "problems": []
+        },
+        "selftest": {
+          "label": "selftest",
+          "path": "<scratch>\\scan-e977053-pwsh\\selftest.stdout.log",
+          "bytes": 266,
+          "sha256": "AFC8D26BB2626064238C5F8E6BEB60CA8722CC7121D0015A399ECE05242EFD91",
+          "decodeReplacements": 0,
+          "exit": 0,
+          "selftestLines": 4,
+          "probeLines": [
+            {
+              "protected": 6,
+              "attributed": 2
+            }
+          ],
+          "recordPathOkLines": 1,
+          "exclusion": {
+            "form": "ok",
+            "removed": 431,
+            "withRecords": 2064,
+            "withoutRecords": 1633
+          },
+          "results": [
+            "PASS"
+          ],
+          "patternLines": 0,
+          "separateRuns": {
+            "withRecords": 2064,
+            "withoutRecords": 1633
+          },
+          "problems": []
+        },
+        "problems": [],
+        "verdict": "CLEAN"
+      }
+    },
+    "stateUnchanged": true,
+    "result": "CLEAN",
+    "shellVersion": "7.6.6",
+    "stateAfterSha256": "45513E8839647E84E6BAEC02994D41B22987485805E191F343F6C4FC3337B3C5"
+  },
+  "ps51": {
+    "version": "PRE1-R1-CLAIM-SCANS-RECEIPT-V1",
+    "head": "e977053d8355d0d429da33d71a42251cfa5e964a",
+    "cleanBefore": true,
+    "stateBeforeSha256": "45513E8839647E84E6BAEC02994D41B22987485805E191F343F6C4FC3337B3C5",
+    "host": "POINPAD",
+    "os": "Microsoft Windows NT 10.0.26200.0",
+    "shell": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "runnerPowerShell": "5.1.26100.9444",
+    "scanner": {
+      "path": "scripts/claim_drift_scan.ps1",
+      "blob": "62badf7e071447a3f3a3f8db0d47a3970b918ad5",
+      "liveSha256": "5310DBA1242B3ED4A0B054A15B1B6911C056C228B2711F3D958EAB539BB3F6F7"
+    },
+    "policy": {
+      "path": "docs/internal/CLAIM_DRIFT_POLICY.json",
+      "blob": "491791898dca137d2a7d94126b87402545ccaa9d",
+      "liveSha256": "4096C7A708DF686F0AC7B62D935B22C13C1F1212494A3B39FD2ADD127AD43CD9"
+    },
+    "detectorSha256": "CDBCBC8816E094A9BA20D49410EB78F9C724F40153267D36697615AD087C8C76",
+    "runnerSha256": "0A3CE98812903458B103008FD519DE3A8CE72D2F87F3D5CD9646AD14C7B97AF8",
+    "python": "C:\\Python314\\python.exe",
+    "mutex": "not taken by this runner (each run expected under five minutes)",
+    "runs": [
+      {
+        "name": "strict",
+        "command": "scripts/claim_drift_scan.ps1 -Strict",
+        "startedUtc": "2026-09-14T07:28:34.3893413Z",
+        "exit": 0,
+        "seconds": 20.16,
+        "deadline": 3600,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "stdoutLines": 1120,
+        "stdoutSha256": "9B331861CF002E749F0EA6367A0C91F0D4D6F73A390FDD009C19B288139DF494",
+        "stderrLines": 0,
+        "stderrSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+      },
+      {
+        "name": "records",
+        "command": "scripts/claim_drift_scan.ps1 -Strict -IncludeProcessRecords",
+        "startedUtc": "2026-09-14T07:28:54.7346199Z",
+        "exit": 0,
+        "seconds": 21.724,
+        "deadline": 3600,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "stdoutLines": 1459,
+        "stdoutSha256": "15D423BDF9F466AAB043D3E025A07100B10BAD44E9946CEB75EBB097F8569BB0",
+        "stderrLines": 0,
+        "stderrSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+      },
+      {
+        "name": "selftest",
+        "command": "scripts/claim_drift_scan.ps1 -SelfTest",
+        "startedUtc": "2026-09-14T07:29:16.6411250Z",
+        "exit": 0,
+        "seconds": 33.376,
+        "deadline": 7200,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "stdoutLines": 4,
+        "stdoutSha256": "AFC8D26BB2626064238C5F8E6BEB60CA8722CC7121D0015A399ECE05242EFD91",
+        "stderrLines": 0,
+        "stderrSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+      }
+    ],
+    "detector": {
+      "exit": 0,
+      "seconds": 2.195,
+      "deadline": 300,
+      "timedOut": false,
+      "stderrLines": 0,
+      "result": {
+        "schema": "rmq.pre1.repair-r1.claim-scan-detector.v1",
+        "summaryPatternRegex": "scan complete \\([0-9]+ hits",
+        "summaryPatternFlags": "IGNORECASE",
+        "default": {
+          "label": "default",
+          "path": "<scratch>\\scan-e977053-ps51\\strict.stdout.log",
+          "bytes": 3557112,
+          "sha256": "9B331861CF002E749F0EA6367A0C91F0D4D6F73A390FDD009C19B288139DF494",
+          "decodeReplacements": 0,
+          "lines": 1120,
+          "exit": 0,
+          "resultLines": 1119,
+          "resultLinesWithPattern": [],
+          "patternLines": 1,
+          "summaryLines": [
+            {
+              "logLine": 1120,
+              "hits": 1633,
+              "strictFailures": 0
+            }
+          ],
+          "strictFailureLines": [],
+          "lastNonemptyLogLine": 1120,
+          "firstParserMatch": {
+            "logLine": 1120,
+            "value": 1633,
+            "source": "scanner summary line"
+          },
+          "problems": []
+        },
+        "records": {
+          "label": "records",
+          "path": "<scratch>\\scan-e977053-ps51\\records.stdout.log",
+          "bytes": 3683688,
+          "sha256": "15D423BDF9F466AAB043D3E025A07100B10BAD44E9946CEB75EBB097F8569BB0",
+          "decodeReplacements": 0,
+          "lines": 1459,
+          "exit": 0,
+          "resultLines": 1458,
+          "resultLinesWithPattern": [],
+          "patternLines": 1,
+          "summaryLines": [
+            {
+              "logLine": 1459,
+              "hits": 2064,
+              "strictFailures": 0
+            }
+          ],
+          "strictFailureLines": [],
+          "lastNonemptyLogLine": 1459,
+          "firstParserMatch": {
+            "logLine": 1459,
+            "value": 2064,
+            "source": "scanner summary line"
+          },
+          "problems": []
+        },
+        "selftest": {
+          "label": "selftest",
+          "path": "<scratch>\\scan-e977053-ps51\\selftest.stdout.log",
+          "bytes": 266,
+          "sha256": "AFC8D26BB2626064238C5F8E6BEB60CA8722CC7121D0015A399ECE05242EFD91",
+          "decodeReplacements": 0,
+          "exit": 0,
+          "selftestLines": 4,
+          "probeLines": [
+            {
+              "protected": 6,
+              "attributed": 2
+            }
+          ],
+          "recordPathOkLines": 1,
+          "exclusion": {
+            "form": "ok",
+            "removed": 431,
+            "withRecords": 2064,
+            "withoutRecords": 1633
+          },
+          "results": [
+            "PASS"
+          ],
+          "patternLines": 0,
+          "separateRuns": {
+            "withRecords": 2064,
+            "withoutRecords": 1633
+          },
+          "problems": []
+        },
+        "problems": [],
+        "verdict": "CLEAN"
+      }
+    },
+    "stateUnchanged": true,
+    "result": "CLEAN",
+    "shellVersion": "5.1.26100.9444",
+    "stateAfterSha256": "45513E8839647E84E6BAEC02994D41B22987485805E191F343F6C4FC3337B3C5"
+  }
+}

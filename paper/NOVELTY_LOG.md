@@ -2,7 +2,7 @@
 
 **Document:** `paper/NOVELTY_LOG.md`
 **Companion to:** `paper/rmq.tex`, `paper/references.bib`, `paper/RELATED_WORK_LEDGER.md`
-**Manuscript base commit:** `e3362d4f0300b3b0aef22d104ed67844d80134a0`
+**Manuscript base commit:** `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 **Search date:** 2026-08-07
 **Status:** first completed novelty search. This log supersedes the "search log not yet complete" hedge in `rmq.tex` §1.2 and §10 only to the extent stated in §3 below; it does **not** license any unconditional priority claim.
 
@@ -37,6 +37,8 @@ Nothing in §3 may be read as stronger than the underlying artifact. For the rec
 - A uniform charged-trace bound of **210** events in an explicit trace model, and a derived cap of **427** attempted aligned `w(n)`-bit cell probes for a packed cell-probe representation whose complete allocated capacity is `2n + o(n)`. Computation *between* probes is free; controller dispatch, decoding, arithmetic, comparisons and branching are **uncharged**. This is a cell-probe result — not word-RAM instruction time, not preprocessing time, not measured runtime.
 - A mechanized information-theoretic lower bound: any fixed-length payload-only exact RMQ encoding needs `2n − 1.5 log₂ n − O(1)` bits, in doubled-Catalan-slack integer form.
 - Preprocessing complexity for the succinct construction is **unproved and unclaimed**.
+- *(Appended 2026-09-11, at the repin to `3849ecbb`.)* A candidate theorem, kernel-checked at this base but not accepted by the project's audit process, counts every executed instruction of one fixed 837,572-instruction register-machine program run on a numeric repacking of the packed object, in a unit-cost model that includes multiplication, division, remainder, variable shifts and bitwise operations. It bounds a different execution: the second bullet above still describes the `210` and `427` bounds, and neither acquires an instruction count. See §7.
+- *(Status update 2026-09-12.)* That PQ1 lineage is now coordinator-accepted after its replay, both-host gates and independent audit. This process change adds no novelty evidence and leaves the search limitations in §7 intact.
 
 ---
 
@@ -232,11 +234,24 @@ T1 fetches: the CSLib PDF (pp. 1–16); the calf POPL 2022 PDF; the ITP 2019 LIP
 - **Fischer 2010 declares itself a word-RAM result on page 1 and in §2**: "Throughout this article, we use the standard word-RAM model of computation, where fundamental arithmetic operations on words consisting of Θ(log n) consecutive bits can be computed in O(1) time." The string "cell probe" occurs **once** in the whole document, inside the title of its reference [17]. **Citing `Fischer10` for the cell-probe convention is wrong.** See §5.4.
 - **Fischer 2010 states the counting lower bound explicitly**, p. 3: "the information-theoretic lower bound (for non-systematic schemes) of 2n − Θ(log n) bits… any scheme must use at least log(C(2n−1,n−1)/(2n−1)) = 2n − Θ(log n) bits." Our manuscript calls this bound "implicit in the classical literature." **It is explicit.** See §5.6.
 - **Liu 2021** (arXiv:2111.02318, CoRR-only, confirmed twice at dblp) already carries the exact constant: `2n − 1.5 log n + n/(log n)^{O(t log² t)}`.
-- **Four classical papers are missing from `references.bib`** and at least two are load-bearing:
+- **Four classical papers were missing from `references.bib`** when this section was written, and at least two are load-bearing:
   - **Sadakane, "Succinct data structures for flexible text retrieval systems", J. Discrete Algorithms 5(1):12–22, 2007, DOI 10.1016/j.jda.2006.03.011** — the **first non-systematic succinct RMQ** (`4n + o(n)`, O(1) query), built by **BP encoding of the Cartesian tree plus an o(n) LCA computation therein**. That is precisely the recipe family our §5.1 describes. A precursor exists: Sadakane, "Space-Efficient Data Structures for Flexible Text Retrieval Systems", ISAAC 2002, pp. 14–24, DOI 10.1007/3-540-36136-7_2 — **we could not verify whether the RMQ structure already appears in the 2002 version**, which matters because it would move the priority date.
   - **Fischer & Heun, ESCAPE 2007, LNCS 4614, pp. 459–470, DOI 10.1007/978-3-540-74450-4_41** — the actual **systematic** `2n + o(n) + |A|` constant-time scheme. **Citation hazard:** its abstract advertises a `2n − o(n)` lower bound; Fischer 2010 footnote 2 reports that claimed min-probe-model bound as **wrong** (attributed to a personal communication from S. Srinivasa Rao, Nov 2007). **Never cite it for a lower bound.**
   - **Gál & Miltersen, "The cell probe complexity of succinct data structures", Theor. Comput. Sci. 379(3):405–417, 2007, DOI 10.1016/j.tcs.2007.02.047** (earlier: ICALP 2003, pp. 332–344, DOI 10.1007/3-540-45061-0_28). Source of the systematic/non-systematic nomenclature we use uncited, **and** of the free-computation-between-probes convention: verbatim, "The time t of the query algorithm is the number of bits it reads in φ(x)"; "as we only charge for reading bits in φ(x), not for computation". Note: the term "**encoding** data structure" is **not** theirs (5 occurrences, all ordinary usage) — attribute only systematic / non-systematic / index.
   - **Pătrașcu, "Succincter", FOCS 2008, pp. 305–313** — `O(n/log^c n)` redundancy at constant query time. Relevant because the classical redundancy frontier is `n/polylog n` while our overhead envelope is proved only little-o-linear.
+
+  **Status at pin `0665b494` (added 2026-08-16):** three of the four are now
+  present -- `Sadakane07`, `FischerHeun07` and `GalMiltersen07`. Only
+  `Patrascu08` is still absent, of 27 entries. The sentence above is a record of
+  the search, not a statement about the bibliography today; it read as the
+  latter and was false from the commit that added the three.
+  Same species as DD-20260816-115, which marked §5 HISTORICAL and re-anchored
+  §1.6 for the same 23-to-27 growth, and did not reach this line.
+  *(Appended 2026-09-11.)* This paragraph was headed "at the current pin" and
+  went stale at the repin to `3849ecbb`, like the line it corrects. Since that
+  repin the bibliography holds 35 entries, and `Patrascu08` is still absent;
+  `PatrascuThorup14`, added with the machine-model entries, is a different
+  paper.
 - Recency: **Munro, Nicholson, Benkner & Wild, "Hypersuccinct Trees", ESA 2021, DOI 10.4230/LIPIcs.ESA.2021.70** achieves worst-case-optimal `2n + o(n)` **and drops below 2n on average** (reported `1.736n + o(n)` in expectation for random permutations); Hamada et al., ESA 2024 (arXiv:2407.00573) implements average-case-optimal RMQ "spending less than 2n bits". Davoodi, Raman & Satti, COCOON 2012 give two further distinct `2n + o(n)` Cartesian-tree representations. Nothing in the classical literature is machine-checked.
 
 **What could NOT be established.**
@@ -498,11 +513,20 @@ Each is named and killed. None may be reintroduced without new receipts.
 
 **R20. Any absence claim about the AFP.** Retired: the AFP search indexes abstracts, not theory sources, and the Burrows-Wheeler entry is a live demonstration that this produces false negatives. *(T1, self-demonstrated)*
 
+**R21. Any priority or ranking wording about the fully charged instruction-level result.** Not licensed: the search does not cover it (§7). *(methodological)*
+
 ---
 
 ## 5. Bibliography repairs
 
-Every repair below quotes the current text. Line numbers are at the base commit.
+**HISTORICAL (annotated 2026-08-16).** Every repair below quoted the text as it
+stood when the section was written, with line numbers at the base commit **of
+that time**. The substrate was repinned to `0665b494` by the RC-4 round, and at
+that commit the repairs are already applied and the line numbers no longer
+resolve — §5.1's quoted "before" text is absent, and §5.7/§5.11's cited
+`references.bib` lines hold different content. The section is left standing as a
+record of what was repaired, in the same way `WORKLOG.md` marks its superseded
+entries; it is not a description of the current tree.
 
 ### 5.1 `rmq.tex` — the Tanaka conflation (two locations, HIGH)
 
@@ -604,7 +628,7 @@ GBT84 introduces the Cartesian tree and the RMQ↔LCA route; the **counting** ar
 > `The information-theoretic bound mechanized here`
 > `(Section~\ref{sec:lower}) is the classical counting bound, stated`
 > `explicitly by Fischer~\cite[\S1.1]{Fischer10} as`
-> `$\log\binom{2n-1}{n-1}/(2n-1) = 2n - \Theta(\log n)$ and sharpened with`
+> `$\log\left(\binom{2n-1}{n-1}/(2n-1)\right) = 2n - \Theta(\log n)$ and sharpened with`
 > `its exact leading constants by Liu~\cite{Liu21}; what is new here is its`
 > `mechanization in integer arithmetic together with a concrete $2n$-bit`
 > `attaining decoder.`
@@ -668,7 +692,18 @@ Note for `Gál`: the surname carries an acute accent (`G\'al`); author order **G
 > `% accepted claim maps, or an explicit web check recorded in`
 > `% RELATED_WORK_LEDGER.md are included.`
 
-The header names three tiers; `RELATED_WORK_LEDGER.md` names a **different** three (repo-doc / web / background). So the header names a tier the ledger never uses ("verified against the source": **0 entries**) and the ledger uses a tier the header never licenses ("background"). Measured across all 23 entries at the base commit:
+The header names three tiers; `RELATED_WORK_LEDGER.md` names a **different** three (repo-doc / web / background). So the header names a tier the ledger never uses ("verified against the source": **0 entries**) and the ledger uses a tier the header never licenses ("background"). Measured across the **23** entries the bibliography held when this section was
+written. **That is not the base commit named in this file's header:**
+`references.bib` reached 27 entries on 2026-08-12 (`de510d0`); `0665b494`, the
+base when this note was written, holds 27, and the substrate commit that
+repinned to `3849ecbb` on 2026-09-11 added eight machine-model entries, for 35.
+None of the twelve entries added after 2026-08-07 has been folded
+into the percentages below, so every `n/23` is a measurement of the 2026-08-07
+bibliography and is left standing as a record rather than restated as current.
+Re-deriving it over 35 would require re-auditing twelve receipt sets, which is
+open work, not a number to adjust.
+
+Measured across those 23 entries:
 
 - **background as the sole basis: 13/23 (57%)** — Vuillemin80, GBT84, HarelTarjan84, BFC00, MunroRaman01, Jacobson89, Clark96, RRR02, Nipkow15, GCP18, CP19, MouraUllrich21, AFP.
 - **background relied on for at least one field: 17/23 (74%)** — the above plus FischerHeun11, Fischer10, Navarro16, ZhanHaslbeck18.
@@ -760,3 +795,21 @@ Two adjudications produced conflicting results this session and are left open:
 - **That the negative results will stay true.** CSLib's roadmap targets an undergraduate algorithms syllabus by end of 2026 and complexity theory in 2027; Algolean's most recent commit at check time was 3 August 2026; CLRS-Lean is six weeks old and pushed daily. Every Lean negative in this log is **dated, not permanent**, and should be re-run before submission.
 
 **The correct posture for the manuscript remains conditional.** This log converts "the search log is not yet complete" into "the search log is complete to the boundary stated in §1, and here is that boundary". It does not convert any claim into a priority claim, and no future tightening of novelty wording is licensed without extending this log first, with receipts.
+
+---
+
+## 7. Appended 2026-09-11: the fully charged packed query is outside this search
+
+At the repin to `3849ecbb` the development gains `L-PQ-01`: one fixed program of 837,572 register-machine instructions whose every executed instruction is counted, under a unit-cost operation set that includes multiplication, division, remainder, variable shifts and bitwise operations, with the program's encoding and register bank counted in a `2n + o(n)` allocation. It is a candidate in the project's acceptance process.
+
+Status update (2026-09-12): that candidate's source-equivalent repaired lineage is now coordinator-accepted; see `docs/internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md`. Acceptance does not extend this novelty search or license a priority claim.
+
+This log was completed on 2026-08-07 and has not been extended for it. Its coverage of instruction-level cost is thin, and is recorded here so that it is not over-read:
+
+1. Modality D swept cost frameworks but did not characterise the Zhan–Haslbeck cost model (§1.4 limitation 2). A Haslbeck–Lammich ITP 2019 item surfaced only as a search result (§6.1, tier T3) and was not read.
+2. The AFP query `word RAM` returned no results, but the AFP search indexes abstracts, not theory sources (§1.2 limitation 1).
+3. The cost and space semantics of CakeML were not swept (tier T4, named from background only).
+
+The eight bibliography entries added at the same repin (Cook–Reckhow 1973 through Andersson–Miltersen–Thorup 1999; receipts in `RELATED_WORK_LEDGER.md`) are authority for the machine model of `rmq.tex` Section 9.2 only. They were not found by this search, they do not extend it, and none of them bears on any claim in §3.
+
+**Restriction.** The manuscript makes no novelty statement, and no "we did not find" statement, about the fully charged result. Any wording that ranks it against other mechanizations requires extending this log first, with receipts. The claims of §3 are unaffected: none of them concerns an instruction count.

@@ -1,0 +1,313 @@
+{
+  "version": "PRE1-R2-RECEIPT-V1",
+  "label": "Q1: cold build of the five consumers' producer targets and the validator, the five typed consumers on the tip, and base copies of the builder and capstone consumers for the before/after stage timings",
+  "repo": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+  "revision": "341bc2803dc26a123c48b1b8d0566e5e1583de7a",
+  "status": "",
+  "host": "PoinPad",
+  "os": "Windows-11-10.0.26200-SP0",
+  "mutex": "Global\\RMQHeavyVerification",
+  "mutexWaitSeconds": 0.0,
+  "requested": "2026-09-17T09:53:50.9850384-07:00",
+  "acquired": "2026-09-17T09:53:51.0051473-07:00",
+  "released": "2026-09-17T10:37:52.8650980-07:00",
+  "queueStatus": "DONE",
+  "steps": [
+    {
+      "label": "cold-build",
+      "command": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+      "arguments": [
+        "build",
+        "RMQ.Core.WordRAM.Construction.Loop",
+        "RMQ.Core.WordRAM.Construction.ArrayRun",
+        "RMQ.Core.WordRAM.Construction.HeaderUse",
+        "RMQ.Core.WordRAM.Construction.Proof.Constants",
+        "RMQ.Core.WordRAM.Packed.Allocation",
+        "RMQ.Core.WordRAM.Construction.Capstone",
+        "RMQ.Core.WordRAM.Construction.Contract",
+        "RMQ.Core.WordRAM.Construction.Conservative",
+        "RMQ.Core.WordRAM.Construction.Spec.OpenCounts",
+        "RMQ.Core.WordRAM.Construction.Spec.Dyck",
+        "RMQ.Core.WordRAM.Construction.Spec.ArgMinSplit",
+        "RMQ.Core.WordRAM.Construction.Spec.Positions",
+        "RMQ.Core.WordRAM.Construction.Spec.Plan",
+        "RMQ.Core.WordRAM.Construction.Spec.Envelope",
+        "RMQ.Core.WordRAM.Construction.Proof.Buffer",
+        "RMQ.Core.WordRAM.Construction.Proof.Tail",
+        "RMQ.Core.WordRAM.Construction.Proof.Leaves",
+        "RMQ.Core.WordRAM.Construction.Proof.Exact",
+        "RMQ.Core.WordRAM.Construction.Proof.AccessHalf",
+        "RMQ.Core.WordRAM.Construction.Proof.InteriorClose",
+        "rmq_preprocessing_validate"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 7200,
+      "start": "2026-09-17T09:53:51.0116065-07:00",
+      "end": "2026-09-17T10:28:22.5430960-07:00",
+      "seconds": 2071.403,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "29875dd9686ad6387b263132ad19aedca27fc58d9f180382f9ff35c9513e0bda",
+      "logBytes": 131041,
+      "logLines": 1843,
+      "markerLines": {},
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "✔ [586/590] Built RMQ.Core.WordRAM.Construction.Proof.Query",
+        "✔ [587/590] Built RMQ.Core.WordRAM.Construction.Proof.Ownership",
+        "✔ [588/590] Built RMQ.Core.WordRAM.Construction.Proof.RunFacts",
+        "✔ [589/590] Built RMQ.Core.WordRAM.Construction.Proof.Static",
+        "✔ [590/590] Built RMQ.Core.WordRAM.Construction.Capstone",
+        "Build completed successfully."
+      ]
+    },
+    {
+      "label": "consumer-builder",
+      "command": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+      "arguments": [
+        "env",
+        "lean",
+        "scripts/preprocessing_builder_check.lean"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 900,
+      "start": "2026-09-17T10:28:22.5557647-07:00",
+      "end": "2026-09-17T10:28:33.5327146-07:00",
+      "seconds": 10.953,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "f35a93f1dad0b19b5323d6dd88c84c935eb59fd545d3c4371ff7ac353b347336",
+      "logBytes": 3510,
+      "logLines": 46,
+      "markerLines": {
+        "PRE1-BUILDER-TYPED-CONSUMERS PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "'PRE1BuilderConsumer.keyLeaf_def' depends on axioms: [propext]",
+        "'PRE1BuilderConsumer.wordLeaf_def' depends on axioms: [propext]",
+        "'PRE1BuilderConsumer.builderBudget_def' does not depend on any axioms",
+        "'PRE1BuilderConsumer.efficientBuild_def' depends on axioms: [propext]",
+        "'PRE1BuilderConsumer.efficientBuildWord_def' depends on axioms: [propext]",
+        "PRE1-BUILDER-TYPED-CONSUMERS PASS"
+      ]
+    },
+    {
+      "label": "consumer-capstone",
+      "command": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+      "arguments": [
+        "env",
+        "lean",
+        "RMQ/Validation/PreprocessingContract.lean"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 1800,
+      "start": "2026-09-17T10:28:33.5354743-07:00",
+      "end": "2026-09-17T10:30:34.1356308-07:00",
+      "seconds": 120.58,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "65b97d0a0b5cdc957e8ea81ec51b784432ace1cc10a191cd9b679eca8c912113",
+      "logBytes": 26349,
+      "logLines": 296,
+      "markerLines": {
+        "PRE1-CAPSTONE-TYPED-CONSUMERS PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "'RMQ.SuccinctFinal.PackedConstruction.Proof.cartesianBP_word' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.SuccinctFinal.PackedConstruction.Structured.Block.compile_targets' depends on axioms: [propext, Quot.sound]",
+        "'RMQ.SuccinctFinal.PackedConstruction.Proof.program_static' depends on axioms: [propext, Quot.sound]",
+        "'RMQ.SuccinctFinal.PackedConstruction.Proof.builderProgram_static' depends on axioms: [propext, Quot.sound]",
+        "'RMQ.SuccinctFinal.PackedConstruction.Proof.builderProgramWord_static' depends on axioms: [propext, Quot.sound]",
+        "PRE1-CAPSTONE-TYPED-CONSUMERS PASS"
+      ]
+    },
+    {
+      "label": "consumer-contract",
+      "command": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+      "arguments": [
+        "env",
+        "lean",
+        "scripts/preprocessing_contract_check.lean"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 900,
+      "start": "2026-09-17T10:30:34.1371675-07:00",
+      "end": "2026-09-17T10:30:38.8699960-07:00",
+      "seconds": 4.714,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "fc41d94914b89838caed1f550f80796ae8580b6058aff31e2cbe67702787c717",
+      "logBytes": 951,
+      "logLines": 12,
+      "markerLines": {
+        "PRE1-CONTRACT-TYPED-CONSUMERS PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "'RMQ.SuccinctFinal.PackedConstruction.encodeInt_lt_iff' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.SuccinctFinal.PackedConstruction.inputFits_all_sizes' depends on axioms: [propext, Quot.sound]",
+        "'RMQ.SuccinctFinal.PackedConstruction.reserve_fresh' depends on axioms: [propext, Quot.sound]",
+        "'RMQ.SuccinctFinal.PackedConstruction.comparison_missing_header_fault' depends on axioms: [propext]",
+        "'RMQ.SuccinctFinal.PackedConstruction.Conservative.execute_eq_of_fits' depends on axioms: [propext, Quot.sound]",
+        "PRE1-CONTRACT-TYPED-CONSUMERS PASS"
+      ]
+    },
+    {
+      "label": "consumer-spec",
+      "command": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+      "arguments": [
+        "env",
+        "lean",
+        "scripts/preprocessing_spec_check.lean"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 1800,
+      "start": "2026-09-17T10:30:38.8722080-07:00",
+      "end": "2026-09-17T10:32:05.7716816-07:00",
+      "seconds": 86.884,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "394b0bf8897aa40f92ad7fc85b9d989176664d49f2538601689dce9ffb5cbad8",
+      "logBytes": 12443,
+      "logLines": 183,
+      "markerLines": {
+        "PRE1-SPEC-TYPED-CONSUMERS PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "'RMQ.SuccinctFinal.PackedConstruction.Spec.log2_rounds_le' depends on axioms: [propext]",
+        "'PRE1SpecConsumer.openCounts_fixture_leftmost_tie' does not depend on any axioms",
+        "'PRE1SpecConsumer.openCounts_fixture_plan_lists' does not depend on any axioms",
+        "'PRE1SpecConsumer.argMin_fixture_tie_keeps_left' does not depend on any axioms",
+        "'PRE1SpecConsumer.positions_fixture' does not depend on any axioms",
+        "PRE1-SPEC-TYPED-CONSUMERS PASS"
+      ]
+    },
+    {
+      "label": "consumer-stage",
+      "command": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+      "arguments": [
+        "env",
+        "lean",
+        "scripts/preprocessing_stage_check.lean"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 3600,
+      "start": "2026-09-17T10:32:05.7744921-07:00",
+      "end": "2026-09-17T10:36:53.2717841-07:00",
+      "seconds": 287.469,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "b14b42c109d45fae654ba2c70e55a30b8bc2c76db6bfee023b2fbe9340c44137",
+      "logBytes": 168384,
+      "logLines": 1945,
+      "markerLines": {
+        "PRE1-STAGE-TYPED-CONSUMERS PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "'RMQ.SuccinctFinal.PackedConstruction.Proof.operand_val_338' depends on axioms: [propext]",
+        "'RMQ.SuccinctFinal.PackedConstruction.Proof.operand_val_339' depends on axioms: [propext]",
+        "'RMQ.SuccinctFinal.PackedConstruction.Proof.operand_val_340' depends on axioms: [propext]",
+        "'RMQ.SuccinctFinal.PackedConstruction.Proof.operand_val_341' depends on axioms: [propext]",
+        "'RMQ.SuccinctFinal.PackedConstruction.Proof.operand_val_342' depends on axioms: [propext]",
+        "PRE1-STAGE-TYPED-CONSUMERS PASS"
+      ]
+    },
+    {
+      "label": "base-consumer-builder",
+      "command": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+      "arguments": [
+        "env",
+        "lean",
+        "C:/Users/poin/AppData/Local/Temp/claude/C--Users-poin-Documents-RMQ--claude-worktrees-pq1-preprocessing-native-bounds-b3fee3/e89e3ad0-2cc5-4b25-95d1-280ec16233b7/scratchpad/pre1-r2/basecopies/preprocessing_builder_check.lean"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 900,
+      "start": "2026-09-17T10:36:53.2734095-07:00",
+      "end": "2026-09-17T10:36:56.7511304-07:00",
+      "seconds": 3.46,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "f35a93f1dad0b19b5323d6dd88c84c935eb59fd545d3c4371ff7ac353b347336",
+      "logBytes": 3510,
+      "logLines": 46,
+      "markerLines": {
+        "PRE1-BUILDER-TYPED-CONSUMERS PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "'PRE1BuilderConsumer.keyLeaf_def' depends on axioms: [propext]",
+        "'PRE1BuilderConsumer.wordLeaf_def' depends on axioms: [propext]",
+        "'PRE1BuilderConsumer.builderBudget_def' does not depend on any axioms",
+        "'PRE1BuilderConsumer.efficientBuild_def' depends on axioms: [propext]",
+        "'PRE1BuilderConsumer.efficientBuildWord_def' depends on axioms: [propext]",
+        "PRE1-BUILDER-TYPED-CONSUMERS PASS"
+      ]
+    },
+    {
+      "label": "base-consumer-capstone",
+      "command": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+      "arguments": [
+        "env",
+        "lean",
+        "C:/Users/poin/AppData/Local/Temp/claude/C--Users-poin-Documents-RMQ--claude-worktrees-pq1-preprocessing-native-bounds-b3fee3/e89e3ad0-2cc5-4b25-95d1-280ec16233b7/scratchpad/pre1-r2/basecopies/PreprocessingContract.lean"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 1800,
+      "start": "2026-09-17T10:36:56.7535208-07:00",
+      "end": "2026-09-17T10:37:52.8637697-07:00",
+      "seconds": 56.092,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "65b97d0a0b5cdc957e8ea81ec51b784432ace1cc10a191cd9b679eca8c912113",
+      "logBytes": 26349,
+      "logLines": 296,
+      "markerLines": {
+        "PRE1-CAPSTONE-TYPED-CONSUMERS PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "'RMQ.SuccinctFinal.PackedConstruction.Proof.cartesianBP_word' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.SuccinctFinal.PackedConstruction.Structured.Block.compile_targets' depends on axioms: [propext, Quot.sound]",
+        "'RMQ.SuccinctFinal.PackedConstruction.Proof.program_static' depends on axioms: [propext, Quot.sound]",
+        "'RMQ.SuccinctFinal.PackedConstruction.Proof.builderProgram_static' depends on axioms: [propext, Quot.sound]",
+        "'RMQ.SuccinctFinal.PackedConstruction.Proof.builderProgramWord_static' depends on axioms: [propext, Quot.sound]",
+        "PRE1-CAPSTONE-TYPED-CONSUMERS PASS"
+      ]
+    }
+  ],
+  "lakeBuildTargets": "Loop ArrayRun HeaderUse Proof.Constants Packed.Allocation Capstone Contract Conservative Spec.OpenCounts Spec.Dyck Spec.ArgMinSplit Spec.Positions Spec.Plan Spec.Envelope Proof.Buffer Proof.Tail Proof.Leaves Proof.Exact Proof.AccessHalf Proof.InteriorClose rmq_preprocessing_validate (590 jobs)",
+  "baseCopies": {
+    "revision": "a0c93e9cf4d3c93856f5756ff6a7271da2b821ff",
+    "builder": "scripts/preprocessing_builder_check.lean blob at the base, LF, SHA-256 1fc1c375b793a89b6401b7bed7cf41e17c2b176811b98d7a1d67f830ebff34b1, run from the repository root by lake env lean on a copy outside the repository",
+    "capstone": "RMQ/Validation/PreprocessingContract.lean blob at the base, LF, SHA-256 9127bab23b8e7ec633d9ac72a24d0d53328a4d4b10ad7d4275551398264f1b83, same method"
+  },
+  "hostNote": "pwsh 7.6.6 queue (repair-r2/tools/queue.ps1) under the mutex Global\\RMQHeavyVerification; every step an owned bounded process; LEAN_NUM_THREADS=1; toolchain leanprover/lean4:v4.22.0"
+}

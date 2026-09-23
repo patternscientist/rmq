@@ -1,0 +1,43 @@
+{
+  "Stage": "S01-SIBLING-MEMORY-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:37:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.memoryRecovery",
+    "has type",
+    "  ∀ (xs : List Int), reconstructedMemory xs = reconstructedMemory xs : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int), reconstructedMemory xs = buildMemory xs : Prop",
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:272:4: error: Application type mismatch: In the application",
+    "  And.intro packedAllocationOptimality_holds.memoryRecovery",
+    "the argument",
+    "  packedAllocationOptimality_holds.memoryRecovery",
+    "has type",
+    "  ∀ (xs : List Int), reconstructedMemory xs = reconstructedMemory xs : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int), reconstructedMemory xs = buildMemory xs : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:37:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.memoryRecovery",
+    "has type",
+    "  ∀ (xs : List Int), reconstructedMemory xs = reconstructedMemory xs : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int), reconstructedMemory xs = buildMemory xs : Prop",
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:272:4: error: Application type mismatch: In the application",
+    "  And.intro packedAllocationOptimality_holds.memoryRecovery",
+    "the argument",
+    "  packedAllocationOptimality_holds.memoryRecovery",
+    "has type",
+    "  ∀ (xs : List Int), reconstructedMemory xs = reconstructedMemory xs : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int), reconstructedMemory xs = buildMemory xs : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 21.568,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

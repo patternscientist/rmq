@@ -1,0 +1,446 @@
+{
+  "schema": "native1-lean-validator-controls-v1",
+  "validatorRegistry": "native1-lean-validator-v1",
+  "validatorCaseIDs": [
+    "load-query-ordered",
+    "endpoint-order-176",
+    "arithmetic-zero-divisor",
+    "arithmetic-overflow",
+    "arithmetic-overshift",
+    "missing-memory",
+    "missing-fetch",
+    "invalid-endpoint-padding",
+    "invalid-endpoint-length",
+    "malformed-padding",
+    "malformed-length",
+    "malformed-version",
+    "truncated-image",
+    "repeated-loaded-image",
+    "reads-false-projection",
+    "fuel-exhaustion"
+  ],
+  "fixtures": {
+    "image": [
+      82,
+      77,
+      81,
+      78,
+      1,
+      1,
+      0,
+      8,
+      1,
+      0,
+      5,
+      1,
+      0,
+      3,
+      1,
+      0,
+      1,
+      1,
+      0,
+      2,
+      1,
+      0,
+      1,
+      8,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      0,
+      1,
+      41
+    ],
+    "golden": "halted 9\n1\n0 0 0 0 0 1\n\n",
+    "wrong": "halted 8\n1\n0 0 0 0 0 1\n\n",
+    "oversizedLength": 134217729
+  },
+  "cases": [
+    {
+      "id": "omitted-default",
+      "arguments": [],
+      "selectorEnvironment": null,
+      "exit": 0,
+      "stdout": [
+        "NATIVE1-LEAN CASE load-query-ordered PASS",
+        "NATIVE1-LEAN CASE endpoint-order-176 PASS",
+        "NATIVE1-LEAN CASE arithmetic-zero-divisor PASS",
+        "NATIVE1-LEAN CASE arithmetic-overflow PASS",
+        "NATIVE1-LEAN CASE arithmetic-overshift PASS",
+        "NATIVE1-LEAN CASE missing-memory PASS",
+        "NATIVE1-LEAN CASE missing-fetch PASS",
+        "NATIVE1-LEAN CASE invalid-endpoint-padding PASS",
+        "NATIVE1-LEAN CASE invalid-endpoint-length PASS",
+        "NATIVE1-LEAN CASE malformed-padding PASS",
+        "NATIVE1-LEAN CASE malformed-length PASS",
+        "NATIVE1-LEAN CASE malformed-version PASS",
+        "NATIVE1-LEAN CASE truncated-image PASS",
+        "NATIVE1-LEAN CASE repeated-loaded-image PASS",
+        "NATIVE1-LEAN CASE reads-false-projection PASS",
+        "NATIVE1-LEAN CASE fuel-exhaustion PASS",
+        "NATIVE1-LEAN PASS registry=native1-lean-validator-v1 executed=16 expected=16 mode=full"
+      ],
+      "stderr": []
+    },
+    {
+      "id": "selector-valid-argument",
+      "arguments": [
+        "--case",
+        "endpoint-order-176"
+      ],
+      "selectorEnvironment": null,
+      "exit": 0,
+      "stdout": [
+        "NATIVE1-LEAN CASE endpoint-order-176 PASS",
+        "NATIVE1-LEAN PASS registry=native1-lean-validator-v1 executed=1 expected=1 mode=selected"
+      ],
+      "stderr": []
+    },
+    {
+      "id": "selector-valid-environment",
+      "arguments": [],
+      "selectorEnvironment": "id:reads-false-projection",
+      "exit": 0,
+      "stdout": [
+        "NATIVE1-LEAN CASE reads-false-projection PASS",
+        "NATIVE1-LEAN PASS registry=native1-lean-validator-v1 executed=1 expected=1 mode=selected"
+      ],
+      "stderr": []
+    },
+    {
+      "id": "selector-empty-argument",
+      "arguments": [
+        "--case",
+        ""
+      ],
+      "selectorEnvironment": null,
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR explicitly empty selector"
+      ]
+    },
+    {
+      "id": "selector-empty-environment",
+      "arguments": [],
+      "selectorEnvironment": "id:",
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR explicitly empty selector"
+      ]
+    },
+    {
+      "id": "selector-whitespace-argument",
+      "arguments": [
+        "--case",
+        "   "
+      ],
+      "selectorEnvironment": null,
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR explicitly empty selector"
+      ]
+    },
+    {
+      "id": "selector-whitespace-environment",
+      "arguments": [],
+      "selectorEnvironment": "id:   ",
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR explicitly empty selector"
+      ]
+    },
+    {
+      "id": "selector-malformed-argument",
+      "arguments": [
+        "--case",
+        "BAD!"
+      ],
+      "selectorEnvironment": null,
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR malformed selector"
+      ]
+    },
+    {
+      "id": "selector-malformed-environment",
+      "arguments": [],
+      "selectorEnvironment": "invalid-channel",
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR malformed selector channel"
+      ]
+    },
+    {
+      "id": "selector-unknown",
+      "arguments": [
+        "--case",
+        "unknown-case"
+      ],
+      "selectorEnvironment": null,
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR unknown selector: unknown-case"
+      ]
+    },
+    {
+      "id": "selector-duplicate",
+      "arguments": [
+        "--case",
+        "load-query-ordered"
+      ],
+      "selectorEnvironment": "id:load-query-ordered",
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR selector given twice"
+      ]
+    },
+    {
+      "id": "compare-golden",
+      "arguments": [
+        "compare",
+        "@image",
+        "07",
+        "09",
+        "16",
+        "1",
+        "@golden"
+      ],
+      "selectorEnvironment": null,
+      "exit": 0,
+      "stdout": [
+        "NATIVE1-LEAN COMPARE PASS bytes=35 fuel=16 reads=1"
+      ],
+      "stderr": []
+    },
+    {
+      "id": "compare-quiet",
+      "arguments": [
+        "compare",
+        "@image",
+        "07",
+        "09",
+        "16",
+        "0",
+        "@golden"
+      ],
+      "selectorEnvironment": null,
+      "exit": 0,
+      "stdout": [
+        "NATIVE1-LEAN COMPARE PASS bytes=35 fuel=16 reads=0"
+      ],
+      "stderr": []
+    },
+    {
+      "id": "compare-wrong-golden",
+      "arguments": [
+        "compare",
+        "@image",
+        "07",
+        "09",
+        "16",
+        "1",
+        "@wrong"
+      ],
+      "selectorEnvironment": null,
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR comparison observation mismatch"
+      ]
+    },
+    {
+      "id": "compare-malformed-hex",
+      "arguments": [
+        "compare",
+        "@image",
+        "zz",
+        "09",
+        "16",
+        "1",
+        "@golden"
+      ],
+      "selectorEnvironment": null,
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR malformed endpoint hex"
+      ]
+    },
+    {
+      "id": "compare-wrong-hex-length",
+      "arguments": [
+        "compare",
+        "@image",
+        "0700",
+        "09",
+        "16",
+        "1",
+        "@golden"
+      ],
+      "selectorEnvironment": null,
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR endpoint hex length mismatch"
+      ]
+    },
+    {
+      "id": "compare-fuel-limit",
+      "arguments": [
+        "compare",
+        "@image",
+        "07",
+        "09",
+        "1000001",
+        "1",
+        "@golden"
+      ],
+      "selectorEnvironment": null,
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR fuel exceeds native limit"
+      ]
+    },
+    {
+      "id": "compare-fuel-format",
+      "arguments": [
+        "compare",
+        "@image",
+        "07",
+        "09",
+        "1x",
+        "1",
+        "@golden"
+      ],
+      "selectorEnvironment": null,
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR malformed or oversized fuel"
+      ]
+    },
+    {
+      "id": "compare-read-mode",
+      "arguments": [
+        "compare",
+        "@image",
+        "07",
+        "09",
+        "16",
+        "reads",
+        "@golden"
+      ],
+      "selectorEnvironment": null,
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR READS must be exactly 0 or 1"
+      ]
+    },
+    {
+      "id": "compare-oversized-file",
+      "arguments": [
+        "compare",
+        "@oversized",
+        "07",
+        "09",
+        "16",
+        "1",
+        "@golden"
+      ],
+      "selectorEnvironment": null,
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR file exceeds byte limit"
+      ]
+    },
+    {
+      "id": "compare-nonutf8",
+      "arguments": [
+        "compare",
+        "@image",
+        "07",
+        "09",
+        "16",
+        "1",
+        "@nonutf8"
+      ],
+      "selectorEnvironment": null,
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR expected observation is not UTF-8"
+      ]
+    },
+    {
+      "id": "compare-truncated",
+      "arguments": [
+        "compare",
+        "@truncated",
+        "07",
+        "09",
+        "16",
+        "1",
+        "@golden"
+      ],
+      "selectorEnvironment": null,
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR load rejected: invalid or unsupported binary image"
+      ]
+    },
+    {
+      "id": "compare-crlf",
+      "arguments": [
+        "compare",
+        "@image",
+        "07",
+        "09",
+        "16",
+        "1",
+        "@crlf"
+      ],
+      "selectorEnvironment": null,
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR comparison observation mismatch"
+      ]
+    },
+    {
+      "id": "compare-selector-channel",
+      "arguments": [
+        "compare",
+        "@image",
+        "07",
+        "09",
+        "16",
+        "1",
+        "@golden"
+      ],
+      "selectorEnvironment": "id:load-query-ordered",
+      "exit": 1,
+      "stdout": [],
+      "stderr": [
+        "NATIVE1-LEAN ERROR selector is incompatible with compare mode"
+      ]
+    }
+  ]
+}

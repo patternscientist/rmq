@@ -1,0 +1,124 @@
+{
+  "Version": 3,
+  "Commit": "5033ce54da233fc7a3df319d50ab09a2ebee523a",
+  "Expected": [
+    "S03-SIBLING-BUDGET"
+  ],
+  "Executed": [
+    "S03-SIBLING-BUDGET"
+  ],
+  "Stages": [
+    {
+      "Stage": "baseline-generic-producer",
+      "ExitCode": 0,
+      "Output": [],
+      "StandardOutput": [],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 9.488,
+      "DeadlineSeconds": 600,
+      "Ownership": "kill-on-close-job"
+    },
+    {
+      "Stage": "baseline-packed-producer",
+      "ExitCode": 0,
+      "Output": [],
+      "StandardOutput": [],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 7.151,
+      "DeadlineSeconds": 600,
+      "Ownership": "kill-on-close-job"
+    },
+    {
+      "Stage": "baseline-inventory",
+      "ExitCode": 0,
+      "Output": [
+        "LB1-FIELDS PASS actual=4,16,33; unchanged and ordered controls accepted; defaulted, indented, underscore, apostrophe, Unicode, escaped, absent, missing, reversed and parent controls rejected"
+      ],
+      "StandardOutput": [
+        "LB1-FIELDS PASS actual=4,16,33; unchanged and ordered controls accepted; defaulted, indented, underscore, apostrophe, Unicode, escaped, absent, missing, reversed and parent controls rejected"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 5.42,
+      "DeadlineSeconds": 600,
+      "Ownership": "kill-on-close-job"
+    },
+    {
+      "Stage": "baseline-consumer",
+      "ExitCode": 0,
+      "Output": [],
+      "StandardOutput": [],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 26.235,
+      "DeadlineSeconds": 600,
+      "Ownership": "kill-on-close-job"
+    },
+    {
+      "Stage": "baseline-generic-consumer",
+      "ExitCode": 0,
+      "Output": [],
+      "StandardOutput": [],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 4.035,
+      "DeadlineSeconds": 600,
+      "Ownership": "kill-on-close-job"
+    },
+    {
+      "Stage": "S03-SIBLING-BUDGET-producer",
+      "ExitCode": 0,
+      "Output": [],
+      "StandardOutput": [],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 8.0,
+      "DeadlineSeconds": 600,
+      "Ownership": "kill-on-close-job"
+    },
+    {
+      "Stage": "S03-SIBLING-BUDGET-consumer",
+      "ExitCode": 1,
+      "Output": [
+        "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:58:20: error: type mismatch",
+        "  packedAllocationOptimality_holds.uniformBudgetCount",
+        "has type",
+        "  ∀ (n B : Nat), UniformAllocationBudget n B → shapeCount n ≤ 2 ^ (2 * n + allocationRho n + 1) - 1 : Prop",
+        "but is expected to have type",
+        "  ∀ (n B : Nat), UniformAllocationBudget n B → shapeCount n ≤ 2 ^ (B + 1) - 1 : Prop"
+      ],
+      "StandardOutput": [
+        "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:58:20: error: type mismatch",
+        "  packedAllocationOptimality_holds.uniformBudgetCount",
+        "has type",
+        "  ∀ (n B : Nat), UniformAllocationBudget n B → shapeCount n ≤ 2 ^ (2 * n + allocationRho n + 1) - 1 : Prop",
+        "but is expected to have type",
+        "  ∀ (n B : Nat), UniformAllocationBudget n B → shapeCount n ≤ 2 ^ (B + 1) - 1 : Prop"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 30.374,
+      "DeadlineSeconds": 600,
+      "Ownership": "kill-on-close-job"
+    }
+  ],
+  "SourceRestored": true,
+  "ArtifactsRestored": true,
+  "CleanTree": true
+}

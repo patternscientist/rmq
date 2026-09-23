@@ -1,0 +1,13 @@
+{
+  "Stage": "M13-scratchCount-producer",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 11.452,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

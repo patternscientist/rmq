@@ -1,0 +1,1119 @@
+{
+  "SourceFreeze": "bbbe652fa41fa40bf2530b5e2f09c4c225c0e896",
+  "ArtifactDirectory": "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-certificate-replay\\20260912T103830Z-b52c64c9512542f292b26ed1c071039d",
+  "Expected": 80,
+  "Executed": 80,
+  "Accepts": 2,
+  "Rejects": 78,
+  "AllProducerExitsZero": true,
+  "AllActualConsumerDiagnosticsMatched": true,
+  "AllRestored": true,
+  "Rows": [
+    {
+      "Id": "A01-UNCHANGED",
+      "Verdict": "ACCEPT",
+      "ProducersCompiled": true,
+      "Diagnostics": [],
+      "Restored": true
+    },
+    {
+      "Id": "A02-COMMENT",
+      "Verdict": "ACCEPT",
+      "ProducersCompiled": true,
+      "Diagnostics": [],
+      "Restored": true
+    },
+    {
+      "Id": "D01-allocationResidualLittleO",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "16",
+          "2",
+          "Invalid field `allocationResidualLittleO`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.allocationResidualLittleO`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W01-allocationResidualLittleO",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "16",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D02-completeResidualLittleO",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "24",
+          "2",
+          "Invalid field `completeResidualLittleO`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.completeResidualLittleO`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W02-completeResidualLittleO",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "24",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D03-widthBounds",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "33",
+          "2",
+          "Invalid field `widthBounds`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.widthBounds`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W03-widthBounds",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "33",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D04-dataCapacity",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "43",
+          "2",
+          "Invalid field `dataCapacity`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.dataCapacity`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W04-dataCapacity",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "43",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D05-completeCapacity",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "55",
+          "2",
+          "Invalid field `completeCapacity`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.completeCapacity`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W05-completeCapacity",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "55",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D06-memoryWordsFit",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "66",
+          "2",
+          "Invalid field `memoryWordsFit`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.memoryWordsFit`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W06-memoryWordsFit",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "66",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D07-allocationAddressesFit",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "75",
+          "2",
+          "Invalid field `allocationAddressesFit`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.allocationAddressesFit`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W07-allocationAddressesFit",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "75",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D08-programFieldsFit",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "84",
+          "2",
+          "Invalid field `programFieldsFit`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.programFieldsFit`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W08-programFieldsFit",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "84",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D09-budgetExact",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "92",
+          "2",
+          "Invalid field `budgetExact`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.budgetExact`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W09-budgetExact",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "92",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D10-programLength",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "100",
+          "2",
+          "Invalid field `programLength`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.programLength`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W10-programLength",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "100",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D11-encodedProgramLength",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "109",
+          "2",
+          "Invalid field `encodedProgramLength`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.encodedProgramLength`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W11-encodedProgramLength",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "109",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D12-programReduction",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "118",
+          "2",
+          "Invalid field `programReduction`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.programReduction`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W12-programReduction",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "118",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D13-emittedProgram",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "126",
+          "2",
+          "Invalid field `emittedProgram`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.emittedProgram`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W13-emittedProgram",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "126",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D14-originalExecutionBound",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "134",
+          "2",
+          "Invalid field `originalExecutionBound`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.originalExecutionBound`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W14-originalExecutionBound",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "134",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D15-originalReducedFuel",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "143",
+          "2",
+          "Invalid field `originalReducedFuel`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.originalReducedFuel`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W15-originalReducedFuel",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "143",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D16-arbitraryMemoryObservations",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "154",
+          "2",
+          "Invalid field `arbitraryMemoryObservations`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.arbitraryMemoryObservations`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W16-arbitraryMemoryObservations",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "154",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D17-completedExecution",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "447",
+          "2",
+          "Invalid field `completedExecution`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.completedExecution`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W17-completedExecution",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "447",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D18-adequateFuel",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "458",
+          "2",
+          "Invalid field `adequateFuel`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.adequateFuel`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W18-adequateFuel",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "458",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D19-registerCount",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "164",
+          "2",
+          "Invalid field `registerCount`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.registerCount`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W19-registerCount",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "164",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D20-scratchCount",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "172",
+          "2",
+          "Invalid field `scratchCount`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.scratchCount`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W20-scratchCount",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "172",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D21-unusedRegisters",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "181",
+          "2",
+          "Invalid field `unusedRegisters`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.unusedRegisters`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W21-unusedRegisters",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "181",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D22-validInputs",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "192",
+          "2",
+          "Invalid field `validInputs`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.validInputs`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W22-validInputs",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "192",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D23-natContract",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "204",
+          "2",
+          "Invalid field `natContract`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.natContract`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W23-natContract",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "204",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D24-leftmost",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "215",
+          "2",
+          "Invalid field `leftmost`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.leftmost`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W24-leftmost",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "215",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D25-result",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "227",
+          "2",
+          "Invalid field `result`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.result`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W25-result",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "227",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D26-halt",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "241",
+          "2",
+          "Invalid field `halt`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.halt`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W26-halt",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "241",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D27-invalidGuard",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "255",
+          "2",
+          "Invalid field `invalidGuard`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.invalidGuard`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W27-invalidGuard",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "255",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D28-stepBound",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "267",
+          "2",
+          "Invalid field `stepBound`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.stepBound`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W28-stepBound",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "267",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D29-categoryPartition",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "280",
+          "2",
+          "Invalid field `categoryPartition`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.categoryPartition`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W29-categoryPartition",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "280",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D30-finalStateFit",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "294",
+          "2",
+          "Invalid field `finalStateFit`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.finalStateFit`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W30-finalStateFit",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "294",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D31-transitionSafety",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "308",
+          "2",
+          "Invalid field `transitionSafety`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.transitionSafety`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W31-transitionSafety",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "308",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D32-prefixSafety",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "323",
+          "2",
+          "Invalid field `prefixSafety`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.prefixSafety`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W32-prefixSafety",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "323",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D33-readWidth",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "340",
+          "2",
+          "Invalid field `readWidth`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.readWidth`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W33-readWidth",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "340",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D34-positionalReadBacking",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "361",
+          "2",
+          "Invalid field `positionalReadBacking`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.positionalReadBacking`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W34-positionalReadBacking",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "361",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D35-orderedLogicalRefinement",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "382",
+          "2",
+          "Invalid field `orderedLogicalRefinement`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.orderedLogicalRefinement`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W35-orderedLogicalRefinement",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "382",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D36-logicalReadOnly",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "397",
+          "2",
+          "Invalid field `logicalReadOnly`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.logicalReadOnly`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W36-logicalReadOnly",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "397",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D37-suppliedMemoryAgreement",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "410",
+          "2",
+          "Invalid field `suppliedMemoryAgreement`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.suppliedMemoryAgreement`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W37-suppliedMemoryAgreement",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "410",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D38-specResult",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "424",
+          "2",
+          "Invalid field `specResult`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.specResult`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W38-specResult",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "424",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "D39-noFailedLoads",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "436",
+          "2",
+          "Invalid field `noFailedLoads`: The environment does not contain `RMQ.SuccinctFinal.PackedWordRAM.Optimization.CompactPackedQueryCapstone.noFailedLoads`"
+        ]
+      ],
+      "Restored": true
+    },
+    {
+      "Id": "W39-noFailedLoads",
+      "Verdict": "REJECT",
+      "ProducersCompiled": true,
+      "Diagnostics": [
+        [
+          "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+          "436",
+          "2",
+          "type mismatch"
+        ]
+      ],
+      "Restored": true
+    }
+  ]
+}

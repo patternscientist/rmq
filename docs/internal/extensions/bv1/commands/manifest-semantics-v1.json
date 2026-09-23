@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "stage": "manifest-semantics-v1",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "path": "lakefile.toml",
+  "parser": "Python standard-library tomllib",
+  "baseBytes": 561,
+  "sourceBytes": 691,
+  "baseSHA256": "A3B43BD8803536ECC70AE68E199718225B22E230F122F2F83AC77636B0A0A63A",
+  "sourceSHA256": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A",
+  "expectedOnlyAddedTarget": {
+    "name": "rmq_packed_bitvector_validate",
+    "root": "RMQ.Validation.PackedBitvector"
+  },
+  "observedTargetsWithThatName": [
+    {
+      "name": "rmq_packed_bitvector_validate",
+      "root": "RMQ.Validation.PackedBitvector"
+    }
+  ],
+  "remainingParsedManifestEqualsBase": true,
+  "recordedSourceBytesUnchanged": true,
+  "passed": true
+}

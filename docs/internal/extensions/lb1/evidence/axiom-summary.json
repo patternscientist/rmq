@@ -1,0 +1,33 @@
+{
+  "Expected": 20,
+  "Observed": 20,
+  "Names": [
+    "RMQ.EncodingVariableLowerBound.boundedBitStrings_cardinality",
+    "RMQ.ExactRMQBoundedEncoding.shapeEncode_injective_on",
+    "RMQ.ExactRMQBoundedEncoding.shapeCount_le",
+    "RMQ.ExactRMQBoundedEncoding.doubledLogSlackLower_le",
+    "RMQ.SuccinctFinal.PackedWordRAM.deserializeWords_serializeWords",
+    "RMQ.SuccinctFinal.PackedWordRAM.serializeWords_injective",
+    "RMQ.SuccinctFinal.PackedWordRAM.allocationBits_length",
+    "RMQ.SuccinctFinal.PackedWordRAM.reconstructedMemory_eq_buildMemory",
+    "RMQ.SuccinctFinal.PackedWordRAM.allocationDecoder_exact",
+    "RMQ.SuccinctFinal.PackedWordRAM.allocationBits_shape_injective",
+    "RMQ.SuccinctFinal.PackedWordRAM.uniformAllocation_shapeCount_le",
+    "RMQ.SuccinctFinal.PackedWordRAM.uniformAllocation_doubledLogSlackLower_le",
+    "RMQ.SuccinctFinal.PackedWordRAM.canonicalAllocation_shapeCount_le",
+    "RMQ.SuccinctFinal.PackedWordRAM.canonicalAllocation_doubledLogSlackLower_le",
+    "RMQ.SuccinctFinal.PackedWordRAM.allocationBits_capacity_le",
+    "RMQ.SuccinctFinal.PackedWordRAM.reconstructedRun_eq",
+    "RMQ.SuccinctFinal.PackedWordRAM.reconstructedPackedQueryCapstone_holds",
+    "RMQ.SuccinctFinal.PackedWordRAM.packedAllocationOptimality_holds",
+    "RMQ.Validation.VariablePayloadLowerBound.publicContract",
+    "RMQ.Validation.VariablePayloadLowerBound.composedConsumer"
+  ],
+  "ObservedAxioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "Unexpected": [],
+  "RawEvidence": "axiom-inventory-development.json"
+}

@@ -1,0 +1,8 @@
+{
+  "ProductionFunction": "Assert-R1Verdict",
+  "ActualOwnedChild": true,
+  "Id": "V06-DUPLICATE-PROGRESS",
+  "Reason": "OPT1-R1-VERDICT: duplicate or reordered setup progress",
+  "ExpectedAccept": false,
+  "ActualAccept": false
+}

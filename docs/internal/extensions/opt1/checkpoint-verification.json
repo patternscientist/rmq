@@ -1,0 +1,95 @@
+{
+  "Status": "INCOMPLETE_RESOURCE_WAIT",
+  "CapturedUTC": "2026-09-12T08:11:58.350967+00:00",
+  "Base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "CheckedLeafCommit": "0cdfcc307a14d39da19fdd8721ab80918c55d3e3",
+  "Role": "checkpoint static/prose checks, not final certification",
+  "Checks": [
+    {
+      "Label": "trust",
+      "Path": "checkpoint-trust.json",
+      "SHA256": "15d186460818d17dc5cfb1ede5afcecd2998a23dd60ab071cf289bc22794e881",
+      "ExitCode": 1,
+      "Passed": true
+    },
+    {
+      "Label": "native-trust",
+      "Path": "checkpoint-native-trust.json",
+      "SHA256": "c80b8bab7acdc4394fc1b66923798686a38fdbe4d509ea7b720074c05b8b13b9",
+      "ExitCode": 1,
+      "Passed": true
+    },
+    {
+      "Label": "whitespace",
+      "Path": "checkpoint-whitespace.json",
+      "SHA256": "3f6e286da95d014e9f3c6be7dbc67c472b9bb573d8afa481455838376b969fc3",
+      "ExitCode": 0,
+      "Passed": true
+    },
+    {
+      "Label": "design",
+      "Path": "checkpoint-design.json",
+      "SHA256": "a5a3c2aad2a1e2273ff15d384b0f138ff02f881d72a0afa2ec4ac56b66ef0b57",
+      "ExitCode": 0,
+      "Passed": true
+    },
+    {
+      "Label": "claims",
+      "Path": "checkpoint-claims.json",
+      "SHA256": "ed8e9aafd63c003bbc4d201a305ff489c53961c5bf73f78e5ca9f37502a68a28",
+      "ExitCode": 0,
+      "Passed": true
+    },
+    {
+      "Label": "committed-whitespace",
+      "Path": "checkpoint-committed-whitespace.json",
+      "SHA256": "fc37e45574095d4e0121759a46511bd14a6af3ca1660aed5a1133617ccf7dcce",
+      "ExitCode": 0,
+      "Passed": true
+    },
+    {
+      "Label": "committed-design",
+      "Path": "checkpoint-committed-design.json",
+      "SHA256": "bafa5c9497eabce97a1d056382b7cf958f707aac094f772e7733ff0e14cdc90c",
+      "ExitCode": 0,
+      "Passed": true
+    },
+    {
+      "Label": "phase-design",
+      "Path": "checkpoint-phase-design.json",
+      "SHA256": "7a82e852e03320fed52c5fc8b971c4fb046b290b2c16b5a8f3250ed2f397f195",
+      "ExitCode": 0,
+      "Passed": true
+    }
+  ],
+  "FrozenRows": {
+    "Path": "checkpoint-frozen-row-check.json",
+    "Count": 35,
+    "Verdict": "PASS"
+  },
+  "EarlierFullStrictClaimScan": {
+    "ExitCode": 0,
+    "Hits": 1573,
+    "StrictFailures": 0,
+    "FullOutputArtifact": false,
+    "Reason": "Tool output was truncated; exact result observed, no full transcript claimed"
+  },
+  "ActiveLeanBuild": {
+    "Session": 34305,
+    "PlanCount": 251,
+    "ObservedCompletedPrefixAtLaterPoll": 159,
+    "Status": "ACTIVE_INCOMPLETE"
+  },
+  "Pending": [
+    "concrete query budget and full Run equality",
+    "all compact kernel and consumer checks",
+    "inhabited compactPackedQueryCapstone_holds",
+    "actual emitted constants and same-object space join",
+    "actual full semantic replay and direct Lean selector controls",
+    "public field source-mutation campaign",
+    "final source restoration and clean candidate",
+    "fresh blind exact-commit candidate audit",
+    "coordinator-scheduled final aggregate"
+  ],
+  "SourceCheckpoint": "a44691d500f3a094b4c96480ed74172c944f69f3"
+}

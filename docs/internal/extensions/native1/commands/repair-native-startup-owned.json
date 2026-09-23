@@ -1,0 +1,23 @@
+{
+  "schema": "native1-startup-repair-v1",
+  "head": "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9",
+  "command": {
+    "arguments": [],
+    "file": "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\build\\packed-rmq-route.exe"
+  },
+  "result": {
+    "Stage": "repair-native-startup",
+    "ExitCode": -1073741515,
+    "Output": [],
+    "StandardOutput": [],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 2.599,
+    "DeadlineSeconds": 30,
+    "Ownership": "kill-on-close-job"
+  },
+  "expectedExit": 2,
+  "artifactSha256": "FB91B5C89BBD8726E1EF1C3A755BED7D34A084C51E6FE37993D502DECBA055D0"
+}

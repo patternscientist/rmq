@@ -1,0 +1,13 @@
+{
+  "Stage": "M32-noFailedLoads-producer",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 7.618,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

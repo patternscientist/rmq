@@ -1,0 +1,21 @@
+import RMQ.Core.WordRAM.Optimization.SourceRelations
+
+open RMQ.SuccinctFinal.PackedWordRAM
+open RMQ.SuccinctFinal.PackedWordRAM.Structured
+open RMQ.SuccinctFinal.PackedWordRAM.Optimization
+
+#check source_eval_congr
+#check source_eval_frame
+#check source_safe_transport
+#print DataAgreesBelow
+#print ActionRegistersBelow
+#print BlockRegistersBelow
+#print SourceRelationsConsumers.source_congr_expectedType
+#print SourceRelationsConsumers.source_frame_expectedType
+#print SourceRelationsConsumers.source_safe_expectedType
+#print axioms source_eval_congr
+#print axioms source_eval_frame
+#print axioms source_safe_transport
+#print axioms SourceRelationsConsumers.source_congr_expectedType
+#print axioms SourceRelationsConsumers.source_frame_expectedType
+#print axioms SourceRelationsConsumers.source_safe_expectedType

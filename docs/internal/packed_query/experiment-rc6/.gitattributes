@@ -1,0 +1,4 @@
+# Preserve manifest-verified experiment bytes on every checkout.
+* -text whitespace=cr-at-eol
+# The frozen source note has one original trailing blank line; retain its hash.
+rank-select-spec.md whitespace=cr-at-eol,-blank-at-eof

@@ -1,0 +1,585 @@
+{
+  "version": 2,
+  "cases": [
+    {
+      "id": "B01_FIREWALL_IMPORT",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Program.lean",
+      "before": "import RMQ.Core.WordRAM.Construction.Model\n",
+      "after": "import RMQ.Core.WordRAM.Construction.Model\nimport RMQ.Core.Shape\n",
+      "expected": "reject",
+      "expectedStage": "firewall",
+      "expectedSurface": "PRE1-BUILDER-FIREWALL imports rejected: RMQ/Core/WordRAM/Construction/Program.lean"
+    },
+    {
+      "id": "B02_CLOSURE_BYTES",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Program.lean",
+      "before": "def Run.steps (r : Run) : Nat := r.transitions.length",
+      "after": "def Run.steps (r : Run) : Nat := 0",
+      "expected": "reject",
+      "expectedStage": "firewall",
+      "expectedSurface": "PRE1-BUILDER-FIREWALL frozen closure bytes changed: RMQ/Core/WordRAM/Construction/Program.lean"
+    },
+    {
+      "id": "B03_LAYERED_CONTRACT_GUARD",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Primitive.lean",
+      "before": "import Std\n",
+      "after": "import Std\nimport RMQ.Core.Shape\n",
+      "expected": "reject",
+      "expectedStage": "firewall",
+      "expectedSurface": "PRE1-BUILDER-FIREWALL contract guard failed: PRE1-FIREWALL imports rejected: RMQ/Core/WordRAM/Construction/Primitive.lean"
+    },
+    {
+      "id": "B04_HEADERFIRST_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/HeaderUse.lean",
+      "before": "  headerFirst : program[0]? = some headerInstruction\n",
+      "after": "  headerFirst : True\n",
+      "expected": "reject",
+      "expectedStage": "producer",
+      "expectedSurface": "RMQ/Core/WordRAM/Construction/HeaderUse.lean:62:"
+    },
+    {
+      "id": "B05_TAIL_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/HeaderUse.lean",
+      "before": "  tailNeverWritesR1 : ∀ i ∈ program.tail, WritesOnly (fun r => r ≠ 1) i\n",
+      "after": "  tailNeverWritesR1 : True\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:22:"
+    },
+    {
+      "id": "B06_WORD_MISSING_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/HeaderUse.lean",
+      "before": "  wordMissingHeaderFault : ∀ (width : Nat) (xs : List Int) (fuel : Nat), 1 ≤ fuel →\n    (run program fuel\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }).final.status =\n        .fault ∧\n    (run program fuel\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }).steps = 1 ∧\n    (run program fuel\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }).writes = [] ∧\n    (run program fuel\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }).reserves = [] ∧\n    (run program fuel\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }).final.extent =\n        (wordInputState width xs).extent :=\n    fun width xs fuel hf => run_missing_header program headerFirst\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }\n      rfl rfl rfl (by simp [put]) fuel hf\n",
+      "after": "  wordMissingHeaderFault : True := True.intro\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:36:"
+    },
+    {
+      "id": "B07_COMPARISON_MISSING_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/HeaderUse.lean",
+      "before": "  comparisonMissingHeaderFault : ∀ (xs : List Int) (fuel : Nat), 1 ≤ fuel →\n    (run program fuel\n      { comparisonInputState xs with\n        memory := put (comparisonInputState xs).memory 0 none }).final.status = .fault ∧\n    (run program fuel\n      { comparisonInputState xs with\n        memory := put (comparisonInputState xs).memory 0 none }).steps = 1 ∧\n    (run program fuel\n      { comparisonInputState xs with\n        memory := put (comparisonInputState xs).memory 0 none }).writes = [] ∧\n    (run program fuel\n      { comparisonInputState xs with\n        memory := put (comparisonInputState xs).memory 0 none }).reserves = [] ∧\n    (run program fuel\n      { comparisonInputState xs with\n        memory := put (comparisonInputState xs).memory 0 none }).final.extent =\n        (comparisonInputState xs).extent :=\n    fun xs fuel hf => run_missing_header program headerFirst\n      { comparisonInputState xs with memory := put (comparisonInputState xs).memory 0 none }\n      rfl rfl rfl (by simp [put]) fuel hf\n",
+      "after": "  comparisonMissingHeaderFault : True := True.intro\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:54:"
+    },
+    {
+      "id": "B08_WORD_RECEIPT_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/HeaderUse.lean",
+      "before": "  wordHeaderReceipt : ∀ (width : Nat) (xs : List Int) (fuel : Nat), 1 ≤ fuel →\n    ∃ t : Transition, (run program fuel (wordInputState width xs)).transitions[0]? = some t ∧\n      t.instruction = headerInstruction ∧ t.before.regs 1 = 0 ∧\n      t.after.regs 1 = xs.length ∧ t.after.status = .running :=\n    wordHeaderReceipt_of_head program headerFirst\n",
+      "after": "  wordHeaderReceipt : True := True.intro\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:59:"
+    },
+    {
+      "id": "B09_COMPARISON_RECEIPT_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/HeaderUse.lean",
+      "before": "  comparisonHeaderReceipt : ∀ (xs : List Int) (fuel : Nat), 1 ≤ fuel →\n    ∃ t : Transition, (run program fuel (comparisonInputState xs)).transitions[0]? = some t ∧\n      t.instruction = headerInstruction ∧ t.before.regs 1 = 0 ∧\n      t.after.regs 1 = xs.length ∧ t.after.status = .running :=\n    comparisonHeaderReceipt_of_head program headerFirst\n",
+      "after": "  comparisonHeaderReceipt : True := True.intro\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:64:"
+    },
+    {
+      "id": "B10_EXTENT_SIBLING",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/HeaderUse.lean",
+      "before": "  oracleExtentOne : ∀ xs : List Int, (comparisonInputState xs).extent = 1 := fun _ => rfl\n",
+      "after": "  oracleExtentOne : ∀ xs : List Int, (comparisonInputState xs).pc = 0 := fun _ => rfl\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:66:"
+    },
+    {
+      "id": "B11_EXTENT_DELETE",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/HeaderUse.lean",
+      "before": "  oracleExtentOne : ∀ xs : List Int, (comparisonInputState xs).extent = 1 := fun _ => rfl\n",
+      "after": "",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:66:"
+    },
+    {
+      "id": "B12_ACCEPT_COMMENT",
+      "kind": "control",
+      "path": "RMQ/Core/WordRAM/Construction/HeaderUse.lean",
+      "before": "This module is a consumer of the execution calculus, outside the operational",
+      "after": "This module is a consumer of the execution calculus outside the operational",
+      "expected": "accept",
+      "expectedStage": "consumer",
+      "expectedSurface": "PRE1-BUILDER-TYPED-CONSUMERS PASS"
+    },
+    {
+      "id": "B13_TOY_PIN_DRIFT",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "    (run toyProgram 4 (wordInputState 40 [3])).steps = 4 ∧\n",
+      "after": "    (run toyProgram 4 (wordInputState 40 [3])).steps = 5 ∧\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:84:"
+    },
+    {
+      "id": "B14_HEADERFIRST_CONSUMER",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/HeaderUse.lean",
+      "before": "structure HeaderUse (program : List BInstr) : Prop where\n  headerFirst : program[0]? = some headerInstruction\n  tailNeverWritesR1 : ∀ i ∈ program.tail, WritesOnly (fun r => r ≠ 1) i\n  wordMissingHeaderFault : ∀ (width : Nat) (xs : List Int) (fuel : Nat), 1 ≤ fuel →\n    (run program fuel\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }).final.status =\n        .fault ∧\n    (run program fuel\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }).steps = 1 ∧\n    (run program fuel\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }).writes = [] ∧\n    (run program fuel\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }).reserves = [] ∧\n    (run program fuel\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }).final.extent =\n        (wordInputState width xs).extent :=\n    fun width xs fuel hf => run_missing_header program headerFirst\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }\n      rfl rfl rfl (by simp [put]) fuel hf\n  comparisonMissingHeaderFault : ∀ (xs : List Int) (fuel : Nat), 1 ≤ fuel →\n    (run program fuel\n      { comparisonInputState xs with\n        memory := put (comparisonInputState xs).memory 0 none }).final.status = .fault ∧\n    (run program fuel\n      { comparisonInputState xs with\n        memory := put (comparisonInputState xs).memory 0 none }).steps = 1 ∧\n    (run program fuel\n      { comparisonInputState xs with\n        memory := put (comparisonInputState xs).memory 0 none }).writes = [] ∧\n    (run program fuel\n      { comparisonInputState xs with\n        memory := put (comparisonInputState xs).memory 0 none }).reserves = [] ∧\n    (run program fuel\n      { comparisonInputState xs with\n        memory := put (comparisonInputState xs).memory 0 none }).final.extent =\n        (comparisonInputState xs).extent :=\n    fun xs fuel hf => run_missing_header program headerFirst\n      { comparisonInputState xs with memory := put (comparisonInputState xs).memory 0 none }\n      rfl rfl rfl (by simp [put]) fuel hf\n  wordHeaderReceipt : ∀ (width : Nat) (xs : List Int) (fuel : Nat), 1 ≤ fuel →\n    ∃ t : Transition, (run program fuel (wordInputState width xs)).transitions[0]? = some t ∧\n      t.instruction = headerInstruction ∧ t.before.regs 1 = 0 ∧\n      t.after.regs 1 = xs.length ∧ t.after.status = .running :=\n    wordHeaderReceipt_of_head program headerFirst\n  comparisonHeaderReceipt : ∀ (xs : List Int) (fuel : Nat), 1 ≤ fuel →\n    ∃ t : Transition, (run program fuel (comparisonInputState xs)).transitions[0]? = some t ∧\n      t.instruction = headerInstruction ∧ t.before.regs 1 = 0 ∧\n      t.after.regs 1 = xs.length ∧ t.after.status = .running :=\n    comparisonHeaderReceipt_of_head program headerFirst\n  oracleExtentOne : ∀ xs : List Int, (comparisonInputState xs).extent = 1 := fun _ => rfl\n\n/-- The certificate of a program follows from the two syntactic facts: the\nheader load is first and no later instruction writes register 1. Both are\ndecidable on a closed program constant. The `trivial` fallbacks below never\nfire on the real field types; they exist so that the registry's field-weakening\nmutations reach the exact-type consumer instead of stopping at this\ninitializer (the load-bearing pins live in `scripts/preprocessing_builder_check.lean`). -/\ntheorem headerUse_of_program (program : List BInstr)\n    (hhead : program[0]? = some headerInstruction)\n    (htail : ∀ i ∈ program.tail, WritesOnly (fun r => r ≠ 1) i) : HeaderUse program :=\n  { headerFirst := by first | exact hhead | trivial\n    tailNeverWritesR1 := by first | exact htail | trivial }",
+      "after": "structure HeaderUse (program : List BInstr) : Prop where\n  headerFirst : True\n  tailNeverWritesR1 : ∀ i ∈ program.tail, WritesOnly (fun r => r ≠ 1) i\n  wordMissingHeaderFault : ∀ (width : Nat) (xs : List Int) (fuel : Nat), 1 ≤ fuel →\n    (run program fuel\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }).final.status =\n        .fault ∧\n    (run program fuel\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }).steps = 1 ∧\n    (run program fuel\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }).writes = [] ∧\n    (run program fuel\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }).reserves = [] ∧\n    (run program fuel\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }).final.extent =\n        (wordInputState width xs).extent\n  comparisonMissingHeaderFault : ∀ (xs : List Int) (fuel : Nat), 1 ≤ fuel →\n    (run program fuel\n      { comparisonInputState xs with\n        memory := put (comparisonInputState xs).memory 0 none }).final.status = .fault ∧\n    (run program fuel\n      { comparisonInputState xs with\n        memory := put (comparisonInputState xs).memory 0 none }).steps = 1 ∧\n    (run program fuel\n      { comparisonInputState xs with\n        memory := put (comparisonInputState xs).memory 0 none }).writes = [] ∧\n    (run program fuel\n      { comparisonInputState xs with\n        memory := put (comparisonInputState xs).memory 0 none }).reserves = [] ∧\n    (run program fuel\n      { comparisonInputState xs with\n        memory := put (comparisonInputState xs).memory 0 none }).final.extent =\n        (comparisonInputState xs).extent\n  wordHeaderReceipt : ∀ (width : Nat) (xs : List Int) (fuel : Nat), 1 ≤ fuel →\n    ∃ t : Transition, (run program fuel (wordInputState width xs)).transitions[0]? = some t ∧\n      t.instruction = headerInstruction ∧ t.before.regs 1 = 0 ∧\n      t.after.regs 1 = xs.length ∧ t.after.status = .running\n  comparisonHeaderReceipt : ∀ (xs : List Int) (fuel : Nat), 1 ≤ fuel →\n    ∃ t : Transition, (run program fuel (comparisonInputState xs)).transitions[0]? = some t ∧\n      t.instruction = headerInstruction ∧ t.before.regs 1 = 0 ∧\n      t.after.regs 1 = xs.length ∧ t.after.status = .running\n  oracleExtentOne : ∀ xs : List Int, (comparisonInputState xs).extent = 1 := fun _ => rfl\n\n/-- The certificate of a program follows from the two syntactic facts: the\nheader load is first and no later instruction writes register 1. Both are\ndecidable on a closed program constant. The `trivial` fallbacks below never\nfire on the real field types; they exist so that the registry's field-weakening\nmutations reach the exact-type consumer instead of stopping at this\ninitializer (the load-bearing pins live in `scripts/preprocessing_builder_check.lean`). -/\ntheorem headerUse_of_program (program : List BInstr)\n    (hhead : program[0]? = some headerInstruction)\n    (htail : ∀ i ∈ program.tail, WritesOnly (fun r => r ≠ 1) i) : HeaderUse program :=\n  { headerFirst := trivial\n    tailNeverWritesR1 := htail\n    wordMissingHeaderFault := fun width xs fuel hf => run_missing_header program hhead\n      { wordInputState width xs with memory := put (encodeInput width xs) 0 none }\n      rfl rfl rfl (by simp [put]) fuel hf\n    comparisonMissingHeaderFault := fun xs fuel hf => run_missing_header program hhead\n      { comparisonInputState xs with memory := put (comparisonInputState xs).memory 0 none }\n      rfl rfl rfl (by simp [put]) fuel hf\n    wordHeaderReceipt := wordHeaderReceipt_of_head program hhead\n    comparisonHeaderReceipt := comparisonHeaderReceipt_of_head program hhead }",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:20:"
+    },
+    {
+      "id": "B15_ARRAYRUN_FINAL_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/ArrayRun.lean",
+      "manifest": "rehash",
+      "before": "    (runArray program.toArray fuel es).result = (run program fuel es.abstract).result ∧\n    (runArray program.toArray fuel es).final.abstract = (run program fuel es.abstract).final := by\n  obtain ⟨hf, hst, hc, hw, hr, hres⟩ :=\n    runArrayAux_spec program R hprog fuel es hregs hkeys 0 [] [] []\n  exact ⟨by rw [runArray, hst, Nat.zero_add], by rw [runArray, hc]; rfl,\n    by rw [runArray, hw]; rfl, by rw [runArray, hr]; rfl, by rw [runArray, hres],\n    by rw [runArray, hf]⟩\n",
+      "after": "    (runArray program.toArray fuel es).result = (run program fuel es.abstract).result := by\n  obtain ⟨_, hst, hc, hw, hr, hres⟩ :=\n    runArrayAux_spec program R hprog fuel es hregs hkeys 0 [] [] []\n  exact ⟨by rw [runArray, hst, Nat.zero_add], by rw [runArray, hc]; rfl,\n    by rw [runArray, hw]; rfl, by rw [runArray, hr]; rfl, by rw [runArray, hres]⟩\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:335:"
+    },
+    {
+      "id": "B16_PROGRAM_PARAMETER",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Builder/Program.lean",
+      "manifest": "rehash",
+      "before": "def builderProgram : List BInstr :=",
+      "after": "def builderProgram (w : Nat := 0) : List BInstr :=",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:370:"
+    },
+    {
+      "id": "B17_PROGRAMWORD_PARAMETER",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Builder/Program.lean",
+      "manifest": "rehash",
+      "before": "def builderProgramWord : List BInstr :=",
+      "after": "def builderProgramWord (w : Nat := 0) : List BInstr :=",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:371:"
+    },
+    {
+      "id": "B18_EFFICIENTBUILD_RELOCATION",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Builder/Program.lean",
+      "manifest": "rehash",
+      "before": "/-- The emitted output of the comparison-oracle run (V3-6). -/\ndef efficientBuild (xs : List Int) : List Nat :=\n  match (run builderProgram (builderBudget xs.length) (comparisonInputState xs)).final.status with\n  | .halted outBase =>\n      emitted (run builderProgram (builderBudget xs.length) (comparisonInputState xs)).final outBase\n        ((run builderProgram (builderBudget xs.length) (comparisonInputState xs)).final.extent - outBase)\n  | _ => []\n\n",
+      "after": "",
+      "companion": {
+        "path": "RMQ/Core/WordRAM/Construction/Proof/Constants.lean",
+        "before": "namespace RMQ.SuccinctFinal.PackedConstruction.Proof\n",
+        "after": "namespace RMQ.SuccinctFinal.PackedConstruction\n\ndef efficientBuild (xs : List Int) : List Nat :=\n  match (run builderProgram (builderBudget xs.length) (comparisonInputState xs)).final.status with\n  | .halted outBase =>\n      emitted (run builderProgram (builderBudget xs.length) (comparisonInputState xs)).final outBase\n        ((run builderProgram (builderBudget xs.length) (comparisonInputState xs)).final.extent - outBase)\n  | _ => []\n\nend RMQ.SuccinctFinal.PackedConstruction\n\nnamespace RMQ.SuccinctFinal.PackedConstruction.Proof\n"
+      },
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:352:"
+    },
+    {
+      "id": "B19_L_KEY_NUMERAL",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "ProgramContract builderProgram (fun _ => builderProgram) 2107 8079",
+      "after": "ProgramContract builderProgram (fun _ => builderProgram) 2108 8079",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:405:"
+    },
+    {
+      "id": "B20_L_WORD_NUMERAL",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "ProgramContract builderProgramWord (fun _ => builderProgramWord) 2107 8089",
+      "after": "ProgramContract builderProgramWord (fun _ => builderProgramWord) 2108 8089",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:408:"
+    },
+    {
+      "id": "B21_B_NUMERAL",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "ProgramContract builderProgram (fun _ => builderProgram) 2107 8079",
+      "after": "ProgramContract builderProgram (fun _ => builderProgram) 2107 8080",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:405:"
+    },
+    {
+      "id": "B22_BPRIME_NUMERAL",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "ProgramContract builderProgramWord (fun _ => builderProgramWord) 2107 8089",
+      "after": "ProgramContract builderProgramWord (fun _ => builderProgramWord) 2107 8090",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:408:"
+    },
+    {
+      "id": "B23_P0_NUMERAL",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "= [411, 412, 413, 414, 415, 429, 430, 431, 432, 433] ∧",
+      "after": "= [1411, 412, 413, 414, 415, 429, 430, 431, 432, 433] ∧",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:401:"
+    },
+    {
+      "id": "B24_P1_NUMERAL",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "= [411, 412, 413, 414, 415, 429, 430, 431, 432, 433] ∧",
+      "after": "= [411, 1412, 413, 414, 415, 429, 430, 431, 432, 433] ∧",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:401:"
+    },
+    {
+      "id": "B25_P2_NUMERAL",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "= [411, 412, 413, 414, 415, 429, 430, 431, 432, 433] ∧",
+      "after": "= [411, 412, 1413, 414, 415, 429, 430, 431, 432, 433] ∧",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:401:"
+    },
+    {
+      "id": "B26_P3_NUMERAL",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "= [411, 412, 413, 414, 415, 429, 430, 431, 432, 433] ∧",
+      "after": "= [411, 412, 413, 1414, 415, 429, 430, 431, 432, 433] ∧",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:401:"
+    },
+    {
+      "id": "B27_P4_NUMERAL",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "= [411, 412, 413, 414, 415, 429, 430, 431, 432, 433] ∧",
+      "after": "= [411, 412, 413, 414, 1415, 429, 430, 431, 432, 433] ∧",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:401:"
+    },
+    {
+      "id": "B28_P5_NUMERAL",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "= [411, 412, 413, 414, 415, 429, 430, 431, 432, 433] ∧",
+      "after": "= [411, 412, 413, 414, 415, 1429, 430, 431, 432, 433] ∧",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:401:"
+    },
+    {
+      "id": "B29_P6_NUMERAL",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "= [411, 412, 413, 414, 415, 429, 430, 431, 432, 433] ∧",
+      "after": "= [411, 412, 413, 414, 415, 429, 1430, 431, 432, 433] ∧",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:401:"
+    },
+    {
+      "id": "B30_P7_NUMERAL",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "= [411, 412, 413, 414, 415, 429, 430, 431, 432, 433] ∧",
+      "after": "= [411, 412, 413, 414, 415, 429, 430, 1431, 432, 433] ∧",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:401:"
+    },
+    {
+      "id": "B31_P8_NUMERAL",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "= [411, 412, 413, 414, 415, 429, 430, 431, 432, 433] ∧",
+      "after": "= [411, 412, 413, 414, 415, 429, 430, 431, 1432, 433] ∧",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:401:"
+    },
+    {
+      "id": "B32_P9_NUMERAL",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "= [411, 412, 413, 414, 415, 429, 430, 431, 432, 433] ∧",
+      "after": "= [411, 412, 413, 414, 415, 429, 430, 431, 432, 1433] ∧",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:401:"
+    },
+    {
+      "id": "B33_D_NUMERAL",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "builderBudget n = 1000000000 + 1000000000 * n",
+      "after": "builderBudget n = 1000000001 + 1000000000 * n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:410:"
+    },
+    {
+      "id": "B34_C_NUMERAL",
+      "kind": "mutation",
+      "path": "scripts/preprocessing_builder_check.lean",
+      "before": "builderBudget n = 1000000000 + 1000000000 * n",
+      "after": "builderBudget n = 1000000000 + 1000000001 * n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:410:"
+    },
+    {
+      "id": "B35_COMPILE_REALIZES_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Compiler.lean",
+      "manifest": "rehash",
+      "before": "theorem EvalG.compile_realizes' {P : State → Action → Prop}\n    (hP : ∀ (s : State) (q : Nat) (op : Action), P s op → P { s with pc := q } op)\n    (program : List BInstr) {b : Block} {s s' : State} {k : Nat} (h : EvalG P b s s' k)\n    (base : Nat) (host : HostedAt program base (b.compileAt base)) (bound : base + b.size < 2 ^ 32) :\n    ∃ s'' ts, RunsTo program { s with pc := base } s'' ts ∧ ts.length = k ∧\n      s'' = { s' with pc := s''.pc } ∧ (s''.status = .running → s''.pc = base + b.size) := by\n  obtain ⟨s'', ts, hrun, hlen, hagree, hpc, _⟩ := h.compile_realizes hP program base host bound\n  exact ⟨s'', ts, hrun, hlen, hagree.eq_set, hpc⟩\n\n",
+      "after": "theorem EvalG.compile_realizes' {P : State → Action → Prop}\n    (hP : ∀ (s : State) (q : Nat) (op : Action), P s op → P { s with pc := q } op)\n    (program : List BInstr) {b : Block} {s s' : State} {k : Nat} (h : EvalG P b s s' k)\n    (base : Nat) (host : HostedAt program base (b.compileAt base)) (bound : base + b.size < 2 ^ 32) :\n    ∃ s'' ts, RunsTo program { s with pc := base } s'' ts ∧\n      s'' = { s' with pc := s''.pc } ∧ (s''.status = .running → s''.pc = base + b.size) := by\n  obtain ⟨s'', ts, hrun, _, hagree, hpc, _⟩ := h.compile_realizes hP program base host bound\n  exact ⟨s'', ts, hrun, hagree.eq_set, hpc⟩\n\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:218:"
+    },
+    {
+      "id": "B36_COMPILE_SAFE_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Compiler.lean",
+      "manifest": "rehash",
+      "before": "theorem SafeEval.compile_safe {W : Nat} (hW : 32 ≤ W) (program : List BInstr)\n    (hprog : program.length < 2 ^ W) {b : Block} {s s' : State} {k : Nat}\n    (h : SafeEval W b s s' k) (base : Nat) (host : HostedAt program base (b.compileAt base))\n    (hbound : base + b.size < 2 ^ 32) (hin : base + b.size < program.length)\n    (hfit : ({ s with pc := base } : State).Fits W) :\n    ∃ s'' ts, RunsTo program { s with pc := base } s'' ts ∧ ts.length = k ∧\n      s'' = { s' with pc := s''.pc } ∧ (s''.status = .running → s''.pc = base + b.size) ∧\n      Run.Safe W program (run program ts.length { s with pc := base }) ∧ s''.Fits W := by\n  obtain ⟨s'', ts, hrun, hlen, hagree, hpc, hshape⟩ :=\n    h.compile_realizes (fun s q op hp => hp.pc_set q) program base host hbound\n  have hsafe : ∀ t ∈ (run program ts.length { s with pc := base }).transitions,\n      Prim.Safe W program.length t.before t.instruction.primitive := by\n    intro t ht\n    unfold RunsTo at hrun\n    rw [hrun] at ht\n    exact (hshape t ht).safe hW hin\n  have hrs := Run.Safe.of_transitions program W hprog ts.length _ hfit hsafe\n  refine ⟨s'', ts, hrun, hlen, hagree.eq_set, hpc, hrs, ?_⟩\n  have hfin := hrs.final_fits hfit\n  unfold RunsTo at hrun\n  rw [hrun] at hfin\n  exact hfin\n",
+      "after": "theorem SafeEval.compile_safe {W : Nat} (hW : 32 ≤ W) (program : List BInstr)\n    (hprog : program.length < 2 ^ W) {b : Block} {s s' : State} {k : Nat}\n    (h : SafeEval W b s s' k) (base : Nat) (host : HostedAt program base (b.compileAt base))\n    (hbound : base + b.size < 2 ^ 32) (hin : base + b.size < program.length)\n    (hfit : ({ s with pc := base } : State).Fits W) :\n    ∃ s'' ts, RunsTo program { s with pc := base } s'' ts ∧ ts.length = k ∧\n      s'' = { s' with pc := s''.pc } ∧ (s''.status = .running → s''.pc = base + b.size) ∧\n      Run.Safe W program (run program ts.length { s with pc := base }) := by\n  obtain ⟨s'', ts, hrun, hlen, hagree, hpc, hshape⟩ :=\n    h.compile_realizes (fun s q op hp => hp.pc_set q) program base host hbound\n  have hsafe : ∀ t ∈ (run program ts.length { s with pc := base }).transitions,\n      Prim.Safe W program.length t.before t.instruction.primitive := by\n    intro t ht\n    unfold RunsTo at hrun\n    rw [hrun] at ht\n    exact (hshape t ht).safe hW hin\n  have hrs := Run.Safe.of_transitions program W hprog ts.length _ hfit hsafe\n  exact ⟨s'', ts, hrun, hlen, hagree.eq_set, hpc, hrs⟩\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:228:"
+    },
+    {
+      "id": "B37_RUN_WRITE_AT_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Calculus.lean",
+      "manifest": "rehash",
+      "before": "theorem run_write_at {program : List BInstr} {fuel : Nat} {s : State} {k : Nat}\n    {t : Transition} {address value : Operand}\n    (h : (run program fuel s).transitions[k]? = some t)\n    (hstore : t.instruction.primitive = .store address value) :\n    t.before = (run program k s).final ∧ t.before.status = .running ∧\n      program[t.before.pc]? = some t.instruction ∧\n      (t.before.regs address < t.before.extent →\n        t.after.memory (t.before.regs address) = some (t.before.regs value) ∧\n        t.after.status = .running ∧ t.after.extent = t.before.extent ∧\n        t.write? = some (t.before.regs address, t.before.regs value)) ∧\n      (¬ t.before.regs address < t.before.extent →\n        t.after.status = .fault ∧ t.after.memory = t.before.memory ∧ t.write? = none) := by\n  obtain ⟨hb, hs, hf, he⟩ := run_transition_spec h\n  refine ⟨hb, hs, hf, ?_, ?_⟩\n  · intro ha\n    refine ⟨?_, ?_, ?_, ?_⟩\n    · rw [he, hstore]; simp [execPrim, ha, State.next, put]\n    · rw [he, hstore]; simp [execPrim, ha, State.next, hs]\n    · rw [he, hstore]; simp [execPrim, ha, State.next]\n    · simp [Transition.write?, hstore, ha]\n  · intro ha\n    refine ⟨?_, ?_, ?_⟩\n    · rw [he, hstore]; simp [execPrim, ha]\n    · rw [he, hstore]; simp [execPrim, ha]\n    · simp [Transition.write?, hstore, ha]\n\n",
+      "after": "theorem run_write_at {program : List BInstr} {fuel : Nat} {s : State} {k : Nat}\n    {t : Transition} {address value : Operand}\n    (h : (run program fuel s).transitions[k]? = some t)\n    (hstore : t.instruction.primitive = .store address value) :\n    t.before = (run program k s).final ∧ t.before.status = .running ∧\n      program[t.before.pc]? = some t.instruction ∧\n      (t.before.regs address < t.before.extent →\n        t.after.memory (t.before.regs address) = some (t.before.regs value) ∧\n        t.after.status = .running ∧ t.after.extent = t.before.extent ∧\n        t.write? = some (t.before.regs address, t.before.regs value)) := by\n  obtain ⟨hb, hs, hf, he⟩ := run_transition_spec h\n  refine ⟨hb, hs, hf, ?_⟩\n  · intro ha\n    refine ⟨?_, ?_, ?_, ?_⟩\n    · rw [he, hstore]; simp [execPrim, ha, State.next, put]\n    · rw [he, hstore]; simp [execPrim, ha, State.next, hs]\n    · rw [he, hstore]; simp [execPrim, ha, State.next]\n    · simp [Transition.write?, hstore, ha]\n\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:108:"
+    },
+    {
+      "id": "B38_RUN_LOAD_AT_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Calculus.lean",
+      "manifest": "rehash",
+      "before": "theorem run_load_at {program : List BInstr} {fuel : Nat} {s : State} {k : Nat}\n    {t : Transition} {dst address : Operand}\n    (h : (run program fuel s).transitions[k]? = some t)\n    (hload : t.instruction.primitive = .load dst address) :\n    t.before = (run program k s).final ∧ t.before.status = .running ∧\n      program[t.before.pc]? = some t.instruction ∧\n      t.load? = some (t.before.regs address) ∧\n      (∀ v, t.before.regs address < t.before.extent →\n        t.before.memory (t.before.regs address) = some v →\n        t.after.regs dst = v ∧ t.after.status = .running ∧ t.after.memory = t.before.memory) ∧\n      (t.after.status = .running →\n        t.before.regs address < t.before.extent ∧\n        ∃ v, t.before.memory (t.before.regs address) = some v ∧ t.after.regs dst = v) := by\n  obtain ⟨hb, hs, hf, he⟩ := run_transition_spec h\n  refine ⟨hb, hs, hf, by simp [Transition.load?, hload], ?_, ?_⟩\n  · intro v ha hv\n    rw [he, hload]\n    simp [execPrim, ha, hv, State.writeNext, State.next, put, hs]\n  · intro hrun\n    rw [he, hload] at hrun\n    by_cases ha : t.before.regs address < t.before.extent\n    · refine ⟨ha, ?_⟩\n      cases hv : t.before.memory (t.before.regs address) with\n      | none => simp [execPrim, ha, hv] at hrun\n      | some v =>\n          refine ⟨v, rfl, ?_⟩\n          rw [he, hload]\n          simp [execPrim, ha, hv, State.writeNext, State.next, put]\n    · simp [execPrim, ha] at hrun\n\n",
+      "after": "theorem run_load_at {program : List BInstr} {fuel : Nat} {s : State} {k : Nat}\n    {t : Transition} {dst address : Operand}\n    (h : (run program fuel s).transitions[k]? = some t)\n    (hload : t.instruction.primitive = .load dst address) :\n    t.before = (run program k s).final ∧ t.before.status = .running ∧\n      program[t.before.pc]? = some t.instruction ∧\n      t.load? = some (t.before.regs address) ∧\n      (∀ v, t.before.regs address < t.before.extent →\n        t.before.memory (t.before.regs address) = some v →\n        t.after.regs dst = v ∧ t.after.status = .running ∧ t.after.memory = t.before.memory) := by\n  obtain ⟨hb, hs, hf, he⟩ := run_transition_spec h\n  refine ⟨hb, hs, hf, by simp [Transition.load?, hload], ?_⟩\n  · intro v ha hv\n    rw [he, hload]\n    simp [execPrim, ha, hv, State.writeNext, State.next, put, hs]\n\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:123:"
+    },
+    {
+      "id": "B39_WRITES_REPLAY_SIBLING",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Calculus.lean",
+      "manifest": "rehash",
+      "before": "theorem writes_replay (program : List BInstr) (fuel : Nat) (s : State) :\n    (run program fuel s).final.memory =\n      (run program fuel s).writes.foldl (fun m e => put m e.1 (some e.2)) s.memory := by\n  induction fuel generalizing s with\n  | zero => rfl\n  | succ fuel ih =>\n      cases hs : stepProgram program s with\n      | none => simp [run, hs, Run.writes]\n      | some t =>\n          have hrest := ih t.after\n          have hmem := Transition.memory_of_step hs\n          simp only [run, hs, Run.writes, List.filterMap_cons] at hrest ⊢\n          rw [hrest, hmem]\n          cases t.write? with\n          | none => rfl\n          | some e => rfl\n\n",
+      "after": "theorem writes_replay (program : List BInstr) (fuel : Nat) (s : State) :\n    (run program fuel s).final.extent = (run program fuel s).final.extent := rfl\n\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:128:"
+    },
+    {
+      "id": "B40_RUN_AGREE_KEYS_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Calculus.lean",
+      "manifest": "rehash",
+      "before": "theorem run_agree_of_reads (program : List BInstr) (fuel : Nat) (s s' : State)\n    (hagree : State.Agree s s')\n    (hmem : ∀ a ∈ (run program fuel s).loads, s'.memory a = s.memory a)\n    (hkey : ∀ i ∈ (run program fuel s).keyReads, s'.keys i = s.keys i) :\n    Run.Agree (run program fuel s) (run program fuel s') := by\n  induction fuel generalizing s s' with\n  | zero => exact ⟨trivial, hagree⟩\n  | succ fuel ih =>\n      cases hs : stepProgram program s with\n      | none =>\n          rw [run_of_step_none program s _ hs,\n            run_of_step_none program s' _ (stepProgram_none_agree hagree hs)]\n          exact ⟨trivial, hagree⟩\n      | some t =>\n          obtain ⟨hb, hst, hf, he⟩ := step_spec hs\n          subst hb\n          have hs' : stepProgram program s' =\n              some ⟨s', t.instruction, execPrim t.instruction.primitive s'⟩ :=\n            stepProgram_of_running (by rw [← hagree.2.2.2.2]; exact hst)\n              (by rw [← hagree.2.2.2.1]; exact hf)\n          have hone := execPrim_agree_of_agree t.instruction.primitive t.before s' hagree\n            (fun dst address hp => hmem _ (by\n              simp [run, hs, Run.loads, Transition.load?, hp]))\n            (fun dst address hp => hkey _ (by\n              simp [run, hs, Run.keyReads, Transition.keyRead?, hp]))\n          obtain ⟨hagree', hcells⟩ := hone\n          rw [← he] at hagree' hcells\n          have hloads : ∀ a ∈ (run program fuel t.after).loads,\n              (execPrim t.instruction.primitive s').memory a = t.after.memory a := by\n            intro a ha\n            rcases hcells a with h | ⟨h1, h2⟩\n            · exact h\n            · rw [h1, h2]\n              apply hmem\n              simp only [run, hs, Run.loads, List.filterMap_cons]\n              cases t.load? <;> simp_all [Run.loads]\n          have hkeys : ∀ i ∈ (run program fuel t.after).keyReads,\n              (execPrim t.instruction.primitive s').keys i = t.after.keys i := by\n            intro i hi\n            rw [execPrim_keys, he, execPrim_keys]\n            apply hkey\n            simp only [run, hs, Run.keyReads, List.filterMap_cons]\n            cases t.keyRead? <;> simp_all [Run.keyReads]\n          have hrest := ih t.after (execPrim t.instruction.primitive s') hagree' hloads hkeys\n          rw [run_succ_of_step fuel hs, run_succ_of_step fuel hs']\n          exact ⟨⟨⟨rfl, hagree, hagree'⟩, hrest.1⟩, hrest.2⟩\n\ntheorem Run.Agree.steps {r r' : Run} (h : Run.Agree r r') : r.steps = r'.steps :=\n  h.1.length_eq\n\ntheorem Run.Agree.categories {r r' : Run} (h : Run.Agree r r') : r.categories = r'.categories :=\n  h.1.map_eq _ (fun _ _ hi _ _ => by simp [hi])\n\ntheorem Run.Agree.writes {r r' : Run} (h : Run.Agree r r') : r.writes = r'.writes :=\n  h.1.filterMap_eq _ (fun t t' hi hb _ => by\n    obtain ⟨hr, he, _, _, _⟩ := hb\n    simp only [Transition.write?, hi, hr, he])\n\ntheorem Run.Agree.reserves {r r' : Run} (h : Run.Agree r r') : r.reserves = r'.reserves :=\n  h.1.filterMap_eq _ (fun t t' hi hb _ => by\n    obtain ⟨_, he, _, _, _⟩ := hb\n    simp only [Transition.reserve?, hi, he])\n\ntheorem Run.Agree.result {r r' : Run} (h : Run.Agree r r') : r.result = r'.result := by\n  unfold Run.result\n  rw [h.2.2.2.2.2]\n\n/-- Coarse supplied-store agreement: two clean-tailed agreeing states whose\nmemories agree on every cell below the extent have equal memories, so the\nfine hypothesis is automatic and the runs agree on every projection. -/\ntheorem run_agree_of_supplied (program : List BInstr) (fuel : Nat) (s s' : State)\n    (hagree : State.Agree s s') (hclean : CleanTail s) (hclean' : CleanTail s')\n    (hbelow : ∀ a, a < s.extent → s'.memory a = s.memory a)\n    (hkey : ∀ i ∈ (run program fuel s).keyReads, s'.keys i = s.keys i) :\n    s'.memory = s.memory ∧ Run.Agree (run program fuel s) (run program fuel s') := by\n  have hm : s'.memory = s.memory := by\n    funext a\n    by_cases ha : a < s.extent\n    · exact hbelow a ha\n    · rw [hclean a (by omega), hclean' a (by rw [← hagree.2.1]; omega)]\n  exact ⟨hm, run_agree_of_reads program fuel s s' hagree (fun a _ => by rw [hm]) hkey⟩\n\n",
+      "after": "theorem run_agree_of_reads (program : List BInstr) (fuel : Nat) (s s' : State)\n    (hagree : State.Agree s s')\n    (hmem : ∀ a ∈ (run program fuel s).loads, s'.memory a = s.memory a)\n    (hkey : ∀ i, s'.keys i = s.keys i) :\n    Run.Agree (run program fuel s) (run program fuel s') := by\n  induction fuel generalizing s s' with\n  | zero => exact ⟨trivial, hagree⟩\n  | succ fuel ih =>\n      cases hs : stepProgram program s with\n      | none =>\n          rw [run_of_step_none program s _ hs,\n            run_of_step_none program s' _ (stepProgram_none_agree hagree hs)]\n          exact ⟨trivial, hagree⟩\n      | some t =>\n          obtain ⟨hb, hst, hf, he⟩ := step_spec hs\n          subst hb\n          have hs' : stepProgram program s' =\n              some ⟨s', t.instruction, execPrim t.instruction.primitive s'⟩ :=\n            stepProgram_of_running (by rw [← hagree.2.2.2.2]; exact hst)\n              (by rw [← hagree.2.2.2.1]; exact hf)\n          have hone := execPrim_agree_of_agree t.instruction.primitive t.before s' hagree\n            (fun dst address hp => hmem _ (by\n              simp [run, hs, Run.loads, Transition.load?, hp]))\n            (fun _ _ _ => hkey _)\n          obtain ⟨hagree', hcells⟩ := hone\n          rw [← he] at hagree' hcells\n          have hloads : ∀ a ∈ (run program fuel t.after).loads,\n              (execPrim t.instruction.primitive s').memory a = t.after.memory a := by\n            intro a ha\n            rcases hcells a with h | ⟨h1, h2⟩\n            · exact h\n            · rw [h1, h2]\n              apply hmem\n              simp only [run, hs, Run.loads, List.filterMap_cons]\n              cases t.load? <;> simp_all [Run.loads]\n          have hkeys : ∀ i, (execPrim t.instruction.primitive s').keys i = t.after.keys i := by\n            intro i\n            rw [execPrim_keys, he, execPrim_keys]\n            exact hkey i\n          have hrest := ih t.after (execPrim t.instruction.primitive s') hagree' hloads hkeys\n          rw [run_succ_of_step fuel hs, run_succ_of_step fuel hs']\n          exact ⟨⟨⟨rfl, hagree, hagree'⟩, hrest.1⟩, hrest.2⟩\n\ntheorem Run.Agree.steps {r r' : Run} (h : Run.Agree r r') : r.steps = r'.steps :=\n  h.1.length_eq\n\ntheorem Run.Agree.categories {r r' : Run} (h : Run.Agree r r') : r.categories = r'.categories :=\n  h.1.map_eq _ (fun _ _ hi _ _ => by simp [hi])\n\ntheorem Run.Agree.writes {r r' : Run} (h : Run.Agree r r') : r.writes = r'.writes :=\n  h.1.filterMap_eq _ (fun t t' hi hb _ => by\n    obtain ⟨hr, he, _, _, _⟩ := hb\n    simp only [Transition.write?, hi, hr, he])\n\ntheorem Run.Agree.reserves {r r' : Run} (h : Run.Agree r r') : r.reserves = r'.reserves :=\n  h.1.filterMap_eq _ (fun t t' hi hb _ => by\n    obtain ⟨_, he, _, _, _⟩ := hb\n    simp only [Transition.reserve?, hi, he])\n\ntheorem Run.Agree.result {r r' : Run} (h : Run.Agree r r') : r.result = r'.result := by\n  unfold Run.result\n  rw [h.2.2.2.2.2]\n\n/-- Coarse supplied-store agreement: two clean-tailed agreeing states whose\nmemories agree on every cell below the extent have equal memories, so the\nfine hypothesis is automatic and the runs agree on every projection. -/\ntheorem run_agree_of_supplied (program : List BInstr) (fuel : Nat) (s s' : State)\n    (hagree : State.Agree s s') (hclean : CleanTail s) (hclean' : CleanTail s')\n    (hbelow : ∀ a, a < s.extent → s'.memory a = s.memory a)\n    (hkey : ∀ i, s'.keys i = s.keys i) :\n    s'.memory = s.memory ∧ Run.Agree (run program fuel s) (run program fuel s') := by\n  have hm : s'.memory = s.memory := by\n    funext a\n    by_cases ha : a < s.extent\n    · exact hbelow a ha\n    · rw [hclean a (by omega), hclean' a (by rw [← hagree.2.1]; omega)]\n  exact ⟨hm, run_agree_of_reads program fuel s s' hagree (fun a _ => by rw [hm]) hkey⟩\n\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:154: preprocessing_builder_check.lean:161:"
+    },
+    {
+      "id": "B41_FUEL_EXTENSION_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Calculus.lean",
+      "manifest": "rehash",
+      "before": "theorem RunsTo.fuel_extension {program : List BInstr} {s s' : State} {ts : List Transition}\n    (h : RunsTo program s s' ts) (stopped : s'.status ≠ .running) (extra : Nat) :\n    run program (ts.length + extra) s = ⟨s', ts⟩ := by\n  unfold RunsTo at h\n  rw [run_add, h]\n  dsimp only\n  rw [run_of_stopped program extra s' stopped]\n  simp\n\n",
+      "after": "theorem RunsTo.fuel_extension {program : List BInstr} {s s' : State} {ts : List Transition}\n    (h : RunsTo program s s' ts) (stopped : s'.status ≠ .running) (extra : Nat) :\n    (run program (ts.length + extra) s).final = s' := by\n  unfold RunsTo at h\n  rw [run_add, h]\n  dsimp only\n  rw [run_of_stopped program extra s' stopped]\n\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:142:"
+    },
+    {
+      "id": "B42_SAFETY_SHIFT_ARM_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Safety.lean",
+      "manifest": "rehash",
+      "before": "      (op = .div ∨ op = .mod → 0 < s.regs rhs) ∧\n      (op = .shl ∨ op = .shr → s.regs rhs < W)\n",
+      "after": "      (op = .div ∨ op = .mod → 0 < s.regs rhs)\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:450:"
+    },
+    {
+      "id": "B43_CARTESIAN_QUADRATIC_RESCAN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Builder/Cartesian.lean",
+      "manifest": "rehash",
+      "profile": "stackpass",
+      "before": "        (.seq linkBlock pushBlock)))\n",
+      "after": "        (.seq linkBlock (.seq (acts [.move rTMP rI]) (.seq (.loop rTMP (acts [.arithmetic .sub rTMP rTMP rONE])) pushBlock)))))\n",
+      "expected": "reject",
+      "expectedStage": "producer",
+      "expectedSurface": "RMQ/Core/WordRAM/Construction/Proof/StackPass.lean:287:"
+    },
+    {
+      "id": "B44_PROGRAM_SEMANTIC_IMPORT",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Builder/Program.lean",
+      "before": "import RMQ.Core.WordRAM.Construction.Builder.Output\n",
+      "after": "import RMQ.Core.WordRAM.Construction.Builder.Output\nimport RMQ.Core.WordRAM.Packed.Allocation\n",
+      "expected": "reject",
+      "expectedStage": "firewall",
+      "expectedSurface": "PRE1-BUILDER-FIREWALL imports rejected: RMQ/Core/WordRAM/Construction/Builder/Program.lean"
+    },
+    {
+      "id": "B45_RUNFACTS_WORK_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Proof/RunFacts.lean",
+      "profile": "capstone",
+      "before": "  work : (run program (builderBudget xs.length) s0).steps ≤ 1000000000 * xs.length + 1000000000\n",
+      "after": "  work : (run program (builderBudget xs.length) s0).steps ≤ 1000000001 * xs.length + 1000000000\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "PreprocessingContract.lean:231: PreprocessingContract.lean:353:"
+    },
+    {
+      "id": "B46_RUNFACTS_WORKSPACE_CW_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Proof/RunFacts.lean",
+      "profile": "capstone",
+      "before": "    outBase - s0.extent ≤ 3200000 * xs.length + 3200000\n",
+      "after": "    outBase - s0.extent ≤ 3200001 * xs.length + 3200000\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "PreprocessingContract.lean:275: PreprocessingContract.lean:397:"
+    },
+    {
+      "id": "B47_RUNFACTS_WORKSPACE_DW_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Proof/RunFacts.lean",
+      "profile": "capstone",
+      "before": "    outBase - s0.extent ≤ 3200000 * xs.length + 3200000\n",
+      "after": "    outBase - s0.extent ≤ 3200000 * xs.length + 3200001\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "PreprocessingContract.lean:275: PreprocessingContract.lean:397:"
+    },
+    {
+      "id": "B48_RUNFACTS_NOINPUTWRITES_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Proof/RunFacts.lean",
+      "profile": "capstone",
+      "before": "  noInputWrites : ∀ e ∈ (run program (builderBudget xs.length) s0).writes, s0.extent ≤ e.1\n",
+      "after": "  noInputWrites : ∀ e ∈ (run program (builderBudget xs.length) s0).writes, s0.extent ≤ e.1 + 1\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "PreprocessingContract.lean:306: PreprocessingContract.lean:428:"
+    },
+    {
+      "id": "B49_RUNFACTS_REGISTERBANK_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Proof/RunFacts.lean",
+      "profile": "capstone",
+      "before": "  registerBank : ∀ fuel reg, 400 ≤ reg → (run program fuel s0).final.regs reg = 0\n",
+      "after": "  registerBank : ∀ fuel reg, 401 ≤ reg → (run program fuel s0).final.regs reg = 0\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "PreprocessingContract.lean:290: PreprocessingContract.lean:412:"
+    },
+    {
+      "id": "B50_CAPSTONE_CW_NUMERAL",
+      "kind": "mutation",
+      "path": "RMQ/Validation/PreprocessingContract.lean",
+      "profile": "capstone",
+      "before": "      outBase - (comparisonInputState xs).extent ≤ 3200000 * xs.length + 3200000 :=\n",
+      "after": "      outBase - (comparisonInputState xs).extent ≤ 3200001 * xs.length + 3200000 :=\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "PreprocessingContract.lean:275:"
+    },
+    {
+      "id": "B51_CAPSTONE_DW_NUMERAL",
+      "kind": "mutation",
+      "path": "RMQ/Validation/PreprocessingContract.lean",
+      "profile": "capstone",
+      "before": "      outBase - (comparisonInputState xs).extent ≤ 3200000 * xs.length + 3200000 :=\n",
+      "after": "      outBase - (comparisonInputState xs).extent ≤ 3200000 * xs.length + 3200001 :=\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "PreprocessingContract.lean:275:"
+    },
+    {
+      "id": "B52_CAPSTONE_ACCEPT_COMMENT",
+      "kind": "control",
+      "path": "RMQ/Core/WordRAM/Construction/Capstone.lean",
+      "profile": "capstone",
+      "before": "One statement joins the uniform efficient builder and the accepted fully charged\n",
+      "after": "One statement joins the uniform efficient builder and the accepted, fully charged\n",
+      "expected": "accept",
+      "expectedStage": "consumer",
+      "expectedSurface": "PRE1-CAPSTONE-TYPED-CONSUMERS PASS"
+    },
+    {
+      "id": "B53_RUNFACTS_HALTS_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Proof/RunFacts.lean",
+      "profile": "capstone",
+      "before": "  halts : ∃ outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase\n  work : (run program (builderBudget xs.length) s0).steps ≤ 1000000000 * xs.length + 1000000000\n  fuelInsensitive : ∀ extra,\n    run program (builderBudget xs.length + extra) s0 = run program (builderBudget xs.length) s0\n  categoryPartition :\n    (run program (builderBudget xs.length) s0).steps =\n      (run program (builderBudget xs.length) s0).categoryCount .read +\n      (run program (builderBudget xs.length) s0).categoryCount .register +\n      (run program (builderBudget xs.length) s0).categoryCount .arithmetic +\n      (run program (builderBudget xs.length) s0).categoryCount .comparison +\n      (run program (builderBudget xs.length) s0).categoryCount .branch +\n      (run program (builderBudget xs.length) s0).categoryCount .control +\n      (run program (builderBudget xs.length) s0).categoryCount .write +\n      (run program (builderBudget xs.length) s0).categoryCount .allocation +\n      (run program (builderBudget xs.length) s0).categoryCount .keyRead +\n      (run program (builderBudget xs.length) s0).categoryCount .oracleComparison\n  outputCells : ∀ outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n    s0.extent ≤ outBase ∧\n    (run program (builderBudget xs.length) s0).final.extent =\n      outBase + (PackedWordRAM.buildMemory xs).length ∧\n    ∀ i, i < (PackedWordRAM.buildMemory xs).length →\n      (run program (builderBudget xs.length) s0).final.memory (outBase + i) =\n        some ((PackedWordRAM.buildMemory xs).getD i 0)\n  outputProvenance : ∀ outBase i, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n    i < (PackedWordRAM.buildMemory xs).length →\n    ∃ (k : Nat) (t : Transition), (run program (builderBudget xs.length) s0).transitions[k]? = some t ∧\n      t.write? = some (outBase + i, (PackedWordRAM.buildMemory xs).getD i 0) ∧\n      ∀ (k' : Nat) (t' : Transition), k < k' →\n        (run program (builderBudget xs.length) s0).transitions[k']? = some t' →\n        ∀ e : Nat × Nat, t'.write? = some e → e.1 ≠ outBase + i\n  workspace : ∀ outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n    outBase - s0.extent ≤ 3200000 * xs.length + 3200000\n  peakExtent : ∀ fuel,\n    (run program fuel s0).final.extent ≤ (run program (builderBudget xs.length) s0).final.extent\n  prefixExtent : ∀ fuel outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n    (run program fuel s0).final.extent ≤\n      s0.extent + (3200000 * xs.length + 3200000) + (PackedWordRAM.buildMemory xs).length\n  registerBank : ∀ fuel reg, 400 ≤ reg → (run program fuel s0).final.regs reg = 0\n  initialFits : s0.Fits (PackedWordRAM.wordWidth xs.length)\n  runSafe : Run.Safe (PackedWordRAM.wordWidth xs.length) program (run program (builderBudget xs.length) s0)\n  finalFits : (run program (builderBudget xs.length) s0).final.Fits (PackedWordRAM.wordWidth xs.length)\n  noInputWrites : ∀ e ∈ (run program (builderBudget xs.length) s0).writes, s0.extent ≤ e.1\n  inputRetained : (∀ a, a < s0.extent → (run program (builderBudget xs.length) s0).final.memory a = s0.memory a) ∧\n    (run program (builderBudget xs.length) s0).final.keys = s0.keys\n  replay : Replays s0.memory (run program (builderBudget xs.length) s0).writes\n    (run program (builderBudget xs.length) s0).final.memory\n  cleanTail : ∀ fuel, CleanTail (run program fuel s0).final\n  readAgreement : ∀ s', State.Agree s0 s' →\n    (∀ a ∈ (run program (builderBudget xs.length) s0).loads, s'.memory a = s0.memory a) →\n    (∀ i ∈ (run program (builderBudget xs.length) s0).keyReads, s'.keys i = s0.keys i) →\n    Run.Agree (run program (builderBudget xs.length) s0) (run program (builderBudget xs.length) s')\n  suppliedAgreement : ∀ s', State.Agree s0 s' → CleanTail s' →\n    (∀ a, a < s0.extent → s'.memory a = s0.memory a) →\n    (∀ i ∈ (run program (builderBudget xs.length) s0).keyReads, s'.keys i = s0.keys i) →\n    s'.memory = s0.memory ∧\n      Run.Agree (run program (builderBudget xs.length) s0) (run program (builderBudget xs.length) s')\n  arrayReflects : ∀ (es : ExecState) fuel, es.abstract = s0 → es.regs.size = 400 → es.keyRegs.size = 400 →\n    (runArray program.toArray fuel es).steps = (run program fuel s0).steps ∧\n    (runArray program.toArray fuel es).categories = (run program fuel s0).categories ∧\n    (runArray program.toArray fuel es).writes = (run program fuel s0).writes ∧\n    (runArray program.toArray fuel es).reserves = (run program fuel s0).reserves ∧\n    (runArray program.toArray fuel es).result = (run program fuel s0).result ∧\n    (runArray program.toArray fuel es).final.abstract = (run program fuel s0).final\n\nnamespace Proof\n\nopen Builder\nopen RMQ.SuccinctFinal.PackedWordRAM (buildMemory wordWidth)\n\n/-- Peak extent: every fuel prefix of a run that stops within `ts.length` has\nextent at most the final one. -/\ntheorem run_extent_le_final (program : List BInstr) (s sF : State) (ts : List Transition)\n    (hR : RunsTo program s sF ts) (hst : sF.status ≠ .running) :\n    ∀ fuel, (run program fuel s).final.extent ≤ sF.extent := by\n  intro fuel\n  rcases Nat.lt_or_ge fuel ts.length with h | h\n  · have hsplit := run_add program fuel (ts.length - fuel) s\n    rw [Nat.add_sub_cancel' (Nat.le_of_lt h)] at hsplit\n    unfold RunsTo at hR\n    rw [hR] at hsplit\n    have hm := run_extent_mono program (ts.length - fuel) (run program fuel s).final\n    have : sF = (run program (ts.length - fuel) (run program fuel s).final).final := by\n      have := congrArg Run.final hsplit\n      simpa using this\n    rw [this]\n    exact hm\n  · have h2 := hR.fuel_extension hst (fuel - ts.length)\n    rw [Nat.add_sub_cancel' h] at h2\n    rw [h2]\n    exact Nat.le_refl _\n\n/-- **Builder run facts from a halting run with the stage conclusions.** -/\ntheorem builderRunFacts_of (program : List BInstr) (s0 : State) (xs : List Int)\n    (sF : State) (ts : List Transition)\n    (hR : RunsTo program s0 sF ts)\n    (hlen : ts.length ≤ 4 + (25 * wordWidth xs.length + 40 + 39 * (5 * wordWidth xs.length + 20)) +\n      2100 * (400000 * (xs.length + 1)))\n    (hst : sF.status = .halted (sF.regs 3)) (h3a : s0.extent ≤ sF.regs 3)\n    (h3b : sF.regs 3 ≤ s0.extent + 8 * (400000 * (xs.length + 1)))\n    (hext : sF.extent = sF.regs 3 + (buildMemory xs).length)\n    (hmem : ∀ i, i < (buildMemory xs).length → sF.memory (sF.regs 3 + i) = some ((buildMemory xs).getD i 0))\n    (hbelow : ∀ a, a < s0.extent → sF.memory a = s0.memory a) (hkeys : sF.keys = s0.keys)\n    (hsafe : Run.Safe (wordWidth xs.length) program ⟨sF, ts⟩)\n    (hwrites : ∀ t ∈ ts, ∀ e, t.write? = some e → s0.extent ≤ e.1)\n    (hfit : s0.Fits (wordWidth xs.length)) (hclean : CleanTail s0) (hregs : ∀ r, s0.regs r = 0)\n    (hrb : ∀ i ∈ program, i.primitive.RegistersBelow 400) :\n    BuilderRunFacts program s0 xs := by\n  have hstop : sF.status ≠ .running := by rw [hst]; simp\n  have hfuel : ts.length ≤ builderBudget xs.length := Nat.le_trans hlen (budget_ge xs.length)\n  have hrun : run program (builderBudget xs.length) s0 = ⟨sF, ts⟩ :=\n    run_of_halting program _ s0 sF ts hR hfuel hstop\n  have hout : ∀ outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n      outBase = sF.regs 3 := by\n    intro outBase h\n    rw [hrun] at h\n    simp only at h\n    rw [hst] at h\n    simp only [Status.halted.injEq] at h\n    exact h.symm\n  have hframe : ∀ i ∈ program, WritesOnly (fun r => r < 400) i :=\n    fun i hi d hd => Prim.dest_lt_of_registersBelow (hrb i hi) d hd\n  refine\n    { halts := ⟨sF.regs 3, by rw [hrun]; exact hst⟩\n",
+      "after": "  halts : ∃ fuel, (run program fuel s0).final.status = s0.status\n  work : (run program (builderBudget xs.length) s0).steps ≤ 1000000000 * xs.length + 1000000000\n  fuelInsensitive : ∀ extra,\n    run program (builderBudget xs.length + extra) s0 = run program (builderBudget xs.length) s0\n  categoryPartition :\n    (run program (builderBudget xs.length) s0).steps =\n      (run program (builderBudget xs.length) s0).categoryCount .read +\n      (run program (builderBudget xs.length) s0).categoryCount .register +\n      (run program (builderBudget xs.length) s0).categoryCount .arithmetic +\n      (run program (builderBudget xs.length) s0).categoryCount .comparison +\n      (run program (builderBudget xs.length) s0).categoryCount .branch +\n      (run program (builderBudget xs.length) s0).categoryCount .control +\n      (run program (builderBudget xs.length) s0).categoryCount .write +\n      (run program (builderBudget xs.length) s0).categoryCount .allocation +\n      (run program (builderBudget xs.length) s0).categoryCount .keyRead +\n      (run program (builderBudget xs.length) s0).categoryCount .oracleComparison\n  outputCells : ∀ outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n    s0.extent ≤ outBase ∧\n    (run program (builderBudget xs.length) s0).final.extent =\n      outBase + (PackedWordRAM.buildMemory xs).length ∧\n    ∀ i, i < (PackedWordRAM.buildMemory xs).length →\n      (run program (builderBudget xs.length) s0).final.memory (outBase + i) =\n        some ((PackedWordRAM.buildMemory xs).getD i 0)\n  outputProvenance : ∀ outBase i, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n    i < (PackedWordRAM.buildMemory xs).length →\n    ∃ (k : Nat) (t : Transition), (run program (builderBudget xs.length) s0).transitions[k]? = some t ∧\n      t.write? = some (outBase + i, (PackedWordRAM.buildMemory xs).getD i 0) ∧\n      ∀ (k' : Nat) (t' : Transition), k < k' →\n        (run program (builderBudget xs.length) s0).transitions[k']? = some t' →\n        ∀ e : Nat × Nat, t'.write? = some e → e.1 ≠ outBase + i\n  workspace : ∀ outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n    outBase - s0.extent ≤ 3200000 * xs.length + 3200000\n  peakExtent : ∀ fuel,\n    (run program fuel s0).final.extent ≤ (run program (builderBudget xs.length) s0).final.extent\n  prefixExtent : ∀ fuel outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n    (run program fuel s0).final.extent ≤\n      s0.extent + (3200000 * xs.length + 3200000) + (PackedWordRAM.buildMemory xs).length\n  registerBank : ∀ fuel reg, 400 ≤ reg → (run program fuel s0).final.regs reg = 0\n  initialFits : s0.Fits (PackedWordRAM.wordWidth xs.length)\n  runSafe : Run.Safe (PackedWordRAM.wordWidth xs.length) program (run program (builderBudget xs.length) s0)\n  finalFits : (run program (builderBudget xs.length) s0).final.Fits (PackedWordRAM.wordWidth xs.length)\n  noInputWrites : ∀ e ∈ (run program (builderBudget xs.length) s0).writes, s0.extent ≤ e.1\n  inputRetained : (∀ a, a < s0.extent → (run program (builderBudget xs.length) s0).final.memory a = s0.memory a) ∧\n    (run program (builderBudget xs.length) s0).final.keys = s0.keys\n  replay : Replays s0.memory (run program (builderBudget xs.length) s0).writes\n    (run program (builderBudget xs.length) s0).final.memory\n  cleanTail : ∀ fuel, CleanTail (run program fuel s0).final\n  readAgreement : ∀ s', State.Agree s0 s' →\n    (∀ a ∈ (run program (builderBudget xs.length) s0).loads, s'.memory a = s0.memory a) →\n    (∀ i ∈ (run program (builderBudget xs.length) s0).keyReads, s'.keys i = s0.keys i) →\n    Run.Agree (run program (builderBudget xs.length) s0) (run program (builderBudget xs.length) s')\n  suppliedAgreement : ∀ s', State.Agree s0 s' → CleanTail s' →\n    (∀ a, a < s0.extent → s'.memory a = s0.memory a) →\n    (∀ i ∈ (run program (builderBudget xs.length) s0).keyReads, s'.keys i = s0.keys i) →\n    s'.memory = s0.memory ∧\n      Run.Agree (run program (builderBudget xs.length) s0) (run program (builderBudget xs.length) s')\n  arrayReflects : ∀ (es : ExecState) fuel, es.abstract = s0 → es.regs.size = 400 → es.keyRegs.size = 400 →\n    (runArray program.toArray fuel es).steps = (run program fuel s0).steps ∧\n    (runArray program.toArray fuel es).categories = (run program fuel s0).categories ∧\n    (runArray program.toArray fuel es).writes = (run program fuel s0).writes ∧\n    (runArray program.toArray fuel es).reserves = (run program fuel s0).reserves ∧\n    (runArray program.toArray fuel es).result = (run program fuel s0).result ∧\n    (runArray program.toArray fuel es).final.abstract = (run program fuel s0).final\n\nnamespace Proof\n\nopen Builder\nopen RMQ.SuccinctFinal.PackedWordRAM (buildMemory wordWidth)\n\n/-- Peak extent: every fuel prefix of a run that stops within `ts.length` has\nextent at most the final one. -/\ntheorem run_extent_le_final (program : List BInstr) (s sF : State) (ts : List Transition)\n    (hR : RunsTo program s sF ts) (hst : sF.status ≠ .running) :\n    ∀ fuel, (run program fuel s).final.extent ≤ sF.extent := by\n  intro fuel\n  rcases Nat.lt_or_ge fuel ts.length with h | h\n  · have hsplit := run_add program fuel (ts.length - fuel) s\n    rw [Nat.add_sub_cancel' (Nat.le_of_lt h)] at hsplit\n    unfold RunsTo at hR\n    rw [hR] at hsplit\n    have hm := run_extent_mono program (ts.length - fuel) (run program fuel s).final\n    have : sF = (run program (ts.length - fuel) (run program fuel s).final).final := by\n      have := congrArg Run.final hsplit\n      simpa using this\n    rw [this]\n    exact hm\n  · have h2 := hR.fuel_extension hst (fuel - ts.length)\n    rw [Nat.add_sub_cancel' h] at h2\n    rw [h2]\n    exact Nat.le_refl _\n\n/-- **Builder run facts from a halting run with the stage conclusions.** -/\ntheorem builderRunFacts_of (program : List BInstr) (s0 : State) (xs : List Int)\n    (sF : State) (ts : List Transition)\n    (hR : RunsTo program s0 sF ts)\n    (hlen : ts.length ≤ 4 + (25 * wordWidth xs.length + 40 + 39 * (5 * wordWidth xs.length + 20)) +\n      2100 * (400000 * (xs.length + 1)))\n    (hst : sF.status = .halted (sF.regs 3)) (h3a : s0.extent ≤ sF.regs 3)\n    (h3b : sF.regs 3 ≤ s0.extent + 8 * (400000 * (xs.length + 1)))\n    (hext : sF.extent = sF.regs 3 + (buildMemory xs).length)\n    (hmem : ∀ i, i < (buildMemory xs).length → sF.memory (sF.regs 3 + i) = some ((buildMemory xs).getD i 0))\n    (hbelow : ∀ a, a < s0.extent → sF.memory a = s0.memory a) (hkeys : sF.keys = s0.keys)\n    (hsafe : Run.Safe (wordWidth xs.length) program ⟨sF, ts⟩)\n    (hwrites : ∀ t ∈ ts, ∀ e, t.write? = some e → s0.extent ≤ e.1)\n    (hfit : s0.Fits (wordWidth xs.length)) (hclean : CleanTail s0) (hregs : ∀ r, s0.regs r = 0)\n    (hrb : ∀ i ∈ program, i.primitive.RegistersBelow 400) :\n    BuilderRunFacts program s0 xs := by\n  have hstop : sF.status ≠ .running := by rw [hst]; simp\n  have hfuel : ts.length ≤ builderBudget xs.length := Nat.le_trans hlen (budget_ge xs.length)\n  have hrun : run program (builderBudget xs.length) s0 = ⟨sF, ts⟩ :=\n    run_of_halting program _ s0 sF ts hR hfuel hstop\n  have hout : ∀ outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n      outBase = sF.regs 3 := by\n    intro outBase h\n    rw [hrun] at h\n    simp only at h\n    rw [hst] at h\n    simp only [Status.halted.injEq] at h\n    exact h.symm\n  have hframe : ∀ i ∈ program, WritesOnly (fun r => r < 400) i :=\n    fun i hi d hd => Prim.dest_lt_of_registersBelow (hrb i hi) d hd\n  refine\n    { halts := ⟨0, rfl⟩\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "PreprocessingContract.lean:227: PreprocessingContract.lean:349:"
+    },
+    {
+      "id": "B54_RUNFACTS_HALTS_FUEL_LARGER",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Proof/RunFacts.lean",
+      "profile": "capstone",
+      "before": "  halts : ∃ outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase\n  work : (run program (builderBudget xs.length) s0).steps ≤ 1000000000 * xs.length + 1000000000\n  fuelInsensitive : ∀ extra,\n    run program (builderBudget xs.length + extra) s0 = run program (builderBudget xs.length) s0\n  categoryPartition :\n    (run program (builderBudget xs.length) s0).steps =\n      (run program (builderBudget xs.length) s0).categoryCount .read +\n      (run program (builderBudget xs.length) s0).categoryCount .register +\n      (run program (builderBudget xs.length) s0).categoryCount .arithmetic +\n      (run program (builderBudget xs.length) s0).categoryCount .comparison +\n      (run program (builderBudget xs.length) s0).categoryCount .branch +\n      (run program (builderBudget xs.length) s0).categoryCount .control +\n      (run program (builderBudget xs.length) s0).categoryCount .write +\n      (run program (builderBudget xs.length) s0).categoryCount .allocation +\n      (run program (builderBudget xs.length) s0).categoryCount .keyRead +\n      (run program (builderBudget xs.length) s0).categoryCount .oracleComparison\n  outputCells : ∀ outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n    s0.extent ≤ outBase ∧\n    (run program (builderBudget xs.length) s0).final.extent =\n      outBase + (PackedWordRAM.buildMemory xs).length ∧\n    ∀ i, i < (PackedWordRAM.buildMemory xs).length →\n      (run program (builderBudget xs.length) s0).final.memory (outBase + i) =\n        some ((PackedWordRAM.buildMemory xs).getD i 0)\n  outputProvenance : ∀ outBase i, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n    i < (PackedWordRAM.buildMemory xs).length →\n    ∃ (k : Nat) (t : Transition), (run program (builderBudget xs.length) s0).transitions[k]? = some t ∧\n      t.write? = some (outBase + i, (PackedWordRAM.buildMemory xs).getD i 0) ∧\n      ∀ (k' : Nat) (t' : Transition), k < k' →\n        (run program (builderBudget xs.length) s0).transitions[k']? = some t' →\n        ∀ e : Nat × Nat, t'.write? = some e → e.1 ≠ outBase + i\n  workspace : ∀ outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n    outBase - s0.extent ≤ 3200000 * xs.length + 3200000\n  peakExtent : ∀ fuel,\n    (run program fuel s0).final.extent ≤ (run program (builderBudget xs.length) s0).final.extent\n  prefixExtent : ∀ fuel outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n    (run program fuel s0).final.extent ≤\n      s0.extent + (3200000 * xs.length + 3200000) + (PackedWordRAM.buildMemory xs).length\n  registerBank : ∀ fuel reg, 400 ≤ reg → (run program fuel s0).final.regs reg = 0\n  initialFits : s0.Fits (PackedWordRAM.wordWidth xs.length)\n  runSafe : Run.Safe (PackedWordRAM.wordWidth xs.length) program (run program (builderBudget xs.length) s0)\n  finalFits : (run program (builderBudget xs.length) s0).final.Fits (PackedWordRAM.wordWidth xs.length)\n  noInputWrites : ∀ e ∈ (run program (builderBudget xs.length) s0).writes, s0.extent ≤ e.1\n  inputRetained : (∀ a, a < s0.extent → (run program (builderBudget xs.length) s0).final.memory a = s0.memory a) ∧\n    (run program (builderBudget xs.length) s0).final.keys = s0.keys\n  replay : Replays s0.memory (run program (builderBudget xs.length) s0).writes\n    (run program (builderBudget xs.length) s0).final.memory\n  cleanTail : ∀ fuel, CleanTail (run program fuel s0).final\n  readAgreement : ∀ s', State.Agree s0 s' →\n    (∀ a ∈ (run program (builderBudget xs.length) s0).loads, s'.memory a = s0.memory a) →\n    (∀ i ∈ (run program (builderBudget xs.length) s0).keyReads, s'.keys i = s0.keys i) →\n    Run.Agree (run program (builderBudget xs.length) s0) (run program (builderBudget xs.length) s')\n  suppliedAgreement : ∀ s', State.Agree s0 s' → CleanTail s' →\n    (∀ a, a < s0.extent → s'.memory a = s0.memory a) →\n    (∀ i ∈ (run program (builderBudget xs.length) s0).keyReads, s'.keys i = s0.keys i) →\n    s'.memory = s0.memory ∧\n      Run.Agree (run program (builderBudget xs.length) s0) (run program (builderBudget xs.length) s')\n  arrayReflects : ∀ (es : ExecState) fuel, es.abstract = s0 → es.regs.size = 400 → es.keyRegs.size = 400 →\n    (runArray program.toArray fuel es).steps = (run program fuel s0).steps ∧\n    (runArray program.toArray fuel es).categories = (run program fuel s0).categories ∧\n    (runArray program.toArray fuel es).writes = (run program fuel s0).writes ∧\n    (runArray program.toArray fuel es).reserves = (run program fuel s0).reserves ∧\n    (runArray program.toArray fuel es).result = (run program fuel s0).result ∧\n    (runArray program.toArray fuel es).final.abstract = (run program fuel s0).final\n\nnamespace Proof\n\nopen Builder\nopen RMQ.SuccinctFinal.PackedWordRAM (buildMemory wordWidth)\n\n/-- Peak extent: every fuel prefix of a run that stops within `ts.length` has\nextent at most the final one. -/\ntheorem run_extent_le_final (program : List BInstr) (s sF : State) (ts : List Transition)\n    (hR : RunsTo program s sF ts) (hst : sF.status ≠ .running) :\n    ∀ fuel, (run program fuel s).final.extent ≤ sF.extent := by\n  intro fuel\n  rcases Nat.lt_or_ge fuel ts.length with h | h\n  · have hsplit := run_add program fuel (ts.length - fuel) s\n    rw [Nat.add_sub_cancel' (Nat.le_of_lt h)] at hsplit\n    unfold RunsTo at hR\n    rw [hR] at hsplit\n    have hm := run_extent_mono program (ts.length - fuel) (run program fuel s).final\n    have : sF = (run program (ts.length - fuel) (run program fuel s).final).final := by\n      have := congrArg Run.final hsplit\n      simpa using this\n    rw [this]\n    exact hm\n  · have h2 := hR.fuel_extension hst (fuel - ts.length)\n    rw [Nat.add_sub_cancel' h] at h2\n    rw [h2]\n    exact Nat.le_refl _\n\n/-- **Builder run facts from a halting run with the stage conclusions.** -/\ntheorem builderRunFacts_of (program : List BInstr) (s0 : State) (xs : List Int)\n    (sF : State) (ts : List Transition)\n    (hR : RunsTo program s0 sF ts)\n    (hlen : ts.length ≤ 4 + (25 * wordWidth xs.length + 40 + 39 * (5 * wordWidth xs.length + 20)) +\n      2100 * (400000 * (xs.length + 1)))\n    (hst : sF.status = .halted (sF.regs 3)) (h3a : s0.extent ≤ sF.regs 3)\n    (h3b : sF.regs 3 ≤ s0.extent + 8 * (400000 * (xs.length + 1)))\n    (hext : sF.extent = sF.regs 3 + (buildMemory xs).length)\n    (hmem : ∀ i, i < (buildMemory xs).length → sF.memory (sF.regs 3 + i) = some ((buildMemory xs).getD i 0))\n    (hbelow : ∀ a, a < s0.extent → sF.memory a = s0.memory a) (hkeys : sF.keys = s0.keys)\n    (hsafe : Run.Safe (wordWidth xs.length) program ⟨sF, ts⟩)\n    (hwrites : ∀ t ∈ ts, ∀ e, t.write? = some e → s0.extent ≤ e.1)\n    (hfit : s0.Fits (wordWidth xs.length)) (hclean : CleanTail s0) (hregs : ∀ r, s0.regs r = 0)\n    (hrb : ∀ i ∈ program, i.primitive.RegistersBelow 400) :\n    BuilderRunFacts program s0 xs := by\n  have hstop : sF.status ≠ .running := by rw [hst]; simp\n  have hfuel : ts.length ≤ builderBudget xs.length := Nat.le_trans hlen (budget_ge xs.length)\n  have hrun : run program (builderBudget xs.length) s0 = ⟨sF, ts⟩ :=\n    run_of_halting program _ s0 sF ts hR hfuel hstop\n  have hout : ∀ outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n      outBase = sF.regs 3 := by\n    intro outBase h\n    rw [hrun] at h\n    simp only at h\n    rw [hst] at h\n    simp only [Status.halted.injEq] at h\n    exact h.symm\n  have hframe : ∀ i ∈ program, WritesOnly (fun r => r < 400) i :=\n    fun i hi d hd => Prim.dest_lt_of_registersBelow (hrb i hi) d hd\n  refine\n    { halts := ⟨sF.regs 3, by rw [hrun]; exact hst⟩\n",
+      "after": "  halts : ∃ outBase, (run program (2000000000 + 2000000000 * xs.length) s0).final.status = .halted outBase\n  work : (run program (builderBudget xs.length) s0).steps ≤ 1000000000 * xs.length + 1000000000\n  fuelInsensitive : ∀ extra,\n    run program (builderBudget xs.length + extra) s0 = run program (builderBudget xs.length) s0\n  categoryPartition :\n    (run program (builderBudget xs.length) s0).steps =\n      (run program (builderBudget xs.length) s0).categoryCount .read +\n      (run program (builderBudget xs.length) s0).categoryCount .register +\n      (run program (builderBudget xs.length) s0).categoryCount .arithmetic +\n      (run program (builderBudget xs.length) s0).categoryCount .comparison +\n      (run program (builderBudget xs.length) s0).categoryCount .branch +\n      (run program (builderBudget xs.length) s0).categoryCount .control +\n      (run program (builderBudget xs.length) s0).categoryCount .write +\n      (run program (builderBudget xs.length) s0).categoryCount .allocation +\n      (run program (builderBudget xs.length) s0).categoryCount .keyRead +\n      (run program (builderBudget xs.length) s0).categoryCount .oracleComparison\n  outputCells : ∀ outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n    s0.extent ≤ outBase ∧\n    (run program (builderBudget xs.length) s0).final.extent =\n      outBase + (PackedWordRAM.buildMemory xs).length ∧\n    ∀ i, i < (PackedWordRAM.buildMemory xs).length →\n      (run program (builderBudget xs.length) s0).final.memory (outBase + i) =\n        some ((PackedWordRAM.buildMemory xs).getD i 0)\n  outputProvenance : ∀ outBase i, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n    i < (PackedWordRAM.buildMemory xs).length →\n    ∃ (k : Nat) (t : Transition), (run program (builderBudget xs.length) s0).transitions[k]? = some t ∧\n      t.write? = some (outBase + i, (PackedWordRAM.buildMemory xs).getD i 0) ∧\n      ∀ (k' : Nat) (t' : Transition), k < k' →\n        (run program (builderBudget xs.length) s0).transitions[k']? = some t' →\n        ∀ e : Nat × Nat, t'.write? = some e → e.1 ≠ outBase + i\n  workspace : ∀ outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n    outBase - s0.extent ≤ 3200000 * xs.length + 3200000\n  peakExtent : ∀ fuel,\n    (run program fuel s0).final.extent ≤ (run program (builderBudget xs.length) s0).final.extent\n  prefixExtent : ∀ fuel outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n    (run program fuel s0).final.extent ≤\n      s0.extent + (3200000 * xs.length + 3200000) + (PackedWordRAM.buildMemory xs).length\n  registerBank : ∀ fuel reg, 400 ≤ reg → (run program fuel s0).final.regs reg = 0\n  initialFits : s0.Fits (PackedWordRAM.wordWidth xs.length)\n  runSafe : Run.Safe (PackedWordRAM.wordWidth xs.length) program (run program (builderBudget xs.length) s0)\n  finalFits : (run program (builderBudget xs.length) s0).final.Fits (PackedWordRAM.wordWidth xs.length)\n  noInputWrites : ∀ e ∈ (run program (builderBudget xs.length) s0).writes, s0.extent ≤ e.1\n  inputRetained : (∀ a, a < s0.extent → (run program (builderBudget xs.length) s0).final.memory a = s0.memory a) ∧\n    (run program (builderBudget xs.length) s0).final.keys = s0.keys\n  replay : Replays s0.memory (run program (builderBudget xs.length) s0).writes\n    (run program (builderBudget xs.length) s0).final.memory\n  cleanTail : ∀ fuel, CleanTail (run program fuel s0).final\n  readAgreement : ∀ s', State.Agree s0 s' →\n    (∀ a ∈ (run program (builderBudget xs.length) s0).loads, s'.memory a = s0.memory a) →\n    (∀ i ∈ (run program (builderBudget xs.length) s0).keyReads, s'.keys i = s0.keys i) →\n    Run.Agree (run program (builderBudget xs.length) s0) (run program (builderBudget xs.length) s')\n  suppliedAgreement : ∀ s', State.Agree s0 s' → CleanTail s' →\n    (∀ a, a < s0.extent → s'.memory a = s0.memory a) →\n    (∀ i ∈ (run program (builderBudget xs.length) s0).keyReads, s'.keys i = s0.keys i) →\n    s'.memory = s0.memory ∧\n      Run.Agree (run program (builderBudget xs.length) s0) (run program (builderBudget xs.length) s')\n  arrayReflects : ∀ (es : ExecState) fuel, es.abstract = s0 → es.regs.size = 400 → es.keyRegs.size = 400 →\n    (runArray program.toArray fuel es).steps = (run program fuel s0).steps ∧\n    (runArray program.toArray fuel es).categories = (run program fuel s0).categories ∧\n    (runArray program.toArray fuel es).writes = (run program fuel s0).writes ∧\n    (runArray program.toArray fuel es).reserves = (run program fuel s0).reserves ∧\n    (runArray program.toArray fuel es).result = (run program fuel s0).result ∧\n    (runArray program.toArray fuel es).final.abstract = (run program fuel s0).final\n\nnamespace Proof\n\nopen Builder\nopen RMQ.SuccinctFinal.PackedWordRAM (buildMemory wordWidth)\n\n/-- Peak extent: every fuel prefix of a run that stops within `ts.length` has\nextent at most the final one. -/\ntheorem run_extent_le_final (program : List BInstr) (s sF : State) (ts : List Transition)\n    (hR : RunsTo program s sF ts) (hst : sF.status ≠ .running) :\n    ∀ fuel, (run program fuel s).final.extent ≤ sF.extent := by\n  intro fuel\n  rcases Nat.lt_or_ge fuel ts.length with h | h\n  · have hsplit := run_add program fuel (ts.length - fuel) s\n    rw [Nat.add_sub_cancel' (Nat.le_of_lt h)] at hsplit\n    unfold RunsTo at hR\n    rw [hR] at hsplit\n    have hm := run_extent_mono program (ts.length - fuel) (run program fuel s).final\n    have : sF = (run program (ts.length - fuel) (run program fuel s).final).final := by\n      have := congrArg Run.final hsplit\n      simpa using this\n    rw [this]\n    exact hm\n  · have h2 := hR.fuel_extension hst (fuel - ts.length)\n    rw [Nat.add_sub_cancel' h] at h2\n    rw [h2]\n    exact Nat.le_refl _\n\n/-- **Builder run facts from a halting run with the stage conclusions.** -/\ntheorem builderRunFacts_of (program : List BInstr) (s0 : State) (xs : List Int)\n    (sF : State) (ts : List Transition)\n    (hR : RunsTo program s0 sF ts)\n    (hlen : ts.length ≤ 4 + (25 * wordWidth xs.length + 40 + 39 * (5 * wordWidth xs.length + 20)) +\n      2100 * (400000 * (xs.length + 1)))\n    (hst : sF.status = .halted (sF.regs 3)) (h3a : s0.extent ≤ sF.regs 3)\n    (h3b : sF.regs 3 ≤ s0.extent + 8 * (400000 * (xs.length + 1)))\n    (hext : sF.extent = sF.regs 3 + (buildMemory xs).length)\n    (hmem : ∀ i, i < (buildMemory xs).length → sF.memory (sF.regs 3 + i) = some ((buildMemory xs).getD i 0))\n    (hbelow : ∀ a, a < s0.extent → sF.memory a = s0.memory a) (hkeys : sF.keys = s0.keys)\n    (hsafe : Run.Safe (wordWidth xs.length) program ⟨sF, ts⟩)\n    (hwrites : ∀ t ∈ ts, ∀ e, t.write? = some e → s0.extent ≤ e.1)\n    (hfit : s0.Fits (wordWidth xs.length)) (hclean : CleanTail s0) (hregs : ∀ r, s0.regs r = 0)\n    (hrb : ∀ i ∈ program, i.primitive.RegistersBelow 400) :\n    BuilderRunFacts program s0 xs := by\n  have hstop : sF.status ≠ .running := by rw [hst]; simp\n  have hfuel : ts.length ≤ builderBudget xs.length := Nat.le_trans hlen (budget_ge xs.length)\n  have hrun : run program (builderBudget xs.length) s0 = ⟨sF, ts⟩ :=\n    run_of_halting program _ s0 sF ts hR hfuel hstop\n  have hout : ∀ outBase, (run program (builderBudget xs.length) s0).final.status = .halted outBase →\n      outBase = sF.regs 3 := by\n    intro outBase h\n    rw [hrun] at h\n    simp only at h\n    rw [hst] at h\n    simp only [Status.halted.injEq] at h\n    exact h.symm\n  have hframe : ∀ i ∈ program, WritesOnly (fun r => r < 400) i :=\n    fun i hi d hd => Prim.dest_lt_of_registersBelow (hrb i hi) d hd\n  have hlargerHalts : ∃ outBase,\n      (run program (2000000000 + 2000000000 * xs.length) s0).final.status = .halted outBase := by\n    have hle : ts.length ≤ 2000000000 + 2000000000 * xs.length := by\n      have := builderBudget_eq_mul_add xs.length\n      omega\n    have hbig := hR.fuel_extension hstop (2000000000 + 2000000000 * xs.length - ts.length)\n    rw [Nat.add_sub_cancel' hle] at hbig\n    exact ⟨sF.regs 3, by rw [hbig]; exact hst⟩\n  refine\n    { halts := hlargerHalts\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "PreprocessingContract.lean:227: PreprocessingContract.lean:349:"
+    },
+    {
+      "id": "B55_RUN_SAFE_LENGTH_WEAKEN",
+      "kind": "mutation",
+      "path": "RMQ/Core/WordRAM/Construction/Safety.lean",
+      "manifest": "rehash",
+      "before": "/-- Every transition of a run is safe and lands in a fitting state. -/\ndef Run.Safe (W : Nat) (program : List BInstr) (r : Run) : Prop :=\n  ∀ t ∈ r.transitions,\n    Prim.Safe W program.length t.before t.instruction.primitive ∧ t.after.Fits W\n",
+      "after": "/-- Every transition of a run is safe and lands in a fitting state. -/\ndef Run.Safe (W : Nat) (program : List BInstr) (r : Run) : Prop :=\n  ∀ t ∈ r.transitions,\n    Prim.Safe W (program.length + 1) t.before t.instruction.primitive ∧ t.after.Fits W\n\ntheorem Prim.Safe.succ_length {W len : Nat} {s : State} {p : Prim} (h : Prim.Safe W len s p) :\n    Prim.Safe W (len + 1) s p := by\n  refine ⟨h.1, ?_⟩\n  have h2 := h.2\n  cases p <;> simp only [Prim.SafeAt] at h2 ⊢ <;> first | exact h2 | omega\n\ninstance {W len : Nat} {s : State} {p : Prim} : Coe (Prim.Safe W len s p) (Prim.Safe W (len + 1) s p) :=\n  ⟨Prim.Safe.succ_length⟩\n",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_builder_check.lean:457:"
+    }
+  ]
+}

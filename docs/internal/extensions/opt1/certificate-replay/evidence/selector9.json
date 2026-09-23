@@ -1,0 +1,368 @@
+{
+    "TrackedSourceMutations":  0,
+    "ExitCode":  0,
+    "Stages":  [
+                   {
+                       "Name":  "selector-omitted",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-certificate-replay\\20260912T091544Z-e0dff840a6454dc58a3368aa53b6d897\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1",
+                                         "-Mode",
+                                         "omitted"
+                                     ],
+                       "Directory":  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ",
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-omitted",
+                                      "ExitCode":  0,
+                                      "Output":  [
+                                                     "OPT1-CERT-SELECTOR PROBE PASS bound=False selected=80 ids=A01-UNCHANGED,A02-COMMENT,D01-allocationResidualLittleO,W01-allocationResidualLittleO,D02-completeResidualLittleO,W02-completeResidualLittleO,D03-widthBounds,W03-widthBounds,D04-dataCapacity,W04-dataCapacity,D05-completeCapacity,W05-completeCapacity,D06-memoryWordsFit,W06-memoryWordsFit,D07-allocationAddressesFit,W07-allocationAddressesFit,D08-programFieldsFit,W08-programFieldsFit,D09-budgetExact,W09-budgetExact,D10-programLength,W10-programLength,D11-encodedProgramLength,W11-encodedProgramLength,D12-programReduction,W12-programReduction,D13-emittedProgram,W13-emittedProgram,D14-originalExecutionBound,W14-originalExecutionBound,D15-originalReducedFuel,W15-originalReducedFuel,D16-arbitraryMemoryObservations,W16-arbitraryMemoryObservations,D17-completedExecution,W17-completedExecution,D18-adequateFuel,W18-adequateFuel,D19-registerCount,W19-registerCount,D20-scratchCount,W20-scratchCount,D21-unusedRegisters,W21-unusedRegisters,D22-validInputs,W22-validInputs,D23-natContract,W23-natContract,D24-leftmost,W24-leftmost,D25-result,W25-result,D26-halt,W26-halt,D27-invalidGuard,W27-invalidGuard,D28-stepBound,W28-stepBound,D29-categoryPartition,W29-categoryPartition,D30-finalStateFit,W30-finalStateFit,D31-transitionSafety,W31-transitionSafety,D32-prefixSafety,W32-prefixSafety,D33-readWidth,W33-readWidth,D34-positionalReadBacking,W34-positionalReadBacking,D35-orderedLogicalRefinement,W35-orderedLogicalRefinement,D36-logicalReadOnly,W36-logicalReadOnly,D37-suppliedMemoryAgreement,W37-suppliedMemoryAgreement,D38-specResult,W38-specResult,D39-noFailedLoads,W39-noFailedLoads"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-CERT-SELECTOR PROBE PASS bound=False selected=80 ids=A01-UNCHANGED,A02-COMMENT,D01-allocationResidualLittleO,W01-allocationResidualLittleO,D02-completeResidualLittleO,W02-completeResidualLittleO,D03-widthBounds,W03-widthBounds,D04-dataCapacity,W04-dataCapacity,D05-completeCapacity,W05-completeCapacity,D06-memoryWordsFit,W06-memoryWordsFit,D07-allocationAddressesFit,W07-allocationAddressesFit,D08-programFieldsFit,W08-programFieldsFit,D09-budgetExact,W09-budgetExact,D10-programLength,W10-programLength,D11-encodedProgramLength,W11-encodedProgramLength,D12-programReduction,W12-programReduction,D13-emittedProgram,W13-emittedProgram,D14-originalExecutionBound,W14-originalExecutionBound,D15-originalReducedFuel,W15-originalReducedFuel,D16-arbitraryMemoryObservations,W16-arbitraryMemoryObservations,D17-completedExecution,W17-completedExecution,D18-adequateFuel,W18-adequateFuel,D19-registerCount,W19-registerCount,D20-scratchCount,W20-scratchCount,D21-unusedRegisters,W21-unusedRegisters,D22-validInputs,W22-validInputs,D23-natContract,W23-natContract,D24-leftmost,W24-leftmost,D25-result,W25-result,D26-halt,W26-halt,D27-invalidGuard,W27-invalidGuard,D28-stepBound,W28-stepBound,D29-categoryPartition,W29-categoryPartition,D30-finalStateFit,W30-finalStateFit,D31-transitionSafety,W31-transitionSafety,D32-prefixSafety,W32-prefixSafety,D33-readWidth,W33-readWidth,D34-positionalReadBacking,W34-positionalReadBacking,D35-orderedLogicalRefinement,W35-orderedLogicalRefinement,D36-logicalReadOnly,W36-logicalReadOnly,D37-suppliedMemoryAgreement,W37-suppliedMemoryAgreement,D38-specResult,W38-specResult,D39-noFailedLoads,W39-noFailedLoads"
+                                                         ],
+                                      "StandardError":  [
+
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  5.101,
+                                      "DeadlineSeconds":  180,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-valid",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-certificate-replay\\20260912T091544Z-e0dff840a6454dc58a3368aa53b6d897\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1",
+                                         "-Mode",
+                                         "valid"
+                                     ],
+                       "Directory":  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ",
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-valid",
+                                      "ExitCode":  0,
+                                      "Output":  [
+                                                     "OPT1-CERT-SELECTOR PROBE PASS bound=True selected=1 ids=A01-UNCHANGED"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-CERT-SELECTOR PROBE PASS bound=True selected=1 ids=A01-UNCHANGED"
+                                                         ],
+                                      "StandardError":  [
+
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  4.028,
+                                      "DeadlineSeconds":  180,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-valid-reject",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-certificate-replay\\20260912T091544Z-e0dff840a6454dc58a3368aa53b6d897\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1",
+                                         "-Mode",
+                                         "valid-reject"
+                                     ],
+                       "Directory":  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ",
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-valid-reject",
+                                      "ExitCode":  0,
+                                      "Output":  [
+                                                     "OPT1-CERT-SELECTOR PROBE PASS bound=True selected=1 ids=W03-widthBounds"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-CERT-SELECTOR PROBE PASS bound=True selected=1 ids=W03-widthBounds"
+                                                         ],
+                                      "StandardError":  [
+
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  5.193,
+                                      "DeadlineSeconds":  180,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-empty",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-certificate-replay\\20260912T091544Z-e0dff840a6454dc58a3368aa53b6d897\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1",
+                                         "-Mode",
+                                         "empty"
+                                     ],
+                       "Directory":  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ",
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-empty",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-CERT-SELECTOR: explicitly empty selector"
+                                                 ],
+                                      "StandardOutput":  [
+
+                                                         ],
+                                      "StandardError":  [
+                                                            "OPT1-CERT-SELECTOR: explicitly empty selector"
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  3.295,
+                                      "DeadlineSeconds":  180,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-whitespace",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-certificate-replay\\20260912T091544Z-e0dff840a6454dc58a3368aa53b6d897\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1",
+                                         "-Mode",
+                                         "whitespace"
+                                     ],
+                       "Directory":  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ",
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-whitespace",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-CERT-SELECTOR: explicitly empty selector"
+                                                 ],
+                                      "StandardOutput":  [
+
+                                                         ],
+                                      "StandardError":  [
+                                                            "OPT1-CERT-SELECTOR: explicitly empty selector"
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  7.191,
+                                      "DeadlineSeconds":  180,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-malformed",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-certificate-replay\\20260912T091544Z-e0dff840a6454dc58a3368aa53b6d897\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1",
+                                         "-Mode",
+                                         "malformed"
+                                     ],
+                       "Directory":  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ",
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-malformed",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-CERT-SELECTOR: malformed selector"
+                                                 ],
+                                      "StandardOutput":  [
+
+                                                         ],
+                                      "StandardError":  [
+                                                            "OPT1-CERT-SELECTOR: malformed selector"
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  9.233,
+                                      "DeadlineSeconds":  180,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-zero",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-certificate-replay\\20260912T091544Z-e0dff840a6454dc58a3368aa53b6d897\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1",
+                                         "-Mode",
+                                         "zero"
+                                     ],
+                       "Directory":  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ",
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-zero",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-CERT-SELECTOR: malformed selector"
+                                                 ],
+                                      "StandardOutput":  [
+
+                                                         ],
+                                      "StandardError":  [
+                                                            "OPT1-CERT-SELECTOR: malformed selector"
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  7.621,
+                                      "DeadlineSeconds":  180,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-unknown",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-certificate-replay\\20260912T091544Z-e0dff840a6454dc58a3368aa53b6d897\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1",
+                                         "-Mode",
+                                         "unknown"
+                                     ],
+                       "Directory":  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ",
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-unknown",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-CERT-SELECTOR: unknown selector D99-unknown"
+                                                 ],
+                                      "StandardOutput":  [
+
+                                                         ],
+                                      "StandardError":  [
+                                                            "OPT1-CERT-SELECTOR: unknown selector D99-unknown"
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  7.998,
+                                      "DeadlineSeconds":  180,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "selector-duplicate",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-certificate-replay\\20260912T091544Z-e0dff840a6454dc58a3368aa53b6d897\\selector-boundary.ps1",
+                                         "-Target",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1",
+                                         "-Mode",
+                                         "duplicate"
+                                     ],
+                       "Directory":  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ",
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "selector-duplicate",
+                                      "ExitCode":  1,
+                                      "Output":  [
+                                                     "OPT1-CERT-BOUNDARY: duplicate parameter rejected"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-CERT-BOUNDARY: duplicate parameter rejected"
+                                                         ],
+                                      "StandardError":  [
+
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  6.275,
+                                      "DeadlineSeconds":  180,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   }
+               ],
+    "Version":  "opt1-certificate-replay-v3",
+    "PrepareOnly":  false
+}

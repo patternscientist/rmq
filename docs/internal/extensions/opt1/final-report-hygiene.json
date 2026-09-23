@@ -1,0 +1,16 @@
+[
+  {
+    "Label": "trust",
+    "Pattern": "\\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\\b|import Mathlib",
+    "ExitCode": 1,
+    "Passed": true,
+    "Output": []
+  },
+  {
+    "Label": "native",
+    "Pattern": "native_decide|Lean\\.ofReduceBool",
+    "ExitCode": 1,
+    "Passed": true,
+    "Output": []
+  }
+]

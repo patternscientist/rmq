@@ -85,6 +85,14 @@ execution. The relevant adequacy claim is that the final modeled trace has
 explicit read events, no synthetic cost-only markers, bounded event data, and
 successful reads backed by counted flat payload words.
 
+A separate accepted theorem,
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, moves closer to the
+program-step tradition without leaving the model: it counts every executed
+instruction of one fixed loop-free program for a small register machine
+over numeric memory, with unit-cost multiplication, division, remainder,
+shifts and bitwise operations. That is still a model-level instruction count
+for a Lean-defined machine, not verified compiled execution, and it is accepted following the replay campaign, both-host aggregate gates and independent audit.
+
 ## Artifact And Provenance Positioning
 
 The artifact uses AI-assisted audit-driven development as process provenance,
@@ -101,10 +109,18 @@ make a theorem true.
   claim is made.
 - The all-size modeled query-cost bound on the canonical reviewer route is the
   uniform checked charged-trace value `210`. Controller operations remain
-  uncharged; this is not conventional word-RAM complexity. Earlier checked
-  cost, dispatch, size-premise, and proof-only chronology lives in the explicit
+  uncharged in that theorem; it is not conventional word-RAM complexity.
+  Earlier checked cost, dispatch, size-premise, and proof-only chronology
+  lives in the explicit
   [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md),
   not in the current paper proposition.
+- The accepted theorem `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` charges
+  every primitive instruction of a distinct numeric-memory execution, within a
+  fixed budget equal to its loop-free program length, under the unit-cost
+  word operations named above. Its code and scratch term is lower order only
+  asymptotically, out-of-word endpoints are rejected by an uncharged
+  value-level check, and it has passed independent audit. Neither it nor the `210` theorem
+  bounds preprocessing.
 - The auxiliary logical layout footprint is a safe overapproximation. The
   reviewer flat-physical footprint is execution-derived and exactly the
   execution's ordered read projection.

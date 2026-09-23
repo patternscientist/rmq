@@ -1,0 +1,6 @@
+{
+  "Command": "frozen trust scan over RMQ lakefile.toml",
+  "ExitCode": 1,
+  "NoMatches": true,
+  "Output": []
+}

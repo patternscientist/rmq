@@ -73,6 +73,10 @@ lake env lean scripts/axiom_check.lean
 
 section "full repository gate"
 if command -v pwsh >/dev/null 2>&1; then
+  # `lean --run` fixtures inside the gate recurse deeper than the default 8 MiB
+  # main-thread stack on Linux and macOS allows; raise it for the gate's children.
+  ulimit -s 1048576 2>/dev/null || ulimit -s "$(ulimit -Hs)" 2>/dev/null || true
+  echo "stack limit for the gate: $(ulimit -s) KB"
   pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File scripts/gate.ps1
 elif [[ "${CI:-}" == "true" ]]; then
   echo "pwsh is required for scripts/gate.ps1 in CI"

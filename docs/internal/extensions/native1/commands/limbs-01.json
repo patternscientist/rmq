@@ -1,0 +1,45 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9",
+  "command": {
+    "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "arguments": [
+      "-j",
+      "1",
+      "RMQ/Core/WordRAM/Native/Limbs.lean"
+    ]
+  },
+  "result": {
+    "Stage": "limbs-01",
+    "ExitCode": 1,
+    "Output": [
+      "RMQ/Core/WordRAM/Native/Limbs.lean:46:73: error: no goals to be solved",
+      "RMQ/Core/WordRAM/Native/Limbs.lean:46:9: error: unsolved goals",
+      "case zero",
+      "value : Nat",
+      "h : value < 1",
+      "this : value = 0",
+      "⊢ decodeList (encodeList 0 value) = value",
+      "RMQ/Core/WordRAM/Native/Limbs.lean:89:2: error: no goals to be solved"
+    ],
+    "StandardOutput": [
+      "RMQ/Core/WordRAM/Native/Limbs.lean:46:73: error: no goals to be solved",
+      "RMQ/Core/WordRAM/Native/Limbs.lean:46:9: error: unsolved goals",
+      "case zero",
+      "value : Nat",
+      "h : value < 1",
+      "this : value = 0",
+      "⊢ decodeList (encodeList 0 value) = value",
+      "RMQ/Core/WordRAM/Native/Limbs.lean:89:2: error: no goals to be solved"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 9.585,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  }
+}

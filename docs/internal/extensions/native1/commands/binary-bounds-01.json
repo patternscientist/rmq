@@ -1,0 +1,86 @@
+{
+    "stage":  "binary-bounds-01",
+    "platform":  "Microsoft Windows NT 10.0.26200.0",
+    "head":  "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9",
+    "pins":  [
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Limbs.lean",
+                     "sha256":  "06D057D0DE50E263E701D2D5FEA1A4B0E1F6C3DD9A6BFDB6F2F9EDE71A7803F1"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Machine.lean",
+                     "sha256":  "F5286E6B52A5C5A73571BBF831E7CA9C5D731F7F5998F3ABA724E17F7AB94B3D"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Binary/Codec.lean",
+                     "sha256":  "E46F05148BB2F4D1D25C848EC804B0E2E0881EFB536F988A90AB9CB7371C11F7"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Binary.lean",
+                     "sha256":  "C50741D0A9AED1797919F405E8F7440410C0CD13DD2B9F299D0E6AB5E959AE16"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Binary/Bounds.lean",
+                     "sha256":  "D89266DB0C733A2022599E9D036FEF009C150228B3B40B55897FE523BE78F84A"
+                 }
+             ],
+    "result":  {
+                   "Stage":  "binary-bounds-01",
+                   "ExitCode":  1,
+                   "Output":  [
+                                  "RMQ/Core/WordRAM/Native/Binary/Bounds.lean:14:26: error: Invalid field `trans`: The environment does not contain `LE.le.trans`",
+                                  "  Nat.log2_self_le ha",
+                                  "has type",
+                                  "  2 ^ a.log2 ≤ a",
+                                  "RMQ/Core/WordRAM/Native/Binary/Bounds.lean:14:26: error: Invalid field `trans`: The environment does not contain `Nat.le.trans`",
+                                  "  Nat.log2_self_le ha",
+                                  "has type",
+                                  "  (2 ^ a.log2).le a",
+                                  "RMQ/Core/WordRAM/Native/Binary/Bounds.lean:27:10: error: Invalid field `trans`: The environment does not contain `LE.le.trans`",
+                                  "  hc",
+                                  "has type",
+                                  "  digitCount value ≤ LimbWord.limbCount width",
+                                  "RMQ/Core/WordRAM/Native/Binary/Bounds.lean:27:10: error: Invalid field `trans`: The environment does not contain `Nat.le.trans`",
+                                  "  hc",
+                                  "has type",
+                                  "  (digitCount value).le (LimbWord.limbCount width)",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedSupportedCaps\u0027 depends on axioms: [propext, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedSupportedExactDomain\u0027 depends on axioms: [propext, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryCodec.digitCount_mono\u0027 depends on axioms: [propext, sorryAx, Quot.sound]",
+                                  "\u0027RMQ.SuccinctFinal.PackedNative.BinaryCodec.digitCount_lt_pow\u0027 depends on axioms: [propext, sorryAx, Quot.sound]"
+                              ],
+                   "StandardOutput":  [
+                                          "RMQ/Core/WordRAM/Native/Binary/Bounds.lean:14:26: error: Invalid field `trans`: The environment does not contain `LE.le.trans`",
+                                          "  Nat.log2_self_le ha",
+                                          "has type",
+                                          "  2 ^ a.log2 ≤ a",
+                                          "RMQ/Core/WordRAM/Native/Binary/Bounds.lean:14:26: error: Invalid field `trans`: The environment does not contain `Nat.le.trans`",
+                                          "  Nat.log2_self_le ha",
+                                          "has type",
+                                          "  (2 ^ a.log2).le a",
+                                          "RMQ/Core/WordRAM/Native/Binary/Bounds.lean:27:10: error: Invalid field `trans`: The environment does not contain `LE.le.trans`",
+                                          "  hc",
+                                          "has type",
+                                          "  digitCount value ≤ LimbWord.limbCount width",
+                                          "RMQ/Core/WordRAM/Native/Binary/Bounds.lean:27:10: error: Invalid field `trans`: The environment does not contain `Nat.le.trans`",
+                                          "  hc",
+                                          "has type",
+                                          "  (digitCount value).le (LimbWord.limbCount width)",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedSupportedCaps\u0027 depends on axioms: [propext, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryChecks.checkedSupportedExactDomain\u0027 depends on axioms: [propext, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryCodec.digitCount_mono\u0027 depends on axioms: [propext, sorryAx, Quot.sound]",
+                                          "\u0027RMQ.SuccinctFinal.PackedNative.BinaryCodec.digitCount_lt_pow\u0027 depends on axioms: [propext, sorryAx, Quot.sound]"
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  4.91,
+                   "DeadlineSeconds":  120,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

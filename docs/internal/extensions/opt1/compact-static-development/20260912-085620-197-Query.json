@@ -1,0 +1,51 @@
+{
+  "Command": [
+    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "-j1",
+    "-o",
+    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Optimization\\Query.olean",
+    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\Query.lean"
+  ],
+  "SourceSHA256": "281FF65BBCB7DD92627127F908958D52815AEF35878CBE71F3EA635D90BB0776",
+  "Base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "Platform": "Microsoft Windows NT 10.0.26200.0",
+  "Result": {
+    "Stage": "compact-static-Query",
+    "ExitCode": 1,
+    "Output": [
+      "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\Query.lean:112:4: error: maximum recursion depth has been reached",
+      "use `set_option maxRecDepth <num>` to increase limit",
+      "use `set_option diagnostics true` to get diagnostic information",
+      "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\Query.lean:127:6: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression",
+      "  (run memory (compactAt compactQuerySource compactQueryFresh 0 0) fuel (initialState n left right)).final.regs r",
+      "memory : Memory",
+      "n left right fuel r : Nat",
+      "outside : compactQueryRegisterCount ≤ r",
+      "h :",
+      "  (run memory (compactAt compactQuerySource compactQueryFresh 0 0) fuel (initialState n left right)).final.regs r =",
+      "    (initialState n left right).regs r",
+      "⊢ (run memory compactQueryProgram fuel (initialState n left right)).final.regs r = 0"
+    ],
+    "StandardOutput": [
+      "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\Query.lean:112:4: error: maximum recursion depth has been reached",
+      "use `set_option maxRecDepth <num>` to increase limit",
+      "use `set_option diagnostics true` to get diagnostic information",
+      "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\Query.lean:127:6: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression",
+      "  (run memory (compactAt compactQuerySource compactQueryFresh 0 0) fuel (initialState n left right)).final.regs r",
+      "memory : Memory",
+      "n left right fuel r : Nat",
+      "outside : compactQueryRegisterCount ≤ r",
+      "h :",
+      "  (run memory (compactAt compactQuerySource compactQueryFresh 0 0) fuel (initialState n left right)).final.regs r =",
+      "    (initialState n left right).regs r",
+      "⊢ (run memory compactQueryProgram fuel (initialState n left right)).final.regs r = 0"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 54.81,
+    "DeadlineSeconds": 300,
+    "Ownership": "kill-on-close-job"
+  }
+}

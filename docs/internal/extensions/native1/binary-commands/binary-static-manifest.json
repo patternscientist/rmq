@@ -1,0 +1,334 @@
+{
+  "schema": "native1-binary-static-manifest-v1",
+  "completedUtc": "2026-09-12T11:32:28.759632+00:00",
+  "pass": true,
+  "manifestSha256": "8ACF20E470E6247E3E415FE283F909C7BDE2F968518F76F0CDA0ED7F988954FD",
+  "counts": {
+    "sources": 31,
+    "generatedC": 19,
+    "artifacts": 3
+  },
+  "toolchainSchema": "native1-toolchain-v2",
+  "toolchainDigest": "8DF566C7330ED567CDBDE84504EC261D1FB26EA713E4BF6034ECA7B0A20751C7",
+  "scope": "read-only roster and byte-pin comparison; no native execution or toolchain reinventory",
+  "pins": [
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Packed/Primitive.lean",
+      "sha256": "4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4",
+      "bytes": 7448
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Packed/Calculus.lean",
+      "sha256": "2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45",
+      "bytes": 17807
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Packed/Structured.lean",
+      "sha256": "F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887",
+      "bytes": 4052
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Packed/Compiler.lean",
+      "sha256": "C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505",
+      "bytes": 29873
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Packed/Frame.lean",
+      "sha256": "480EA8DF315B6DEE0F2048EEEAC03131368FD27EF09E0AAFA21DA2A676929939",
+      "bytes": 3216
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Packed/Scratch.lean",
+      "sha256": "320DDD6C1F6549902951B99CCF99C66B231D2A0106487A710D8638372EF32E64",
+      "bytes": 4433
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Native/Finite.lean",
+      "sha256": "8EDC747F2F0BBB7D4E6F6849B63869016969C4F7535D62E99A6E4D01901223DF",
+      "bytes": 11537
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Native/Thin.lean",
+      "sha256": "26D984386EEA21CCCC49EBF6217CD824B7896CF98785F8F843C6AD9E2EB69845",
+      "bytes": 4498
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Native/Route.lean",
+      "sha256": "C00240A5A2E994DD1A996C79A52FF54780A0B5A87010B3DBCF4ED3A61244A5C5",
+      "bytes": 7462
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Native/Limbs.lean",
+      "sha256": "06D057D0DE50E263E701D2D5FEA1A4B0E1F6C3DD9A6BFDB6F2F9EDE71A7803F1",
+      "bytes": 15313
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Native/Machine.lean",
+      "sha256": "F5286E6B52A5C5A73571BBF831E7CA9C5D731F7F5998F3ABA724E17F7AB94B3D",
+      "bytes": 38858
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Native/Observations.lean",
+      "sha256": "BC3C825AB7598810F9506B36D0EC9F34031DF7D9715F2AB68FEDB823009679B6",
+      "bytes": 3164
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Native/Binary/Codec.lean",
+      "sha256": "E46F05148BB2F4D1D25C848EC804B0E2E0881EFB536F988A90AB9CB7371C11F7",
+      "bytes": 16260
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Native/Binary.lean",
+      "sha256": "C50741D0A9AED1797919F405E8F7440410C0CD13DD2B9F299D0E6AB5E959AE16",
+      "bytes": 25637
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Native/Binary/Bounds.lean",
+      "sha256": "1ADF9BE737AD6C86AAC6E5FBA75ED3384876AA029CCEFBBD76CDA03DF70C339E",
+      "bytes": 6807
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Native/Binary/Cursor/Core.lean",
+      "sha256": "18F42ACEE5D218DA5CB6B787E7DF25C69C572C72551E3008D1106A6CFA660E28",
+      "bytes": 24281
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Native/Binary/Cursor.lean",
+      "sha256": "FA032A73E3CAAB84A874D736D26CA8B833CECC526BBC880BDF09AC8647E68F45",
+      "bytes": 10733
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Native/Runtime.lean",
+      "sha256": "23EF158FCC87169566CC443401BD6842197F9373E39CF5DF172165B765FEA847",
+      "bytes": 6120
+    },
+    {
+      "group": "sources",
+      "path": "RMQ/Core/WordRAM/Native/Entry.lean",
+      "sha256": "ADD666450D8CF6B724F1467CC2CD4182E8B5EEFC50AE1BF369AEFC5A2A4B7832",
+      "bytes": 2266
+    },
+    {
+      "group": "sources",
+      "path": "native/packed-rmq/native_shim.c",
+      "sha256": "0D395279A803AB9FB796BB1176F5376F59CBF887E0414F09AF4D376A78F89780",
+      "bytes": 3692
+    },
+    {
+      "group": "sources",
+      "path": "native/packed-rmq/include/packed_rmq.h",
+      "sha256": "E2DDB51D62B2CBAB79E0A64803F38343F4E73D66C91327E55D708CF47A3C993E",
+      "bytes": 2936
+    },
+    {
+      "group": "sources",
+      "path": "native/packed-rmq/src/lib.rs",
+      "sha256": "CC5A8DEFC747DC08E855C758E7F6BAC5036D6611ACB4C2A589BE48C2E9090FBE",
+      "bytes": 2606
+    },
+    {
+      "group": "sources",
+      "path": "native/packed-rmq/src/native.rs",
+      "sha256": "82E7DEF4F6F67FBC52D0829FF82BA67082D7E68FC8B7A6938EDA41802AA1BDE7",
+      "bytes": 5211
+    },
+    {
+      "group": "sources",
+      "path": "native/packed-rmq/src/native_main.rs",
+      "sha256": "3251E67EA8339FF7E5339B78A025308B0D031348BA844BDCBACA9C56CFAF1E22",
+      "bytes": 2910
+    },
+    {
+      "group": "sources",
+      "path": "native/packed-rmq/Cargo.toml",
+      "sha256": "C641E44960474CF903618A2AA4E9A724623A13BB4609DA853EFCF21BA58416D8",
+      "bytes": 228
+    },
+    {
+      "group": "sources",
+      "path": "scripts/packed_native_binary_build.ps1",
+      "sha256": "7FB90CC8AF87AD01FD250E8D9A253852E5A954FEF0E5FD8E7B48F06DBBFDAB87",
+      "bytes": 9141
+    },
+    {
+      "group": "sources",
+      "path": "native/packed-rmq/Cargo.lock",
+      "sha256": "5A59DA0864CAB8E739DC408245DF7BF5ED4BC7AD3A11FAF2962C3DECFF1C8AAC",
+      "bytes": 154
+    },
+    {
+      "group": "sources",
+      "path": "native/packed-rmq/examples/native.cpp",
+      "sha256": "A5BFE471012D24A68BF743F2EC76F141F5B7731E66F7002A6F2127485FBA3FAB",
+      "bytes": 7428
+    },
+    {
+      "group": "sources",
+      "path": "native/packed-rmq/packed_rmq.def",
+      "sha256": "1FDE85FF9210ABD57407803250A4348B6F919187D387B0368E76BFA2B4CFB1B9",
+      "bytes": 256
+    },
+    {
+      "group": "sources",
+      "path": "scripts/packed_native_identity.ps1",
+      "sha256": "3853E9E2F71096B75598F8220461F0796A7C19166E0738BBDF395C849947CABF",
+      "bytes": 14747
+    },
+    {
+      "group": "sources",
+      "path": "scripts/owned_process_tree.ps1",
+      "sha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+      "bytes": 47060
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Packed/Primitive.c",
+      "sha256": "568EE3038CD8DE167702AF65E6EDC2D0725C4D76D384F58F0A817EE6D937D4EC",
+      "bytes": 217285
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Packed/Calculus.c",
+      "sha256": "08F75F522DA58DEE4EFD9322245E78C2F4086654FD917B9728729E38F66AD136",
+      "bytes": 24712
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Packed/Structured.c",
+      "sha256": "395BEA6499816BE439D32C6FCE232ACBCCADE8BDEEF6A6701206174F3E1CD4A3",
+      "bytes": 99684
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Packed/Compiler.c",
+      "sha256": "03D40362A34DB1192FA35D269957EE6B0A19ED67A35061A1B679B393BF0D6D8F",
+      "bytes": 62966
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Packed/Frame.c",
+      "sha256": "F3BBFCA649A0208BA1C1537A5E9B4B5FE176C698BCA0223D262AF67318B76C93",
+      "bytes": 7357
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Packed/Scratch.c",
+      "sha256": "E69ABDE6567ECD36190E13F6A46222CC3F00120647862709715A6E3DB4602C4A",
+      "bytes": 14772
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Native/Finite.c",
+      "sha256": "DD360675CE814223BF1217CA26EBB017B85C069D7B67784334F9F94D927DF329",
+      "bytes": 136291
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Native/Thin.c",
+      "sha256": "96C23972C3BB49F1BD8CDD1ED7E1F1DE6FD82D68487689379C77926B731F7B43",
+      "bytes": 94533
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Native/Route.c",
+      "sha256": "8C6D342B244FC51F375D4796BFBA45E2377939E0190271264DC7111137D911C0",
+      "bytes": 79264
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Native/Limbs.c",
+      "sha256": "750FBA03D69CD8330C7CCBB19EDB03AA3DF21A2E13FF8BE3237FE7CCD8771E74",
+      "bytes": 62390
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Native/Machine.c",
+      "sha256": "1DD535D3B8B88F1290288170ECB942D173540D039A6246AB9F475AFCCCB7517E",
+      "bytes": 248500
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Native/Observations.c",
+      "sha256": "05B15E4616FD1BF9C381E4146D252C109B96F69B028CB36ED49BBC7601B1EFBA",
+      "bytes": 11562
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Native/Binary/Codec.c",
+      "sha256": "9C534BE3ABD08E7023C5DF1D565D0E1E350BFA882FD2ECB1282BC8AEB0A95677",
+      "bytes": 40015
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Native/Binary.c",
+      "sha256": "092BE2EC0D8F65E08658D598DCD9887ED0518F9A3B268647630D0D60D8C9B20F",
+      "bytes": 136717
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Native/Binary/Bounds.c",
+      "sha256": "BE407AD71EBA7A655610C90075245C3F3F031857F72B63049D34BF9117E3F352",
+      "bytes": 2513
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Native/Binary/Cursor/Core.c",
+      "sha256": "4351C57F0382D926E2892F336E765331BC48FEEABDCCF8949CBC22C5C50B9A9E",
+      "bytes": 56690
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Native/Binary/Cursor.c",
+      "sha256": "ABBE67E4B5F1B34E35A8557A7825924439D02B3B2EC3B7A658981D3F23BDE427",
+      "bytes": 27595
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Native/Runtime.c",
+      "sha256": "13679232A101DBCB385B0B12025A7B71E6251911352B347CD14B801C0B437459",
+      "bytes": 22993
+    },
+    {
+      "group": "generatedC",
+      "path": ".lake/build/ir/RMQ/Core/WordRAM/Native/Entry.c",
+      "sha256": "239E7EE0109619EEE6B5DDA1D4154CF0C6B1B8EADE2D763B91883DA9C18C256F",
+      "bytes": 5254
+    },
+    {
+      "group": "artifacts",
+      "path": "packed_rmq.dll",
+      "sha256": "251E18FD68D09DA2538DEC7FECC4F3D09CF8F732143CB3B05541CC5DB5ED5201",
+      "bytes": 1013248
+    },
+    {
+      "group": "artifacts",
+      "path": "packed-rmq-native.exe",
+      "sha256": "7A6FB03165C0DFCBD8F58D4A7E04D383019D1633CC9E28F052B57E2FA27814D7",
+      "bytes": 169472
+    },
+    {
+      "group": "artifacts",
+      "path": "packed-rmq-native-cpp.exe",
+      "sha256": "6B47EAAD31CA731C9D1019091F2EE71ABBABB80A72AB09EEC15F34DACDF4668F",
+      "bytes": 325120
+    }
+  ]
+}

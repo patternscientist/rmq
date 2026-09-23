@@ -1,0 +1,451 @@
+{
+  "verdict": "PASS",
+  "mode": "full",
+  "registrySha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+  "runnerSha256": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c",
+  "expected": [
+    "C01_REFLECTION",
+    "C02_CAP",
+    "C03_CONSTANTS",
+    "C04_HEADER",
+    "C05_POINTWISE",
+    "C06_ORACLE",
+    "C07_UNIFORM",
+    "C08_STORE_VALUE",
+    "C09_FRESH_RESERVE",
+    "C10_CODE_ACCOUNTING",
+    "C11_FIELD_DELETE",
+    "C12_FIELD_WEAKEN",
+    "C13_SIBLING",
+    "C14_ACCEPT_COMMENT",
+    "C15_CODE_ALIAS",
+    "C16_CODE_COUNT",
+    "C17_FIREWALL_IMPORT",
+    "C18_PRIMITIVE_BYTES"
+  ],
+  "executed": [
+    "C01_REFLECTION",
+    "C02_CAP",
+    "C03_CONSTANTS",
+    "C04_HEADER",
+    "C05_POINTWISE",
+    "C06_ORACLE",
+    "C07_UNIFORM",
+    "C08_STORE_VALUE",
+    "C09_FRESH_RESERVE",
+    "C10_CODE_ACCOUNTING",
+    "C11_FIELD_DELETE",
+    "C12_FIELD_WEAKEN",
+    "C13_SIBLING",
+    "C14_ACCEPT_COMMENT",
+    "C15_CODE_ALIAS",
+    "C16_CODE_COUNT",
+    "C17_FIREWALL_IMPORT",
+    "C18_PRIMITIVE_BYTES"
+  ],
+  "sourceHashes": [
+    {
+      "path": "docs/internal/extensions/pre1/primitive_manifest.json",
+      "sha256": "a1d31f0bc4b1d732a331d4bac3b1b2103e3be9812fd0b1eb2e9769c45931fcfa"
+    },
+    {
+      "path": "lean-toolchain",
+      "sha256": "ad3e6363c78908c80953282baf57162702f1134173a5247aad3dbfea108a525f"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Conservative.lean",
+      "sha256": "e10276e6526c2592ec2fb6d619b202003a5433a9f9fcbb8cb131aaec7b3828bb"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Contract.lean",
+      "sha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Controls.lean",
+      "sha256": "8887604c57d3ccda1ca1e1b8a25b419c32076e787f419cf35cda808dff068000"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Input.lean",
+      "sha256": "78316916624cf086a87bc797b1111b62383f37218101b5c7f6b267ab647722e4"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Model.lean",
+      "sha256": "9d7b3d7ef66f5739d2501576e6990d284f30b318d4eda4d71ae0731d3dd32a1e"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Construction/Primitive.lean",
+      "sha256": "80120235c5bcb3c72d1c536644f5b22e41dfb36d08b8564ecbadad2efcf6edca"
+    },
+    {
+      "path": "scripts/preprocessing_contract_check.lean",
+      "sha256": "09cc867149fb8be6bef9acc3a862db8465492b405a666ea0ccfce7ca52186843"
+    },
+    {
+      "path": "scripts/preprocessing_contract_firewall.ps1",
+      "sha256": "1f6903d5ae753fb49ac0d21611ba82aeb61fe9c8aced63e2c6469473b5f28786"
+    },
+    {
+      "path": "scripts/preprocessing_contract_replay.ps1",
+      "sha256": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c"
+    }
+  ],
+  "selfTests": [
+    {
+      "category": "registry",
+      "case": "empty",
+      "verdict": "PASS"
+    },
+    {
+      "category": "registry",
+      "case": "missing",
+      "verdict": "PASS"
+    },
+    {
+      "category": "registry",
+      "case": "extra",
+      "verdict": "PASS"
+    },
+    {
+      "category": "registry",
+      "case": "duplicate",
+      "verdict": "PASS"
+    },
+    {
+      "category": "registry",
+      "case": "reordered",
+      "verdict": "PASS"
+    },
+    {
+      "category": "registry",
+      "case": "version",
+      "verdict": "PASS"
+    },
+    {
+      "category": "registry",
+      "case": "hash",
+      "verdict": "PASS"
+    },
+    {
+      "category": "matcher",
+      "case": "exact-rejection",
+      "expected": true,
+      "observed": true,
+      "verdict": "PASS"
+    },
+    {
+      "category": "matcher",
+      "case": "wrong-stage",
+      "expected": false,
+      "observed": false,
+      "verdict": "PASS"
+    },
+    {
+      "category": "matcher",
+      "case": "wrong-location",
+      "expected": false,
+      "observed": false,
+      "verdict": "PASS"
+    },
+    {
+      "category": "matcher",
+      "case": "generic-substring-only",
+      "expected": false,
+      "observed": false,
+      "verdict": "PASS"
+    },
+    {
+      "category": "matcher",
+      "case": "unrelated-error-plus-generic-substring",
+      "expected": false,
+      "observed": false,
+      "verdict": "PASS"
+    },
+    {
+      "category": "matcher",
+      "case": "timeout-is-inconclusive",
+      "expected": false,
+      "observed": false,
+      "verdict": "PASS"
+    },
+    {
+      "category": "matcher",
+      "case": "success-is-not-rejection",
+      "expected": false,
+      "observed": false,
+      "verdict": "PASS"
+    },
+    {
+      "category": "matcher",
+      "case": "exact-acceptance",
+      "expected": true,
+      "observed": true,
+      "verdict": "PASS"
+    },
+    {
+      "category": "matcher",
+      "case": "acceptance-at-wrong-stage",
+      "expected": false,
+      "observed": false,
+      "verdict": "PASS"
+    },
+    {
+      "category": "selector",
+      "case": "omitted",
+      "verdict": "PASS",
+      "exit": 0
+    },
+    {
+      "category": "selector",
+      "case": "valid",
+      "verdict": "PASS",
+      "exit": 0
+    },
+    {
+      "category": "selector",
+      "case": "empty",
+      "verdict": "PASS",
+      "exit": 1
+    },
+    {
+      "category": "selector",
+      "case": "whitespace",
+      "verdict": "PASS",
+      "exit": 1
+    },
+    {
+      "category": "selector",
+      "case": "malformed",
+      "verdict": "PASS",
+      "exit": 1
+    },
+    {
+      "category": "selector",
+      "case": "unknown",
+      "verdict": "PASS",
+      "exit": 1
+    },
+    {
+      "category": "selector",
+      "case": "zero",
+      "verdict": "PASS",
+      "exit": 1
+    },
+    {
+      "category": "selector",
+      "case": "missing",
+      "verdict": "PASS",
+      "exit": 1
+    },
+    {
+      "category": "selector",
+      "case": "duplicate",
+      "verdict": "PASS",
+      "exit": 1
+    },
+    {
+      "category": "deadline",
+      "case": "deterministic-plans-and-collections",
+      "verdict": "PASS",
+      "scope": "Production launch-plan branches and process-ID collection logic; foreign-host execution is not implied"
+    },
+    {
+      "category": "deadline",
+      "case": "exit-stderr",
+      "verdict": "PASS"
+    },
+    {
+      "category": "deadline",
+      "case": "owned-descendant",
+      "verdict": "PASS",
+      "descendant": 17020,
+      "platform": "Microsoft Windows NT 10.0.26200.0",
+      "ownership": "kill-on-close-job",
+      "unexecutedHost": "POSIX execution not covered by this run"
+    }
+  ],
+  "cases": [
+    {
+      "id": "C01_REFLECTION",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:11:",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a",
+      "afterSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a"
+    },
+    {
+      "id": "C02_CAP",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:13:",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a",
+      "afterSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a"
+    },
+    {
+      "id": "C03_CONSTANTS",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:15:",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a",
+      "afterSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a"
+    },
+    {
+      "id": "C04_HEADER",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:21:",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a",
+      "afterSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a"
+    },
+    {
+      "id": "C05_POINTWISE",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:24:",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a",
+      "afterSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a"
+    },
+    {
+      "id": "C06_ORACLE",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:27:",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a",
+      "afterSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a"
+    },
+    {
+      "id": "C07_UNIFORM",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:29:",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a",
+      "afterSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a"
+    },
+    {
+      "id": "C08_STORE_VALUE",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:32:",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a",
+      "afterSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a"
+    },
+    {
+      "id": "C09_FRESH_RESERVE",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:35:",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a",
+      "afterSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a"
+    },
+    {
+      "id": "C10_CODE_ACCOUNTING",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:38:",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a",
+      "afterSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a"
+    },
+    {
+      "id": "C11_FIELD_DELETE",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:47:",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a",
+      "afterSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a"
+    },
+    {
+      "id": "C12_FIELD_WEAKEN",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:47:",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a",
+      "afterSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a"
+    },
+    {
+      "id": "C13_SIBLING",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:27:",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a",
+      "afterSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a"
+    },
+    {
+      "id": "C14_ACCEPT_COMMENT",
+      "expected": "accept",
+      "expectedStage": "consumer",
+      "expectedSurface": "PRE1-CONTRACT-TYPED-CONSUMERS PASS",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a",
+      "afterSha256": "d85498fcb3108156e97bb8c8eb6c7f7f64c3ad01242e2578ab8c0d9934ca628a"
+    },
+    {
+      "id": "C15_CODE_ALIAS",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:42:",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "8887604c57d3ccda1ca1e1b8a25b419c32076e787f419cf35cda808dff068000",
+      "afterSha256": "8887604c57d3ccda1ca1e1b8a25b419c32076e787f419cf35cda808dff068000"
+    },
+    {
+      "id": "C16_CODE_COUNT",
+      "expected": "reject",
+      "expectedStage": "consumer",
+      "expectedSurface": "preprocessing_contract_check.lean:44:",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "8887604c57d3ccda1ca1e1b8a25b419c32076e787f419cf35cda808dff068000",
+      "afterSha256": "8887604c57d3ccda1ca1e1b8a25b419c32076e787f419cf35cda808dff068000"
+    },
+    {
+      "id": "C17_FIREWALL_IMPORT",
+      "expected": "reject",
+      "expectedStage": "firewall",
+      "expectedSurface": "PRE1-FIREWALL imports rejected: RMQ/Core/WordRAM/Construction/Primitive.lean",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "80120235c5bcb3c72d1c536644f5b22e41dfb36d08b8564ecbadad2efcf6edca",
+      "afterSha256": "80120235c5bcb3c72d1c536644f5b22e41dfb36d08b8564ecbadad2efcf6edca"
+    },
+    {
+      "id": "C18_PRIMITIVE_BYTES",
+      "expected": "reject",
+      "expectedStage": "firewall",
+      "expectedSurface": "PRE1-FIREWALL frozen primitive bytes changed: RMQ/Core/WordRAM/Construction/Primitive.lean",
+      "verdict": "PASS",
+      "restoration": "EXACT",
+      "beforeSha256": "80120235c5bcb3c72d1c536644f5b22e41dfb36d08b8564ecbadad2efcf6edca",
+      "afterSha256": "80120235c5bcb3c72d1c536644f5b22e41dfb36d08b8564ecbadad2efcf6edca"
+    }
+  ],
+  "stageCount": 198,
+  "baselineHead": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "baselineDisposition": "Authorized dirty author tree restored exactly; subsequent contract commit must be checked clean."
+}

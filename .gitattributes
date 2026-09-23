@@ -12,3 +12,20 @@ docs/internal/E1_ARCHITECTURE_COORDINATOR_HANDOFF.md -text
 # or re-touches those lines. Reformatting the dossier is not the fix; it is
 # evidence, not maintained prose.
 docs/internal/E1_ARCHITECTURE_COORDINATOR_HANDOFF.md -whitespace
+
+# BV-1 source and replay evidence retain their exact recorded bytes on checkout.
+# The patterns are confined to this extension; no other family is affected.
+RMQ/Core/WordRAM/Bitvector/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+RMQ/Validation/PackedBitvector.lean -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+scripts/packed_bitvector_* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+docs/internal/extensions/bv1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# These exact replay-pinned artifacts retain their recorded final blank line.
+# Other trailing whitespace and indentation checks remain enabled.
+RMQ/Core/WordRAM/Bitvector/Capstone.lean whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol
+docs/internal/extensions/bv1/CHECKOUT_BYTES_DISPOSITION.md whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol
+docs/internal/extensions/bv1/CHECKOUT_BYTES_LAKEFILE_DISPOSITION.md whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol
+docs/internal/extensions/bv1/COORDINATOR_ROUTE_DISPOSITION.md whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol
+docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/*.constructor.lean whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol
+docs/internal/extensions/bv1/controls/public_mutations/snapshots/97405C70ED3B60CED72874D6DF622D2E9BBA0BD8F04808A3F98ED34EE1CEB770/Capstone.lean whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol
+scripts/packed_bitvector_validation_controls.ps1 whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol

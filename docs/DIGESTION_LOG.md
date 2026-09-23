@@ -1649,3 +1649,421 @@ any reviewer-facing property of the packed machine is missing from the
 combined proposition -- and whether the loose `o(n)` envelope and the `427`
 constant survive comparison against Fischer-style constants once `S1` fixes
 bit-level probe accounting.
+
+## 2026-09-11 -- PQ1 candidate: fully charged packed primitive query (not accepted)
+
+Theorem: `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`
+in `RMQ/Core/WordRAM/Packed/Capstone.lean`, exported through `RMQPaper` as
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` and consumed field by field
+by `RMQ/Validation/PackedQueryContract.lean`. Branch
+`codex/fully-charged-packed-query-v1` over governance base
+`4639223bc8130b0ef752270b5cbdd74325abcd60` (`audit-v1-rc-6`). Status:
+CANDIDATE. The theorem is kernel checked with axioms `propext`,
+`Classical.choice` and `Quot.sound`; the committed replay campaign, the
+aggregate gate and a fresh blind exact-commit audit are pending, and this
+entry records no acceptance.
+
+Conceptually, PQ1 changes what is counted. The earlier canonical theorems
+count charged payload reads on a logical trace (the `210` certificate) or
+structural probes into a packed allocation with free computation between them
+(the `427` bound); controller work is uncharged in both. PQ1 introduces a
+separate primitive machine -- a register machine over numeric memory with
+nine instruction forms, each executed instruction one step -- and a separate
+execution: preprocessing builds `buildMemory xs`, 174 counted metadata words
+followed by the existing packed allocation densely repacked into
+`wordWidth n`-bit words, and one closed straight-line `queryProgram` of
+837,572 instructions, independent of `xs` and `n`, answers every query. The
+certificate ties space, width, correctness, halting, safety, read provenance
+and memory agreement to that one memory, program and run. The former E1 plan,
+to simulate the charged-trace execution on a richer machine, is superseded by
+this route, pending the audit.
+
+In plain English: for every list and every endpoint pair that fits in a
+machine word, running one fixed program on one `2n + o(n)`-bit memory halts
+within at most 837,572 steps and returns the leftmost minimum of every valid
+range, and every step is an ordinary register-machine instruction. The number
+is the length of the straight-line program, not a tight cost; the committed
+valid-query fixtures take 6,003 to 16,358 steps. On a valid range the loads
+are exactly the metadata loads followed by the physical expansion of the same
+logical trace the charged-trace theorem analyses, so the two accounts agree
+about what is read.
+
+Live assumptions: unit-cost multiplication, division, remainder, variable
+shifts and bitwise operations (an arithmetic word-RAM); every executed
+operation proved free of overflow, underflow, zero division and oversized
+shifts, so natural-number arithmetic equals `w(n)`-bit arithmetic; an
+uncharged value-level check rejecting endpoints outside the word domain, with
+no instruction bound for parsing them; code and scratch storage of roughly
+1.68 to 4.2 million words that exceeds `n` for every `n` below about `2^28`,
+so its absorption into `o(n)` is asymptotic only; preprocessing unbounded and
+unclaimed; Lean runtime separate and unmeasured; and the Mathlib-free Lean/Std
+plus `omega` trust base.
+
+Reusable proof ideas: straight-line compilation of statically expanded,
+proved-bounded repetition, so the budget is the program length and needs no
+loop analysis; serializing size and shape geometry into a counted metadata
+prefix instead of code specialized to `n`; dense repacking at a wider word to
+keep the leading `2n` coefficient; generic evaluation boundaries and register
+write frames, so the kernel never unfolds the whole program;
+constructor-complete static maxima over every encoded field, dormant branch
+arms included; and proving the absence of overflow so the word model is not
+an unstated wraparound convention.
+
+Public surfaces synchronized in the same change: every registered current
+surface now names `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` with its
+caveats and CANDIDATE status, and every earlier "controller uncharged", "not
+proved" or "E1 remains" statement is rescoped to the `210` and `427`
+theorems, where it stays true. Claim-drift policy v28 requires the alias in
+any current-surface paragraph that states the budget or the words "fully
+charged", and forbids attaching them to a charged-trace or packed-probe
+theorem name.
+
+A skeptical graduate student should next ask whether 837,572 means anything
+beyond the program length (no path-sensitive bound is proved); whether the
+unit-cost division and shift convention matches their word-RAM; whether the
+uncharged outer word-domain check hides work; how large `n` must be before the
+code and scratch term is genuinely lower order; whether weakening any
+certificate field really breaks the typed client, which the committed replay
+campaign is meant to show; and whether preprocessing can be brought into the
+same machine.
+
+## 2026-09-12 UTC: PQ1 coordinator acceptance
+
+The packed primitive query is accepted on the source and evidence identified in `internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md`. Both full host gates and the independent audit passed. The one gate-blocking runtime-selector defect was repaired; current descriptions now say “loop-free” because the fixed program contains forward conditional branches. The earlier dated entries remain historical accounts.
+
+Conceptually, the query obtains its answer from a counted numeric allocation and charges every executed primitive instruction, including metadata reads, decoding and branches. In plain English, the modeled machine answers every valid half-open list query with the leftmost minimum under one uniform budget. The unit-cost scalar arithmetic model, unbounded preprocessing, uncharged outer Nat encoding check and asymptotic-only code/scratch absorption remain live assumptions. The next skeptical question concerns useful finite-size or preprocessing bounds in the same model. S1 serialization, extraction and release-wide V1 verification are separate work; this acceptance changes no theorem.
+
+## 2026-09-12 UTC: BV-1 generic bitvector theorem check
+
+The kernel-checked
+`RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds` joins the complete
+allocation, actual source evaluations, shared compiler, all-natural APIs,
+numeric safety, fixed costs and finite scratch. Its 23 fields refer to the same
+arbitrary input list, numeric memory and three programs. Independent consumers,
+replay and coordinator acceptance are separate obligations; this entry records
+the mathematical composition milestone, not a coordinator disposition.
+
+The conceptual change is to make the existing generic directory semantics a
+client of the actual numeric reader. Canonical regularity and exact bit spans
+connect each logical word to the densely packed body. Charged setup loads every
+geometry field used by the controllers. Empty logical words have zero spans
+and need no body load even when their nominal descriptor position lies beyond
+the body; the position still fits the common width. The reader normalizes only
+raw true-select replies, so both directories share one retained input. Rank
+uses four additional sample arrays and an alias to the same raw input, all
+included in the complete capacity theorem.
+
+In plain English, the modeled programs read their data and return the selected
+bit, prefix count or occurrence position for every input size. Invalid indices
+return the explicit absent packet. Every primitive setup/read/decode/branch
+contributes to the actual execution; the instruction bounds are 132/1450/10030.
+One width bounds the counted words, nominal positions, instruction fields,
+arithmetic and every execution prefix. The retained data, encoded code and
+finite register bank occupy at most `n + o(n)` bits under that same width.
+
+The live assumptions are unit-cost scalar arithmetic including division and
+shifts, unbounded preprocessing, an uncharged outer Nat-to-word-domain check,
+and asymptotic absorption of fixed code and scratch. The theorem is about the
+explicit word-RAM model; Lean's List-based interpreter runtime is separate.
+A skeptical graduate student should next ask whether the public consumer
+rejects every weakened field, whether valid small components exercise the rare
+exception branches, what finite input sizes make the overhead useful, and
+whether preprocessing or tighter path-sensitive bounds can be proved in the
+same machine.
+
+## 2026-09-12 UTC: LB-1 candidate joins variable payload counting to PQ1 allocation
+
+The new generic encoding record permits bitstrings of length at most B and
+allows the decoder to observe their lengths. There are exactly 2^(B+1)-1 such
+strings. One decoder must answer every valid leftmost RMQ window across every
+input of the chosen size. Equal codes consequently force equal Cartesian
+shapes, so the finite shape count gives
+`doubledLogSlackLower n <= 2*(B+1)`. The lower bound constrains a uniform budget
+over inputs; it does not depend on the numerical values being recoverable.
+
+The adapter now counts exactly the words PQ1 allocates. It writes each word at
+the same n-only width, retains the bitstring length, recovers the entire word
+list, and passes that recovered memory to the existing query. Different numbers
+of zero words stay distinguishable. Inputs with the same Cartesian shape share
+the same serialized allocation. In plain English, the information lower bound
+and the payload upper bound now refer to the memory the query actually uses.
+The named join is
+`RMQ.SuccinctFinal.PackedWordRAM.packedAllocationOptimality_holds`; the checked
+adapter's full memory equality transports all 33 existing machine propositions
+with their original endpoint and validity conditions.
+
+The live conventions are observed payload length, one decoder fixed per n, a
+uniform allocation budget, and PQ1's declared unit-cost scalar operations and
+word width. The canonical decoder takes only n, bits and endpoints. Code and
+finite scratch are separately accounted; bit conversion, preprocessing and the
+outer natural-number wrapper have no added primitive-time bound. Independent
+literal consumers and replay controls are tracked in the LB-1 report; candidate
+status does not record coordinator acceptance.
+
+The next questions for a skeptical graduate student are the useful finite-size
+slack in allocationRho and the cost of building this serialized allocation in
+the same machine model. Those are separate from the present uniform payload
+comparison. The task's consumer/replay and exact-commit verification remain
+required before candidate closure.
+
+
+### LB-1 lower/upper allocation join: repaired verification checkpoint (2026-09-12)
+
+Allowing the payload length to be observed gives `2^(B+1)-1` available codes
+through B bits. Exact half-open leftmost RMQ answers distinguish the Cartesian
+shapes, so the information bound applies to a uniform budget for the complete
+PQ1 allocation. Serialization and its whole-list inverse keep the counted
+memory identical to the memory used by the decoder and primitive query run.
+All 63 mutation/control cases, all 6 runtime fixtures, five focused modes, three extra selector branches and the 20-name trust inventory passed on the repaired candidate. The earlier sibling-budget test reached a recursion
+limit; its unchanged proposition now rejects at the intended type mismatch
+after a proof-body comparison repair. The failed campaign is retained as
+inconclusive history. Live conventions remain public n, observed length,
+uniform worst-case budget and the stated word-RAM primitives/width. There is
+no per-input allocation lower bound or charged-time claim for bit conversion.
+Coordinator broad certification and acceptance remain pending.
+
+## 2026-09-12 — NATIVE-1 finite-container/native-route checkpoint
+
+Conceptually, the new leaf replaces three storage interfaces with Arrays while
+preserving the old primitive run as the reference. The equality includes final
+state and ordered transitions under a destination-bank bound. A separate
+accumulator computes the same final state, instruction count, six categories
+and optional read observations without retaining a full transition trace.
+
+In plain English, the executable source being prepared for the native DLL is
+now the same Lean function whose behavior is connected to the reference
+interpreter. Rust only supplies the frontend in this experiment. This does not
+yet supply fixed limbs, a proved binary loader, a production API or the final
+`PackedNative.nativeExecutionCapstone_holds` join.
+
+Live assumptions: natural-cell arithmetic, a bounded destination bank, and
+explicit compiler/runtime/FFI assumptions for native execution. Raw PQ1's total
+arithmetic and missing-fetch behavior must be kept separate from a future
+checked native fault policy. The downstream consumer is the assigned native
+capstone on the exact PQ1 allocation and program. A skeptical reader should ask
+whether the later loaded limbs and marshaled inputs are those same counted and
+executed objects, and how corruption is rejected before unsafe arithmetic.
+
+## 2026-09-12 — NATIVE-1 loaded-limb source composition
+
+Conceptually, the reference program now has a direct byte-limb implementation,
+and the source theorem follows one canonical image through serialization,
+loading, execution and observation. The canonical all-fuel proof discharges
+the machine safety premises from the accepted PQ1 safety theorem; extra fuel
+after the query budget is justified by halting. The query-independent word
+width is unchanged, so the real 168/176-bit examples do not pass through a
+64/128-bit surrogate.
+
+In plain English, the bytes loaded for a query contain exactly the code and
+memory counted by the space theorem, and the executor uses those bytes to
+compute its answer. Its optional read list and six operation counts come from
+the same execution. Replacing a supplied store by one agreeing at every actual
+read preserves the entire run. The public certificate and all 42 literal
+consumer types have passed Lean checks; their native build and operational
+replay are separate obligations still being completed.
+
+Live assumptions are explicit: endpoints fit the modeled width; the finite
+native API checks its own file/container/fuel limits; compiler, foreign runtime
+and FFI behavior are outside the kernel theorem. Byte-array container overhead
+and allocation availability are not the numeric payload bound, and a checked
+multiprecision operation is not a constant physical-time hardware instruction.
+The next skeptical question is whether the actual compiled bridge preserves
+argument order, byte lengths and ownership, and whether the replay witnesses
+identify real select/fringe/rank/cross-cell instruction occurrences. The
+expanded native campaign and fresh final audit must answer those questions.
+
+## 2026-09-12 — NATIVE-1 compiled execution and dependency controls
+
+The compiled DLL and unchanged Rust/C++ clients now pass every final native
+case, including ordered duplicate reads, wide words/endpoints, malformed inputs,
+all six categories and the seven real select/fringe/rank/cross-cell witnesses.
+The deliberate endpoint-order defect in a separately rebuilt shim produces the
+independently predicted fault in both clients, and mutations of the actual
+exported Lean source break the designated correspondence proofs. Original
+source, generated C and binary artifact hashes are restored and rechecked.
+
+The public dependency replay successfully compiles each of 42 field weakenings
+and a collapsed public proposition, then demonstrates rejection by the unchanged
+independent literal consumer. Each newly compiled producer is hash-bound into a
+complete private import package; the shared checked objects remain unchanged.
+The unchanged baseline accepts. All 44 cases, nine certificate controls, 109
+native cases expanded to 214 checks, 128 native controls and 24 validator controls
+pass their exact rosters. These executed challenges support the source join and
+bridge assumptions; they do not turn compiler, runtime or foreign-pointer
+semantics into kernel theorems.
+
+A skeptical reader can now inspect the exact same-store propositions, raw
+observations, designated failures and restoration records in the final evidence
+packet. Fresh blind exact-commit review and aggregate certification remain the
+coordinator's independent acceptance phase. Numeric payload and model counts
+retain the limitations stated in the source-composition entry above.
+
+
+## 2026-09-12: OPT-1 generic proof checkpoint, compact query still open
+
+Conceptually, the checked BranchBound producer separates static program
+addresses from executed branch cost. Its witness is an actual primitive
+transition segment; extending its fuel preserves the entire Run, including
+ordered duplicate and failed read attempts. In plain English, extra unused
+fuel does not change what this compiled program does once the witnessed
+segment has stopped. This generic theorem is not yet the concrete query
+bound or compact-query capstone.
+
+The checked SourceRelations producer inventories every source register,
+including read addresses and dormant branch/exit operands. It permits fresh
+scratch to differ while preserving source-visible registers, status and
+ordered reads. Its safety transport also requires the alternative data state
+to fit globally: agreement on a finite prefix cannot bound untouched high
+registers. Independent route review additionally requires rebasing source
+scratch when nested-loop induction protects a newly initialized counter pair.
+
+The named downstream consumers remain
+`RMQ.SuccinctFinal.PackedWordRAM.Optimization.branchSensitiveQueryBound` and
+`compactPackedQueryCapstone_holds`. Their compact simulation, literal emitted
+size, whole-state safety and combined accounting are still open. The accepted
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` baseline remains unchanged.
+Live generic assumptions are hosted code and starting PC, adequate fuel, or
+complete register inventory/agreement and global fit as appropriate. A
+skeptical reader should next ask whether nested counters survive every early
+halt/fault and whether the final capstone counts the exact code, register bank,
+allocation and execution it certifies. See `internal/extensions/opt1/REPORT.md`.
+
+
+### 2026-09-12 — OPT-1 compact query reaches the inhabited certificate
+
+The compact machine now has a checked whole-query certificate. Repeated source
+blocks share one emitted body and use two counted loop registers. This reduces
+actual code from 837572 to 212964 instructions and its encoding from 2847399 to
+722339 numeric words. It introduces modeled loop-control work: the compact
+upper bound 151978 is slightly above the sharper 150739 bound proved for the
+complete original unrolled run. Neither figure is a claim of attained cost or
+native runtime improvement.
+
+The conceptual proof step is comparing a nested body with the source evaluator
+at that body's actual machine state, while separately maintaining global word
+fit. That permits ancestor counters to remain protected without pretending all
+scratch equals the original source state. The resulting run preserves exact
+ordered attempts/replies, including faults; every adequate larger fuel produces
+the same complete compact Run. Canonical query safety, positional backing and
+complete literal code/store/scratch space all use the same allocation and width.
+
+The named downstream theorem is `Optimization.compactPackedQueryCapstone_holds`,
+with 39 explicit fields and 78 checked generic/canonical expected-type consumers.
+The live model assumes unit-cost word arithmetic as in the accepted baseline;
+physical safety requires representable endpoints, while ordinary-list exactness
+is all-size. The next skeptical checks are the actual route fixtures, negative
+mutation surfaces and exact-commit audit/certification. Those checks remain
+active; a checked inhabitant alone is not OPT-1 acceptance.
+
+OPT-1 executable follow-up at source ac5af8e416f906391dc117f083a883acc053a268:
+all 23 positive semantic cases and four corrupted-program controls reached
+their expected verdicts, including independently identified query routes and
+malformed metadata. Script/direct selector controls passed and exact source
+and compiled-artifact hashes were unchanged. This checks the implemented
+compiler and query objects; it does not establish native-time complexity or
+replace the remaining field-dependency campaign and independent acceptance.
+
+The subsequent certificate replay checks a concrete dependency for every
+mandatory field: removing a fact, or replacing its proposition with True,
+leaves the altered certificate and inhabitant compilable but breaks the fixed
+consumer that demands the original proposition. Two positive controls check
+that the same mechanism accepts an unchanged certificate and a nonsemantic
+comment. All 80 actual cases reached their expected verdicts with exact
+restoration. This tests producer/consumer dependence; the mathematical proofs
+remain the separately checked inhabited certificate. Live machine assumptions,
+representable-endpoint guards and modeled cost interpretation are unchanged.
+The remaining acceptance checks are full-project compatibility and the
+coordinator's independent reconstruction on the final candidate.
+
+## 2026-09-12: OPT-1-R1 replay certification repair (not accepted)
+
+Two production replay defects found by the fresh audit of the OPT-1 compact
+compiler candidate were repaired without touching a line of Lean. The runtime
+rejection check had accepted an expected `uncaught exception` line even when an
+unrelated exception appeared on the other stream; it now admits exactly one
+retained line equal to the intended diagnostic across both streams, with exit 1
+and no timeout or overflow, and 53 real-child controls (mixed streams,
+duplicates, padding, success and resource records, actual timeouts with
+descendant death, actual overflows) pin that grammar. The certificate replay
+had pinned source bytes that Git does not reproduce, so a clean checkout failed
+before any semantic case; it now checks a declared canonical serialization of
+the exact Git blobs, the complete toolchain distribution, a frozen build driver
+and a receipt of actual one-job compilation of all 263 modules, and requires an
+exact dedicated artifact cache. Both a raw LF and a default Windows CRLF fresh
+checkout pass the production library positive and reject the decisive
+`stepBound` weakening at the unchanged expected-type consumer, while seventeen
+tampering categories (source token, whitespace, BOM, bare CR, invalid UTF-8,
+artifact byte, missing or stale artifact, omitted or duplicated import,
+manifest, receipt, toolchain text, wrong executable, extra artifact, shadow
+package directory, sidecar) are rejected with exact sole diagnostics and exact
+restoration.
+
+Conceptually this separates four things the old evidence had conflated:
+immutable source content, checkout newline serialization, successful
+compilation, and later artifact installation. In plain English, a known failure
+message can no longer hide another failure, and a reviewer can reproduce the
+checked compiler inputs from the commit alone. Live assumptions are the
+unchanged primitive machine model with its representable-endpoint guards, the
+pinned Windows Lean 4.22.0 distribution as the only supported compiler for exact
+artifact equality, and the trusted manifest/receipt/driver pins. The downstream
+consumer is the production replay of the same inhabited certificate through its
+78 exact consumers and then the coordinator's aggregate certification and fresh
+audit. A skeptical graduate student would ask whether another compiler build
+could pass the profile (it is rejected, and cross-distribution reproducibility
+is explicitly not claimed) and whether POSIX process ownership behaves like the
+Windows job (unexecuted on this host). The full 27 runtime and 80 certificate
+campaigns were re-executed on the repaired scripts; the mathematical bounds,
+allocation, word width and observation relation are unchanged, and no
+acceptance is recorded by this entry.
+
+## PRE-1: make the preprocessing model reviewable before building (2026-09-12)
+
+The first construction phase fixes what counts as one machine operation and
+where input values may enter. A word reservation creates one absent cell; a
+separate store initializes it. Length must be read from cell zero. Signed keys
+use a pointwise, order-preserving representation, while arbitrary integers use
+a separately named comparison-oracle model. One reflected operation cannot
+secretly compute even the existing two-key Cartesian BP code from unread keys.
+A same-length shape-dependent constant-emission program also fails the fixed-
+program requirement.
+
+These are checked contract prerequisites, not a preprocessing algorithm. The
+next consumer is an independently audited contract, then a charged monotone-
+stack/directory/packing builder whose output equals PQ1 buildMemory exactly.
+Live assumptions include indexed RAM access, the stated scalar arithmetic
+model, signed representability for the finite-key corollary, and explicit
+word/address/temporary-space obligations for the future run. A skeptical
+reader should next ask how every loop and input/table write participates in
+one linear interpreter-work proof, and whether the emitted cells are exactly
+those used by the existing query. Those questions remain required PRE-1 work.
+
+## PRE-1: an efficient builder candidate for the packed allocation (2026-09-14, pending audit)
+
+The PRE-1 lane now has a candidate builder for the allocation that the packed
+query reads. One fixed program per input model, the same for every input
+length, runs on the construction machine, where every read, write,
+reservation, arithmetic step, comparison and branch is one counted transition.
+It reads the length from cell zero, builds the Cartesian tree with a monotone
+stack, writes the parenthesis bits, the rank/select and interior tables, the
+microtables and the metadata words, and repacks the bit buffer into words.
+Lean proves that the cells it leaves between its halt value and the end of
+memory are exactly `PackedWordRAM.buildMemory xs`, for every list in the
+comparison-oracle model and for every representable list in the word model.
+
+In plain English: the precomputed structure that the query relies on can
+itself be produced by a counted machine run whose transitions and temporary
+cells are at most linear in the input length; the run never overwrites its
+input, and each output cell is traced to the transition that wrote it. The
+capstone then carries the accepted query facts over to those emitted cells.
+A compiled validator runs both programs on small fixtures against the
+reference allocation.
+
+Live assumptions: unit-cost operations of the stated machine, including
+multiplication, division and shifts on `wordWidth n`-bit words; the key
+comparison oracle for arbitrary integers; signed representability for the word
+model. Recorded limits: the constants are crude, no tightness is claimed, and
+the query is not executed at an offset inside the builder's memory. The next
+consumers are the coordinator's aggregate gate and a fresh blind audit. A
+skeptical reader should ask whether the linear bound is tight enough to matter
+in practice, how the temporary space compares to the output size, and whether
+a relocated in-place query execution can be proved as well.

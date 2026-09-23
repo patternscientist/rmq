@@ -1,0 +1,139 @@
+{
+    "Stages":  [
+                   {
+                       "Name":  "tracked-source-status-before",
+                       "Executable":  "C:\\Program Files\\Git\\cmd\\git.exe",
+                       "Arguments":  [
+                                         "-c",
+                                         "core.excludesfile=",
+                                         "status",
+                                         "--porcelain=v1",
+                                         "--untracked-files=no",
+                                         "--",
+                                         "RMQ/Core/WordRAM/Optimization/Certificate.lean",
+                                         "RMQ/Core/WordRAM/Optimization/Capstone.lean",
+                                         "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+                                         "docs/internal/extensions/opt1/certificate-replay/FIELDS.json"
+                                     ],
+                       "Directory":  "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "tracked-source-status-before",
+                                      "ExitCode":  0,
+                                      "Output":  [
+
+                                                 ],
+                                      "StandardOutput":  [
+
+                                                         ],
+                                      "StandardError":  [
+
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  1.919,
+                                      "DeadlineSeconds":  600,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "import-freshness",
+                       "Executable":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                       "Arguments":  [
+                                         "-NoProfile",
+                                         "-ExecutionPolicy",
+                                         "Bypass",
+                                         "-File",
+                                         "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_runtime.ps1",
+                                         "-ArtifactCheckOnly"
+                                     ],
+                       "Directory":  "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "import-freshness",
+                                      "ExitCode":  0,
+                                      "Output":  [
+                                                     "OPT1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\opt1-runtime-replay\\20260912T234806Z-92833c864a1e4084b070577cc3e279c8",
+                                                     "OPT1-IMPORT PASS checked=261 source/artifact/dependency freshness; no Lean launched"
+                                                 ],
+                                      "StandardOutput":  [
+                                                             "OPT1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\opt1-runtime-replay\\20260912T234806Z-92833c864a1e4084b070577cc3e279c8",
+                                                             "OPT1-IMPORT PASS checked=261 source/artifact/dependency freshness; no Lean launched"
+                                                         ],
+                                      "StandardError":  [
+
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  22.498,
+                                      "DeadlineSeconds":  600,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   },
+                   {
+                       "Name":  "tracked-source-status-after",
+                       "Executable":  "C:\\Program Files\\Git\\cmd\\git.exe",
+                       "Arguments":  [
+                                         "-c",
+                                         "core.excludesfile=",
+                                         "status",
+                                         "--porcelain=v1",
+                                         "--untracked-files=no",
+                                         "--",
+                                         "RMQ/Core/WordRAM/Optimization/Certificate.lean",
+                                         "RMQ/Core/WordRAM/Optimization/Capstone.lean",
+                                         "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+                                         "docs/internal/extensions/opt1/certificate-replay/FIELDS.json"
+                                     ],
+                       "Directory":  "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+                       "Environment":  {
+
+                                       },
+                       "Result":  {
+                                      "Stage":  "tracked-source-status-after",
+                                      "ExitCode":  0,
+                                      "Output":  [
+
+                                                 ],
+                                      "StandardOutput":  [
+
+                                                         ],
+                                      "StandardError":  [
+
+                                                        ],
+                                      "TimedOut":  false,
+                                      "OutputLimitExceeded":  false,
+                                      "TerminatedIds":  [
+
+                                                        ],
+                                      "DurationSeconds":  1.355,
+                                      "DeadlineSeconds":  517,
+                                      "Ownership":  "kill-on-close-job"
+                                  }
+                   }
+               ],
+    "Version":  "opt1-certificate-replay-v3",
+    "ExitCode":  0,
+    "ReplayIdentity":  {
+                           "SourceCommit":  "aecf4a580c591e8f694a3699e19e843198089194",
+                           "SourceProfileSHA256":  "b83ada3baa438d812da076b48422c0a92f88ce686cd48ef982f39de7701699c9",
+                           "BuildReceiptSHA256":  "eed1ecee4a031a9c3cfcadea445307d8e15e70e732e6ffdd5b166d135292b64e",
+                           "HistoricalReceiptSHA256":  "a7eb5831a88a7431607d5fe1d7189318d41978391e0a10be3ed336c014563661",
+                           "RunnerSHA256":  "a37ca628267371275f200c0a0bce8db9dec9663ba1ffdce76bb9509c259fd33b",
+                           "SourceSerialization":  "strict UTF-8, only CRLF-to-LF; every other byte significant",
+                           "Execution":  "Lean compiler producer/expected-type consumer checks; not a native machine performance measurement"
+                       },
+    "LibrarySelfTestOnly":  true,
+    "TrackedSourceMutations":  0,
+    "PrepareOnly":  false
+}

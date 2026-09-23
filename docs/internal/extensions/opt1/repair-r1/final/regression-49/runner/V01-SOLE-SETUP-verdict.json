@@ -1,0 +1,8 @@
+{
+  "ProductionFunction": "Assert-R1Verdict",
+  "ActualOwnedChild": true,
+  "Id": "V01-SOLE-SETUP",
+  "Reason": null,
+  "ExpectedAccept": true,
+  "ActualAccept": true
+}

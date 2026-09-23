@@ -1,0 +1,59 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "fa79233f77acbfa0470ef6203131e66784c7b014",
+  "command": {
+    "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "arguments": [
+      "-j",
+      "1",
+      ".lake/native1/validator-controls/CapstoneAxiomProbe.lean"
+    ]
+  },
+  "result": {
+    "Stage": "native-axiom-probe-01",
+    "ExitCode": 1,
+    "Output": [
+      ".lake/native1/validator-controls/CapstoneAxiomProbe.lean:3:9: error: type mismatch",
+      "  IO.println (\"AXIOM-PROBE before=\" ++ toString __do_lift✝)",
+      "has type",
+      "  IO Unit : Type",
+      "but is expected to have type",
+      "  BaseIO ?m.353 : Type",
+      "'RMQ.SuccinctFinal.PackedNative.nativeExecutionCapstone_holds' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]",
+      ".lake/native1/validator-controls/CapstoneAxiomProbe.lean:5:9: error: type mismatch",
+      "  IO.println (\"AXIOM-PROBE after=\" ++ toString __do_lift✝)",
+      "has type",
+      "  IO Unit : Type",
+      "but is expected to have type",
+      "  BaseIO ?m.926 : Type"
+    ],
+    "StandardOutput": [
+      ".lake/native1/validator-controls/CapstoneAxiomProbe.lean:3:9: error: type mismatch",
+      "  IO.println (\"AXIOM-PROBE before=\" ++ toString __do_lift✝)",
+      "has type",
+      "  IO Unit : Type",
+      "but is expected to have type",
+      "  BaseIO ?m.353 : Type",
+      "'RMQ.SuccinctFinal.PackedNative.nativeExecutionCapstone_holds' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]",
+      ".lake/native1/validator-controls/CapstoneAxiomProbe.lean:5:9: error: type mismatch",
+      "  IO.println (\"AXIOM-PROBE after=\" ++ toString __do_lift✝)",
+      "has type",
+      "  IO Unit : Type",
+      "but is expected to have type",
+      "  BaseIO ?m.926 : Type"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 10.059,
+    "DeadlineSeconds": 300,
+    "Ownership": "kill-on-close-job"
+  }
+}

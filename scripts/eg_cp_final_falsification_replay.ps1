@@ -58,6 +58,9 @@ param(
 )
 
 Set-StrictMode -Version Latest
+# Which PowerShell is running, measured rather than inferred from the OS.
+. (Join-Path $PSScriptRoot 'host_shell_path.ps1')
+
 $ErrorActionPreference = 'Stop'
 
 $script:RepoRoot = Split-Path -Parent $PSScriptRoot
@@ -423,8 +426,13 @@ function Invoke-DescendantSelfTest {
   # ever exercising the kill. This body is the honest portable replacement.
   $pidFile = Join-Path ([System.IO.Path]::GetTempPath()) ("egcp-replay-" + [System.Guid]::NewGuid().ToString('N') + ".pid")
   $onWindows = Test-OnWindows
-  $shellExe = if ($onWindows) { Join-Path $PSHOME 'powershell.exe' }
-    else { Join-Path $PSHOME 'pwsh' }
+  # Spawn THE RUNNING HOST, measured -- not a shell inferred from the OS.
+  # $onWindows below still selects taskkill vs setsid, which IS an OS
+  # question and stays correct. WDD-20260908-082.
+  $shellExe = Get-HostShellPath
+  if ([string]::IsNullOrWhiteSpace($shellExe)) {
+    throw 'cannot determine the running PowerShell executable; refusing to guess a shell for the descendant self-test'
+  }
   # A root that spawns a detached grandchild sleeper and records its pid, so
   # killing the root alone would leave a running grandchild whose pid we know.
   $childScript = "`$grandchild = Start-Process -FilePath '$shellExe' -ArgumentList '-NoProfile','-Command','Start-Sleep -Seconds 120' -PassThru; Set-Content -Path '$pidFile' -Value `$grandchild.Id; Start-Sleep -Seconds 120"

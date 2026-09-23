@@ -1,0 +1,66 @@
+{
+  "expectedCases": [
+    "empty",
+    "whitespace",
+    "malformed",
+    "unknown",
+    "source-manifest-missing",
+    "artifact-manifest-empty",
+    "fixture-manifest-missing",
+    "restored-smoke"
+  ],
+  "results": [
+    {
+      "verdict": "expected rejection",
+      "id": "empty",
+      "surface": "invalid exact selector"
+    },
+    {
+      "verdict": "expected rejection",
+      "id": "whitespace",
+      "surface": "invalid exact selector"
+    },
+    {
+      "verdict": "expected rejection",
+      "id": "malformed",
+      "surface": "invalid exact selector"
+    },
+    {
+      "verdict": "expected rejection",
+      "id": "unknown",
+      "surface": "invalid exact selector"
+    },
+    {
+      "verdict": "expected rejection",
+      "id": "source-manifest-missing",
+      "surface": "build manifest shape"
+    },
+    {
+      "verdict": "expected rejection",
+      "id": "artifact-manifest-empty",
+      "surface": "build manifest shape"
+    },
+    {
+      "verdict": "expected rejection",
+      "id": "fixture-manifest-missing",
+      "surface": "exact fixture manifest mismatch"
+    },
+    {
+      "verdict": "expected accept",
+      "id": "restored-smoke",
+      "surface": "exact native smoke output"
+    }
+  ],
+  "success": true,
+  "schema": "native1-route-controls-v1",
+  "executedCases": [
+    "empty",
+    "whitespace",
+    "malformed",
+    "unknown",
+    "source-manifest-missing",
+    "artifact-manifest-empty",
+    "fixture-manifest-missing",
+    "restored-smoke"
+  ]
+}

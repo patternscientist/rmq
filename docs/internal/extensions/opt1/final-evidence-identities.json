@@ -1,0 +1,40 @@
+{
+  "SourceFreeze": "bbbe652fa41fa40bf2530b5e2f09c4c225c0e896",
+  "Artifacts": [
+    {
+      "Path": "certificate-replay/evidence/full80.json",
+      "Bytes": 1382859,
+      "SHA256": "451e108122b077310137e8a2ca206062bb83274ec01a3ce7387fedc271ea66eb"
+    },
+    {
+      "Path": "certificate-replay/evidence/focused3.json",
+      "Bytes": 934903,
+      "SHA256": "85eb9c4f2f4f5d964fe4722e4d55e5de9fa1196c62ccc0392988b558f261d6fd"
+    },
+    {
+      "Path": "certificate-independent-check.py",
+      "Bytes": 5436,
+      "SHA256": "ab31a997fd0ea861f105fda617858d8824956ccce0b310836687fb2c733f9200"
+    },
+    {
+      "Path": "certificate-independent-check.json",
+      "Bytes": 30666,
+      "SHA256": "d4464b694c3ddaf56da4b62be53cf91d6b26da25678dd0e76d47437870f86d8a"
+    },
+    {
+      "Path": "certificate-consolidation-check.json",
+      "Bytes": 312,
+      "SHA256": "437e61892c2e21b52d6cb493d393836a692988c4d24ba4616862409a28f17a39"
+    },
+    {
+      "Path": "CHECKER_REVIEW_BBBE.md",
+      "Bytes": 3686,
+      "SHA256": "3b6c124e626c19f8b01ef00d573819c41301df9f404dd9237f3c24a565d1c66c"
+    },
+    {
+      "Path": "CAMPAIGN_RECEIPT_REVIEW.md",
+      "Bytes": 3647,
+      "SHA256": "934f5c864359bc9fd3099b72e6fecf1da98e00bc6fb0a4a1a6c52eed7ca6bcf6"
+    }
+  ]
+}

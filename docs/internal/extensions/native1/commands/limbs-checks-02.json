@@ -1,0 +1,73 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9",
+  "command": {
+    "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "arguments": [
+      "-j",
+      "1",
+      "RMQ/Core/WordRAM/Native/Limbs/Checks.lean"
+    ]
+  },
+  "result": {
+    "Stage": "limbs-checks-02",
+    "ExitCode": 0,
+    "Output": [
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.decode_encode' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.encode_decode' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.encode_injective' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.decode_injective' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.canonical_padding' depends on axioms: [propext]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.encoded_payload_bits' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.encodeList_getElem' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.checkedArithmetic_of_safe' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.checkedArithmetic_success' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.checkedArithmetic_accepts_iff' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.arithmeticSafe_of_instructionSafe' depends on axioms: [propext]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.checkedComparison_success' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.checkedAddress_success' depends on axioms: [propext]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.checkedInt_success' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    ],
+    "StandardOutput": [
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.decode_encode' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.encode_decode' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.encode_injective' depends on axioms: [propext, Classical.choice, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.decode_injective' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.canonical_padding' depends on axioms: [propext]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.encoded_payload_bits' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.encodeList_getElem' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.checkedArithmetic_of_safe' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.checkedArithmetic_success' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.checkedArithmetic_accepts_iff' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.arithmeticSafe_of_instructionSafe' depends on axioms: [propext]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.checkedComparison_success' depends on axioms: [propext,",
+      " Classical.choice,",
+      " Quot.sound]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.checkedAddress_success' depends on axioms: [propext]",
+      "'RMQ.SuccinctFinal.PackedNative.LimbWord.checkedInt_success' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 12.474,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  }
+}

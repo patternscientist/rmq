@@ -1,0 +1,203 @@
+{
+  "version": 1,
+  "tag": "leaf-replay-20260912130101742",
+  "startedUtc": "2026-09-12T13:01:01.7609591Z",
+  "finishedUtc": "2026-09-12T13:02:17.0874936Z",
+  "manifest": "docs/internal/extensions/bv1/controls/leaf_consumers/replay-list-v1.json",
+  "manifestSHA256": "FCA3D67AD0B3B13AE65416431F73A209FBE8CECDE1C08E790FA7DADB2DFBEDEC",
+  "expected": [
+    "regular-layout-types",
+    "regular-layout-axioms",
+    "select-semantics",
+    "rank-semantics",
+    "rank-layout",
+    "generic-select-safety",
+    "canonical-select-safety",
+    "scratch-frame"
+  ],
+  "expectedCount": 8,
+  "executedCount": 8,
+  "passed": true,
+  "cases": [
+    {
+      "id": "regular-layout-types",
+      "path": "docs/internal/extensions/bv1/controls/leaf_consumers/bv1-regular-layout-exact-types.lean",
+      "sha256Before": "F59CCBB23FD0074B8E769D98DC16ED263C16A7DBC3939E6F76FF20CC1586E337",
+      "sha256After": "F59CCBB23FD0074B8E769D98DC16ED263C16A7DBC3939E6F76FF20CC1586E337",
+      "manifestSHA256": "FCA3D67AD0B3B13AE65416431F73A209FBE8CECDE1C08E790FA7DADB2DFBEDEC",
+      "record": "docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-regular-layout-types.json",
+      "exitCode": 0,
+      "seconds": 12.155,
+      "axiomReports": [
+        "'RMQ.PackedBitvector.RegularWords.getElem?_eq' depends on axioms: [propext, Quot.sound]",
+        "'RMQ.PackedBitvector.RegularWords.length_eq' depends on axioms: [propext]",
+        "'RMQ.PackedBitvector.RegularWords.min_slice_eq' depends on axioms: [propext]",
+        "'RMQ.PackedBitvector.regularWords_of_slices' depends on axioms: [propext, Quot.sound]",
+        "'RMQ.PackedBitvector.regularWords_of_uniform' depends on axioms: [propext, Quot.sound]",
+        "'RMQ.PackedBitvector.regularWords_fixedWidthTable' depends on axioms: [propext, Quot.sound]",
+        "'RMQ.PackedBitvector.regularWords_chunks_with_empty_tail' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.regularWords_ofChunks' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.regularWords_ofChunksWithSentinel' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.directorySegments_regular' depends on axioms: [propext, Quot.sound]",
+        "'RMQ.PackedBitvector.canonical_bitWords_regular' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.canonical_directorySegments_regular' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.canonical_allSegments_regular' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.irregular_empty_head_rejected' depends on axioms: [propext]"
+      ],
+      "diagnostics": [],
+      "passed": true
+    },
+    {
+      "id": "regular-layout-axioms",
+      "path": "docs/internal/extensions/bv1/controls/leaf_consumers/bv1-regular-layout-axiom-source.lean",
+      "sha256Before": "67012CCC16E31764979ADED20BA08C462E1CC207DA389839737219CD98E7627D",
+      "sha256After": "67012CCC16E31764979ADED20BA08C462E1CC207DA389839737219CD98E7627D",
+      "manifestSHA256": "FCA3D67AD0B3B13AE65416431F73A209FBE8CECDE1C08E790FA7DADB2DFBEDEC",
+      "record": "docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-regular-layout-axioms.json",
+      "exitCode": 0,
+      "seconds": 7.822,
+      "axiomReports": [
+        "'RMQ.SuccinctSpace.chunkPayloadWords_get?_some_of_mul_lt' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.SuccinctSpace.chunkPayloadWords_get?_eq_take_drop' depends on axioms: [propext]",
+        "'RMQ.SuccinctSpace.flattenPayloadWords_chunkPayloadWords' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'List.getElem?_eq_some_iff' depends on axioms: [propext]",
+        "'List.mem_of_getElem?' depends on axioms: [propext]",
+        "'List.mem_replicate' depends on axioms: [propext]"
+      ],
+      "diagnostics": [],
+      "passed": true
+    },
+    {
+      "id": "select-semantics",
+      "path": "docs/internal/extensions/bv1/controls/leaf_consumers/bv1-select-semantics-consumer.lean",
+      "sha256Before": "35A9FEB285AA5CD883F9AB0FBECC693EE7DE9271242EB63E8F45EA07B27026A0",
+      "sha256After": "35A9FEB285AA5CD883F9AB0FBECC693EE7DE9271242EB63E8F45EA07B27026A0",
+      "manifestSHA256": "FCA3D67AD0B3B13AE65416431F73A209FBE8CECDE1C08E790FA7DADB2DFBEDEC",
+      "record": "docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-select-semantics.json",
+      "exitCode": 0,
+      "seconds": 9.289,
+      "axiomReports": [
+        "'RMQ.PackedBitvector.canonical_bitWords_target_eq' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.canonical_select_chunk_geometry' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.normalized_dense_value' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.selectRead_value_eq_of_agree' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.selectRead_value_of_agree' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.canonicalSelectRead_value_eq' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.canonicalSelectRead_value' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.constant_none_select_rejected' does not depend on any axioms"
+      ],
+      "diagnostics": [],
+      "passed": true
+    },
+    {
+      "id": "rank-semantics",
+      "path": "docs/internal/extensions/bv1/controls/leaf_consumers/bv1-rank-semantics-consumer.lean",
+      "sha256Before": "2F4D7A5B4FF532C80CCD162519C8A989F5B78B44B249CD9A159F122E7EEEA2C0",
+      "sha256After": "2F4D7A5B4FF532C80CCD162519C8A989F5B78B44B249CD9A159F122E7EEEA2C0",
+      "manifestSHA256": "FCA3D67AD0B3B13AE65416431F73A209FBE8CECDE1C08E790FA7DADB2DFBEDEC",
+      "record": "docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-rank-semantics.json",
+      "exitCode": 0,
+      "seconds": 7.193,
+      "axiomReports": [
+        "'RMQ.PackedBitvector.canonical_rank_chunk_geometry' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.rankRead_toCosted_of_agree' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.rankRead_value_of_agree' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.canonicalRankRead_value' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.constant_zero_rank_rejected' does not depend on any axioms"
+      ],
+      "diagnostics": [],
+      "passed": true
+    },
+    {
+      "id": "rank-layout",
+      "path": "docs/internal/extensions/bv1/controls/leaf_consumers/bv1-rank-layout-consumer.lean",
+      "sha256Before": "283CE0B7E52E49F63108BBDBCBB66E916C6086C0E821F49C1F6B8B5D6A071E7F",
+      "sha256After": "283CE0B7E52E49F63108BBDBCBB66E916C6086C0E821F49C1F6B8B5D6A071E7F",
+      "manifestSHA256": "FCA3D67AD0B3B13AE65416431F73A209FBE8CECDE1C08E790FA7DADB2DFBEDEC",
+      "record": "docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-rank-layout.json",
+      "exitCode": 0,
+      "seconds": 7.712,
+      "axiomReports": [
+        "'RMQ.PackedBitvector.jacobson_wordSize_eq' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.jacobson_blocksPerSuper_eq' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.jacobson_superWidth_eq' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.jacobson_blockWidth_eq' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.jacobson_raw_words_eq' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.jacobson_raw_regular' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.jacobson_samples_regular' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.jacobson_samples_count_le' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.jacobson_raw_count_le' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.jacobson_sample_word_length_le' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.jacobson_raw_word_length_le' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.jacobsonRankLayout' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      ],
+      "diagnostics": [],
+      "passed": true
+    },
+    {
+      "id": "generic-select-safety",
+      "path": "docs/internal/extensions/bv1/controls/leaf_consumers/bv1-generic-select-safety-consumer.lean",
+      "sha256Before": "297C96DB48830938A8236C5D02CDA3DE35E87AFD4CCD75E17785814B5F53D8B7",
+      "sha256After": "297C96DB48830938A8236C5D02CDA3DE35E87AFD4CCD75E17785814B5F53D8B7",
+      "manifestSHA256": "FCA3D67AD0B3B13AE65416431F73A209FBE8CECDE1C08E790FA7DADB2DFBEDEC",
+      "record": "docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-generic-select-safety.json",
+      "exitCode": 0,
+      "seconds": 9.175,
+      "axiomReports": [
+        "'RMQ.PackedBitvector.Controller.selectCloseBlock_safe' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.Controller.selectCloseBlock_output_bound' depends on axioms: [propext,",
+        "'RMQ.PackedBitvector.Controller.selectCloseBlock_execution_safe' depends on axioms: [propext,",
+        "'RMQ.PackedBitvector.Controller.physicalReader_fieldsFit' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.Controller.physicalSelect_safe' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.Controller.physicalSelect_execution_safe' depends on axioms: [propext,",
+        "'RMQ.PackedBitvector.Controller.physicalSelect_execution_safe_expectedType' depends on axioms: [propext,",
+        "'RMQ.PackedBitvector.Controller.readerSimulation_rejects_skip' depends on axioms: [propext, Quot.sound]"
+      ],
+      "diagnostics": [],
+      "passed": true
+    },
+    {
+      "id": "canonical-select-safety",
+      "path": "docs/internal/extensions/bv1/controls/leaf_consumers/bv1-canonical-select-safety-consumer.lean",
+      "sha256Before": "6EB1741EC157B37904DCE556CDBC16BA9730DFD28269217C16FEEA0EE9B44C50",
+      "sha256After": "6EB1741EC157B37904DCE556CDBC16BA9730DFD28269217C16FEEA0EE9B44C50",
+      "manifestSHA256": "FCA3D67AD0B3B13AE65416431F73A209FBE8CECDE1C08E790FA7DADB2DFBEDEC",
+      "record": "docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-canonical-select-safety.json",
+      "exitCode": 0,
+      "seconds": 8.537,
+      "axiomReports": [
+        "'RMQ.PackedBitvector.loadedMetadata_envelope' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.loadedModel_safetyBounds' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.loadedModel_readerSafe' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.initial_data_fits' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.canonical_select_source_safe' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.canonical_select_source_fieldsFit' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.canonical_select_source_budget' depends on axioms: [propext, Quot.sound]",
+        "'RMQ.PackedBitvector.canonical_select_execution_safe' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.canonical_select_execution_safe_expectedType' depends on axioms: [propext,"
+      ],
+      "diagnostics": [],
+      "passed": true
+    },
+    {
+      "id": "scratch-frame",
+      "path": "docs/internal/extensions/bv1/controls/leaf_consumers/bv1-scratch-frame-consumer.lean",
+      "sha256Before": "C40D8F1B3D776C84E2594FFC6605E51AD347F9ABBA1B5A83E1788CB214AC6712",
+      "sha256After": "C40D8F1B3D776C84E2594FFC6605E51AD347F9ABBA1B5A83E1788CB214AC6712",
+      "manifestSHA256": "FCA3D67AD0B3B13AE65416431F73A209FBE8CECDE1C08E790FA7DADB2DFBEDEC",
+      "record": "docs/internal/extensions/bv1/commands/leaf-replay-20260912130101742-scratch-frame.json",
+      "exitCode": 0,
+      "seconds": 5.196,
+      "axiomReports": [
+        "'RMQ.PackedBitvector.source_writes_registerBank' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.program_writes_registerBank' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.run_finite_registers' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.execute_finite_registers' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.program_preservesScratchBank' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'RMQ.PackedBitvector.outOfBankWrite_rejected' depends on axioms: [propext, Quot.sound]"
+      ],
+      "diagnostics": [],
+      "passed": true
+    }
+  ]
+}

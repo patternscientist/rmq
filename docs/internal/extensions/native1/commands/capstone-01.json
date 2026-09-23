@@ -1,0 +1,45 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "fbd5a44f4f68c0ab1ad54fbff0cc9169000c8949",
+  "command": {
+    "arguments": [
+      "-j",
+      "1",
+      "-o",
+      ".lake/build/lib/lean/RMQ/Core/WordRAM/Native/Capstone.olean",
+      "-c",
+      ".lake/build/ir/RMQ/Core/WordRAM/Native/Capstone.c",
+      "RMQ/Core/WordRAM/Native/Capstone.lean"
+    ],
+    "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe"
+  },
+  "result": {
+    "Stage": "capstone-01",
+    "ExitCode": 1,
+    "Output": [
+      "RMQ/Core/WordRAM/Native/Capstone.lean:116:6: error: typeclass instance problem is stuck, it is often due to metavariables",
+      "  GetElem? (List Transition) (?m.6127 xs left right) Transition (?m.6128 xs left right index t)",
+      "RMQ/Core/WordRAM/Native/Capstone.lean:152:64: error: invalid {...} notation, expected type is not of the form (C ...)",
+      "  NativeExecutionCapstone",
+      "RMQ/Core/WordRAM/Native/Capstone.lean:150:0: error: type of theorem 'RMQ.SuccinctFinal.PackedNative.nativeExecutionCapstone_holds' is not a proposition",
+      "  {NativeExecutionCapstone : Sort u_1} → NativeExecutionCapstone"
+    ],
+    "StandardOutput": [
+      "RMQ/Core/WordRAM/Native/Capstone.lean:116:6: error: typeclass instance problem is stuck, it is often due to metavariables",
+      "  GetElem? (List Transition) (?m.6127 xs left right) Transition (?m.6128 xs left right index t)",
+      "RMQ/Core/WordRAM/Native/Capstone.lean:152:64: error: invalid {...} notation, expected type is not of the form (C ...)",
+      "  NativeExecutionCapstone",
+      "RMQ/Core/WordRAM/Native/Capstone.lean:150:0: error: type of theorem 'RMQ.SuccinctFinal.PackedNative.nativeExecutionCapstone_holds' is not a proposition",
+      "  {NativeExecutionCapstone : Sort u_1} → NativeExecutionCapstone"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 5.556,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  }
+}

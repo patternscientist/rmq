@@ -1,0 +1,19 @@
+{
+  "provisionalCommit": "125f2e1ab1579dff5cf0fbf8cde311bf9be06cba",
+  "sourceCommit": "763b00e68cabef2ea322a92fb7b3be354b367179",
+  "designEntry": "DD-20260912-BV1-004",
+  "designFileSHA256": "07F5D5585FD7E45BDED613434F09C1C67F8B567CC803B57BBC959D143B4105AA",
+  "scopedClaimCommand": [
+    "pwsh",
+    "-NoProfile",
+    "-File",
+    "scripts/claim_drift_scan.ps1",
+    "-Strict",
+    "-Path",
+    "docs/internal/DESIGN_DECISIONS.md"
+  ],
+  "scopedClaimExit": 0,
+  "scopedClaimSummary": "scan complete (221 hits, 0 strict failures)",
+  "scopedClaimPassed": true,
+  "replacementPerCommitCheck": "Required after amending the unpublished evidence commit; this record does not assert its outcome."
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "command": {
+    "file": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/lib.exe",
+    "arguments": [
+      "/nologo",
+      "/def:native/packed-rmq/packed_route.def",
+      "/out:.lake/native1/build/packed_route.lib",
+      "/machine:X64"
+    ]
+  },
+  "result": {
+    "Stage": "cpp-import-library",
+    "ExitCode": 0,
+    "Output": [
+      "   Creating library .lake/native1/build/packed_route.lib and object .lake/native1/build/packed_route.exp"
+    ],
+    "StandardOutput": [
+      "   Creating library .lake/native1/build/packed_route.lib and object .lake/native1/build/packed_route.exp"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 2.749,
+    "DeadlineSeconds": 60,
+    "Ownership": "kill-on-close-job"
+  }
+}

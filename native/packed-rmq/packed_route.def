@@ -1,0 +1,6 @@
+LIBRARY packed_route
+EXPORTS
+    packed_route_init
+    packed_route_eval
+    packed_route_text
+    packed_route_free

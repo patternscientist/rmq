@@ -1,0 +1,19 @@
+{
+  "Stage": "pre1-RMQ.Core.WordRAM.Construction.Controls-r7",
+  "ExitCode": 0,
+  "Output": [
+    "✔ [13/13] Built RMQ.Core.WordRAM.Construction.Controls",
+    "Build completed successfully."
+  ],
+  "StandardOutput": [
+    "✔ [13/13] Built RMQ.Core.WordRAM.Construction.Controls",
+    "Build completed successfully."
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 6.769,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

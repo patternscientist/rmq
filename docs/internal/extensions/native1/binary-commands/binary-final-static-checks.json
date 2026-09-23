@@ -1,0 +1,51 @@
+{
+  "schema": "native1-binary-final-static-v1",
+  "utc": "2026-09-12T13:53:38.8616457Z",
+  "pass": true,
+  "powershell": "7.6.5",
+  "parsed": [
+    {
+      "syntaxPass": true,
+      "path": "scripts/packed_native_binary_replay.ps1",
+      "sha256": "36774810EB0BA670594D11D11DBD22924032CE8F67554027B5ED5F02CB80DCF6"
+    },
+    {
+      "syntaxPass": true,
+      "path": "scripts/packed_native_binary_controls.ps1",
+      "sha256": "EDEE71ED973FFF4BC860E1258C6B7FED315FEE43218179C800407998AAD58104"
+    },
+    {
+      "syntaxPass": true,
+      "path": "scripts/packed_native_identity.ps1",
+      "sha256": "A21F67E2EDF49C8E218C657E73967E920EFB85FF025476E01BD04A83CA50B17A"
+    },
+    {
+      "syntaxPass": true,
+      "path": "scripts/packed_native_identity_v3_controls.ps1",
+      "sha256": "D8C9C5209D2E4FD738D9F89208A3AEDAB5FC35916A9F8220CCFD94E94422BBD1"
+    }
+  ],
+  "pythonAstPass": true,
+  "hygieneScan": {
+    "paths": [
+      "RMQ",
+      "lakefile.toml"
+    ],
+    "pattern": "\\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\\b|import Mathlib",
+    "matches": [],
+    "exitCode": 1
+  },
+  "trustScan": {
+    "paths": [
+      "RMQ"
+    ],
+    "pattern": "native_decide|Lean\\.ofReduceBool",
+    "matches": [],
+    "exitCode": 1
+  },
+  "scopedDiffCheck": {
+    "exitCode": 0,
+    "output": []
+  },
+  "fullGate": "Coordinator owns final aggregate gate; no duplicate full gate in this bounded leaf."
+}

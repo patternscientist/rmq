@@ -1,0 +1,31 @@
+{
+    "Label":  "claims",
+    "Command":  [
+                    "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-File",
+                    "scripts/claim_drift_scan.ps1",
+                    "-Strict"
+                ],
+    "Passed":  true,
+    "ExitCode":  0,
+    "TimedOut":  false,
+    "OutputLimitExceeded":  false,
+    "DurationSeconds":  206.03,
+    "DeadlineSeconds":  900,
+    "Ownership":  "kill-on-close-job",
+    "TerminatedIds":  [
+
+                      ],
+    "OutputSummary":  [
+                          "CLAIM-DRIFT: scan complete (1695 hits, 0 strict failures)"
+                      ],
+    "OutputSHA256":  "eb5aa064121ac2134e265817bb7a35d93068b34faef1582fbf4e6232a2d842ad",
+    "OutputBytes":  4871686,
+    "StderrSHA256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "StderrBytes":  0,
+    "RawArtifactDirectory":  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\opt1-final-claims\\400117eb6473420d9ce91242a6b395e7",
+    "Scope":  "Final report/storage tree; production strict scanner/policy/roots unchanged"
+}

@@ -1,0 +1,43 @@
+{
+  "version": "PRE1-R1-REPAIR-CONTROLS-V1",
+  "verifiers": {
+    "archives": "docs/internal/extensions/pre1/repair-r1/verify_receipt_archives.py",
+    "rewords": "docs/internal/extensions/pre1/repair-r1/verify_rewords.py"
+  },
+  "cases": [
+    {"id": "archives-positive-tree", "kind": "verify-tree", "verifier": "archives", "requirement": "archive verifier positive on the live checkout", "expectedExit": 0, "expectedCodes": []},
+    {"id": "archives-positive-committed", "kind": "verify-committed", "verifier": "archives", "requirement": "archive verifier positive on committed blobs", "expectedExit": 0, "expectedCodes": []},
+    {"id": "archives-positive-copy", "kind": "verify-copy", "verifier": "archives", "requirement": "archive verifier positive on an unmutated exact export", "expectedExit": 0, "expectedCodes": []},
+    {"id": "archives-changed-archive-header-byte", "kind": "verify-copy", "verifier": "archives", "requirement": "changed archive byte", "expectedExit": 1, "expectedCodes": ["archive-gzip-invalid", "archive-sha256-mismatch"]},
+    {"id": "archives-changed-archive-trailer-byte", "kind": "verify-copy", "verifier": "archives", "requirement": "changed archive byte", "expectedExit": 1, "expectedCodes": ["archive-gzip-invalid", "archive-sha256-mismatch"]},
+    {"id": "archives-missing-archive", "kind": "verify-copy", "verifier": "archives", "requirement": "missing archive", "expectedExit": 1, "expectedCodes": ["archive-missing"]},
+    {"id": "archives-extra-archive", "kind": "verify-copy", "verifier": "archives", "requirement": "extra archive not in the manifest", "expectedExit": 1, "expectedCodes": ["archive-extra"]},
+    {"id": "archives-duplicate-manifest-entry", "kind": "verify-copy", "verifier": "archives", "requirement": "duplicated manifest entry", "expectedExit": 1, "expectedCodes": ["manifest-duplicate-entry"]},
+    {"id": "archives-wrong-base-blob-id", "kind": "verify-copy", "verifier": "archives", "requirement": "wrong base blob id", "expectedExit": 1, "expectedCodes": ["base-blob-id-mismatch"]},
+    {"id": "archives-decompressed-byte-mismatch", "kind": "verify-copy", "verifier": "archives", "requirement": "decompressed-byte mismatch", "expectedExit": 1, "expectedCodes": ["decompressed-bytes-mismatch"]},
+    {"id": "archives-original-restored", "kind": "verify-copy", "verifier": "archives", "requirement": "original file restored beside its archive", "expectedExit": 1, "expectedCodes": ["original-present", "result-line-file-present"]},
+    {"id": "archives-audit-report-restored", "kind": "verify-copy", "verifier": "archives", "requirement": "original file restored beside its archive (the named audit report, additional)", "expectedExit": 1, "expectedCodes": ["original-present"]},
+    {"id": "archives-manifest-entry-removed", "kind": "verify-copy", "verifier": "archives", "requirement": "missing manifest entry (additional)", "expectedExit": 1, "expectedCodes": ["archive-extra", "attributes-manifest-mismatch", "manifest-missing-entry"]},
+    {"id": "archives-result-line-file", "kind": "verify-copy", "verifier": "archives", "requirement": "reintroduced result-line file (additional)", "expectedExit": 1, "expectedCodes": ["result-line-file-present"]},
+    {"id": "rewords-positive-committed", "kind": "verify-committed", "verifier": "rewords", "requirement": "reword verifier positive on committed blobs", "expectedExit": 0, "expectedCodes": []},
+    {"id": "rewords-positive-copy", "kind": "verify-copy", "verifier": "rewords", "requirement": "reword verifier positive on an unmutated exact export", "expectedExit": 0, "expectedCodes": []},
+    {"id": "rewords-changed-integer", "kind": "verify-copy", "verifier": "rewords", "requirement": "changed integer", "expectedExit": 1, "expectedCodes": ["digit-runs-mismatch", "integers-mismatch"]},
+    {"id": "rewords-unrecorded-line-changed", "kind": "verify-copy", "verifier": "rewords", "requirement": "line changed outside the recorded set", "expectedExit": 1, "expectedCodes": ["unrecorded-line-changed"]},
+    {"id": "rewords-missing-recorded-line", "kind": "verify-copy", "verifier": "rewords", "requirement": "missing recorded line", "expectedExit": 1, "expectedCodes": ["digit-runs-mismatch", "new-integers-mismatch", "new-line-hash-mismatch", "unrecorded-line-changed"]},
+    {"id": "rewords-reintroduced-pattern", "kind": "verify-copy", "verifier": "rewords", "requirement": "reintroduced pattern", "expectedExit": 1, "expectedCodes": ["new-line-hash-mismatch", "pattern-present"]},
+    {"id": "rewords-wrong-base-line-hash", "kind": "verify-copy", "verifier": "rewords", "requirement": "wrong base line hash", "expectedExit": 1, "expectedCodes": ["base-line-hash-mismatch"]},
+    {"id": "rewords-manifest-entry-removed", "kind": "verify-copy", "verifier": "rewords", "requirement": "missing recorded line in the manifest (additional)", "expectedExit": 1, "expectedCodes": ["reword-missing-entry", "unrecorded-line-changed"]},
+    {"id": "rewords-pattern-in-new-file", "kind": "verify-copy", "verifier": "rewords", "requirement": "reintroduced pattern in new committed text (additional)", "expectedExit": 1, "expectedCodes": ["pattern-present"]},
+    {"id": "deadline-descendant-cleanup", "kind": "deadline", "requirement": "REPLAY-SUBPROCESS-DEADLINE", "deadlineSeconds": 5, "expectedExit": null, "expectedCodes": []},
+    {"id": "registry-missing-case", "kind": "registry", "requirement": "REPLAY-EXACT-REGISTRY", "mutation": "remove-last", "expectedExit": 1, "expectedMarker": "REPAIR-CONTROLS: FAIL registry"},
+    {"id": "registry-reordered-cases", "kind": "registry", "requirement": "REPLAY-EXACT-REGISTRY", "mutation": "swap-first-two", "expectedExit": 1, "expectedMarker": "REPAIR-CONTROLS: FAIL registry"},
+    {"id": "registry-version-changed", "kind": "registry", "requirement": "REPLAY-EXACT-REGISTRY", "mutation": "version", "expectedExit": 1, "expectedMarker": "REPAIR-CONTROLS: FAIL registry"},
+    {"id": "selector-omitted", "kind": "selector", "requirement": "REPLAY-SELECTOR-NONVACUITY", "selector": null, "probe": true, "expectedExit": 0, "expectedMarker": "REPAIR-CONTROLS: SELECTOR-PROBE selected=34 ids=archives-positive-tree,"},
+    {"id": "selector-valid", "kind": "selector", "requirement": "REPLAY-SELECTOR-NONVACUITY", "selector": "archives-positive-committed", "probe": false, "expectedExit": 0, "expectedMarker": "REPAIR-CONTROLS: RESULT: PASS executed 1 of 1 selected cases"},
+    {"id": "selector-empty", "kind": "selector", "requirement": "REPLAY-SELECTOR-NONVACUITY", "selector": "''", "probe": false, "expectedExit": 2, "expectedMarker": "REPAIR-CONTROLS: SELECTOR-ERROR [empty]"},
+    {"id": "selector-whitespace", "kind": "selector", "requirement": "REPLAY-SELECTOR-NONVACUITY", "selector": "' '", "probe": false, "expectedExit": 2, "expectedMarker": "REPAIR-CONTROLS: SELECTOR-ERROR [whitespace]"},
+    {"id": "selector-malformed", "kind": "selector", "requirement": "REPLAY-SELECTOR-NONVACUITY", "selector": "'Archives Positive!'", "probe": false, "expectedExit": 2, "expectedMarker": "REPAIR-CONTROLS: SELECTOR-ERROR [malformed]"},
+    {"id": "selector-unknown", "kind": "selector", "requirement": "REPLAY-SELECTOR-NONVACUITY", "selector": "no-such-case", "probe": false, "expectedExit": 2, "expectedMarker": "REPAIR-CONTROLS: SELECTOR-ERROR [unknown]"},
+    {"id": "selector-duplicate", "kind": "selector", "requirement": "REPLAY-SELECTOR-NONVACUITY", "selector": "archives-positive-tree,archives-positive-tree", "probe": false, "expectedExit": 2, "expectedMarker": "REPAIR-CONTROLS: SELECTOR-ERROR [duplicate]"}
+  ]
+}

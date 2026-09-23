@@ -1,0 +1,52 @@
+[
+  {
+    "Stage": "generic-consumer",
+    "UTC": "2026-09-12T08:46:16.8779000Z",
+    "Source": "scripts/variable_payload_generic_consumer.lean",
+    "SourceSHA256": "EAEABD56E6AA750D02F416E34952A1164037DC8FEE60B4C39A3AD22F9245151D",
+    "Tree": "Dirty owned implementation after adapter/validation compile; contract checkpoint 0bbbe8ca4a937bc9782b2f7c5cc5419faa1a75a2",
+    "Result": {
+      "Stage": "generic-consumer",
+      "ExitCode": 0,
+      "Output": [],
+      "StandardOutput": [],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 6.921,
+      "DeadlineSeconds": 600,
+      "Ownership": "kill-on-close-job"
+    }
+  },
+  {
+    "Stage": "field-inventory",
+    "UTC": "2026-09-12T08:46:46.6882048Z",
+    "Source": "scripts/variable_payload_inventory.lean",
+    "SourceSHA256": "9B52A8E9DE86078E93F93AE4D62AC4F6CCC5B5F91A2373E00FB3CA696968EDF1",
+    "Tree": "Dirty owned implementation after adapter/validation compile; contract checkpoint 0bbbe8ca4a937bc9782b2f7c5cc5419faa1a75a2",
+    "Result": {
+      "Stage": "field-inventory",
+      "ExitCode": 1,
+      "Output": [
+        "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_inventory.lean:69:41: error: expected structure",
+        "This error is possibly due to a change in the 'structure' syntax. Now the syntax is 'structure S : Type extends P' rather than 'structure S extends P' : Type'.",
+        "The purpose of the change is to accommodate 'structure S extends toP : P' syntax for naming parent projections.",
+        "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_inventory.lean:78:0: error: LB1-FIELDS: parent control metadata absent"
+      ],
+      "StandardOutput": [
+        "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_inventory.lean:69:41: error: expected structure",
+        "This error is possibly due to a change in the 'structure' syntax. Now the syntax is 'structure S : Type extends P' rather than 'structure S extends P' : Type'.",
+        "The purpose of the change is to accommodate 'structure S extends toP : P' syntax for naming parent projections.",
+        "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\scripts\\variable_payload_inventory.lean:78:0: error: LB1-FIELDS: parent control metadata absent"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 29.686,
+      "DeadlineSeconds": 600,
+      "Ownership": "kill-on-close-job"
+    }
+  }
+]

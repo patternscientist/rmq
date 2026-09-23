@@ -1,9 +1,11 @@
 % rmq.tex -- private working draft of the RMQ manuscript substrate.
-% Branch codex/eg-cp-paper-evidence-r1, base commit
-% e3362d4f0300b3b0aef22d104ed67844d80134a0.
+% Authored on branch codex/eg-cp-paper-evidence-r1; base commit
+% 3849ecbb53bbedfcd679352cc68d095fa5a304c2 (branch
+% codex/fully-charged-packed-query-v1).
 % This draft asserts only theorem surfaces present at that base commit.
-% The packed all-size architecture result is provisional and appears only at
-% the single marked insertion point in Section 9.
+% The packed all-size architecture result is stated as a theorem in Section 9,
+% and as a capacity bound with a ledger citation in the allocated-bits entry.
+% The fully charged packed query is kernel-checked at the base commit. Its later source-equivalent lineage passed the audit and coordinator acceptance recorded in the theorem ledger.
 \documentclass[11pt]{article}
 
 \usepackage[T1]{fontenc}
@@ -27,6 +29,10 @@
 \newtheorem{lemma}[theorem]{Lemma}
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
+% `targetstmt` quoted the packed architecture result as a provisional target.
+% Section 9 now states it as a theorem (RC-4, 2026-08-16), so this environment
+% has no uses. Kept defined so a future provisional target gets the same
+% presentation instead of a reinvented one.
 \newtheorem{targetstmt}[theorem]{Target Statement}
 \theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
@@ -39,7 +45,7 @@ Machine-Checked in Lean~4:\\
 Reference Semantics, a Charged-Trace Cost Model,\\
 and an Explicit Trust Boundary\thanks{Private working draft. This document
 is an internal manuscript substrate pinned to repository commit
-\texttt{e3362d4f0300b3b0aef22d104ed67844d80134a0}. It is not a submission,
+\texttt{3849ecbb53bbedfcd679352cc68d095fa5a304c2}. It is not a submission,
 not a public claim surface, and not an architecture-acceptance record.}}
 \author{RMQ repository contributors}
 \date{Draft of 2026-08-05}
@@ -67,14 +73,25 @@ are backed by counted payload words, the physical word list erases exactly
 to the public payload, and store-parametricity holds under agreement on the
 execution's ordered read footprint, with checked mutation witnesses showing
 that the store is genuinely observed. We state precisely what is and is not
-charged, keep payload bits, allocated bits, charged probes, model ticks, and
-Lean wall-clock time distinct, and document the trust base (Lean kernel
-checking under a pinned toolchain, standard axioms only). A packed
-cell-probe strengthening, bounding the allocated capacity of one packed
-object and the probes into it, has been accepted in the repository but is
-not yet absorbed into this draft; we reserve exactly one marked insertion
-point for it and assert it nowhere else. Novelty statements are deliberately conditional pending a
-completed search log.
+charged, keep payload bits, allocated bits, charged probes, model ticks,
+executed instructions, and Lean wall-clock time distinct, and document the
+trust base (Lean kernel checking under a pinned toolchain, standard axioms
+only). A packed cell-probe strengthening, bounding the allocated capacity of
+one packed object and the attempted probes into it, is stated as a theorem in
+Section~\ref{sec:pending} and, as a capacity bound, in the allocated-bits
+entry of Section~\ref{sec:quantities}. It appears nowhere else. A further
+theorem, kernel-checked and accepted through the project's audit process, charges every executed instruction: one fixed program of
+$837{,}572$ register-machine instructions, run on a numeric allocation of
+words whose width is logarithmic in $n$, returns an encoding of the leftmost
+minimum for every valid query and halts within that many steps, in a
+word-RAM-style model that treats multiplication, division, remainder, shifts
+and bitwise operations as unit-cost, division and remainder being an explicit
+assumption beyond the standard multiplication model. The allocation, together
+with the program's encoding and register bank, is at most $2n + o(n)$ bits,
+the program's share being lower order only asymptotically
+(Section~\ref{sec:fullycharged}).
+Novelty statements are deliberately conditional pending a completed search
+log.
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
@@ -104,9 +121,9 @@ from claims.
 \subsection{Contributions of the mechanization}\label{sec:contributions}
 
 All results below are kernel-checked Lean~4 theorems at repository commit
-\texttt{e3362d4f0300b3b0aef22d104ed67844d80134a0}; the ledger
-(\texttt{paper/THEOREM\_LEDGER.md}) maps every claim in this draft to an
-exact declaration and source file.
+\texttt{3849ecbb53bbedfcd679352cc68d095fa5a304c2}; the later audit and acceptance of the sixth are recorded separately in Section~\ref{sec:status}. The
+ledger (\texttt{paper/THEOREM\_LEDGER.md}) maps every claim in this draft to
+an exact declaration and source file.
 
 \begin{enumerate}
 \item \emph{Reference semantics.} A value-level half-open, leftmost-tie RMQ
@@ -132,36 +149,67 @@ exact declaration and source file.
   Jacobson/Clark-style $n + o(n)$ family and a fixed-weight compressed/FID
   family) and the balanced-parentheses close-navigation layer consumed by
   the RMQ capstone (Section~\ref{sec:upper}).
+\item \emph{A fully charged execution (accepted).} One closed program of
+  $837{,}572$ register-machine instructions, independent of the input,
+  answers every valid query exactly on a numeric allocation of
+  logarithmic-width words and halts within that many executed instructions,
+  with every executed operation proved to fit the word width; the
+  allocation, the program's encoding and its register bank together occupy
+  at most $2n + o(n)$ bits, the program's share of that capacity being
+  lower order only asymptotically. The project's audit process has accepted this result (Section~\ref{sec:fullycharged}).\ledger{L-PQ-01}
 \end{enumerate}
 
 \subsection{What this draft does not claim}\label{sec:nonclaims-intro}
 
 The development makes no claim about compiled Lean execution speed, compiler
 correctness, CPU or memory-hierarchy semantics, or production serialization.
-The modeled cost bound charges attempted payload-word reads only; controller
-dispatch, decoding, arithmetic, comparisons, and branching are uncharged in
-the current model, so the constant $210$ is a charged-trace bound in an
+The charged-trace cost bound charges attempted payload-word reads only;
+controller dispatch, decoding, arithmetic, comparisons, and branching are
+uncharged in that model, so the constant $210$ is a charged-trace bound in an
 explicitly named model, not a running-time bound in the conventional
-word-RAM model (Section~\ref{sec:quantities}). The space theorem of
-Section~\ref{sec:upper} counts advertised payload bits, not the allocated
+word-RAM model (Section~\ref{sec:quantities}). The theorem of
+Section~\ref{sec:fullycharged} does charge every executed instruction, but of
+a different program on a different allocation. It bounds the steps of a
+modeled register machine with unit-cost multiplication, division, remainder,
+shifts and bitwise operations, division and remainder being an explicit
+assumption beyond the standard multiplication model. It does not bound
+wall-clock time, compiled code, or preprocessing, and it changes neither the
+model nor the constant of the charged-trace bound.\ledger{L-PQ-01} The space
+theorem of Section~\ref{sec:upper} counts advertised payload bits, not the allocated
 capacity of a packed memory object (Section~\ref{sec:quantities}); the
 allocated-capacity strengthening is a separate accepted result over a
-different object, which this draft states in one place and nowhere else
-(Section~\ref{sec:pending}). Priority claims are deliberately conditional:
+different object, which this draft states only in the allocated-bits entry of
+Section~\ref{sec:quantities} and in Section~\ref{sec:pending}. The theorem bounds a third allocation, which also counts its program and
+register bank. Priority claims are deliberately conditional:
 closely related mechanizations exist, most prominently the
-Coq/SSReflect succinct-data-structure line of Tanaka, Affeldt, Garrigue,
-and Qi~\cite{TAG16,AGQT19}, and the search log
+Coq/SSReflect succinct-data-structure line of Akira Tanaka, Affeldt and
+Garrigue~\cite{TAG16}, continued by Affeldt and Garrigue with Qi and
+Kazunari Tanaka~\cite{AGQT19}, and the search log
 (\texttt{paper/RELATED\_WORK\_LEDGER.md}) is not yet complete
 (Section~\ref{sec:related}).
 
 \subsection{Draft status}\label{sec:status}
 
-This is a private working draft assembled from the repository's accepted
-claim maps at one exact commit. One result family --- a packed
-counted-header cell-probe refinement --- is under a separate feasibility
-gate and is neither accepted nor rejected at the base commit. This draft
-reserves a single insertion point for it (Section~\ref{sec:pending}) and
-otherwise excludes it from every claim.
+This is a private working draft assembled from the repository's claim maps
+at one exact commit. One result family --- a packed
+counted-header cell-probe refinement --- has been \emph{accepted} in the
+repository and is stated as a theorem here. This draft states it in
+exactly two places: the
+allocated-bits entry of Section~\ref{sec:quantities}, which cites its ledger
+row, and Section~\ref{sec:pending}. It asserts it nowhere else.
+
+A second result --- the fully charged packed query of
+Section~\ref{sec:fullycharged} --- is kernel-checked at the same commit and
+exported by the paper-facing import root. The later source-equivalent lineage has passed the committed replay on both required hosts, both aggregate gates, and a fresh blind source audit with one narrow tooling correction review. Coordinator acceptance is recorded in the repository's PQ1 acceptance record; it is distinct from the older mathematical source pin. This draft
+states the result in Section~\ref{sec:fullycharged}. It summarizes it, each
+time with its acceptance status, in the abstract, the contributions
+(Section~\ref{sec:contributions}), Section~\ref{sec:nonclaims-intro} and this
+subsection, Section~\ref{sec:quantities}, a reading of
+Theorem~\ref{thm:packed}, the related work (Section~\ref{sec:related}), the
+limitations (Section~\ref{sec:limitations}) and the conclusion
+(Section~\ref{sec:conclusion}). The trust and reproduction sections
+(Sections~\ref{sec:trust} and~\ref{sec:repro}) name it only as part of the
+import closure of the paper root and of the aggregate gate's wiring.
 
 \section{Reference semantics}\label{sec:semantics}
 
@@ -215,7 +263,7 @@ answer.\ledger{L-REF-02}
 \section{Quantities, models, and the accounting discipline}
 \label{sec:quantities}
 
-Five quantities are kept distinct throughout the development and throughout
+Six quantities are kept distinct throughout the development and throughout
 this draft. Conflating any two of them changes the meaning of a succinct
 data-structure claim, so we fix vocabulary once, here.
 
@@ -237,7 +285,11 @@ data-structure claim, so we fix vocabulary once, here.
   Section~\ref{sec:pending}, whose complete capacity, counting the header
   cell, every payload cell, and final padding at full cell width, is at most
   $2n + \rho(n)$ for a checked little-$o$-linear
-  $\rho$.\ledger{L-PACK-01}
+  $\rho$.\ledger{L-PACK-01} The theorem of
+  Section~\ref{sec:fullycharged} bounds a third allocation --- a fixed bank
+  of $174$ metadata words followed by a dense repacking of that packed array
+  into wider words --- and in addition counts the literal encoding of its
+  program and its register bank at the same width.\ledger{L-PQ-01}
 \item[Charged probes (model reads).] Events of the explicit trace layer.
   On the accepted route every charged event is one attempted read of one
   word of the modeled store, including failed reads. The constant $210$
@@ -245,6 +297,13 @@ data-structure claim, so we fix vocabulary once, here.
 \item[Model ticks.] The \leanid{Costed} cost of a query. On the canonical
   route this is proved \emph{equal} to the emitted trace length, so ticks
   and charged probes coincide there by theorem, not by definition.
+\item[Executed instructions (steps).] The steps of the register-machine run
+  of the theorem of Section~\ref{sec:fullycharged}: one per
+  executed instruction, whether it loads a word, writes a register, computes,
+  compares, branches, or halts. This quantity belongs to that theorem alone.
+  It is neither a count of charged probes nor of model ticks, and neither
+  the constant of Section~\ref{sec:cost} nor Theorem~\ref{thm:packed}
+  bounds it.\ledger{L-PQ-01}
 \item[Lean wall-clock time.] The observable behavior of Lean's evaluator on
   the executable fragment. No theorem in the repository mentions it; the
   validation harness measures it separately and it plays no role in any
@@ -252,7 +311,7 @@ data-structure claim, so we fix vocabulary once, here.
 \end{description}
 
 \paragraph{The charge policy.}
-The declared policy of the current model is: \emph{charged} --- attempted
+The declared policy of the charged-trace model is: \emph{charged} --- attempted
 payload-word reads (\leanid{readWord}), one model tick each, including
 failed reads; \emph{uncharged} --- instruction dispatch, register moves,
 fixed-width decoding of a fetched word, bounded arithmetic and comparisons
@@ -265,16 +324,21 @@ that is silent in the trace. The chunk caps making this checkable are
 described in Section~\ref{sec:upper}.\ledger{L-UB-19}
 
 \paragraph{What the model is not.}
-Because controller work is uncharged, the bound $210$ is not a conventional
-word-RAM running-time result, and this draft never presents it as one. It
-is closer in spirit to a cell-probe accounting --- memory touches are the
-unit --- but the current theorem does not package a cell-probe object
-either: the store is word-addressed by logical segment, not a single packed
-bit array with a frozen width function. That packaging is precisely what the
-accepted packed cell-probe result of Section~\ref{sec:pending} supplies, over
-a different object than the theorem discussed here. Charging an
-instruction-level controller is a separate planned strengthening
-(Section~\ref{sec:limitations}).\ledger{L-OPEN-06}
+Because controller work is uncharged in this model, the bound $210$ is not a
+conventional word-RAM running-time result, and this draft never presents it
+as one.\ledger{L-OPEN-06} It is closer in spirit to a cell-probe accounting
+--- memory touches are the unit --- but the charged-trace theorem does not
+package a cell-probe object either: the store is word-addressed by logical
+segment, not a single packed bit array with a frozen width function. That
+packaging is precisely what the accepted packed cell-probe result of
+Section~\ref{sec:pending} supplies, over a different object than the theorem
+discussed here. An instruction-level execution that charges every step,
+controller work included, is the theorem of
+Section~\ref{sec:fullycharged}. On a valid query its loads, after a fixed
+metadata prefix, are the physical expansion of the reads of this model's
+canonical trace, but it is a theorem about a different program and
+allocation: it attaches no instruction count to the constant $210$, and it
+leaves this model unchanged.\ledger{L-PQ-01}
 
 \section{The information-theoretic lower bound}\label{sec:lower}
 
@@ -660,8 +724,9 @@ process evidence explains decisions but proves no mathematics.
 
 \paragraph{Import discipline.}
 The narrow paper-facing import root is \leanid{RMQPaper}, whose checked
-closure contains the succinct RMQ construction, the lower bound, and the
-word-RAM/model-adequacy machinery, and excludes legacy, compatibility,
+closure contains the succinct RMQ construction, the lower bound, the
+word-RAM/model-adequacy machinery, and the fully charged packed query of
+Section~\ref{sec:fullycharged}, and excludes legacy, compatibility,
 archive, and proposal barrels. Historical cost surfaces remain
 kernel-checked but are quarantined behind explicitly named
 compatibility aliases that \leanid{RMQPaper} does not import.
@@ -669,7 +734,7 @@ compatibility aliases that \leanid{RMQPaper} does not import.
 \section{Reproducibility}\label{sec:repro}
 
 All claims of this draft refer to repository commit
-\texttt{e3362d4f0300b3b0aef22d104ed67844d80134a0}. The artifact reproduction
+\texttt{3849ecbb53bbedfcd679352cc68d095fa5a304c2}. The artifact reproduction
 path is:
 
 \begin{itemize}
@@ -683,8 +748,10 @@ path is:
   here;
 \item \texttt{powershell -File paper/check\_paper.ps1} --- the
   deterministic manuscript checker for this draft (citation closure,
-  duplicate labels and keys, forbidden tokens, theorem-ledger coverage, and
-  the single pending-architecture insertion point);
+  duplicate labels and keys, forbidden tokens, theorem-ledger coverage,
+  evidence-matrix status vocabulary, source-citation resolution, and
+  \emph{at most one} pending-architecture insertion point --- there are
+  currently none, the result having been absorbed into Section~9);
 \item \texttt{latexmk -pdf rmq.tex} (in \texttt{paper/}) --- the PDF build
   used for this draft.
 \end{itemize}
@@ -694,19 +761,23 @@ validation runs report payload overhead, model cost, and wall-clock time in
 separate columns, maintaining the quantity separation of
 Section~\ref{sec:quantities} in the measurements as well as in the
 theorems. Measurements never substitute for the space or cost theorems.
+The aggregate gate also runs the committed replay of the typed public client
+of Theorem~\ref{thm:fullycharged} (\texttt{scripts/packed\_query\_replay.ps1});
+like the mutation replay of Section~\ref{sec:model-adequacy}, it is
+reproducible-artifact evidence, one tier below the kernel theorem.
 
-\section{Toward a packed cell-probe theorem (provisional)}
+\section{A packed cell-probe architecture}
 \label{sec:pending}
 
-The strongest form of the succinct story packages the entire structure as
+The cell-probe form of the succinct story packages the entire structure as
 \emph{one} read-only array of fixed-width cells and charges the query for
 every aligned cell probe, computation between probes being free --- the
 standard convention in which succinct RMQ upper and lower bounds are
-usually read~\cite{Fischer10,LiuYu20}. The repository's endgame roadmap
+usually read~\cite{GalMiltersen07,LiuYu20}. The repository's endgame roadmap
 freezes such a target:
 
-\begin{targetstmt}[Accepted in the repository; not yet absorbed into this draft]
-\label{tgt:packed}
+\begin{theorem}[Packed cell-probe architecture]
+\label{thm:packed}
 For every input list of length $n$, preprocessing constructs one read-only
 array of exact-width $w(n)$-bit cells, with checked all-size bounds on $w$
 yielding the conventional logarithmic-width corollary. Its complete
@@ -715,9 +786,30 @@ padding --- is at most $2n + \rho(n)$ bits for a checked little-$o$-linear
 $\rho$. For every valid half-open query, a closed uniform controller, whose
 dynamic inputs are exactly $n$, the endpoints, and the words returned by
 its previous probes into that same array, returns the leftmost minimum
-index after at most $C$ adaptive probes, for one exact constant $C$
-independent of $n$.\ledger{L-ARCH-01}
-\end{targetstmt}
+index after at most $427$ \emph{attempted} adaptive probes into that same
+array.\ledger{L-ARCH-01}
+\end{theorem}
+
+\noindent The statement is machine-checked as a $39$-field certificate,
+inhabited for every input list and every endpoint pair; one import of the
+paper root supplies it. Three readings it does \emph{not} license, each of
+which the repository states explicitly:
+
+\begin{itemize}
+\item $427$ bounds \emph{attempted} probes and is an upper bound, not an
+      attainment claim. No execution is known to reach it; the pinned
+      fixture issues $68$.
+\item The model is cell-probe, so this is not word-RAM instruction time, not
+      preprocessing time, and not measured runtime. Computation between
+      probes is free. An instruction-level bound for a different program and
+      allocation is the Theorem~\ref{thm:fullycharged} below; it
+      is not a reading of this theorem.
+\item The $210$ inside $427 = 1 + 2\cdot 3 + 2\cdot 210$ is the packed
+      controller's own structural countdown. It is \emph{not} the
+      charged-trace budget of Section~\ref{sec:cost}, and the two are
+      independent at declaration and proof-term level --- a property the
+      repository checks rather than asserts.
+\end{itemize}
 
 At the base commit this statement is no longer a target: the feasibility
 gate closed and the repository recorded a positive architecture acceptance,
@@ -726,35 +818,200 @@ candidate lineage together with a fresh-blind exact-commit audit and a
 coordinator reconstruction. The theorem ledger reproduces the repository's
 status label accordingly.
 
-What has \emph{not} happened is editorial: this draft has not yet absorbed
-the accepted statement into a theorem environment with its proof obligations
-spelled out at the level the rest of the manuscript uses. Until it does, the
-marked insertion point below remains the only location licensed to carry the
-result, and no other section states, assumes, or paraphrases it as a theorem
-of this draft. Two consequences of the acceptance are already reflected
-above, because leaving them out would have made the draft assert falsehoods:
-the allocated-bits entry of Section~\ref{sec:quantities} now points here
-rather than denying that any theorem bounds capacity, and the corresponding
-limitation has been withdrawn.
+The editorial step has now been taken: Theorem~\ref{thm:packed} above states
+the accepted result as a theorem of this draft, at the level the rest of the
+manuscript uses. The allocated-bits entry of Section~\ref{sec:quantities}
+also states the capacity bound, with an explicit ledger citation; no section
+other than that entry and this one states, assumes, or paraphrases the
+result.
 
-\subsection{Result insertion point}\label{sec:insertion}
+\subsection{Result location}\label{sec:insertion}
 
-Exactly one location in this manuscript may carry the packed all-size
-result. The acceptance condition has been met; the remaining step is
-editorial, and until it is taken the marker below is the entire content of
-that location, and no other section states, assumes, or paraphrases the
-result as a theorem of this draft.
+Exactly one location in this manuscript carries the packed all-size result,
+and it is Theorem~\ref{thm:packed} above. Outside it, only the allocated-bits
+entry of Section~\ref{sec:quantities} states the capacity bound, and it does
+so with an explicit ledger citation rather than as a theorem of this draft.
 
-\medskip
-\noindent\verb|ARCHITECTURE_RESULT_PENDING|
-\medskip
+The pending marker that previously stood here has been removed, because the
+result it reserved space for is now stated. It was retained through earlier
+drafts so the manuscript checker could confirm the result appeared in exactly
+one place; that check now permits zero markers and fails only on more than
+one, so an absorbed result no longer has to advertise itself as unabsorbed.
 
-\noindent The marker is retained deliberately rather than deleted: it is
-what the manuscript checker keys on to confirm that the result appears in
-exactly one place, and it will be replaced by the theorem statement and its
-proof obligations in the same edit that removes this paragraph. Every
-theorem above is already checked at the base commit and none depends on the
-result carried here, so that edit is additive.
+\subsection{A fully charged query on a repacked allocation}
+\label{sec:fullycharged}
+
+Theorem~\ref{thm:packed} charges probes and leaves the computation between
+them free; the charged-trace bound of Section~\ref{sec:cost} charges
+attempted reads and leaves the controller free. The theorem below charges
+every executed instruction. It concerns a third object: a numeric allocation
+that stores a fixed bank of $174$ metadata words followed by a dense
+repacking of the packed array of Theorem~\ref{thm:packed}, its header and
+final padding included, into words of
+\[
+  W(n) \;=\; 32 + 8\,w(n)
+\]
+bits, where $w(n)$ is the cell width of Theorem~\ref{thm:packed}.
+
+\paragraph{The machine.}
+Memory is a list of natural numbers. A state holds registers, a program
+counter, and a status: running, halted with a value, or faulted. The
+instruction set has nine constructors: a load from the address held in a
+register; a load-immediate; a register move; arithmetic (addition,
+subtraction, multiplication, division, remainder, left and right shifts by a
+register amount, and bitwise and, or, and exclusive or); comparison
+(less-than, at-most, and equality, each producing $0$ or $1$); an
+unconditional jump; a jump to the address held in a register; a branch on
+zero; and halt. There is no store instruction. Each executed instruction is
+one step. A load outside the allocation faults the machine and is still
+logged. The evaluator computes on unbounded naturals, and no separate
+$W(n)$-bit semantics is formalized. Instead, on every run from endpoints
+below $2^{W(n)}$, every executed operation is proved not to exceed $W(n)$
+bits, not to subtract below zero, not to divide by zero, and not to shift by
+$W(n)$ or more, which is what licenses reading such a run as a $W(n)$-bit
+one. Treating multiplication, division, remainder, variable shifts, and
+bitwise operations as unit-cost is an assumption of this model, not a
+consequence of it.
+
+\paragraph{Where the model assumptions come from.}
+The machine is a unit-cost word RAM on words of $\Theta(\log n)$ bits: by
+item~1 of Theorem~\ref{thm:fullycharged} below, a word can address every
+input position, as the word-RAM literature
+requires~\cite{FredmanWillard93,AHNR98,PatrascuThorup14}. Its arithmetic is
+\emph{conservative} in the sense of Andersson, Hagerup, Nilsson and
+Raman~\cite{AHNR98}: on every run from endpoints below $2^{W(n)}$, every
+executed result is proved to fit in one word, so no step relies on the
+oversized operands whose unit cost Fredman and Willard treat as a
+misuse~\cite{FredmanWillard93}. The individual operations have primary
+sources. Register-indirect load, load-immediate, addition,
+subtraction and a conditional transfer are instructions of Cook and
+Reckhow's random access machine, each costing a bounded number of units under
+its uniform cost function~\cite{CookReckhow73}; addressing, conditional
+jumps, addition, subtraction, bitwise Boolean operations and shifts form the
+unit-cost basic instruction set of Brodnik, Miltersen and
+Munro~\cite{BMM97}; Fredman and Willard's instruction set has addition,
+subtraction, multiplication, comparison and bitwise and, from which or and
+exclusive or are derived~\cite{FredmanWillard93}; Andersson et al.\ take
+the shift distance from a second word~\cite{AHNR98}; and Hagerup, Miltersen
+and Pagh call addition, Boolean operations, shifts and multiplication the
+multiplication model~\cite{HMP01}. Unlike Fredman and Willard's, the
+multiplication here returns no high product word; its result is simply
+required to fit. Integer division and remainder go beyond all of these, and
+this model assumes them explicitly: Fredman and Willard use division only in
+a separate extension~\cite{FredmanWillard93}, P\u{a}tra\c{s}cu and Thorup
+take the word RAM to model what can be implemented in C, which has both
+operators~\cite{PatrascuThorup14}, and Mehlhorn and Sanders list both among
+the one-step instructions of their machine model~\cite{MehlhornSanders08}.
+The program needs them, since its span decoder divides a bit position by
+the word width $W(n)$, which it reads from the metadata bank into a
+register, and takes the remainder. Multiplication is not an AC$^0$
+operation~\cite{FredmanWillard93,AMT99}, so nothing here is claimed for
+AC$^0$-only instruction sets~\cite{AMT99} or for models without unit-cost
+multiplication~\cite{BMM97}. We cite no source for the register-indirect
+jump; the compiler that produces the program never emits it, which is a
+fact of the compiler's definition rather than a clause of the theorem.
+
+\begin{theorem}[Fully charged packed query]
+\label{thm:fullycharged}
+There is one closed program $P$ of $837{,}572$ instructions, independent of
+the input list, its length, and the endpoints, and for every input list
+$xs$ of length $n$ an allocation $M(xs)$ of $W(n)$-bit words, such that:
+\begin{enumerate}
+\item \emph{Width.} $\flog{(n+2)} + 1 \le W(n) \le 192\,(\flog{(n+2)}+1)$;
+  every word of $M(xs)$ and every address up to $\len{M(xs)}$ is below
+  $2^{W(n)}$, and every encoded field of every instruction of $P$,
+  including instructions no run reaches, is below $2^{W(n)}$ for every $n$.
+\item \emph{Space.} $\len{M(xs)}\cdot W(n) \le 2n + \rho_1(n)$ and
+  $\bigl(\len{M(xs)} + \len{\mathrm{enc}(P)} + 8274\bigr)\cdot W(n) \le
+  2n + \rho_2(n)$ for checked little-$o$-linear $\rho_1$ and $\rho_2$. Here
+  $\mathrm{enc}(P)$ is the literal encoding of $P$, one word per operation
+  tag, per operation code and per operand, at most $5 \cdot 837{,}572$
+  words, and $8274$ counts a bank of $8271$ registers (the input registers
+  included), the program counter, and two status words; every register
+  outside that bank is proved to stay zero at every fuel.
+\item \emph{Exact answers.} Every valid query has endpoints below
+  $2^{W(n)}$. For endpoints below $2^{W(n)}$, the run of $P$ on $M(xs)$
+  from the state holding $\mathit{left}$, $\mathit{right}$, and $n$, with
+  fuel $837{,}572$, halts. On a valid query it returns $i + 1$, where
+  $i = \leanid{scanWindow}\ xs\ \mathit{left}\ (\mathit{right} -
+  \mathit{left})$ is the reference answer of Section~\ref{sec:semantics},
+  the \leanid{LeftmostArgMin} index of Definition~\ref{def:leftmostargmin};
+  on a representable invalid query it returns $0$ without loading any word;
+  and on every invalid query the run takes at most $6$ steps. For endpoints
+  of $2^{W(n)}$ or more that last bound is a fact about the unbounded
+  evaluator, since the wrapper rejects such endpoints before the machine
+  starts. The total wrapper over unbounded naturals returns
+  \leanid{some}~$i$ on valid queries and \leanid{none} otherwise.
+\item \emph{Charging.} For endpoints below $2^{W(n)}$, because the run
+  halts within its fuel, it halts within $837{,}572$ steps, one per
+  executed instruction; the steps are counted by category (memory reads,
+  register writes, arithmetic, comparisons, branches, and control), and the
+  category counts sum to the step count.
+\item \emph{Safety.} For endpoints below $2^{W(n)}$, every prefix state of
+  the run, every executed transition, and every load address and loaded
+  word fit in $W(n)$ bits, and every executed operation meets the side
+  conditions above.
+\item \emph{Reads.} Every load is positionally backed: at its position in
+  the run the program counter selects a load instruction whose address
+  register holds the logged address, and the logged reply is the lookup of
+  $M(xs)$ at that address. On a valid query the ordered loads are the $174$
+  metadata loads followed, for each read event of the canonical trace of
+  Theorem~\ref{thm:readword} in order, by the loads of the words holding
+  the read's stored bit span --- one, or two when the span crosses a word
+  boundary, and none when the read has no stored span or a zero-length
+  one --- and no load fails. On an invalid query there are no loads. Any
+  memory that agrees with $M(xs)$ at every address the run loads yields the
+  identical run: final state and every transition.
+\end{enumerate}
+\textup{(}Lean: \leanid{fullyChargedPackedQueryCapstone\_holds};\\
+public alias \leanid{RMQ.Headlines.succinctRMQFullyChargedPackedQuery}.\textup{)}
+\ledger{L-PQ-01}
+\end{theorem}
+
+\noindent The step bound and the category count hold for every fuel-bounded
+run of this machine; what the theorem adds is that, for endpoints below
+$2^{W(n)}$, the run halts within the fuel. Four readings it does \emph{not}
+license:
+
+\begin{itemize}
+\item $837{,}572$ is the length of $P$ and the fuel of the run. It is an
+      input-independent upper bound, not an optimized constant and not an
+      attainment claim.\ledger{L-OPEN-07}
+\item The model is the register machine above, with unit-cost
+      multiplication, division, remainder, variable shifts, and bitwise
+      operations; division and remainder are assumed beyond the
+      multiplication model of the cited literature. The theorem says
+      nothing about compiled code, hardware, or the Lean evaluator's
+      wall-clock time, and preprocessing remains unbounded and unclaimed
+      (Section~\ref{sec:limitations}).
+\item Endpoints are natural numbers and machine registers hold $W(n)$ bits.
+      Every valid query fits, but the wrapper rejects larger endpoints by a
+      value-level test before the machine starts; that test is not charged,
+      and no instruction bound is claimed for parsing unbounded integers.
+\item The program's encoding and register bank are absorbed into the
+      little-$o$ term only asymptotically: at least two words per
+      instruction (an operation tag and an operand), each of $W(n)$ bits,
+      already exceed $n$ bits for every input size below $2^{28}$. That
+      threshold is arithmetic from the definitions of the encoding and of
+      $W$, using $W(n) \ge 48 + 8\flog{(n+1)}$, which follows from the
+      definition of $w(n)$; it is not a kernel-checked
+      statement.\ledger{L-PQ-01}
+\end{itemize}
+
+The theorem neither restates nor strengthens Theorem~\ref{thm:packed} or the
+charged-trace bound of Section~\ref{sec:cost}: those keep their models and
+constants, and $837{,}572$ bounds this execution only. It is not independent
+of them at proof level, since its loads expand the canonical trace's reads
+and its allocation repacks the packed array.
+
+\paragraph{Status.} The theorem is kernel-checked at the base commit with
+the standard axioms only: at that commit
+\texttt{scripts/headline\_axiom\_check.lean} reports that its public alias
+depends on \leanid{propext}, \leanid{Classical.choice} and
+\leanid{Quot.sound} alone, and the build and axiom checks run for this draft
+are recorded in \texttt{paper/README.md} and \texttt{paper/WORKLOG.md}. Its
+public alias is consumed field by field by an independent typed client. The
+project's acceptance process has completed the full committed replay and aggregate gates on both required hosts, a fresh blind audit at source commit \texttt{4c89378}, and its narrow tooling correction review at \texttt{6562ff6}. The coordinator has accepted that repaired lineage. The theorem definitions and proofs agree with this draft's mathematical source pin; nothing else in the draft depends on this result.
 
 \section{Related work}\label{sec:related}
 
@@ -763,12 +1020,16 @@ Cartesian trees originate with Vuillemin~\cite{Vuillemin80}; the
 RMQ-to-$\pm 1$-RMQ and RMQ/LCA reductions with linear-space constant-time
 solutions descend from Gabow--Bentley--Tarjan~\cite{GBT84},
 Harel--Tarjan~\cite{HarelTarjan84}, and
-Bender--Farach-Colton~\cite{BFC00}. Fischer and
-Heun~\cite{FischerHeun11} gave the systematic $2n + o(n)$-bit,
-constant-time succinct RMQ preprocessing scheme, and
-Fischer~\cite{Fischer10} the non-systematic optimal-succinctness variant
-whose model vocabulary the packed cell-probe result of
-Section~\ref{sec:pending} follows.
+Bender--Farach-Colton~\cite{BFC00}. Fischer and Heun~\cite{FischerHeun07}
+gave the systematic $2n + o(n) + \len{A}$-bit constant-time scheme; the
+non-systematic (encoding) $2n + o(n)$-bit constant-time scheme, which
+answers without consulting the array, is Fischer and
+Heun's~\cite[Thm.~5.8, Cor.~5.9]{FischerHeun11}, with
+Fischer~\cite{Fischer10} its preliminary LATIN~2010 version. The earliest
+non-systematic succinct RMQ is Sadakane's $4n + o(n)$ balanced-parentheses
+encoding of the Cartesian tree with an $o(n)$-bit LCA computation
+therein~\cite{Sadakane07}, whose setting --- though not whose mechanism ---
+the construction of Section~\ref{sec:architecture} shares.
 
 \paragraph{Succinct building blocks.}
 Rank/select dictionaries begin with Jacobson~\cite{Jacobson89} and
@@ -782,18 +1043,29 @@ the fragments of this toolkit that the RMQ capstone consumes.
 
 \paragraph{Lower bounds.}
 The information-theoretic bound mechanized here
-(Section~\ref{sec:lower}) is the counting bound implicit in the classical
-literature. The substantially stronger cell-probe redundancy lower bounds
+(Section~\ref{sec:lower}) is the classical counting bound, stated
+explicitly by Fischer~\cite[\S1.1]{Fischer10} as
+$\log\left(\binom{2n-1}{n-1}/(2n-1)\right) = 2n - \Theta(\log n)$ and sharpened with
+its exact leading constants by Liu~\cite{Liu21}; what is new here is its
+mechanization in integer arithmetic together with a concrete $2n$-bit
+attaining decoder. The substantially stronger cell-probe redundancy lower bounds
 for succinct RMQ are due to Liu and Yu~\cite{LiuYu20} and
 Liu~\cite{Liu21}; they are not mechanized here.
 
 \paragraph{Mechanized succinct data structures.}
-The closest precedent is the Coq/SSReflect line of Tanaka, Affeldt, and
-Garrigue, who verified the Jacobson rank algorithm with extraction to
-OCaml~\cite{TAG16}, extended with Qi to tree algorithms over LOUDS and
-related succinct representations~\cite{AGQT19}. Those papers already state
-priority for mechanized succinct-structure verification in their setting;
-accordingly, this draft claims no such priority. The present development
+The closest precedent is the Coq/SSReflect line begun by Akira Tanaka,
+Affeldt and Garrigue, who verified the Jacobson rank algorithm with
+extraction to OCaml~\cite{TAG16} and later machine-checked a counted
+bits-examined bound for it~\cite{TAG18}, and continued by Affeldt and
+Garrigue with Xuanrui Qi and Kazunari Tanaka, who formalized tree
+algorithms over LOUDS and dynamic bit vectors~\cite{AGQT19}. The two
+Tanakas are different authors.
+Tanaka, Affeldt and Garrigue state that, to the best of their knowledge,
+theirs is ``the first application of formal verification to succinct data
+structures''~\cite{TAG16}; Affeldt, Garrigue, Qi and Tanaka record a
+similar priority belief, scoped to their LOUDS and dynamic-bit-vector
+developments~\cite{AGQT19}. Accordingly, this draft claims no priority for
+mechanized succinct-structure verification. The present development
 differs in prover (Lean~4, Mathlib-free), in problem focus (RMQ end-to-end
 from reference semantics to a payload-accounted capstone with an
 information-theoretic lower bound in the same repository), and in its
@@ -809,14 +1081,21 @@ Nipkow16}, time credits in separation logic with the
 Chargu\'eraud--Pottier union-find verification as flagship~\cite{CP19},
 asymptotic-complexity frameworks over imperative programs~\cite{GCP18,
 ZhanHaslbeck18}. Those efforts tie cost to program steps of an executable
-or deeply embedded program. The present development occupies a different
-design point: cost is defined by an explicit model-level trace over a
-declared store, with adequacy theorems (Section~\ref{sec:model-adequacy})
-substituting for a program-logic connection. We present this as a
-trade-off, not a superiority claim: the model is simpler and the
-accounting is exhaustive over reads, but no compiled-code statement
-follows. The Isabelle Archive of Formal Proofs~\cite{AFP} hosts many
-verified data-structure analyses; our search of it for succinct
+or deeply embedded program. The charged-trace theorems of this development
+occupy a different design point: cost is defined by an explicit model-level
+trace over a declared store, with adequacy theorems
+(Section~\ref{sec:model-adequacy}) substituting for a program-logic
+connection. We present this as a trade-off, not a superiority claim: the
+model is simpler and the accounting is exhaustive over reads, but no
+compiled-code statement follows. The theorem of
+Section~\ref{sec:fullycharged} is closer to the step-counting tradition: it
+counts every executed instruction of one deeply embedded register-machine
+program, though for a single fixed program rather than through a program
+logic, and again no compiled-code statement follows. This draft makes no
+novelty statement about it; the search log predates it and does not cover
+instruction-level cost mechanizations. The Isabelle Archive of Formal
+Proofs~\cite{AFP} hosts many verified data-structure analyses; our search of
+it for succinct
 rank/select or RMQ entries is recorded, with its limitations, in the
 related-work ledger.
 
@@ -826,19 +1105,30 @@ Stated as theorems-not-yet-proved rather than hedges; each carries a ledger
 row.
 
 \begin{enumerate}
-\item \emph{Controller charging.} Controller dispatch, decoding, bounded
-  arithmetic, comparisons, and branching are uncharged; a richer
-  instruction-level machine that charges each such step and simulates the
-  same execution is future work. Consequently no claim is made about
-  running time in the conventional word-RAM model.\ledger{L-OPEN-06}
+\item \emph{Controller charging.} The charged-trace bound of
+  Section~\ref{sec:cost} leaves controller dispatch, decoding, bounded
+  arithmetic, comparisons, and branching uncharged, and no claim is made
+  about it as running time in the conventional word-RAM
+  model.\ledger{L-OPEN-06} Theorem~\ref{thm:packed} states its own
+  disclaimers in Section~\ref{sec:pending}. An instruction-level machine
+  that charges each such step is now the theorem of
+  Section~\ref{sec:fullycharged}, for a different program and allocation
+  and under a unit-cost operation set that
+  includes multiplication, division, remainder, variable shifts, and bitwise
+  operations, division and remainder being an explicit assumption beyond the
+  multiplication model. It transfers no instruction count to the
+  charged-trace bound or to Theorem~\ref{thm:packed}, and its absorption of
+  program and register space is asymptotic only.\ledger{L-PQ-01}
 \item \emph{Preprocessing.} The construction's preprocessing complexity
   (time and workspace, in any model) is unproved and unclaimed.
   \ledger{L-OPEN-01}
-\item \emph{Tightness of the constant.} $210$ is an upper cap with an
+\item \emph{Tightness of the constants.} $210$ is an upper cap with an
   exact reachable interior-cost witness at one component, but global
   minimality across component correlations is not proved; the constant is
   an artifact of the current representation and charge policy.
-  \ledger{L-OPEN-02}
+  \ledger{L-OPEN-02} The instruction budget $837{,}572$ of the Theorem~\ref{thm:fullycharged} is the length of a program that was not
+  optimized; no theorem shows that any run attains it, and no smaller
+  uniform budget is proved.\ledger{L-OPEN-07}
 \item \emph{Tightness of the overhead envelope.} $\mathrm{overhead}$ is
   little-$o$-linear but not proved tight; no reachable family is shown to
   attain the envelope, and the envelope is not claimed comparable to
@@ -850,8 +1140,9 @@ row.
   kernel-checked at the base commit. The project's own acceptance process
   additionally requires fresh-blind audits for some surfaces; at the base
   commit the audit of the release lineage of the $210$ chain is still open
-  in that internal process. This is a process status, not a mathematical
-  caveat, and it is recorded here for candor.
+  in that internal process. The fully charged packed query of
+  Section~\ref{sec:fullycharged} has since passed its fresh blind source audit, narrow tooling correction review and both-host gates, and has coordinator acceptance. That later process record does not close the separate release-wide audit. This is a process status,
+  not a mathematical caveat, and it is recorded here for candor.
 \end{enumerate}
 
 \section{Conclusion}\label{sec:conclusion}
@@ -864,11 +1155,15 @@ execution model with erasure, footprint-determinacy, payload-backing,
 provenance, and mutation-rejection theorems; and an information-theoretic
 lower bound in matching integer arithmetic. The one result held apart ---
 an allocated-capacity theorem over a single packed object queried by a
-closed controller --- has since been accepted in the repository, and this
-draft will absorb it at the marked insertion point, and only there. What
-remains genuinely open is listed in Section~\ref{sec:limitations}: the
-controller's uncharged steps, preprocessing complexity, tightness of both
-the constant and the overhead envelope, and mechanized cell-probe
+closed controller --- has since been accepted in the repository and is
+stated as Theorem~\ref{thm:packed}, and only there. A fully charged
+execution, in which one fixed register-machine program answers every valid
+query on a repacked allocation and every executed instruction is counted, is
+kernel-checked at the base commit and stated as Theorem~\ref{thm:fullycharged}; its later source-equivalent lineage has been accepted through the project's audit process. What remains genuinely open is listed in
+Section~\ref{sec:limitations}: an instruction count for the executions that
+the charged-trace bound and Theorem~\ref{thm:packed} themselves describe,
+preprocessing complexity, tightness of the charged-trace constant, of the
+instruction budget, and of the overhead envelope, and mechanized cell-probe
 redundancy bounds.
 
 \bibliographystyle{alpha}

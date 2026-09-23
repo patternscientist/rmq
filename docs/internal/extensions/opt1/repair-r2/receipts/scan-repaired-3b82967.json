@@ -1,0 +1,145 @@
+{
+  "schema": "rmq.opt1.repair-r2.scan-receipt.v1",
+  "phase": "repaired-3b82967",
+  "note": "Curated from the session driver's raw phase receipt. Every string is exact after JSON decoding; the file bytes avoid the scanner's emission and summary shapes so this receipt is not itself a claim surface. The raw stdout files stay outside the repository and are identified by SHA-256.",
+  "repo": "C:/Users/poin/Documents/RMQ/.claude/worktrees/opt1-r2-claim-receipts",
+  "commit": "3b8296767f93cd11fed7eb6a257ce94683430228",
+  "commitAfter": "3b8296767f93cd11fed7eb6a257ce94683430228",
+  "statusBefore": [],
+  "statusAfter": [],
+  "ignoredUnderScanRoots": [],
+  "host": {
+    "machine": "POINPAD",
+    "os": "Microsoft Windows NT 10.0.26200.0",
+    "driverPowerShell": "7.6.6",
+    "driverPath": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe"
+  },
+  "heavyMutex": {
+    "name": "Global\\RMQHeavyVerification",
+    "detail": {
+      "first": {
+        "label": "phaseA-base",
+        "waitedSeconds": 15807.84,
+        "acquiredUtc": "2026-09-13T20:12:29.8967864Z"
+      },
+      "signalWait": {
+        "signal": {
+          "commit": "3b8296767f93cd11fed7eb6a257ce94683430228"
+        },
+        "heldWhileWaitingSeconds": 105.2,
+        "reacquired": null
+      }
+    }
+  },
+  "finishedUtc": "2026-09-13T20:34:23.3054464Z",
+  "runs": [
+    {
+      "mode": "-SelfTest",
+      "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -SelfTest",
+      "shell": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "startUtc": "2026-09-13T20:24:52.7118677Z",
+      "endUtc": "2026-09-13T20:29:23.6208860Z",
+      "exit": 0,
+      "seconds": 270.884,
+      "deadlineSeconds": 10800,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "ownership": "kill-on-close-job",
+      "terminatedIds": [],
+      "scannerSha256": "5310DBA1242B3ED4A0B054A15B1B6911C056C228B2711F3D958EAB539BB3F6F7",
+      "policySha256": "4096C7A708DF686F0AC7B62D935B22C13C1F1212494A3B39FD2ADD127AD43CD9",
+      "stdoutLines": 4,
+      "stdoutSha256": "07A65CA61163CF6200B64C436176B5C27024C8C09F76C4175B1762D72BA25FBB",
+      "stdoutBytes": 266,
+      "stdoutFileOutsideRepository": "session/out/phaseB-repaired/SelfTest.stdout.txt",
+      "stderrLines": 0,
+      "stderrSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "summaryLines": [
+        "CLAIM-DRIFT SELFTEST: ok -- 6 protected probes rejected and 2 attributed probes accepted",
+        "CLAIM-DRIFT SELFTEST: ok -- no emitted line cites a process-record path",
+        "CLAIM-DRIFT SELFTEST: ok -- exclusion removed 431 hits \u00282241 -> 1810)",
+        "CLAIM-DRIFT SELFTEST: RESULT: PASS"
+      ],
+      "summaryShapedOutputLineCount": 0,
+      "summaryShapedOutputLines": [],
+      "survivorsAfterRun": [],
+      "survivorsStopped": []
+    },
+    {
+      "mode": "-Strict",
+      "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -Strict",
+      "shell": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "startUtc": "2026-09-13T20:29:26.1577698Z",
+      "endUtc": "2026-09-13T20:31:49.5110523Z",
+      "exit": 0,
+      "seconds": 143.329,
+      "deadlineSeconds": 5400,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "ownership": "kill-on-close-job",
+      "terminatedIds": [],
+      "scannerSha256": "5310DBA1242B3ED4A0B054A15B1B6911C056C228B2711F3D958EAB539BB3F6F7",
+      "policySha256": "4096C7A708DF686F0AC7B62D935B22C13C1F1212494A3B39FD2ADD127AD43CD9",
+      "stdoutLines": 1242,
+      "stdoutSha256": "77BC48E6C79A8B2F48380728E7A4288231024D46B7031DD3B6A353AE66427C6C",
+      "stdoutBytes": 3579506,
+      "stdoutFileOutsideRepository": "session/out/phaseB-repaired/Strict.stdout.txt",
+      "stderrLines": 0,
+      "stderrSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "summaryLines": [
+        "CLAIM-DRIFT: scan complete \u00281810 hits, 0 strict failures)"
+      ],
+      "summaryShapedOutputLineCount": 1,
+      "summaryShapedOutputLines": [
+        {
+          "outputLineIndex": 1241,
+          "parsedCount": 1810,
+          "isEmittedHit": false,
+          "emittingTerm": null,
+          "emittingPath": null,
+          "emittingLine": null
+        }
+      ],
+      "survivorsAfterRun": [],
+      "survivorsStopped": []
+    },
+    {
+      "mode": "-Strict -IncludeProcessRecords",
+      "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -Strict -IncludeProcessRecords",
+      "shell": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "startUtc": "2026-09-13T20:31:52.3782617Z",
+      "endUtc": "2026-09-13T20:34:20.3084400Z",
+      "exit": 0,
+      "seconds": 147.911,
+      "deadlineSeconds": 5400,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "ownership": "kill-on-close-job",
+      "terminatedIds": [],
+      "scannerSha256": "5310DBA1242B3ED4A0B054A15B1B6911C056C228B2711F3D958EAB539BB3F6F7",
+      "policySha256": "4096C7A708DF686F0AC7B62D935B22C13C1F1212494A3B39FD2ADD127AD43CD9",
+      "stdoutLines": 1581,
+      "stdoutSha256": "BD8B67385F7DC0F820C75490459B82078E3099A0935520BBAED29A5C5B735445",
+      "stdoutBytes": 3706082,
+      "stdoutFileOutsideRepository": "session/out/phaseB-repaired/StrictIncludeProcessRecords.stdout.txt",
+      "stderrLines": 0,
+      "stderrSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "summaryLines": [
+        "CLAIM-DRIFT: scan complete \u00282241 hits, 0 strict failures)"
+      ],
+      "summaryShapedOutputLineCount": 1,
+      "summaryShapedOutputLines": [
+        {
+          "outputLineIndex": 1580,
+          "parsedCount": 2241,
+          "isEmittedHit": false,
+          "emittingTerm": null,
+          "emittingPath": null,
+          "emittingLine": null
+        }
+      ],
+      "survivorsAfterRun": [],
+      "survivorsStopped": []
+    }
+  ]
+}

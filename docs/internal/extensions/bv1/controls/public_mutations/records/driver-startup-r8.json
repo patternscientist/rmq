@@ -1,0 +1,54 @@
+{
+  "stage": "controller-public-startup-r8",
+  "evidenceTag": "startup-local-v1-20260912130542938-da84d62a",
+  "utc": "2026-09-12T13:06:19.3320378Z",
+  "executable": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+  "arguments": [
+    "-NoProfile",
+    "-File",
+    "scripts/packed_bitvector_public_controls.ps1",
+    "-Startup",
+    "-DeadlineSeconds",
+    "180",
+    "-CampaignDeadlineSeconds",
+    "2700",
+    "-EvidenceTag",
+    "startup-local-v1-20260912130542938-da84d62a"
+  ],
+  "result": {
+    "Stage": "controller-public-startup-r8",
+    "ExitCode": 0,
+    "Output": [
+      "BV1-PUBLIC-CASE unchanged PASS version=1 constructor=True consumer=True",
+      "BV1-PUBLIC-SUMMARY version=1 executed=1 expected=1 passed=1 total=32",
+      "BV1-PUBLIC-STARTUP version=1 expected=32",
+      "BV1-PUBLIC-REPLAY version=1 executed=1 expected=1 passed=True unchanged=True fixtures=True statusRestored=True whitespace=True",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied"
+    ],
+    "StandardOutput": [
+      "BV1-PUBLIC-CASE unchanged PASS version=1 constructor=True consumer=True",
+      "BV1-PUBLIC-SUMMARY version=1 executed=1 expected=1 passed=1 total=32",
+      "BV1-PUBLIC-STARTUP version=1 expected=32",
+      "BV1-PUBLIC-REPLAY version=1 executed=1 expected=1 passed=True unchanged=True fixtures=True statusRestored=True whitespace=True"
+    ],
+    "StandardError": [
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 36.029,
+    "DeadlineSeconds": 420,
+    "Ownership": "kill-on-close-job"
+  }
+}

@@ -1,0 +1,2 @@
+# Preserve the source bytes cited by the native validator replay evidence.
+PackedNative.lean text eol=lf

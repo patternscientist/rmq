@@ -1,0 +1,8 @@
+{
+  "ProductionFunction": "Assert-R1Verdict",
+  "ActualOwnedChild": true,
+  "Id": "V05-ALLOWED-PROGRESS",
+  "Reason": null,
+  "ExpectedAccept": true,
+  "ActualAccept": true
+}

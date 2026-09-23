@@ -1,0 +1,17 @@
+{
+  "Stage": "runtime-selector-unknown",
+  "ExitCode": 1,
+  "Output": [
+    "uncaught exception: LB1-RUNTIME unknown selector: R99-UNKNOWN"
+  ],
+  "StandardOutput": [],
+  "StandardError": [
+    "uncaught exception: LB1-RUNTIME unknown selector: R99-UNKNOWN"
+  ],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 49.739,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

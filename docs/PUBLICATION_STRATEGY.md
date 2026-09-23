@@ -52,7 +52,7 @@ candidates, subject to the novelty search described below — are:
   with constant modeled query cost — a *charged-probe* bound, and deliberately
   not the word-RAM `O(1)` of the time-credit line above, since computation
   between charged probes is free in this model and payload construction is
-  accounted separately —
+  unproved and excluded from the bound rather than separately accounted —
   with any priority wording deferred until a referee-grade novelty search;
 - **(b)** a mechanized **matching lower bound** (rare: the three lines above are
   all upper-bound/correctness; a mechanized information-theoretic lower bound is
@@ -73,8 +73,10 @@ candidates, subject to the novelty search described below — are:
    accounting for the canonical no-synthetic trace.
    Earlier checked cost and dispatch declarations live in the explicit
    [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md)
-   and are not part of the paper surface. E1 still owns fully charged
-   controller simulation.
+   and are not part of the paper surface. Instruction-level charging of the
+   controller, once assigned to an E1 simulation, is now the separate
+   accepted theorem `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` (section 4b),
+   following the replay campaign, both-host aggregate gates and independent audit.
 
 Two items that were previously P0 are no longer proof blockers on the Lean/docs
 side:
@@ -155,10 +157,35 @@ Landed on `main` since this document was written (through `3f6f1e3`):
 - **Historical cost-regime split:** detailed earlier cost and dispatch
   chronology is quarantined in the explicit compatibility history. The
   canonical reviewer route is uniform; the current theorem gives the checked charged-trace cap
-  `210`, while E1 fully charged controller simulation remains.
+  `210`, while E1 fully charged controller simulation remained open at that
+  date (section 4b: now the accepted theorem
+  `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`).
 
-Remaining, in priority order: **paper/artifact packaging; novelty search;
-extraction + benchmarks; E1 fully charged simulation.**
+Remaining at that date, in priority order: **paper/artifact packaging; novelty
+search; extraction + benchmarks; E1 fully charged simulation** (the last item
+is superseded by the accepted theorem
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`; see section 4b).
+
+## 4b. Status update (2026-09-11)
+
+The instruction-level charging gap now has an accepted theorem,
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`. It charges every
+primitive instruction of a separate numeric-memory execution: one closed
+loop-free program of 837,572 instructions whose run halts within at most
+that many steps, with memory, program encoding and registers in `2n + o(n)`
+bits, under unit-cost multiplication, division, remainder, shifts and bitwise
+operations. It is ACCEPTED, following the replay campaign, both-host aggregate gates and independent audit; the E1 simulation plan is
+superseded by this accepted route. The coordinator acceptance record is
+`docs/internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md`.
+
+For the paper this adds a second model theorem, with a stricter charge policy
+and a different execution, beside the `210` charged-trace result rather than
+replacing it. The step budget is the program
+length, not a tight constant; the code and scratch term is lower order only
+asymptotically; endpoints outside the word domain are rejected by an
+uncharged check; and preprocessing remains unclaimed. Remaining, in priority
+order: **paper/artifact packaging with both cost models
+stated separately; novelty search; extraction + benchmarks.**
 
 ## 5. Recommended target
 

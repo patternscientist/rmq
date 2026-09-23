@@ -1,0 +1,11 @@
+{
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "path": "lakefile.toml",
+  "bytes": 691,
+  "sha256": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A",
+  "rawBlob": "fa57dac01b0a2a3217fe359402ac88c88709d8dc",
+  "stagedBlob": "fa57dac01b0a2a3217fe359402ac88c88709d8dc",
+  "method": "git hash-object -w --no-filters; git update-index --cacheinfo 100644,rawBlob,lakefile.toml",
+  "passed": true,
+  "scope": "staged raw-byte equality only; committed/fresh checkout pending"
+}

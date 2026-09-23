@@ -1,0 +1,35 @@
+{
+  "Stage": "O02-wordSerializationInjective-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:30:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.wordSerializationInjective",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (width : Nat) (first second : List Nat),",
+    "    0 < width →",
+    "      (∀ (word : Nat), word ∈ first → word < 2 ^ width) →",
+    "        (∀ (word : Nat), word ∈ second → word < 2 ^ width) →",
+    "          serializeWords width first = serializeWords width second → first = second : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:30:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.wordSerializationInjective",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (width : Nat) (first second : List Nat),",
+    "    0 < width →",
+    "      (∀ (word : Nat), word ∈ first → word < 2 ^ width) →",
+    "        (∀ (word : Nat), word ∈ second → word < 2 ^ width) →",
+    "          serializeWords width first = serializeWords width second → first = second : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 47.923,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

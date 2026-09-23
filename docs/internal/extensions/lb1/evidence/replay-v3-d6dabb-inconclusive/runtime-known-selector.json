@@ -1,0 +1,19 @@
+{
+  "Stage": "runtime-known-selector",
+  "ExitCode": 0,
+  "Output": [
+    "LB1-RUNTIME CASE PASS R04-ZERO-LENGTH",
+    "LB1-RUNTIME PASS version=LB1-RUNTIME-V1 executed=1 expected=1 ids=R04-ZERO-LENGTH"
+  ],
+  "StandardOutput": [
+    "LB1-RUNTIME CASE PASS R04-ZERO-LENGTH",
+    "LB1-RUNTIME PASS version=LB1-RUNTIME-V1 executed=1 expected=1 ids=R04-ZERO-LENGTH"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 49.155,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

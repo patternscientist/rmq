@@ -66,6 +66,9 @@ param(
 )
 
 Set-StrictMode -Version Latest
+# Which PowerShell is running, measured rather than inferred from the OS.
+. (Join-Path $PSScriptRoot 'host_shell_path.ps1')
+
 $ErrorActionPreference = 'Stop'
 
 $script:RepoRoot = Split-Path -Parent $PSScriptRoot
@@ -520,8 +523,23 @@ function Invoke-DescendantSelfTest {
 
   $pidFile = Join-Path ([System.IO.Path]::GetTempPath()) ("egcp-stagea-replay-" + [System.Guid]::NewGuid().ToString('N') + ".pid")
   $onWindows = Test-OnWindows
-  $shellExe = if ($onWindows) { Join-Path $PSHOME 'powershell.exe' }
-    else { Join-Path $PSHOME 'pwsh' }
+  # Spawn THE RUNNING HOST, measured -- not a shell inferred from the OS.
+  # $onWindows below still selects taskkill vs setsid, which IS an OS
+  # question and stays correct. WDD-20260908-082.
+  $shellExe = Get-HostShellPath
+  # CONTROL. The selected shell must BE the running host, not merely exist.
+  # Without this, reintroducing the OS-keyed choice passes wherever both hosts
+  # are installed -- the machine that finds the bug is the one that lacks the
+  # other shell, which is precisely the configuration nobody ran for a year.
+  $runningImage = $null
+  try { $runningImage = (Get-Process -Id $PID).Path } catch { }
+  if ((-not [string]::IsNullOrWhiteSpace($runningImage)) -and ($shellExe -ne $runningImage)) {
+    throw ("the descendant self-test would spawn '$shellExe' while running as '$runningImage'; " +
+           'the shell must be selected from the running host, not inferred from the OS')
+  }
+  if ([string]::IsNullOrWhiteSpace($shellExe)) {
+    throw 'cannot determine the running PowerShell executable; refusing to guess a shell for the descendant self-test'
+  }
   $childScript = "`$grandchild = Start-Process -FilePath '$shellExe' -ArgumentList '-NoProfile','-Command','Start-Sleep -Seconds 120' -PassThru; Set-Content -Path '$pidFile' -Value `$grandchild.Id; Start-Sleep -Seconds 120"
 
   if ($onWindows) {

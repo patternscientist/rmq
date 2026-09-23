@@ -1,0 +1,1703 @@
+{
+  "version": "PRE1-R1-REPAIR-CONTROLS-RECEIPT-V1",
+  "registryVersion": "PRE1-R1-REPAIR-CONTROLS-V1",
+  "registrySha256": "3B44C6BC3693B1017D4451BDC5DF1E372AF97AFEE1B7183366C7C349C5EB7ED7",
+  "runnerSha256": "3C7AE3B0AEF6FBB4A83EA027C528AD4AC8EF16E5FAE8C6EDC337FF4E683B1B87",
+  "helperSha256": "7D4ED15EDDFF0E6358D1973E782240CFC215EA9CB393DA8B3B82EC45C246A476",
+  "archivesVerifierSha256": "76AFAACBA4D788856F4F023872019CF999C63B2AF41AD9FBCC6DA5D2D278A3D3",
+  "rewordsVerifierSha256": "B980778487D495B2BC7434EDF26D03C758A5A81FFD975C3DE5F93A7F0F65DF85",
+  "liveBytesNote": "SHA-256 values are of the live checkout bytes that ran",
+  "repo": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r1-claim-receipts",
+  "revision": "ece8ae5606f48befdd03b2c6a33af1e7371733c3",
+  "host": "POINPAD",
+  "os": "Microsoft Windows NT 10.0.26200.0",
+  "powershell": "7.6.6",
+  "hostPath": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+  "packagedHost": true,
+  "python": "C:\\Python314\\python.exe",
+  "pythonSha256": "7CA24F26D6E3F463419EE4F537DDD3ACD312C38FE45E678CCE08572F26A8BD1A",
+  "workRoot": "<scratch>\\ctl-pwsh-ece8ae5-work",
+  "workRootRemoved": true,
+  "selectorBound": false,
+  "selected": [
+    "archives-positive-tree",
+    "archives-positive-committed",
+    "archives-positive-copy",
+    "archives-changed-archive-header-byte",
+    "archives-changed-archive-trailer-byte",
+    "archives-missing-archive",
+    "archives-extra-archive",
+    "archives-duplicate-manifest-entry",
+    "archives-wrong-base-blob-id",
+    "archives-decompressed-byte-mismatch",
+    "archives-original-restored",
+    "archives-audit-report-restored",
+    "archives-manifest-entry-removed",
+    "archives-result-line-file",
+    "rewords-positive-committed",
+    "rewords-positive-copy",
+    "rewords-changed-integer",
+    "rewords-unrecorded-line-changed",
+    "rewords-missing-recorded-line",
+    "rewords-reintroduced-pattern",
+    "rewords-wrong-base-line-hash",
+    "rewords-manifest-entry-removed",
+    "rewords-pattern-in-new-file",
+    "deadline-descendant-cleanup",
+    "registry-missing-case",
+    "registry-reordered-cases",
+    "registry-version-changed",
+    "selector-omitted",
+    "selector-valid",
+    "selector-empty",
+    "selector-whitespace",
+    "selector-malformed",
+    "selector-unknown",
+    "selector-duplicate"
+  ],
+  "expected": [
+    "archives-positive-tree",
+    "archives-positive-committed",
+    "archives-positive-copy",
+    "archives-changed-archive-header-byte",
+    "archives-changed-archive-trailer-byte",
+    "archives-missing-archive",
+    "archives-extra-archive",
+    "archives-duplicate-manifest-entry",
+    "archives-wrong-base-blob-id",
+    "archives-decompressed-byte-mismatch",
+    "archives-original-restored",
+    "archives-audit-report-restored",
+    "archives-manifest-entry-removed",
+    "archives-result-line-file",
+    "rewords-positive-committed",
+    "rewords-positive-copy",
+    "rewords-changed-integer",
+    "rewords-unrecorded-line-changed",
+    "rewords-missing-recorded-line",
+    "rewords-reintroduced-pattern",
+    "rewords-wrong-base-line-hash",
+    "rewords-manifest-entry-removed",
+    "rewords-pattern-in-new-file",
+    "deadline-descendant-cleanup",
+    "registry-missing-case",
+    "registry-reordered-cases",
+    "registry-version-changed",
+    "selector-omitted",
+    "selector-valid",
+    "selector-empty",
+    "selector-whitespace",
+    "selector-malformed",
+    "selector-unknown",
+    "selector-duplicate"
+  ],
+  "executed": [
+    "archives-positive-tree",
+    "archives-positive-committed",
+    "archives-positive-copy",
+    "archives-changed-archive-header-byte",
+    "archives-changed-archive-trailer-byte",
+    "archives-missing-archive",
+    "archives-extra-archive",
+    "archives-duplicate-manifest-entry",
+    "archives-wrong-base-blob-id",
+    "archives-decompressed-byte-mismatch",
+    "archives-original-restored",
+    "archives-audit-report-restored",
+    "archives-manifest-entry-removed",
+    "archives-result-line-file",
+    "rewords-positive-committed",
+    "rewords-positive-copy",
+    "rewords-changed-integer",
+    "rewords-unrecorded-line-changed",
+    "rewords-missing-recorded-line",
+    "rewords-reintroduced-pattern",
+    "rewords-wrong-base-line-hash",
+    "rewords-manifest-entry-removed",
+    "rewords-pattern-in-new-file",
+    "deadline-descendant-cleanup",
+    "registry-missing-case",
+    "registry-reordered-cases",
+    "registry-version-changed",
+    "selector-omitted",
+    "selector-valid",
+    "selector-empty",
+    "selector-whitespace",
+    "selector-malformed",
+    "selector-unknown",
+    "selector-duplicate"
+  ],
+  "registryCaseCount": 34,
+  "result": "INCONCLUSIVE",
+  "cases": [
+    {
+      "id": "archives-positive-tree",
+      "kind": "verify-tree",
+      "requirement": "archive verifier positive on the live checkout",
+      "verdict": "PASS",
+      "detail": "archives exit 0 codes [] expected exit 0 codes []",
+      "verifier": {
+        "name": "archives",
+        "exit": 0,
+        "seconds": 2.536,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [],
+        "jsonCodes": [],
+        "expectedExit": 0,
+        "expectedCodes": [],
+        "stdout": [
+          "RECEIPT-ARCHIVES: source tree C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r1-claim-receipts",
+          "RECEIPT-ARCHIVES: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 55 blobs under docs/internal/extensions/pre1/; 1 contain claim-scanner result lines; 1 named; 2 mention scanner text without a result line; 3 zip containers hold result lines inside members",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz -> docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md (named) blob b8a7abc83d9347f00198836ac2c011805b0ec6e3 sha256 2B35DD0386D202EA7D73D28C4754791B43232D4E6CE591E6DAB7C543393EEA52 bytes 88646 archive sha256 E8F77103CE5AB4E15734AF6E09564D3FE8A6BDA8C2463C2776471E8A02D0FDBD bytes 33919 result-lines 0 summary-pattern-lines 2 referring-files 6",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz -> docs/internal/extensions/pre1/evidence/author-final-checks-summary.json (result-line) blob f52767d9b690ecc444b9e181e56fb6a411f93dbd sha256 5590C0FB372BDDCE4B29BAB621E9F86B16C1F8E3F251BC5889BEF8181301B4BB bytes 4453 archive sha256 DB44F7AC0D2DBFE58CAB93CCF20B0BF1ABD14B71625C458AC72F66822FD45E39 bytes 1199 result-lines 1 summary-pattern-lines 1 referring-files 0",
+          "RECEIPT-ARCHIVES: RESULT: PASS (2 of 2 required archives verified; 2 manifest entries; 0 extra archives; 2 unselected scanner-text files and 3 zip containers present and unchanged; base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 8.68
+    },
+    {
+      "id": "archives-positive-committed",
+      "kind": "verify-committed",
+      "requirement": "archive verifier positive on committed blobs",
+      "verdict": "PASS",
+      "detail": "archives exit 0 codes [] expected exit 0 codes []",
+      "verifier": {
+        "name": "archives",
+        "exit": 0,
+        "seconds": 5.019,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [],
+        "jsonCodes": [],
+        "expectedExit": 0,
+        "expectedCodes": [],
+        "stdout": [
+          "RECEIPT-ARCHIVES: source commit ece8ae5606f48befdd03b2c6a33af1e7371733c3",
+          "RECEIPT-ARCHIVES: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 55 blobs under docs/internal/extensions/pre1/; 1 contain claim-scanner result lines; 1 named; 2 mention scanner text without a result line; 3 zip containers hold result lines inside members",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz -> docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md (named) blob b8a7abc83d9347f00198836ac2c011805b0ec6e3 sha256 2B35DD0386D202EA7D73D28C4754791B43232D4E6CE591E6DAB7C543393EEA52 bytes 88646 archive sha256 E8F77103CE5AB4E15734AF6E09564D3FE8A6BDA8C2463C2776471E8A02D0FDBD bytes 33919 result-lines 0 summary-pattern-lines 2 referring-files 6",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz -> docs/internal/extensions/pre1/evidence/author-final-checks-summary.json (result-line) blob f52767d9b690ecc444b9e181e56fb6a411f93dbd sha256 5590C0FB372BDDCE4B29BAB621E9F86B16C1F8E3F251BC5889BEF8181301B4BB bytes 4453 archive sha256 DB44F7AC0D2DBFE58CAB93CCF20B0BF1ABD14B71625C458AC72F66822FD45E39 bytes 1199 result-lines 1 summary-pattern-lines 1 referring-files 0",
+          "RECEIPT-ARCHIVES: RESULT: PASS (2 of 2 required archives verified; 2 manifest entries; 0 extra archives; 2 unselected scanner-text files and 3 zip containers present and unchanged; base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 10.507
+    },
+    {
+      "id": "archives-positive-copy",
+      "kind": "verify-copy",
+      "requirement": "archive verifier positive on an unmutated exact export",
+      "verdict": "PASS",
+      "detail": "archives exit 0 codes [] expected exit 0 codes []",
+      "export": {
+        "exit": 0,
+        "seconds": 1.242,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.878,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: no mutation"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "archives",
+        "exit": 0,
+        "seconds": 3.29,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [],
+        "jsonCodes": [],
+        "expectedExit": 0,
+        "expectedCodes": [],
+        "stdout": [
+          "RECEIPT-ARCHIVES: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\archives-positive-copy\\copy",
+          "RECEIPT-ARCHIVES: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 55 blobs under docs/internal/extensions/pre1/; 1 contain claim-scanner result lines; 1 named; 2 mention scanner text without a result line; 3 zip containers hold result lines inside members",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz -> docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md (named) blob b8a7abc83d9347f00198836ac2c011805b0ec6e3 sha256 2B35DD0386D202EA7D73D28C4754791B43232D4E6CE591E6DAB7C543393EEA52 bytes 88646 archive sha256 E8F77103CE5AB4E15734AF6E09564D3FE8A6BDA8C2463C2776471E8A02D0FDBD bytes 33919 result-lines 0 summary-pattern-lines 2 referring-files 6",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz -> docs/internal/extensions/pre1/evidence/author-final-checks-summary.json (result-line) blob f52767d9b690ecc444b9e181e56fb6a411f93dbd sha256 5590C0FB372BDDCE4B29BAB621E9F86B16C1F8E3F251BC5889BEF8181301B4BB bytes 4453 archive sha256 DB44F7AC0D2DBFE58CAB93CCF20B0BF1ABD14B71625C458AC72F66822FD45E39 bytes 1199 result-lines 1 summary-pattern-lines 1 referring-files 0",
+          "RECEIPT-ARCHIVES: RESULT: PASS (2 of 2 required archives verified; 2 manifest entries; 0 extra archives; 2 unselected scanner-text files and 3 zip containers present and unchanged; base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 10.572
+    },
+    {
+      "id": "archives-changed-archive-header-byte",
+      "kind": "verify-copy",
+      "requirement": "changed archive byte",
+      "verdict": "PASS",
+      "detail": "archives exit 1 codes [archive-gzip-invalid,archive-sha256-mismatch] expected exit 1 codes [archive-gzip-invalid,archive-sha256-mismatch]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.265,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.901,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: flipped bit 0 of byte 9 (gzip OS field) of docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "archives",
+        "exit": 1,
+        "seconds": 3.282,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "archive-gzip-invalid",
+          "archive-sha256-mismatch"
+        ],
+        "jsonCodes": [
+          "archive-gzip-invalid",
+          "archive-sha256-mismatch"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "archive-gzip-invalid",
+          "archive-sha256-mismatch"
+        ],
+        "stdout": [
+          "RECEIPT-ARCHIVES: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\archives-changed-archive-header-byte\\copy",
+          "RECEIPT-ARCHIVES: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 55 blobs under docs/internal/extensions/pre1/; 1 contain claim-scanner result lines; 1 named; 2 mention scanner text without a result line; 3 zip containers hold result lines inside members",
+          "RECEIPT-ARCHIVES: FAIL [archive-sha256-mismatch] docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz: manifest E8F77103CE5AB4E15734AF6E09564D3FE8A6BDA8C2463C2776471E8A02D0FDBD != 5F7FB031A40517EC4D82274F118B2B025E3C1F8CB0904B82F0383146B89FEB02",
+          "RECEIPT-ARCHIVES: FAIL [archive-gzip-invalid] docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz: header 1f8b08000000000002fe != pinned 1f8b08000000000002ff",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz -> docs/internal/extensions/pre1/evidence/author-final-checks-summary.json (result-line) blob f52767d9b690ecc444b9e181e56fb6a411f93dbd sha256 5590C0FB372BDDCE4B29BAB621E9F86B16C1F8E3F251BC5889BEF8181301B4BB bytes 4453 archive sha256 DB44F7AC0D2DBFE58CAB93CCF20B0BF1ABD14B71625C458AC72F66822FD45E39 bytes 1199 result-lines 1 summary-pattern-lines 1 referring-files 0",
+          "RECEIPT-ARCHIVES: RESULT: FAIL (2 failures; 1 of 2 required archives verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 10.703
+    },
+    {
+      "id": "archives-changed-archive-trailer-byte",
+      "kind": "verify-copy",
+      "requirement": "changed archive byte",
+      "verdict": "PASS",
+      "detail": "archives exit 1 codes [archive-gzip-invalid,archive-sha256-mismatch] expected exit 1 codes [archive-gzip-invalid,archive-sha256-mismatch]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.215,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.876,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: flipped bit 0 of the last byte (gzip ISIZE) of docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "archives",
+        "exit": 1,
+        "seconds": 3.22,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "archive-gzip-invalid",
+          "archive-sha256-mismatch"
+        ],
+        "jsonCodes": [
+          "archive-gzip-invalid",
+          "archive-sha256-mismatch"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "archive-gzip-invalid",
+          "archive-sha256-mismatch"
+        ],
+        "stdout": [
+          "RECEIPT-ARCHIVES: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\archives-changed-archive-trailer-byte\\copy",
+          "RECEIPT-ARCHIVES: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 55 blobs under docs/internal/extensions/pre1/; 1 contain claim-scanner result lines; 1 named; 2 mention scanner text without a result line; 3 zip containers hold result lines inside members",
+          "RECEIPT-ARCHIVES: FAIL [archive-sha256-mismatch] docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz: manifest E8F77103CE5AB4E15734AF6E09564D3FE8A6BDA8C2463C2776471E8A02D0FDBD != 996BF30DD4362B8BFBF97B85F00151223D5B62F5E8099CE71E2547A1CB9B51C3",
+          "RECEIPT-ARCHIVES: FAIL [archive-gzip-invalid] docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz: Error -3 while decompressing data: incorrect length check",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz -> docs/internal/extensions/pre1/evidence/author-final-checks-summary.json (result-line) blob f52767d9b690ecc444b9e181e56fb6a411f93dbd sha256 5590C0FB372BDDCE4B29BAB621E9F86B16C1F8E3F251BC5889BEF8181301B4BB bytes 4453 archive sha256 DB44F7AC0D2DBFE58CAB93CCF20B0BF1ABD14B71625C458AC72F66822FD45E39 bytes 1199 result-lines 1 summary-pattern-lines 1 referring-files 0",
+          "RECEIPT-ARCHIVES: RESULT: FAIL (2 failures; 1 of 2 required archives verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 10.675
+    },
+    {
+      "id": "archives-missing-archive",
+      "kind": "verify-copy",
+      "requirement": "missing archive",
+      "verdict": "PASS",
+      "detail": "archives exit 1 codes [archive-missing] expected exit 1 codes [archive-missing]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.171,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.831,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: deleted docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "archives",
+        "exit": 1,
+        "seconds": 3.308,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "archive-missing"
+        ],
+        "jsonCodes": [
+          "archive-missing"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "archive-missing"
+        ],
+        "stdout": [
+          "RECEIPT-ARCHIVES: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\archives-missing-archive\\copy",
+          "RECEIPT-ARCHIVES: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 55 blobs under docs/internal/extensions/pre1/; 1 contain claim-scanner result lines; 1 named; 2 mention scanner text without a result line; 3 zip containers hold result lines inside members",
+          "RECEIPT-ARCHIVES: FAIL [archive-missing] docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz -> docs/internal/extensions/pre1/evidence/author-final-checks-summary.json (result-line) blob f52767d9b690ecc444b9e181e56fb6a411f93dbd sha256 5590C0FB372BDDCE4B29BAB621E9F86B16C1F8E3F251BC5889BEF8181301B4BB bytes 4453 archive sha256 DB44F7AC0D2DBFE58CAB93CCF20B0BF1ABD14B71625C458AC72F66822FD45E39 bytes 1199 result-lines 1 summary-pattern-lines 1 referring-files 0",
+          "RECEIPT-ARCHIVES: RESULT: FAIL (1 failures; 1 of 2 required archives verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 10.509
+    },
+    {
+      "id": "archives-extra-archive",
+      "kind": "verify-copy",
+      "requirement": "extra archive not in the manifest",
+      "verdict": "PASS",
+      "detail": "archives exit 1 codes [archive-extra] expected exit 1 codes [archive-extra]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.265,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.868,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: added valid gzip docs/internal/extensions/pre1/evidence/unlisted-control-extra.json.gz, absent from the manifest and the base tree"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "archives",
+        "exit": 1,
+        "seconds": 3.297,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "archive-extra"
+        ],
+        "jsonCodes": [
+          "archive-extra"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "archive-extra"
+        ],
+        "stdout": [
+          "RECEIPT-ARCHIVES: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\archives-extra-archive\\copy",
+          "RECEIPT-ARCHIVES: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 55 blobs under docs/internal/extensions/pre1/; 1 contain claim-scanner result lines; 1 named; 2 mention scanner text without a result line; 3 zip containers hold result lines inside members",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz -> docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md (named) blob b8a7abc83d9347f00198836ac2c011805b0ec6e3 sha256 2B35DD0386D202EA7D73D28C4754791B43232D4E6CE591E6DAB7C543393EEA52 bytes 88646 archive sha256 E8F77103CE5AB4E15734AF6E09564D3FE8A6BDA8C2463C2776471E8A02D0FDBD bytes 33919 result-lines 0 summary-pattern-lines 2 referring-files 6",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz -> docs/internal/extensions/pre1/evidence/author-final-checks-summary.json (result-line) blob f52767d9b690ecc444b9e181e56fb6a411f93dbd sha256 5590C0FB372BDDCE4B29BAB621E9F86B16C1F8E3F251BC5889BEF8181301B4BB bytes 4453 archive sha256 DB44F7AC0D2DBFE58CAB93CCF20B0BF1ABD14B71625C458AC72F66822FD45E39 bytes 1199 result-lines 1 summary-pattern-lines 1 referring-files 0",
+          "RECEIPT-ARCHIVES: FAIL [archive-extra] docs/internal/extensions/pre1/evidence/unlisted-control-extra.json.gz is under docs/internal/extensions/pre1/ but in neither the manifest nor the base tree",
+          "RECEIPT-ARCHIVES: RESULT: FAIL (1 failures; 2 of 2 required archives verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 10.66
+    },
+    {
+      "id": "archives-duplicate-manifest-entry",
+      "kind": "verify-copy",
+      "requirement": "duplicated manifest entry",
+      "verdict": "PASS",
+      "detail": "archives exit 1 codes [manifest-duplicate-entry] expected exit 1 codes [manifest-duplicate-entry]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.159,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.815,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: inserted a second copy of the docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md entry next to the first"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "archives",
+        "exit": 1,
+        "seconds": 3.224,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "manifest-duplicate-entry"
+        ],
+        "jsonCodes": [
+          "manifest-duplicate-entry"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "manifest-duplicate-entry"
+        ],
+        "stdout": [
+          "RECEIPT-ARCHIVES: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\archives-duplicate-manifest-entry\\copy",
+          "RECEIPT-ARCHIVES: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 55 blobs under docs/internal/extensions/pre1/; 1 contain claim-scanner result lines; 1 named; 2 mention scanner text without a result line; 3 zip containers hold result lines inside members",
+          "RECEIPT-ARCHIVES: FAIL [manifest-duplicate-entry] originalPath docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md appears 2 times",
+          "RECEIPT-ARCHIVES: FAIL [manifest-duplicate-entry] archivePath docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz appears 2 times",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz -> docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md (named) blob b8a7abc83d9347f00198836ac2c011805b0ec6e3 sha256 2B35DD0386D202EA7D73D28C4754791B43232D4E6CE591E6DAB7C543393EEA52 bytes 88646 archive sha256 E8F77103CE5AB4E15734AF6E09564D3FE8A6BDA8C2463C2776471E8A02D0FDBD bytes 33919 result-lines 0 summary-pattern-lines 2 referring-files 6",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz -> docs/internal/extensions/pre1/evidence/author-final-checks-summary.json (result-line) blob f52767d9b690ecc444b9e181e56fb6a411f93dbd sha256 5590C0FB372BDDCE4B29BAB621E9F86B16C1F8E3F251BC5889BEF8181301B4BB bytes 4453 archive sha256 DB44F7AC0D2DBFE58CAB93CCF20B0BF1ABD14B71625C458AC72F66822FD45E39 bytes 1199 result-lines 1 summary-pattern-lines 1 referring-files 0",
+          "RECEIPT-ARCHIVES: RESULT: FAIL (2 failures; 2 of 2 required archives verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 10.236
+    },
+    {
+      "id": "archives-wrong-base-blob-id",
+      "kind": "verify-copy",
+      "requirement": "wrong base blob id",
+      "verdict": "PASS",
+      "detail": "archives exit 1 codes [base-blob-id-mismatch] expected exit 1 codes [base-blob-id-mismatch]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.198,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.882,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: set the docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md baseBlobId to the other entry's blob id"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "archives",
+        "exit": 1,
+        "seconds": 3.315,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "base-blob-id-mismatch"
+        ],
+        "jsonCodes": [
+          "base-blob-id-mismatch"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "base-blob-id-mismatch"
+        ],
+        "stdout": [
+          "RECEIPT-ARCHIVES: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\archives-wrong-base-blob-id\\copy",
+          "RECEIPT-ARCHIVES: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 55 blobs under docs/internal/extensions/pre1/; 1 contain claim-scanner result lines; 1 named; 2 mention scanner text without a result line; 3 zip containers hold result lines inside members",
+          "RECEIPT-ARCHIVES: FAIL [base-blob-id-mismatch] docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md: manifest f52767d9b690ecc444b9e181e56fb6a411f93dbd != base b8a7abc83d9347f00198836ac2c011805b0ec6e3",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz -> docs/internal/extensions/pre1/evidence/author-final-checks-summary.json (result-line) blob f52767d9b690ecc444b9e181e56fb6a411f93dbd sha256 5590C0FB372BDDCE4B29BAB621E9F86B16C1F8E3F251BC5889BEF8181301B4BB bytes 4453 archive sha256 DB44F7AC0D2DBFE58CAB93CCF20B0BF1ABD14B71625C458AC72F66822FD45E39 bytes 1199 result-lines 1 summary-pattern-lines 1 referring-files 0",
+          "RECEIPT-ARCHIVES: RESULT: FAIL (1 failures; 1 of 2 required archives verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 10.433
+    },
+    {
+      "id": "archives-decompressed-byte-mismatch",
+      "kind": "verify-copy",
+      "requirement": "decompressed-byte mismatch",
+      "verdict": "PASS",
+      "detail": "archives exit 1 codes [decompressed-bytes-mismatch] expected exit 1 codes [decompressed-bytes-mismatch]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.203,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.892,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: replaced docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz by a well-formed gzip of the base bytes with byte 44323 changed and updated archiveSha256 and archiveBytes, so only the decompressed content differs"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "archives",
+        "exit": 1,
+        "seconds": 3.293,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "decompressed-bytes-mismatch"
+        ],
+        "jsonCodes": [
+          "decompressed-bytes-mismatch"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "decompressed-bytes-mismatch"
+        ],
+        "stdout": [
+          "RECEIPT-ARCHIVES: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\archives-decompressed-byte-mismatch\\copy",
+          "RECEIPT-ARCHIVES: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 55 blobs under docs/internal/extensions/pre1/; 1 contain claim-scanner result lines; 1 named; 2 mention scanner text without a result line; 3 zip containers hold result lines inside members",
+          "RECEIPT-ARCHIVES: FAIL [decompressed-bytes-mismatch] docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz: recovered blob be7568f3730833c29a8b759bf8e92d26728e285c sha256 8F795BFAA590639D8BD9A43DFD88A2DC0DF205402C290F361D985F1DEABE8B8C != base blob b8a7abc83d9347f00198836ac2c011805b0ec6e3 sha256 2B35DD0386D202EA7D73D28C4754791B43232D4E6CE591E6DAB7C543393EEA52",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz -> docs/internal/extensions/pre1/evidence/author-final-checks-summary.json (result-line) blob f52767d9b690ecc444b9e181e56fb6a411f93dbd sha256 5590C0FB372BDDCE4B29BAB621E9F86B16C1F8E3F251BC5889BEF8181301B4BB bytes 4453 archive sha256 DB44F7AC0D2DBFE58CAB93CCF20B0BF1ABD14B71625C458AC72F66822FD45E39 bytes 1199 result-lines 1 summary-pattern-lines 1 referring-files 0",
+          "RECEIPT-ARCHIVES: RESULT: FAIL (1 failures; 1 of 2 required archives verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 10.497
+    },
+    {
+      "id": "archives-original-restored",
+      "kind": "verify-copy",
+      "requirement": "original file restored beside its archive",
+      "verdict": "PASS",
+      "detail": "archives exit 1 codes [original-present,result-line-file-present] expected exit 1 codes [original-present,result-line-file-present]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.182,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.915,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: wrote the exact base blob bytes of docs/internal/extensions/pre1/evidence/author-final-checks-summary.json beside its archive"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "archives",
+        "exit": 1,
+        "seconds": 3.543,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "original-present",
+          "result-line-file-present"
+        ],
+        "jsonCodes": [
+          "original-present",
+          "result-line-file-present"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "original-present",
+          "result-line-file-present"
+        ],
+        "stdout": [
+          "RECEIPT-ARCHIVES: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\archives-original-restored\\copy",
+          "RECEIPT-ARCHIVES: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 55 blobs under docs/internal/extensions/pre1/; 1 contain claim-scanner result lines; 1 named; 2 mention scanner text without a result line; 3 zip containers hold result lines inside members",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz -> docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md (named) blob b8a7abc83d9347f00198836ac2c011805b0ec6e3 sha256 2B35DD0386D202EA7D73D28C4754791B43232D4E6CE591E6DAB7C543393EEA52 bytes 88646 archive sha256 E8F77103CE5AB4E15734AF6E09564D3FE8A6BDA8C2463C2776471E8A02D0FDBD bytes 33919 result-lines 0 summary-pattern-lines 2 referring-files 6",
+          "RECEIPT-ARCHIVES: FAIL [original-present] docs/internal/extensions/pre1/evidence/author-final-checks-summary.json still exists in the tree",
+          "RECEIPT-ARCHIVES: FAIL [result-line-file-present] docs/internal/extensions/pre1/evidence/author-final-checks-summary.json holds a claim-scanner result line",
+          "RECEIPT-ARCHIVES: RESULT: FAIL (2 failures; 1 of 2 required archives verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 10.805
+    },
+    {
+      "id": "archives-audit-report-restored",
+      "kind": "verify-copy",
+      "requirement": "original file restored beside its archive (the named audit report, additional)",
+      "verdict": "PASS",
+      "detail": "archives exit 1 codes [original-present] expected exit 1 codes [original-present]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.157,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.862,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: wrote the exact base blob bytes of docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md back into audit_reports"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "archives",
+        "exit": 1,
+        "seconds": 3.417,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "original-present"
+        ],
+        "jsonCodes": [
+          "original-present"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "original-present"
+        ],
+        "stdout": [
+          "RECEIPT-ARCHIVES: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\archives-audit-report-restored\\copy",
+          "RECEIPT-ARCHIVES: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 55 blobs under docs/internal/extensions/pre1/; 1 contain claim-scanner result lines; 1 named; 2 mention scanner text without a result line; 3 zip containers hold result lines inside members",
+          "RECEIPT-ARCHIVES: FAIL [original-present] docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md still exists in the tree",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz -> docs/internal/extensions/pre1/evidence/author-final-checks-summary.json (result-line) blob f52767d9b690ecc444b9e181e56fb6a411f93dbd sha256 5590C0FB372BDDCE4B29BAB621E9F86B16C1F8E3F251BC5889BEF8181301B4BB bytes 4453 archive sha256 DB44F7AC0D2DBFE58CAB93CCF20B0BF1ABD14B71625C458AC72F66822FD45E39 bytes 1199 result-lines 1 summary-pattern-lines 1 referring-files 0",
+          "RECEIPT-ARCHIVES: RESULT: FAIL (1 failures; 1 of 2 required archives verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 10.423
+    },
+    {
+      "id": "archives-manifest-entry-removed",
+      "kind": "verify-copy",
+      "requirement": "missing manifest entry (additional)",
+      "verdict": "PASS",
+      "detail": "archives exit 1 codes [archive-extra,attributes-manifest-mismatch,manifest-missing-entry] expected exit 1 codes [archive-extra,attributes-manifest-mismatch,manifest-missing-entry]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.201,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.839,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: removed the docs/internal/extensions/pre1/evidence/author-final-checks-summary.json entry; its archive stays"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "archives",
+        "exit": 1,
+        "seconds": 3.12,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "archive-extra",
+          "attributes-manifest-mismatch",
+          "manifest-missing-entry"
+        ],
+        "jsonCodes": [
+          "archive-extra",
+          "attributes-manifest-mismatch",
+          "manifest-missing-entry"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "archive-extra",
+          "attributes-manifest-mismatch",
+          "manifest-missing-entry"
+        ],
+        "stdout": [
+          "RECEIPT-ARCHIVES: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\archives-manifest-entry-removed\\copy",
+          "RECEIPT-ARCHIVES: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 55 blobs under docs/internal/extensions/pre1/; 1 contain claim-scanner result lines; 1 named; 2 mention scanner text without a result line; 3 zip containers hold result lines inside members",
+          "RECEIPT-ARCHIVES: FAIL [manifest-missing-entry] docs/internal/extensions/pre1/evidence/author-final-checks-summary.json is a required result-line archive at base but has no manifest entry",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz -> docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md (named) blob b8a7abc83d9347f00198836ac2c011805b0ec6e3 sha256 2B35DD0386D202EA7D73D28C4754791B43232D4E6CE591E6DAB7C543393EEA52 bytes 88646 archive sha256 E8F77103CE5AB4E15734AF6E09564D3FE8A6BDA8C2463C2776471E8A02D0FDBD bytes 33919 result-lines 0 summary-pattern-lines 2 referring-files 6",
+          "RECEIPT-ARCHIVES: FAIL [archive-extra] docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz is under docs/internal/extensions/pre1/ but in neither the manifest nor the base tree",
+          "RECEIPT-ARCHIVES: FAIL [attributes-manifest-mismatch] attributes.lines differs from the lines implied by the archives",
+          "RECEIPT-ARCHIVES: RESULT: FAIL (3 failures; 1 of 2 required archives verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 10.33
+    },
+    {
+      "id": "archives-result-line-file",
+      "kind": "verify-copy",
+      "requirement": "reintroduced result-line file (additional)",
+      "verdict": "PASS",
+      "detail": "archives exit 1 codes [result-line-file-present] expected exit 1 codes [result-line-file-present]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.153,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.794,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: added docs/internal/extensions/pre1/repair-r1/control-result-line.txt holding one synthesized scanner result line"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "archives",
+        "exit": 1,
+        "seconds": 3.206,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "result-line-file-present"
+        ],
+        "jsonCodes": [
+          "result-line-file-present"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "result-line-file-present"
+        ],
+        "stdout": [
+          "RECEIPT-ARCHIVES: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\archives-result-line-file\\copy",
+          "RECEIPT-ARCHIVES: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 55 blobs under docs/internal/extensions/pre1/; 1 contain claim-scanner result lines; 1 named; 2 mention scanner text without a result line; 3 zip containers hold result lines inside members",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz -> docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md (named) blob b8a7abc83d9347f00198836ac2c011805b0ec6e3 sha256 2B35DD0386D202EA7D73D28C4754791B43232D4E6CE591E6DAB7C543393EEA52 bytes 88646 archive sha256 E8F77103CE5AB4E15734AF6E09564D3FE8A6BDA8C2463C2776471E8A02D0FDBD bytes 33919 result-lines 0 summary-pattern-lines 2 referring-files 6",
+          "RECEIPT-ARCHIVES: ok docs/internal/extensions/pre1/evidence/author-final-checks-summary.json.gz -> docs/internal/extensions/pre1/evidence/author-final-checks-summary.json (result-line) blob f52767d9b690ecc444b9e181e56fb6a411f93dbd sha256 5590C0FB372BDDCE4B29BAB621E9F86B16C1F8E3F251BC5889BEF8181301B4BB bytes 4453 archive sha256 DB44F7AC0D2DBFE58CAB93CCF20B0BF1ABD14B71625C458AC72F66822FD45E39 bytes 1199 result-lines 1 summary-pattern-lines 1 referring-files 0",
+          "RECEIPT-ARCHIVES: FAIL [result-line-file-present] docs/internal/extensions/pre1/repair-r1/control-result-line.txt holds a claim-scanner result line",
+          "RECEIPT-ARCHIVES: RESULT: FAIL (1 failures; 2 of 2 required archives verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 10.197
+    },
+    {
+      "id": "rewords-positive-committed",
+      "kind": "verify-committed",
+      "requirement": "reword verifier positive on committed blobs",
+      "verdict": "PASS",
+      "detail": "rewords exit 0 codes [] expected exit 0 codes []",
+      "verifier": {
+        "name": "rewords",
+        "exit": 0,
+        "seconds": 6.745,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [],
+        "jsonCodes": [],
+        "expectedExit": 0,
+        "expectedCodes": [],
+        "stdout": [
+          "REWORDS: source commit ece8ae5606f48befdd03b2c6a33af1e7371733c3",
+          "REWORDS: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 10 Markdown blobs under docs/internal/extensions/pre1/; 5 pattern lines in 2 files",
+          "REWORDS: ok docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md: 3 recorded lines replaced; other 492 base lines identical; appended tail 0 bytes",
+          "REWORDS: ok docs/internal/extensions/pre1/REPORT.md: 2 recorded lines replaced; other 1659 base lines identical; appended tail 0 bytes",
+          "REWORDS: RESULT: PASS (2 of 2 files verified; 5 recorded lines; 0 pattern lines under the root; 18 changed text paths in the range checked; base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 11.981
+    },
+    {
+      "id": "rewords-positive-copy",
+      "kind": "verify-copy",
+      "requirement": "reword verifier positive on an unmutated exact export",
+      "verdict": "PASS",
+      "detail": "rewords exit 0 codes [] expected exit 0 codes []",
+      "export": {
+        "exit": 0,
+        "seconds": 1.233,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 0.835,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: no mutation"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "rewords",
+        "exit": 0,
+        "seconds": 2.498,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [],
+        "jsonCodes": [],
+        "expectedExit": 0,
+        "expectedCodes": [],
+        "stdout": [
+          "REWORDS: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\rewords-positive-copy\\copy",
+          "REWORDS: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 10 Markdown blobs under docs/internal/extensions/pre1/; 5 pattern lines in 2 files",
+          "REWORDS: ok docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md: 3 recorded lines replaced; other 492 base lines identical; appended tail 0 bytes",
+          "REWORDS: ok docs/internal/extensions/pre1/REPORT.md: 2 recorded lines replaced; other 1659 base lines identical; appended tail 0 bytes",
+          "REWORDS: RESULT: PASS (2 of 2 files verified; 5 recorded lines; 0 pattern lines under the root; base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 9.797
+    },
+    {
+      "id": "rewords-changed-integer",
+      "kind": "verify-copy",
+      "requirement": "changed integer",
+      "verdict": "PASS",
+      "detail": "rewords exit 1 codes [digit-runs-mismatch,integers-mismatch] expected exit 1 codes [digit-runs-mismatch,integers-mismatch]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.19,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 1.061,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: changed the reworded count 1609 to 1610 in docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md:488 and recorded the mutated line's hash and integers, so only the integer and digit-run equality with the base line differs"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "rewords",
+        "exit": 1,
+        "seconds": 2.534,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "digit-runs-mismatch",
+          "integers-mismatch"
+        ],
+        "jsonCodes": [
+          "digit-runs-mismatch",
+          "integers-mismatch"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "digit-runs-mismatch",
+          "integers-mismatch"
+        ],
+        "stdout": [
+          "REWORDS: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\rewords-changed-integer\\copy",
+          "REWORDS: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 10 Markdown blobs under docs/internal/extensions/pre1/; 5 pattern lines in 2 files",
+          "REWORDS: FAIL [integers-mismatch] docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md:488: manifest new integers differ from base integers",
+          "REWORDS: FAIL [digit-runs-mismatch] docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md:488: tip line digit runs differ from the base line",
+          "REWORDS: ok docs/internal/extensions/pre1/REPORT.md: 2 recorded lines replaced; other 1659 base lines identical; appended tail 0 bytes",
+          "REWORDS: RESULT: FAIL (2 failures; 1 of 2 files verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 9.846
+    },
+    {
+      "id": "rewords-unrecorded-line-changed",
+      "kind": "verify-copy",
+      "requirement": "line changed outside the recorded set",
+      "verdict": "PASS",
+      "detail": "rewords exit 1 codes [unrecorded-line-changed] expected exit 1 codes [unrecorded-line-changed]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.175,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 1.041,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: appended a word to docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md:426, which is not a recorded line"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "rewords",
+        "exit": 1,
+        "seconds": 2.498,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "unrecorded-line-changed"
+        ],
+        "jsonCodes": [
+          "unrecorded-line-changed"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "unrecorded-line-changed"
+        ],
+        "stdout": [
+          "REWORDS: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\rewords-unrecorded-line-changed\\copy",
+          "REWORDS: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 10 Markdown blobs under docs/internal/extensions/pre1/; 5 pattern lines in 2 files",
+          "REWORDS: FAIL [unrecorded-line-changed] docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md: 1 base line(s) outside the recorded set differ or are missing at the tip (first: 426)",
+          "REWORDS: ok docs/internal/extensions/pre1/REPORT.md: 2 recorded lines replaced; other 1659 base lines identical; appended tail 0 bytes",
+          "REWORDS: RESULT: FAIL (1 failures; 1 of 2 files verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 9.74
+    },
+    {
+      "id": "rewords-missing-recorded-line",
+      "kind": "verify-copy",
+      "requirement": "missing recorded line",
+      "verdict": "PASS",
+      "detail": "rewords exit 1 codes [digit-runs-mismatch,new-integers-mismatch,new-line-hash-mismatch,unrecorded-line-changed] expected exit 1 codes [digit-runs-mismatch,new-integers-mismatch,new-line-hash-mismatch,unrecorded-line-changed]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.187,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 1.017,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: deleted the reworded line docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md:488 from the tip copy"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "rewords",
+        "exit": 1,
+        "seconds": 2.509,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "digit-runs-mismatch",
+          "new-integers-mismatch",
+          "new-line-hash-mismatch",
+          "unrecorded-line-changed"
+        ],
+        "jsonCodes": [
+          "digit-runs-mismatch",
+          "new-integers-mismatch",
+          "new-line-hash-mismatch",
+          "unrecorded-line-changed"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "digit-runs-mismatch",
+          "new-integers-mismatch",
+          "new-line-hash-mismatch",
+          "unrecorded-line-changed"
+        ],
+        "stdout": [
+          "REWORDS: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\rewords-missing-recorded-line\\copy",
+          "REWORDS: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 10 Markdown blobs under docs/internal/extensions/pre1/; 5 pattern lines in 2 files",
+          "REWORDS: FAIL [new-line-hash-mismatch] docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md:488: tip line hash differs from the recorded new line",
+          "REWORDS: FAIL [new-integers-mismatch] docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md:488: tip line integers differ from the recorded new integers",
+          "REWORDS: FAIL [digit-runs-mismatch] docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md:488: tip line digit runs differ from the base line",
+          "REWORDS: FAIL [unrecorded-line-changed] docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md: 7 base line(s) outside the recorded set differ or are missing at the tip (first: 489, 490, 491, 492, 493)",
+          "REWORDS: ok docs/internal/extensions/pre1/REPORT.md: 2 recorded lines replaced; other 1659 base lines identical; appended tail 0 bytes",
+          "REWORDS: RESULT: FAIL (4 failures; 1 of 2 files verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 10.07
+    },
+    {
+      "id": "rewords-reintroduced-pattern",
+      "kind": "verify-copy",
+      "requirement": "reintroduced pattern",
+      "verdict": "PASS",
+      "detail": "rewords exit 1 codes [new-line-hash-mismatch,pattern-present] expected exit 1 codes [new-line-hash-mismatch,pattern-present]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.219,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 1.07,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: restored the exact base bytes of docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md:488, which match the summary pattern"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "rewords",
+        "exit": 1,
+        "seconds": 2.512,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "new-line-hash-mismatch",
+          "pattern-present"
+        ],
+        "jsonCodes": [
+          "new-line-hash-mismatch",
+          "pattern-present"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "new-line-hash-mismatch",
+          "pattern-present"
+        ],
+        "stdout": [
+          "REWORDS: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\rewords-reintroduced-pattern\\copy",
+          "REWORDS: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 10 Markdown blobs under docs/internal/extensions/pre1/; 5 pattern lines in 2 files",
+          "REWORDS: FAIL [new-line-hash-mismatch] docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md:488: tip line hash differs from the recorded new line",
+          "REWORDS: ok docs/internal/extensions/pre1/REPORT.md: 2 recorded lines replaced; other 1659 base lines identical; appended tail 0 bytes",
+          "REWORDS: FAIL [pattern-present] docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md:488 matches the summary pattern",
+          "REWORDS: RESULT: FAIL (2 failures; 1 of 2 files verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 10.087
+    },
+    {
+      "id": "rewords-wrong-base-line-hash",
+      "kind": "verify-copy",
+      "requirement": "wrong base line hash",
+      "verdict": "PASS",
+      "detail": "rewords exit 1 codes [base-line-hash-mismatch] expected exit 1 codes [base-line-hash-mismatch]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.161,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 1.018,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: set the docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md:488 baseLineSha256 to the hash recorded for line 427"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "rewords",
+        "exit": 1,
+        "seconds": 2.268,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "base-line-hash-mismatch"
+        ],
+        "jsonCodes": [
+          "base-line-hash-mismatch"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "base-line-hash-mismatch"
+        ],
+        "stdout": [
+          "REWORDS: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\rewords-wrong-base-line-hash\\copy",
+          "REWORDS: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 10 Markdown blobs under docs/internal/extensions/pre1/; 5 pattern lines in 2 files",
+          "REWORDS: FAIL [base-line-hash-mismatch] docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md:488: manifest base line hash differs from the base blob",
+          "REWORDS: ok docs/internal/extensions/pre1/REPORT.md: 2 recorded lines replaced; other 1659 base lines identical; appended tail 0 bytes",
+          "REWORDS: RESULT: FAIL (1 failures; 1 of 2 files verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 9.47
+    },
+    {
+      "id": "rewords-manifest-entry-removed",
+      "kind": "verify-copy",
+      "requirement": "missing recorded line in the manifest (additional)",
+      "verdict": "PASS",
+      "detail": "rewords exit 1 codes [reword-missing-entry,unrecorded-line-changed] expected exit 1 codes [reword-missing-entry,unrecorded-line-changed]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.245,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 1.1,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: removed the docs/internal/extensions/pre1/REPORT.md:246 entry; the tip line stays reworded"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "rewords",
+        "exit": 1,
+        "seconds": 2.306,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "reword-missing-entry",
+          "unrecorded-line-changed"
+        ],
+        "jsonCodes": [
+          "reword-missing-entry",
+          "unrecorded-line-changed"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "reword-missing-entry",
+          "unrecorded-line-changed"
+        ],
+        "stdout": [
+          "REWORDS: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\rewords-manifest-entry-removed\\copy",
+          "REWORDS: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 10 Markdown blobs under docs/internal/extensions/pre1/; 5 pattern lines in 2 files",
+          "REWORDS: FAIL [reword-missing-entry] docs/internal/extensions/pre1/REPORT.md:246 matches the pattern at base but has no manifest entry",
+          "REWORDS: ok docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md: 3 recorded lines replaced; other 492 base lines identical; appended tail 0 bytes",
+          "REWORDS: FAIL [unrecorded-line-changed] docs/internal/extensions/pre1/REPORT.md: 1 base line(s) outside the recorded set differ or are missing at the tip (first: 246)",
+          "REWORDS: RESULT: FAIL (2 failures; 1 of 2 files verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 9.679
+    },
+    {
+      "id": "rewords-pattern-in-new-file",
+      "kind": "verify-copy",
+      "requirement": "reintroduced pattern in new committed text (additional)",
+      "verdict": "PASS",
+      "detail": "rewords exit 1 codes [pattern-present] expected exit 1 codes [pattern-present]",
+      "export": {
+        "exit": 0,
+        "seconds": 1.185,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-EXPORT: exported 89 blobs of ece8ae5606f48befdd03b2c6a33af1e7371733c3 under docs/internal/extensions/pre1/, docs/internal/audit_reports/"
+        ],
+        "stderr": []
+      },
+      "mutation": {
+        "exit": 0,
+        "seconds": 1.042,
+        "deadline": 300,
+        "timedOut": false,
+        "stdout": [
+          "REPAIR-CONTROL-MUTATION: added docs/internal/extensions/pre1/repair-r1/control-pattern.md holding one synthesized summary-pattern line"
+        ],
+        "stderr": []
+      },
+      "verifier": {
+        "name": "rewords",
+        "exit": 1,
+        "seconds": 2.273,
+        "deadline": 900,
+        "timedOut": false,
+        "overflow": false,
+        "ownership": "kill-on-close-job",
+        "codes": [
+          "pattern-present"
+        ],
+        "jsonCodes": [
+          "pattern-present"
+        ],
+        "expectedExit": 1,
+        "expectedCodes": [
+          "pattern-present"
+        ],
+        "stdout": [
+          "REWORDS: source tree <scratch>\\ctl-pwsh-ece8ae5-work\\rewords-pattern-in-new-file\\copy",
+          "REWORDS: base 84ae12f6f6bad99fd3215c5bdd5b2a93e3779897: 10 Markdown blobs under docs/internal/extensions/pre1/; 5 pattern lines in 2 files",
+          "REWORDS: ok docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md: 3 recorded lines replaced; other 492 base lines identical; appended tail 0 bytes",
+          "REWORDS: ok docs/internal/extensions/pre1/REPORT.md: 2 recorded lines replaced; other 1659 base lines identical; appended tail 0 bytes",
+          "REWORDS: FAIL [pattern-present] docs/internal/extensions/pre1/repair-r1/control-pattern.md:1 matches the summary pattern",
+          "REWORDS: RESULT: FAIL (1 failures; 2 of 2 files verified)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 9.634
+    },
+    {
+      "id": "deadline-descendant-cleanup",
+      "kind": "deadline",
+      "requirement": "REPLAY-SUBPROCESS-DEADLINE",
+      "verdict": "INCONCLUSIVE",
+      "detail": "packaged PowerShell host: descendant cleanup cannot be established here; sleeper not started",
+      "sleeper": {
+        "started": false,
+        "host": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+        "packagedHost": true
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 5.277
+    },
+    {
+      "id": "registry-missing-case",
+      "kind": "registry",
+      "requirement": "REPLAY-EXACT-REGISTRY",
+      "verdict": "PASS",
+      "detail": "exit 1 marker 1 probe 0",
+      "registry": {
+        "mutation": "remove-last",
+        "exit": 1,
+        "seconds": 1.359,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 1,
+        "stdout": [
+          "REPAIR-CONTROLS: FAIL registry version or ordered case ids differ from the pinned PRE1-R1-REPAIR-CONTROLS-V1 list (33 ids read, 34 pinned)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 6.811
+    },
+    {
+      "id": "registry-reordered-cases",
+      "kind": "registry",
+      "requirement": "REPLAY-EXACT-REGISTRY",
+      "verdict": "PASS",
+      "detail": "exit 1 marker 1 probe 0",
+      "registry": {
+        "mutation": "swap-first-two",
+        "exit": 1,
+        "seconds": 1.381,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 1,
+        "stdout": [
+          "REPAIR-CONTROLS: FAIL registry version or ordered case ids differ from the pinned PRE1-R1-REPAIR-CONTROLS-V1 list (34 ids read, 34 pinned)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 6.939
+    },
+    {
+      "id": "registry-version-changed",
+      "kind": "registry",
+      "requirement": "REPLAY-EXACT-REGISTRY",
+      "verdict": "PASS",
+      "detail": "exit 1 marker 1 probe 0",
+      "registry": {
+        "mutation": "version",
+        "exit": 1,
+        "seconds": 1.334,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 1,
+        "stdout": [
+          "REPAIR-CONTROLS: FAIL registry version or ordered case ids differ from the pinned PRE1-R1-REPAIR-CONTROLS-V1 list (34 ids read, 34 pinned)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 6.739
+    },
+    {
+      "id": "selector-omitted",
+      "kind": "selector",
+      "requirement": "REPLAY-SELECTOR-NONVACUITY",
+      "verdict": "PASS",
+      "detail": "exit 0 marker 1 executed []",
+      "selector": {
+        "argument": "(omitted)",
+        "probe": true,
+        "exit": 0,
+        "seconds": 1.291,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 0,
+        "expectedMarker": "REPAIR-CONTROLS: SELECTOR-PROBE selected=34 ids=archives-positive-tree,",
+        "childExecuted": [],
+        "stdout": [
+          "REPAIR-CONTROLS: SELECTOR-PROBE selected=34 ids=archives-positive-tree,archives-positive-committed,archives-positive-copy,archives-changed-archive-header-byte,archives-changed-archive-trailer-byte,archives-missing-archive,archives-extra-archive,archives-duplicate-manifest-entry,archives-wrong-base-blob-id,archives-decompressed-byte-mismatch,archives-original-restored,archives-audit-report-restored,archives-manifest-entry-removed,archives-result-line-file,rewords-positive-committed,rewords-positive-copy,rewords-changed-integer,rewords-unrecorded-line-changed,rewords-missing-recorded-line,rewords-reintroduced-pattern,rewords-wrong-base-line-hash,rewords-manifest-entry-removed,rewords-pattern-in-new-file,deadline-descendant-cleanup,registry-missing-case,registry-reordered-cases,registry-version-changed,selector-omitted,selector-valid,selector-empty,selector-whitespace,selector-malformed,selector-unknown,selector-duplicate"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 6.755
+    },
+    {
+      "id": "selector-valid",
+      "kind": "selector",
+      "requirement": "REPLAY-SELECTOR-NONVACUITY",
+      "verdict": "PASS",
+      "detail": "exit 0 marker 1 executed [archives-positive-committed]",
+      "selector": {
+        "argument": "archives-positive-committed",
+        "probe": false,
+        "exit": 0,
+        "seconds": 15.075,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 0,
+        "expectedMarker": "REPAIR-CONTROLS: RESULT: PASS executed 1 of 1 selected cases",
+        "childExecuted": [
+          "archives-positive-committed"
+        ],
+        "stdout": [
+          "REPAIR-CONTROLS: PASS [archives-positive-committed] archives exit 0 codes [] expected exit 0 codes [] (12.087 s)",
+          "REPAIR-CONTROLS: RESULT: PASS executed 1 of 1 selected cases (registry PRE1-R1-REPAIR-CONTROLS-V1, 34 cases)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 20.588
+    },
+    {
+      "id": "selector-empty",
+      "kind": "selector",
+      "requirement": "REPLAY-SELECTOR-NONVACUITY",
+      "verdict": "PASS",
+      "detail": "exit 2 marker 1 executed []",
+      "selector": {
+        "argument": "''",
+        "probe": false,
+        "exit": 2,
+        "seconds": 1.292,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 2,
+        "expectedMarker": "REPAIR-CONTROLS: SELECTOR-ERROR [empty]",
+        "childExecuted": [],
+        "stdout": [
+          "REPAIR-CONTROLS: SELECTOR-ERROR [empty] bound -Case holds an empty string"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 6.638
+    },
+    {
+      "id": "selector-whitespace",
+      "kind": "selector",
+      "requirement": "REPLAY-SELECTOR-NONVACUITY",
+      "verdict": "PASS",
+      "detail": "exit 2 marker 1 executed []",
+      "selector": {
+        "argument": "' '",
+        "probe": false,
+        "exit": 2,
+        "seconds": 1.247,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 2,
+        "expectedMarker": "REPAIR-CONTROLS: SELECTOR-ERROR [whitespace]",
+        "childExecuted": [],
+        "stdout": [
+          "REPAIR-CONTROLS: SELECTOR-ERROR [whitespace] bound -Case holds only whitespace"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 6.611
+    },
+    {
+      "id": "selector-malformed",
+      "kind": "selector",
+      "requirement": "REPLAY-SELECTOR-NONVACUITY",
+      "verdict": "PASS",
+      "detail": "exit 2 marker 1 executed []",
+      "selector": {
+        "argument": "'Archives Positive!'",
+        "probe": false,
+        "exit": 2,
+        "seconds": 1.322,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 2,
+        "expectedMarker": "REPAIR-CONTROLS: SELECTOR-ERROR [malformed]",
+        "childExecuted": [],
+        "stdout": [
+          "REPAIR-CONTROLS: SELECTOR-ERROR [malformed] 'Archives Positive!' is not a lowercase hyphenated case id"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 6.696
+    },
+    {
+      "id": "selector-unknown",
+      "kind": "selector",
+      "requirement": "REPLAY-SELECTOR-NONVACUITY",
+      "verdict": "PASS",
+      "detail": "exit 2 marker 1 executed []",
+      "selector": {
+        "argument": "no-such-case",
+        "probe": false,
+        "exit": 2,
+        "seconds": 1.321,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 2,
+        "expectedMarker": "REPAIR-CONTROLS: SELECTOR-ERROR [unknown]",
+        "childExecuted": [],
+        "stdout": [
+          "REPAIR-CONTROLS: SELECTOR-ERROR [unknown] 'no-such-case' is not a registered case id"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 6.826
+    },
+    {
+      "id": "selector-duplicate",
+      "kind": "selector",
+      "requirement": "REPLAY-SELECTOR-NONVACUITY",
+      "verdict": "PASS",
+      "detail": "exit 2 marker 1 executed []",
+      "selector": {
+        "argument": "archives-positive-tree,archives-positive-tree",
+        "probe": false,
+        "exit": 2,
+        "seconds": 1.276,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 2,
+        "expectedMarker": "REPAIR-CONTROLS: SELECTOR-ERROR [duplicate]",
+        "childExecuted": [],
+        "stdout": [
+          "REPAIR-CONTROLS: SELECTOR-ERROR [duplicate] bound -Case repeats a case id"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "14A2218C2D5C762C4F983F9B7CBB9CFCD8EFD6FA72CEAF5D8F5EA23377FBA7FC",
+      "seconds": 6.646
+    }
+  ],
+  "wrapperRun": {
+    "name": "pwsh-ece8ae5",
+    "startedUtc": "2026-09-14T10:10:52.8275302Z",
+    "exit": 3,
+    "seconds": 324.705
+  }
+}

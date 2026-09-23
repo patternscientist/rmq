@@ -1,0 +1,35 @@
+{
+  "Stage": "M05-completeCapacity-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:107:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.completeCapacity",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int),",
+    "    (List.length (reconstructedMemory xs) + (List.map Instruction.encoding queryProgram).flatten.length +",
+    "          (queryRegisterCount + 3)) *",
+    "        wordWidth xs.length ≤",
+    "      2 * xs.length + queryCompleteRho xs.length : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:107:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.completeCapacity",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int),",
+    "    (List.length (reconstructedMemory xs) + (List.map Instruction.encoding queryProgram).flatten.length +",
+    "          (queryRegisterCount + 3)) *",
+    "        wordWidth xs.length ≤",
+    "      2 * xs.length + queryCompleteRho xs.length : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 36.174,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

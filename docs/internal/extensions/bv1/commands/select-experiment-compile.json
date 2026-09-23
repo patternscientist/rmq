@@ -1,0 +1,70 @@
+{
+  "stage": "select-experiment-compile",
+  "platform": "Windows",
+  "head": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "dirty": [
+    " M lakefile.toml",
+    "?? RMQ/Core/WordRAM/Bitvector/",
+    "?? RMQ/Validation/PackedBitvector.lean",
+    "?? docs/internal/extensions/"
+  ],
+  "executable": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+  "arguments": [
+    "build",
+    "RMQ.Validation.PackedBitvector"
+  ],
+  "deadlineSeconds": 300,
+  "leanNumThreads": 1,
+  "result": {
+    "Stage": "select-experiment-compile",
+    "ExitCode": 1,
+    "Output": [
+      "✔ [5/11] Built RMQ.Core.WordRAM.Packed.Scalar",
+      "✔ [69/126] Built RMQ.Core.WordRAM.Packed.Frame",
+      "✔ [72/126] Built RMQ.Core.WordRAM.Packed.RegularLocate",
+      "✔ [105/126] Built RMQ.Core.WordRAM.Packed.ArrayRun",
+      "✔ [120/126] Built RMQ.Core.WordRAM.Packed.ChunkArithmetic",
+      "✔ [122/126] Built RMQ.Core.WordRAM.Packed.RankSource",
+      "✔ [124/126] Built RMQ.Core.WordRAM.Packed.SelectSource",
+      "✔ [125/126] Built RMQ.Core.WordRAM.Bitvector.SelectExperiment",
+      "✖ [126/126] Building RMQ.Validation.PackedBitvector",
+      "trace: .> LEAN_PATH=C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\.lake\\build\\lib\\lean c:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Validation\\PackedBitvector.lean -o C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Validation\\PackedBitvector.olean -i C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Validation\\PackedBitvector.ilean -c C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\.lake\\build\\ir\\RMQ\\Validation\\PackedBitvector.c --setup C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\.lake\\build\\ir\\RMQ\\Validation\\PackedBitvector.setup.json --json",
+      "error: RMQ/Validation/PackedBitvector.lean:74:27: Invalid field `trimAscii`: The environment does not contain `String.trimAscii`",
+      "  name",
+      "has type",
+      "  String",
+      "error: Lean exited with code 1",
+      "Some required builds logged failures:",
+      "- RMQ.Validation.PackedBitvector",
+      "error: build failed"
+    ],
+    "StandardOutput": [
+      "✔ [5/11] Built RMQ.Core.WordRAM.Packed.Scalar",
+      "✔ [69/126] Built RMQ.Core.WordRAM.Packed.Frame",
+      "✔ [72/126] Built RMQ.Core.WordRAM.Packed.RegularLocate",
+      "✔ [105/126] Built RMQ.Core.WordRAM.Packed.ArrayRun",
+      "✔ [120/126] Built RMQ.Core.WordRAM.Packed.ChunkArithmetic",
+      "✔ [122/126] Built RMQ.Core.WordRAM.Packed.RankSource",
+      "✔ [124/126] Built RMQ.Core.WordRAM.Packed.SelectSource",
+      "✔ [125/126] Built RMQ.Core.WordRAM.Bitvector.SelectExperiment",
+      "✖ [126/126] Building RMQ.Validation.PackedBitvector",
+      "trace: .> LEAN_PATH=C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\.lake\\build\\lib\\lean c:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\RMQ\\Validation\\PackedBitvector.lean -o C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Validation\\PackedBitvector.olean -i C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Validation\\PackedBitvector.ilean -c C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\.lake\\build\\ir\\RMQ\\Validation\\PackedBitvector.c --setup C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\.lake\\build\\ir\\RMQ\\Validation\\PackedBitvector.setup.json --json",
+      "error: RMQ/Validation/PackedBitvector.lean:74:27: Invalid field `trimAscii`: The environment does not contain `String.trimAscii`",
+      "  name",
+      "has type",
+      "  String",
+      "error: Lean exited with code 1",
+      "Some required builds logged failures:",
+      "- RMQ.Validation.PackedBitvector"
+    ],
+    "StandardError": [
+      "error: build failed"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 74.494,
+    "DeadlineSeconds": 300,
+    "Ownership": "kill-on-close-job"
+  }
+}

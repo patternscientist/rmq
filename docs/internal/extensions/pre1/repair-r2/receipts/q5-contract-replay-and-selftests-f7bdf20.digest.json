@@ -1,0 +1,3396 @@
+{
+  "version": "PRE1-R2-REPLAY-DIGEST-V1",
+  "reports": [
+    {
+      "evidenceDirectory": "20260917-155014-f799411b193448339c4931db99321aae",
+      "reportSha256": "420f4cd47e9853189e820bf76c6849b0e90ae3f8fe4a6da5e47d3e6607a5146e",
+      "reportBytes": 456996,
+      "phase": "CONTRACT",
+      "mode": "full",
+      "verdict": "PASS",
+      "error": "",
+      "platform": "Microsoft Windows NT 10.0.26200.0",
+      "powershell": "7.6.6",
+      "registrySha256": "85eaffcd86e95c0f8468a76596c1153bb0a6b986f5b3a977b40926e1776e6c97",
+      "registryContentSha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+      "runnerSha256": "12bb6e8a802f9a60151b75609e182002ea2d70582168980a7683eff64dfb6322",
+      "deadlineSeconds": 300,
+      "administrationDeadlineSeconds": 60,
+      "sleeperDeadlineSeconds": null,
+      "expectedCount": 18,
+      "registryExpectedCount": 18,
+      "executedCount": 18,
+      "executedEqualsExpected": true,
+      "executed": [
+        "C01_REFLECTION",
+        "C02_CAP",
+        "C03_CONSTANTS",
+        "C04_HEADER",
+        "C05_POINTWISE",
+        "C06_ORACLE",
+        "C07_UNIFORM",
+        "C08_STORE_VALUE",
+        "C09_FRESH_RESERVE",
+        "C10_CODE_ACCOUNTING",
+        "C11_FIELD_DELETE",
+        "C12_FIELD_WEAKEN",
+        "C13_SIBLING",
+        "C14_ACCEPT_COMMENT",
+        "C15_CODE_ALIAS",
+        "C16_CODE_COUNT",
+        "C17_FIREWALL_IMPORT",
+        "C18_PRIMITIVE_BYTES"
+      ],
+      "selfTestCount": 28,
+      "selfTestsAllPass": true,
+      "selfTestSample": {
+        "category": "registry",
+        "case": "empty",
+        "verdict": "PASS"
+      },
+      "baseline": [
+        [
+          {
+            "stage": null,
+            "exit": null,
+            "seconds": null,
+            "timedOut": null
+          }
+        ]
+      ],
+      "validator": null,
+      "topStages": [
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        }
+      ],
+      "restored": {
+        "head": "f7bdf20df8aa4949495ff892828bc8c8a2277ccc",
+        "status": "",
+        "worktree": "",
+        "index": ""
+      },
+      "sourceHashCount": 84,
+      "caseCount": 18,
+      "casesAllPass": true,
+      "sumStageSeconds": 297.011,
+      "cases": [
+        {
+          "id": "C01_REFLECTION",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_contract_check.lean:11:",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Contract.lean",
+          "beforeSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "mutationSha256": "8bdfe352c9ec2490c02c5f59f3cb9abd2a2dddabc100d5c4506a2c2da10fcd40",
+          "afterSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C01_REFLECTION-firewall",
+              "exit": 0,
+              "seconds": 1.361,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C01_REFLECTION-producer",
+              "exit": 0,
+              "seconds": 1.898,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C01_REFLECTION-consumer",
+              "exit": 1,
+              "seconds": 5.621,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 17,
+              "consumerErrorLines": [
+                11
+              ],
+              "anyErrorLines": 1,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C01_REFLECTION-restored-firewall",
+              "exit": 0,
+              "seconds": 1.278,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C01_REFLECTION-restored-producer",
+              "exit": 0,
+              "seconds": 1.721,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C01_REFLECTION-restored-consumer",
+              "exit": 0,
+              "seconds": 5.374,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C02_CAP",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_contract_check.lean:13:",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Contract.lean",
+          "beforeSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "mutationSha256": "f3f88d2b12726a070c7cc78ea79de75105c93f5b2d8f8b8175ad9c6de64e9526",
+          "afterSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C02_CAP-firewall",
+              "exit": 0,
+              "seconds": 1.459,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C02_CAP-producer",
+              "exit": 0,
+              "seconds": 1.718,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C02_CAP-consumer",
+              "exit": 1,
+              "seconds": 5.201,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 17,
+              "consumerErrorLines": [
+                13
+              ],
+              "anyErrorLines": 1,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C02_CAP-restored-firewall",
+              "exit": 0,
+              "seconds": 1.298,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C02_CAP-restored-producer",
+              "exit": 0,
+              "seconds": 1.699,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C02_CAP-restored-consumer",
+              "exit": 0,
+              "seconds": 5.286,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C03_CONSTANTS",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_contract_check.lean:15:",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Contract.lean",
+          "beforeSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "mutationSha256": "99de1360378ff096144921a806e0eb28ffca51272a3729b5b12fa13f2c3cdec1",
+          "afterSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C03_CONSTANTS-firewall",
+              "exit": 0,
+              "seconds": 1.337,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C03_CONSTANTS-producer",
+              "exit": 0,
+              "seconds": 1.703,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C03_CONSTANTS-consumer",
+              "exit": 1,
+              "seconds": 5.376,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 18,
+              "consumerErrorLines": [
+                15
+              ],
+              "anyErrorLines": 1,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C03_CONSTANTS-restored-firewall",
+              "exit": 0,
+              "seconds": 1.345,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C03_CONSTANTS-restored-producer",
+              "exit": 0,
+              "seconds": 1.768,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C03_CONSTANTS-restored-consumer",
+              "exit": 0,
+              "seconds": 5.436,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C04_HEADER",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_contract_check.lean:21:",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Contract.lean",
+          "beforeSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "mutationSha256": "6a2f5a6ae42ca4d7bfb360a5623a90314cb299f02aeb181df69f5d6d9c70eccb",
+          "afterSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C04_HEADER-firewall",
+              "exit": 0,
+              "seconds": 1.367,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C04_HEADER-producer",
+              "exit": 0,
+              "seconds": 1.741,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C04_HEADER-consumer",
+              "exit": 1,
+              "seconds": 5.411,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 24,
+              "consumerErrorLines": [
+                21
+              ],
+              "anyErrorLines": 1,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C04_HEADER-restored-firewall",
+              "exit": 0,
+              "seconds": 1.299,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C04_HEADER-restored-producer",
+              "exit": 0,
+              "seconds": 1.715,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C04_HEADER-restored-consumer",
+              "exit": 0,
+              "seconds": 5.395,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C05_POINTWISE",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_contract_check.lean:24:",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Contract.lean",
+          "beforeSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "mutationSha256": "6b6b072743683656f0c93168c0e6f42a8f215e3bfe415a6095bedb686f8dce91",
+          "afterSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C05_POINTWISE-firewall",
+              "exit": 0,
+              "seconds": 1.421,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C05_POINTWISE-producer",
+              "exit": 0,
+              "seconds": 1.844,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C05_POINTWISE-consumer",
+              "exit": 1,
+              "seconds": 5.528,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 15,
+              "consumerErrorLines": [
+                24
+              ],
+              "anyErrorLines": 1,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C05_POINTWISE-restored-firewall",
+              "exit": 0,
+              "seconds": 1.293,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C05_POINTWISE-restored-producer",
+              "exit": 0,
+              "seconds": 1.706,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C05_POINTWISE-restored-consumer",
+              "exit": 0,
+              "seconds": 5.443,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C06_ORACLE",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_contract_check.lean:27:",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Contract.lean",
+          "beforeSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "mutationSha256": "920f9793f42a6965dbc39a88ea5e8d0855802f334a14a0f556c93add2b624a4e",
+          "afterSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C06_ORACLE-firewall",
+              "exit": 0,
+              "seconds": 1.416,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C06_ORACLE-producer",
+              "exit": 0,
+              "seconds": 1.737,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C06_ORACLE-consumer",
+              "exit": 1,
+              "seconds": 5.466,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 17,
+              "consumerErrorLines": [
+                27
+              ],
+              "anyErrorLines": 1,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C06_ORACLE-restored-firewall",
+              "exit": 0,
+              "seconds": 1.295,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C06_ORACLE-restored-producer",
+              "exit": 0,
+              "seconds": 1.721,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C06_ORACLE-restored-consumer",
+              "exit": 0,
+              "seconds": 5.437,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C07_UNIFORM",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_contract_check.lean:29:",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Contract.lean",
+          "beforeSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "mutationSha256": "82f70da568ebd70d4e7bb8e7a2d45686a6085e384934924a7760b773cf5eddd9",
+          "afterSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C07_UNIFORM-firewall",
+              "exit": 0,
+              "seconds": 1.381,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C07_UNIFORM-producer",
+              "exit": 0,
+              "seconds": 1.774,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C07_UNIFORM-consumer",
+              "exit": 1,
+              "seconds": 5.373,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 17,
+              "consumerErrorLines": [
+                29
+              ],
+              "anyErrorLines": 1,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C07_UNIFORM-restored-firewall",
+              "exit": 0,
+              "seconds": 1.264,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C07_UNIFORM-restored-producer",
+              "exit": 0,
+              "seconds": 1.714,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C07_UNIFORM-restored-consumer",
+              "exit": 0,
+              "seconds": 5.436,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C08_STORE_VALUE",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_contract_check.lean:32:",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Contract.lean",
+          "beforeSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "mutationSha256": "daf23d90895b19b60e06546d2048d3e7673eea76799afe5c9ec17d504f946b0b",
+          "afterSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C08_STORE_VALUE-firewall",
+              "exit": 0,
+              "seconds": 1.399,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C08_STORE_VALUE-producer",
+              "exit": 0,
+              "seconds": 1.738,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C08_STORE_VALUE-consumer",
+              "exit": 1,
+              "seconds": 5.565,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 19,
+              "consumerErrorLines": [
+                32
+              ],
+              "anyErrorLines": 1,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C08_STORE_VALUE-restored-firewall",
+              "exit": 0,
+              "seconds": 1.243,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C08_STORE_VALUE-restored-producer",
+              "exit": 0,
+              "seconds": 1.705,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C08_STORE_VALUE-restored-consumer",
+              "exit": 0,
+              "seconds": 5.496,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C09_FRESH_RESERVE",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_contract_check.lean:35:",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Contract.lean",
+          "beforeSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "mutationSha256": "680ae1b424eb4e879149828aef3306785ed0b8c5a428828973237a2f7b60aee9",
+          "afterSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C09_FRESH_RESERVE-firewall",
+              "exit": 0,
+              "seconds": 1.414,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C09_FRESH_RESERVE-producer",
+              "exit": 0,
+              "seconds": 1.684,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C09_FRESH_RESERVE-consumer",
+              "exit": 1,
+              "seconds": 5.498,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 17,
+              "consumerErrorLines": [
+                35
+              ],
+              "anyErrorLines": 1,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C09_FRESH_RESERVE-restored-firewall",
+              "exit": 0,
+              "seconds": 1.283,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C09_FRESH_RESERVE-restored-producer",
+              "exit": 0,
+              "seconds": 1.717,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C09_FRESH_RESERVE-restored-consumer",
+              "exit": 0,
+              "seconds": 5.66,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C10_CODE_ACCOUNTING",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_contract_check.lean:38:",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Contract.lean",
+          "beforeSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "mutationSha256": "19c63f5c02278c9b0c47b641947237e8a9747e47bb77c3393af1c406178fb79c",
+          "afterSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C10_CODE_ACCOUNTING-firewall",
+              "exit": 0,
+              "seconds": 2.094,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C10_CODE_ACCOUNTING-producer",
+              "exit": 0,
+              "seconds": 2.105,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C10_CODE_ACCOUNTING-consumer",
+              "exit": 1,
+              "seconds": 5.625,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 17,
+              "consumerErrorLines": [
+                38
+              ],
+              "anyErrorLines": 1,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C10_CODE_ACCOUNTING-restored-firewall",
+              "exit": 0,
+              "seconds": 1.311,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C10_CODE_ACCOUNTING-restored-producer",
+              "exit": 0,
+              "seconds": 1.693,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C10_CODE_ACCOUNTING-restored-consumer",
+              "exit": 0,
+              "seconds": 5.473,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C11_FIELD_DELETE",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_contract_check.lean:47:",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Contract.lean",
+          "beforeSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "mutationSha256": "d13828d45095105624607624b432a15bfa02ed004a04241f0ae2bbcc715c7cfb",
+          "afterSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C11_FIELD_DELETE-firewall",
+              "exit": 0,
+              "seconds": 1.407,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C11_FIELD_DELETE-producer",
+              "exit": 0,
+              "seconds": 1.72,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C11_FIELD_DELETE-consumer",
+              "exit": 1,
+              "seconds": 5.524,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 15,
+              "consumerErrorLines": [
+                47
+              ],
+              "anyErrorLines": 1,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C11_FIELD_DELETE-restored-firewall",
+              "exit": 0,
+              "seconds": 1.321,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C11_FIELD_DELETE-restored-producer",
+              "exit": 0,
+              "seconds": 1.699,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C11_FIELD_DELETE-restored-consumer",
+              "exit": 0,
+              "seconds": 5.454,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C12_FIELD_WEAKEN",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_contract_check.lean:47:",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Contract.lean",
+          "beforeSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "mutationSha256": "0884578cd2bd61706e4cc68d08a33156531d438515a756537f6a40b5824d4ccb",
+          "afterSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C12_FIELD_WEAKEN-firewall",
+              "exit": 0,
+              "seconds": 1.411,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C12_FIELD_WEAKEN-producer",
+              "exit": 0,
+              "seconds": 1.715,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C12_FIELD_WEAKEN-consumer",
+              "exit": 1,
+              "seconds": 5.367,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 17,
+              "consumerErrorLines": [
+                47
+              ],
+              "anyErrorLines": 1,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C12_FIELD_WEAKEN-restored-firewall",
+              "exit": 0,
+              "seconds": 1.287,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C12_FIELD_WEAKEN-restored-producer",
+              "exit": 0,
+              "seconds": 1.686,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C12_FIELD_WEAKEN-restored-consumer",
+              "exit": 0,
+              "seconds": 5.334,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C13_SIBLING",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_contract_check.lean:27:",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Contract.lean",
+          "beforeSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "mutationSha256": "ba8f9c2f968aa95e31a8ab4c2f200baf39e83c5d427a49e6ce7f9abbd02bfb2e",
+          "afterSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C13_SIBLING-firewall",
+              "exit": 0,
+              "seconds": 1.427,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C13_SIBLING-producer",
+              "exit": 0,
+              "seconds": 1.753,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C13_SIBLING-consumer",
+              "exit": 1,
+              "seconds": 5.4,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 17,
+              "consumerErrorLines": [
+                27
+              ],
+              "anyErrorLines": 1,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C13_SIBLING-restored-firewall",
+              "exit": 0,
+              "seconds": 1.222,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C13_SIBLING-restored-producer",
+              "exit": 0,
+              "seconds": 1.651,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C13_SIBLING-restored-consumer",
+              "exit": 0,
+              "seconds": 5.369,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C14_ACCEPT_COMMENT",
+          "expected": "accept",
+          "expectedStage": "consumer",
+          "expectedSurface": "PRE1-CONTRACT-TYPED-CONSUMERS PASS",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Contract.lean",
+          "beforeSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "mutationSha256": "0a1a78a660bc751bcd71d997cd85091134d5faf4ee7e8db458b78149e5d9c9a4",
+          "afterSha256": "93e6c1a264c2be7f5de3d9cfccb5b7aaf10c28dc3f6f6c51385dcdaddecc6fd6",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C14_ACCEPT_COMMENT-firewall",
+              "exit": 0,
+              "seconds": 1.421,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C14_ACCEPT_COMMENT-producer",
+              "exit": 0,
+              "seconds": 1.833,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C14_ACCEPT_COMMENT-consumer",
+              "exit": 0,
+              "seconds": 5.423,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C14_ACCEPT_COMMENT-restored-firewall",
+              "exit": 0,
+              "seconds": 1.322,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C14_ACCEPT_COMMENT-restored-producer",
+              "exit": 0,
+              "seconds": 1.724,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 2,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C14_ACCEPT_COMMENT-restored-consumer",
+              "exit": 0,
+              "seconds": 5.513,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C15_CODE_ALIAS",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_contract_check.lean:42:",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Controls.lean",
+          "beforeSha256": "580fecac1c2fea11ab8ee0939082aa69981017e3225cb630b1937431d5a768ca",
+          "mutationSha256": "824a0b72f13f50cf39472484fea4dba7350f86818481623be87c45eecb978c6b",
+          "afterSha256": "580fecac1c2fea11ab8ee0939082aa69981017e3225cb630b1937431d5a768ca",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C15_CODE_ALIAS-firewall",
+              "exit": 0,
+              "seconds": 1.348,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C15_CODE_ALIAS-producer",
+              "exit": 0,
+              "seconds": 2.905,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 9,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C15_CODE_ALIAS-consumer",
+              "exit": 1,
+              "seconds": 5.603,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 17,
+              "consumerErrorLines": [
+                42
+              ],
+              "anyErrorLines": 1,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C15_CODE_ALIAS-restored-firewall",
+              "exit": 0,
+              "seconds": 1.253,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C15_CODE_ALIAS-restored-producer",
+              "exit": 0,
+              "seconds": 2.998,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 3,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C15_CODE_ALIAS-restored-consumer",
+              "exit": 0,
+              "seconds": 5.457,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C16_CODE_COUNT",
+          "expected": "reject",
+          "expectedStage": "consumer",
+          "expectedSurface": "preprocessing_contract_check.lean:44:",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Controls.lean",
+          "beforeSha256": "580fecac1c2fea11ab8ee0939082aa69981017e3225cb630b1937431d5a768ca",
+          "mutationSha256": "245acf35251754814ac537d311745cd499c54f28da2346e3d38c62e18e74f80c",
+          "afterSha256": "580fecac1c2fea11ab8ee0939082aa69981017e3225cb630b1937431d5a768ca",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C16_CODE_COUNT-firewall",
+              "exit": 0,
+              "seconds": 1.418,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C16_CODE_COUNT-producer",
+              "exit": 0,
+              "seconds": 2.89,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 5,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C16_CODE_COUNT-consumer",
+              "exit": 1,
+              "seconds": 5.498,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 27,
+              "consumerErrorLines": [
+                42,
+                43,
+                44
+              ],
+              "anyErrorLines": 3,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C16_CODE_COUNT-restored-firewall",
+              "exit": 0,
+              "seconds": 1.291,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C16_CODE_COUNT-restored-producer",
+              "exit": 0,
+              "seconds": 2.836,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 3,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C16_CODE_COUNT-restored-consumer",
+              "exit": 0,
+              "seconds": 5.594,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C17_FIREWALL_IMPORT",
+          "expected": "reject",
+          "expectedStage": "firewall",
+          "expectedSurface": "PRE1-FIREWALL imports rejected: RMQ/Core/WordRAM/Construction/Primitive.lean",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Primitive.lean",
+          "beforeSha256": "9d296ef6a7d08cbcbcad7e262430f466fb9bf41021c55cd1997d2e8f92b77a69",
+          "mutationSha256": "6d9d3eb46375526f105ff71f26f088b81c64865e4354198f4f11548d8093a428",
+          "afterSha256": "9d296ef6a7d08cbcbcad7e262430f466fb9bf41021c55cd1997d2e8f92b77a69",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C17_FIREWALL_IMPORT-firewall",
+              "exit": 1,
+              "seconds": 1.28,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C17_FIREWALL_IMPORT-restored-firewall",
+              "exit": 0,
+              "seconds": 1.387,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C17_FIREWALL_IMPORT-restored-producer",
+              "exit": 0,
+              "seconds": 0.787,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C17_FIREWALL_IMPORT-restored-consumer",
+              "exit": 0,
+              "seconds": 5.48,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        },
+        {
+          "id": "C18_PRIMITIVE_BYTES",
+          "expected": "reject",
+          "expectedStage": "firewall",
+          "expectedSurface": "PRE1-FIREWALL frozen primitive bytes changed: RMQ/Core/WordRAM/Construction/Primitive.lean",
+          "profile": "contract",
+          "manifest": null,
+          "verdict": "PASS",
+          "source": "RMQ/Core/WordRAM/Construction/Primitive.lean",
+          "beforeSha256": "9d296ef6a7d08cbcbcad7e262430f466fb9bf41021c55cd1997d2e8f92b77a69",
+          "mutationSha256": "cac2dbe8ea47f09ff6f42ff9ca093498e4175db29b538d79f56a211883f1935b",
+          "afterSha256": "9d296ef6a7d08cbcbcad7e262430f466fb9bf41021c55cd1997d2e8f92b77a69",
+          "restoredExactly": true,
+          "manifestRestored": null,
+          "compile": [
+            {
+              "stage": "C18_PRIMITIVE_BYTES-firewall",
+              "exit": 1,
+              "seconds": 1.529,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            }
+          ],
+          "restoreCompile": [
+            {
+              "stage": "C18_PRIMITIVE_BYTES-restored-firewall",
+              "exit": 0,
+              "seconds": 1.445,
+              "deadline": 60,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C18_PRIMITIVE_BYTES-restored-producer",
+              "exit": 0,
+              "seconds": 0.78,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 1,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": false
+            },
+            {
+              "stage": "C18_PRIMITIVE_BYTES-restored-consumer",
+              "exit": 0,
+              "seconds": 5.49,
+              "deadline": 300,
+              "timedOut": false,
+              "outputLimitExceeded": false,
+              "ownership": "kill-on-close-job",
+              "outputLines": 12,
+              "consumerErrorLines": [],
+              "anyErrorLines": 0,
+              "markerPresent": true
+            }
+          ],
+          "restoration": "EXACT",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "evidenceDirectory": "20260917-160208-1ca69003f34047b88d10d940c42c4282",
+      "reportSha256": "753290b7aaa9e32a3dc54f05fd9a939e6db41a95387df1d43aac4d74c7fe2d4f",
+      "reportBytes": 11332,
+      "phase": "BUILDER",
+      "mode": "registry-selftest",
+      "verdict": "PASS",
+      "error": "",
+      "platform": "Microsoft Windows NT 10.0.26200.0",
+      "powershell": "7.6.6",
+      "registrySha256": "911ed51bc30f2260508000d6c6e892c840d80afbba0233610559289861e1c931",
+      "registryContentSha256": "3e27e7626f4af805820071777246d3a5c2ac101e7adbb3db028219b2f46ae495",
+      "runnerSha256": "a1a1427531be41317f232ccaf7d73481e4c96b57aca4d585ff451149e04c4006",
+      "deadlineSeconds": 600,
+      "administrationDeadlineSeconds": 120,
+      "sleeperDeadlineSeconds": 45,
+      "expectedCount": 55,
+      "registryExpectedCount": 55,
+      "executedCount": 0,
+      "executedEqualsExpected": false,
+      "executed": [],
+      "selfTestCount": 46,
+      "selfTestsAllPass": true,
+      "selfTestSample": {
+        "category": "registry",
+        "case": "empty",
+        "verdict": "PASS"
+      },
+      "baseline": [],
+      "validator": null,
+      "topStages": [],
+      "restored": null,
+      "sourceHashCount": 0,
+      "caseCount": 0,
+      "casesAllPass": null,
+      "sumStageSeconds": 0.0,
+      "cases": []
+    },
+    {
+      "evidenceDirectory": "20260917-160210-7c71d0bbbb21430692b3621c6c9e2601",
+      "reportSha256": "8aad8d091fd38bfa318d3b45d072507d65352f0e64b5d2e769e8a2b00a8653a6",
+      "reportBytes": 24446,
+      "phase": "BUILDER",
+      "mode": "selector-selftest",
+      "verdict": "PASS",
+      "error": "",
+      "platform": "Microsoft Windows NT 10.0.26200.0",
+      "powershell": "7.6.6",
+      "registrySha256": "911ed51bc30f2260508000d6c6e892c840d80afbba0233610559289861e1c931",
+      "registryContentSha256": "3e27e7626f4af805820071777246d3a5c2ac101e7adbb3db028219b2f46ae495",
+      "runnerSha256": "a1a1427531be41317f232ccaf7d73481e4c96b57aca4d585ff451149e04c4006",
+      "deadlineSeconds": 600,
+      "administrationDeadlineSeconds": 120,
+      "sleeperDeadlineSeconds": 45,
+      "expectedCount": 55,
+      "registryExpectedCount": 55,
+      "executedCount": 0,
+      "executedEqualsExpected": false,
+      "executed": [],
+      "selfTestCount": 9,
+      "selfTestsAllPass": true,
+      "selfTestSample": {
+        "category": "selector",
+        "case": "omitted",
+        "verdict": "PASS",
+        "exit": 0
+      },
+      "baseline": [],
+      "validator": null,
+      "topStages": [
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        }
+      ],
+      "restored": null,
+      "sourceHashCount": 0,
+      "caseCount": 0,
+      "casesAllPass": null,
+      "sumStageSeconds": 0.0,
+      "cases": []
+    },
+    {
+      "evidenceDirectory": "20260917-160225-2587fbb15a1242e794f880e3e6ed96a8",
+      "reportSha256": "f0335fba780c6afde13c68739176676aaabb6f00bd7f6600c02a5fd472315c80",
+      "reportBytes": 7760,
+      "phase": "BUILDER",
+      "mode": "deadline-selftest",
+      "verdict": "PASS",
+      "error": "",
+      "platform": "Microsoft Windows NT 10.0.26200.0",
+      "powershell": "7.6.6",
+      "registrySha256": "911ed51bc30f2260508000d6c6e892c840d80afbba0233610559289861e1c931",
+      "registryContentSha256": "3e27e7626f4af805820071777246d3a5c2ac101e7adbb3db028219b2f46ae495",
+      "runnerSha256": "a1a1427531be41317f232ccaf7d73481e4c96b57aca4d585ff451149e04c4006",
+      "deadlineSeconds": 600,
+      "administrationDeadlineSeconds": 120,
+      "sleeperDeadlineSeconds": 45,
+      "expectedCount": 55,
+      "registryExpectedCount": 55,
+      "executedCount": 0,
+      "executedEqualsExpected": false,
+      "executed": [],
+      "selfTestCount": 3,
+      "selfTestsAllPass": true,
+      "selfTestSample": {
+        "category": "deadline",
+        "case": "deterministic-plans-and-collections",
+        "verdict": "PASS",
+        "scope": "Production launch-plan branches and process-ID collection logic; foreign-host execution is not implied"
+      },
+      "baseline": [],
+      "validator": null,
+      "topStages": [
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        }
+      ],
+      "restored": null,
+      "sourceHashCount": 0,
+      "caseCount": 0,
+      "casesAllPass": null,
+      "sumStageSeconds": 0.0,
+      "cases": []
+    },
+    {
+      "evidenceDirectory": "20260917-160313-b82b173bdec943ae9968f5da95a12821",
+      "reportSha256": "ed6b1a4c7cb5be2959bc4dec98651d33dfd2135740f48547f4399fabdf83cb52",
+      "reportBytes": 20501,
+      "phase": "BUILDER",
+      "mode": "registry-selftest",
+      "verdict": "PASS",
+      "error": "",
+      "platform": "Microsoft Windows NT 10.0.26200.0",
+      "powershell": "5.1.26100.9444",
+      "registrySha256": "911ed51bc30f2260508000d6c6e892c840d80afbba0233610559289861e1c931",
+      "registryContentSha256": "3e27e7626f4af805820071777246d3a5c2ac101e7adbb3db028219b2f46ae495",
+      "runnerSha256": "a1a1427531be41317f232ccaf7d73481e4c96b57aca4d585ff451149e04c4006",
+      "deadlineSeconds": 600,
+      "administrationDeadlineSeconds": 120,
+      "sleeperDeadlineSeconds": 45,
+      "expectedCount": 55,
+      "registryExpectedCount": 55,
+      "executedCount": 0,
+      "executedEqualsExpected": false,
+      "executed": [],
+      "selfTestCount": 46,
+      "selfTestsAllPass": true,
+      "selfTestSample": {
+        "category": "registry",
+        "case": "empty",
+        "verdict": "PASS"
+      },
+      "baseline": [],
+      "validator": null,
+      "topStages": [],
+      "restored": null,
+      "sourceHashCount": 0,
+      "caseCount": 0,
+      "casesAllPass": null,
+      "sumStageSeconds": 0.0,
+      "cases": []
+    },
+    {
+      "evidenceDirectory": "20260917-160315-fcf669070bc941d684c5bdd063e53e18",
+      "reportSha256": "8e6fc90c768e2e53d6e5bbff1bdd7499dbf151ab51c31e13af1682f93ff074ad",
+      "reportBytes": 42127,
+      "phase": "BUILDER",
+      "mode": "selector-selftest",
+      "verdict": "PASS",
+      "error": "",
+      "platform": "Microsoft Windows NT 10.0.26200.0",
+      "powershell": "5.1.26100.9444",
+      "registrySha256": "911ed51bc30f2260508000d6c6e892c840d80afbba0233610559289861e1c931",
+      "registryContentSha256": "3e27e7626f4af805820071777246d3a5c2ac101e7adbb3db028219b2f46ae495",
+      "runnerSha256": "a1a1427531be41317f232ccaf7d73481e4c96b57aca4d585ff451149e04c4006",
+      "deadlineSeconds": 600,
+      "administrationDeadlineSeconds": 120,
+      "sleeperDeadlineSeconds": 45,
+      "expectedCount": 55,
+      "registryExpectedCount": 55,
+      "executedCount": 0,
+      "executedEqualsExpected": false,
+      "executed": [],
+      "selfTestCount": 9,
+      "selfTestsAllPass": true,
+      "selfTestSample": {
+        "category": "selector",
+        "case": "omitted",
+        "verdict": "PASS",
+        "exit": 0
+      },
+      "baseline": [],
+      "validator": null,
+      "topStages": [
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        }
+      ],
+      "restored": null,
+      "sourceHashCount": 0,
+      "caseCount": 0,
+      "casesAllPass": null,
+      "sumStageSeconds": 0.0,
+      "cases": []
+    },
+    {
+      "evidenceDirectory": "20260917-160322-a366838cdf07488ebbceb3a1fe577551",
+      "reportSha256": "f6344bfea7613c4e3685515a473f79dc7c2803bfe42daf39bf24396d7c59c7ab",
+      "reportBytes": 13935,
+      "phase": "BUILDER",
+      "mode": "deadline-selftest",
+      "verdict": "PASS",
+      "error": "",
+      "platform": "Microsoft Windows NT 10.0.26200.0",
+      "powershell": "5.1.26100.9444",
+      "registrySha256": "911ed51bc30f2260508000d6c6e892c840d80afbba0233610559289861e1c931",
+      "registryContentSha256": "3e27e7626f4af805820071777246d3a5c2ac101e7adbb3db028219b2f46ae495",
+      "runnerSha256": "a1a1427531be41317f232ccaf7d73481e4c96b57aca4d585ff451149e04c4006",
+      "deadlineSeconds": 600,
+      "administrationDeadlineSeconds": 120,
+      "sleeperDeadlineSeconds": 45,
+      "expectedCount": 55,
+      "registryExpectedCount": 55,
+      "executedCount": 0,
+      "executedEqualsExpected": false,
+      "executed": [],
+      "selfTestCount": 3,
+      "selfTestsAllPass": true,
+      "selfTestSample": {
+        "category": "deadline",
+        "case": "deterministic-plans-and-collections",
+        "verdict": "PASS",
+        "scope": "Production launch-plan branches and process-ID collection logic; foreign-host execution is not implied"
+      },
+      "baseline": [],
+      "validator": null,
+      "topStages": [
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        },
+        {
+          "stage": null,
+          "exit": null,
+          "seconds": null,
+          "timedOut": null
+        }
+      ],
+      "restored": null,
+      "sourceHashCount": 0,
+      "caseCount": 0,
+      "casesAllPass": null,
+      "sumStageSeconds": 0.0,
+      "cases": []
+    }
+  ]
+}

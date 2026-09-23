@@ -1,0 +1,54 @@
+﻿{
+    "Module":  "RMQ.Core.WordRAM.Optimization.Capstone",
+    "Command":  [
+                    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+                    "-j1",
+                    "-o",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\WordRAM\\Optimization\\Capstone.olean",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\Capstone.lean"
+                ],
+    "SourceSHA256":  "198878D7EC47E8F1545EC5927F1F250DDABC8A11AA021FF6463B229D03ECCF2B",
+    "Base":  "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+    "Platform":  "Microsoft Windows NT 10.0.26200.0",
+    "Result":  {
+                   "Stage":  "RMQ.Core.WordRAM.Optimization.Capstone",
+                   "ExitCode":  1,
+                   "Output":  [
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\Capstone.lean:26:0: error: maximum recursion depth has been reached",
+                                  "use `set_option maxRecDepth \u003cnum\u003e` to increase limit",
+                                  "use `set_option diagnostics true` to get diagnostic information",
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\Capstone.lean:26:0: error: maximum recursion depth has been reached",
+                                  "use `set_option maxRecDepth \u003cnum\u003e` to increase limit",
+                                  "use `set_option diagnostics true` to get diagnostic information",
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\Capstone.lean:41:5: error: unsolved goals",
+                                  "memory : Memory",
+                                  "n left right : Nat",
+                                  "⊢ branchQueryBudget ≤ branchQueryBudget",
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\Capstone.lean:34:8: error: (kernel) unknown constant \u0027_private.RMQ.Core.WordRAM.Optimization.Capstone.0.RMQ.SuccinctFinal.PackedWordRAM.Optimization.whole_bound\u0027"
+                              ],
+                   "StandardOutput":  [
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\Capstone.lean:26:0: error: maximum recursion depth has been reached",
+                                          "use `set_option maxRecDepth \u003cnum\u003e` to increase limit",
+                                          "use `set_option diagnostics true` to get diagnostic information",
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\Capstone.lean:26:0: error: maximum recursion depth has been reached",
+                                          "use `set_option maxRecDepth \u003cnum\u003e` to increase limit",
+                                          "use `set_option diagnostics true` to get diagnostic information",
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\Capstone.lean:41:5: error: unsolved goals",
+                                          "memory : Memory",
+                                          "n left right : Nat",
+                                          "⊢ branchQueryBudget ≤ branchQueryBudget",
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\WordRAM\\Optimization\\Capstone.lean:34:8: error: (kernel) unknown constant \u0027_private.RMQ.Core.WordRAM.Optimization.Capstone.0.RMQ.SuccinctFinal.PackedWordRAM.Optimization.whole_bound\u0027"
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  8.808,
+                   "DeadlineSeconds":  600,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

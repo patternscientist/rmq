@@ -1,0 +1,52 @@
+{
+  "schema": "native1-default-import-parser-controls-v1",
+  "sourceSHA256": "3440BDBD01233A934CD08E21FCC7F874A1B486FB52F680589E37580FFD026A68",
+  "cases": [
+    {
+      "id": "multiple-imports-line-comment",
+      "expected": [
+        "A",
+        "B",
+        "C"
+      ],
+      "actual": [
+        "A",
+        "B",
+        "C"
+      ],
+      "passed": true
+    },
+    {
+      "id": "nested-comment-fake-import",
+      "expected": [
+        "Std"
+      ],
+      "actual": [
+        "Std"
+      ],
+      "passed": true
+    },
+    {
+      "id": "actual-documentation-import",
+      "expected": [
+        "RMQ.Core.SuccinctClose.BlockLocal",
+        "RMQ.Core.SuccinctClose.RangeSummary",
+        "RMQ.Core.SuccinctClose.RelativeSummary",
+        "RMQ.Core.SuccinctClose.RangeWitness",
+        "RMQ.Core.SuccinctClose.EndpointFringe",
+        "RMQ.Core.SuccinctClose.RelativeRmmMacro"
+      ],
+      "actual": [
+        "RMQ.Core.SuccinctClose.BlockLocal",
+        "RMQ.Core.SuccinctClose.RangeSummary",
+        "RMQ.Core.SuccinctClose.RelativeSummary",
+        "RMQ.Core.SuccinctClose.RangeWitness",
+        "RMQ.Core.SuccinctClose.EndpointFringe",
+        "RMQ.Core.SuccinctClose.RelativeRmmMacro"
+      ],
+      "passed": true
+    }
+  ],
+  "parserErrors": 0,
+  "priorControlError": "The first actual-documentation fixture used an incorrect expected import list; the source header was inspected and all six declared imports were then frozen explicitly."
+}

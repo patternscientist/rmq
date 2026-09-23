@@ -1,0 +1,2852 @@
+{
+  "ExitCode": 0,
+  "Version": "opt1-r1-production-v4",
+  "Stages": [
+    {
+      "Name": "P01-LIBRARY-LF",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf",
+      "Result": {
+        "Stage": "P01-LIBRARY-LF",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\.lake\\oc\\8d39220a5260",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-LIBRARY SELF-TEST PASS dependencies=259 private=3 alias/escape/provenance=reject no-Lean",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\.lake\\oc\\8d39220a5260",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-LIBRARY SELF-TEST PASS dependencies=259 private=3 alias/escape/provenance=reject no-Lean",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 197.928,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P02-LIBRARY-WINDOWS",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P02-LIBRARY-WINDOWS",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\27daf2f2d44b",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-LIBRARY SELF-TEST PASS dependencies=259 private=3 alias/escape/provenance=reject no-Lean",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\27daf2f2d44b",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-LIBRARY SELF-TEST PASS dependencies=259 private=3 alias/escape/provenance=reject no-Lean",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 132.827,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P03-WEAKEN-LF",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-OnlyCase",
+        "W28-stepBound",
+        "-StageDeadlineSeconds",
+        "300",
+        "-CampaignDeadlineSeconds",
+        "1400"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf",
+      "Result": {
+        "Stage": "P03-WEAKEN-LF",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\.lake\\oc\\13e2623d6420",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=300s",
+          "OPT1-CERT-STAGE import-freshness deadline=300s",
+          "OPT1-CERT-STAGE W28-stepBound-Certificate deadline=300s",
+          "OPT1-CERT-STAGE W28-stepBound-Capstone deadline=300s",
+          "OPT1-CERT-STAGE W28-stepBound-Consumers deadline=300s",
+          "OPT1-CERT CASE W28-stepBound REJECT restored=True",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=300s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-REPLAY PASS executed=1 expected=1 registry=opt1-certificate-replay-v3"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\.lake\\oc\\13e2623d6420",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=300s",
+          "OPT1-CERT-STAGE import-freshness deadline=300s",
+          "OPT1-CERT-STAGE W28-stepBound-Certificate deadline=300s",
+          "OPT1-CERT-STAGE W28-stepBound-Capstone deadline=300s",
+          "OPT1-CERT-STAGE W28-stepBound-Consumers deadline=300s",
+          "OPT1-CERT CASE W28-stepBound REJECT restored=True",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=300s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-REPLAY PASS executed=1 expected=1 registry=opt1-certificate-replay-v3"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 119.718,
+        "DeadlineSeconds": 1500,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P04-WEAKEN-WINDOWS",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-OnlyCase",
+        "W28-stepBound",
+        "-StageDeadlineSeconds",
+        "300",
+        "-CampaignDeadlineSeconds",
+        "1400"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P04-WEAKEN-WINDOWS",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\bf555e009274",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=300s",
+          "OPT1-CERT-STAGE import-freshness deadline=300s",
+          "OPT1-CERT-STAGE W28-stepBound-Certificate deadline=300s",
+          "OPT1-CERT-STAGE W28-stepBound-Capstone deadline=300s",
+          "OPT1-CERT-STAGE W28-stepBound-Consumers deadline=300s",
+          "OPT1-CERT CASE W28-stepBound REJECT restored=True",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=300s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-REPLAY PASS executed=1 expected=1 registry=opt1-certificate-replay-v3"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\bf555e009274",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=300s",
+          "OPT1-CERT-STAGE import-freshness deadline=300s",
+          "OPT1-CERT-STAGE W28-stepBound-Certificate deadline=300s",
+          "OPT1-CERT-STAGE W28-stepBound-Capstone deadline=300s",
+          "OPT1-CERT-STAGE W28-stepBound-Consumers deadline=300s",
+          "OPT1-CERT CASE W28-stepBound REJECT restored=True",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=300s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-REPLAY PASS executed=1 expected=1 registry=opt1-certificate-replay-v3"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 119.835,
+        "DeadlineSeconds": 1500,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P05-SOURCE-TOKEN-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P05-SOURCE-TOKEN-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.359,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P05-SOURCE-TOKEN",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P05-SOURCE-TOKEN",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\c1c567017911",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: source/configuration differs from versioned Git identity: RMQ/Core/Backend.lean"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\c1c567017911",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: source/configuration differs from versioned Git identity: RMQ/Core/Backend.lean"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 19.643,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P05-SOURCE-TOKEN-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P05-SOURCE-TOKEN-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.459,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P06-ARTIFACT-TOKEN-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P06-ARTIFACT-TOKEN-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.367,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P06-ARTIFACT-TOKEN",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P06-ARTIFACT-TOKEN",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\02f70f5f8531",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: missing/changed/stale compiled artifact or receipt: RMQ.Core.Backend"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\02f70f5f8531",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: missing/changed/stale compiled artifact or receipt: RMQ.Core.Backend"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 27.34,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P06-ARTIFACT-TOKEN-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P06-ARTIFACT-TOKEN-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.941,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P07-ARTIFACT-MISSING-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P07-ARTIFACT-MISSING-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.948,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P07-ARTIFACT-MISSING",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P07-ARTIFACT-MISSING",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\92b8fdc8d165",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-VERDICT: producer/accept control failed at import-freshness exit=1"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\92b8fdc8d165",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-VERDICT: producer/accept control failed at import-freshness exit=1"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 11.591,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P07-ARTIFACT-MISSING-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P07-ARTIFACT-MISSING-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.224,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P08-ARTIFACT-STALE-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P08-ARTIFACT-STALE-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.099,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P08-ARTIFACT-STALE",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P08-ARTIFACT-STALE",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\44d7d9347a38",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-VERDICT: producer/accept control failed at import-freshness exit=1"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\44d7d9347a38",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-VERDICT: producer/accept control failed at import-freshness exit=1"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 11.481,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P08-ARTIFACT-STALE-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P08-ARTIFACT-STALE-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.025,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P09-SOURCE-PROFILE-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P09-SOURCE-PROFILE-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.018,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P09-SOURCE-PROFILE",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P09-SOURCE-PROFILE",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\cb90bc5e56ce",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: pinned source manifest bytes changed"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\cb90bc5e56ce",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: pinned source manifest bytes changed"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 13.326,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P09-SOURCE-PROFILE-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P09-SOURCE-PROFILE-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.12,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P10-BUILD-RECEIPT-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P10-BUILD-RECEIPT-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.088,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P10-BUILD-RECEIPT",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P10-BUILD-RECEIPT",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\115a9e1bd94a",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: pinned build receipt bytes changed"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\115a9e1bd94a",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: pinned build receipt bytes changed"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 26.921,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P10-BUILD-RECEIPT-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P10-BUILD-RECEIPT-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.974,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P11-TOOLCHAIN-TEXT-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P11-TOOLCHAIN-TEXT-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.979,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P11-TOOLCHAIN-TEXT",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P11-TOOLCHAIN-TEXT",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\e2af40e61e57",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: source/configuration differs from versioned Git identity: lean-toolchain"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\e2af40e61e57",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: source/configuration differs from versioned Git identity: lean-toolchain"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 15.545,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P11-TOOLCHAIN-TEXT-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P11-TOOLCHAIN-TEXT-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.965,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P12-IMPORT-OMITTED-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P12-IMPORT-OMITTED-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.999,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P12-IMPORT-OMITTED",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P12-IMPORT-OMITTED",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\d24671bc67b9",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-REGISTRY: checked import provenance inventory missing, duplicate, extra, reordered or changed"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\d24671bc67b9",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-REGISTRY: checked import provenance inventory missing, duplicate, extra, reordered or changed"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 46.456,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P12-IMPORT-OMITTED-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P12-IMPORT-OMITTED-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.944,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P13-IMPORT-DUPLICATE-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P13-IMPORT-DUPLICATE-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.047,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P13-IMPORT-DUPLICATE",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P13-IMPORT-DUPLICATE",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\0365ea642a62",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-IMPORT: duplicate production import record"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\0365ea642a62",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: duplicate production import record"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 13.412,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P13-IMPORT-DUPLICATE-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P13-IMPORT-DUPLICATE-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.008,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P14-SOURCE-SPACE-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P14-SOURCE-SPACE-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.982,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P14-SOURCE-SPACE",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P14-SOURCE-SPACE",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\41958a2dff83",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: source/configuration differs from versioned Git identity: RMQ/Core/Backend.lean"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\41958a2dff83",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: source/configuration differs from versioned Git identity: RMQ/Core/Backend.lean"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 14.651,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P14-SOURCE-SPACE-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P14-SOURCE-SPACE-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.977,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P15-SOURCE-UTF8-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P15-SOURCE-UTF8-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.104,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P15-SOURCE-UTF8",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P15-SOURCE-UTF8",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\f7dcc3cefbd9",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-VERDICT: producer/accept control failed at import-freshness exit=1"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\f7dcc3cefbd9",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-VERDICT: producer/accept control failed at import-freshness exit=1"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 10.674,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P15-SOURCE-UTF8-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P15-SOURCE-UTF8-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.962,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P16-SOURCE-BOM-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P16-SOURCE-BOM-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.963,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P16-SOURCE-BOM",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P16-SOURCE-BOM",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\7f8abafe3bb2",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: BOM or bare CR outside serialization: RMQ/Core/Backend.lean"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\7f8abafe3bb2",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: BOM or bare CR outside serialization: RMQ/Core/Backend.lean"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 14.962,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P16-SOURCE-BOM-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P16-SOURCE-BOM-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.899,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P17-SOURCE-BARE-CR-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P17-SOURCE-BARE-CR-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.974,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P17-SOURCE-BARE-CR",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P17-SOURCE-BARE-CR",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\4bf83062aa0b",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: BOM or bare CR outside serialization: RMQ/Core/Backend.lean"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\4bf83062aa0b",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: BOM or bare CR outside serialization: RMQ/Core/Backend.lean"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 14.648,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P17-SOURCE-BARE-CR-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P17-SOURCE-BARE-CR-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.93,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P18-LEAN-EXECUTABLE",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850",
+        "-LeanPath",
+        "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "P18-LEAN-EXECUTABLE",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\349f41403e63",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: wrong Lean executable/profile path"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\oc\\349f41403e63",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: wrong Lean executable/profile path"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 16.103,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P19-EXTRA-ARTIFACT-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf",
+      "Result": {
+        "Stage": "P19-EXTRA-ARTIFACT-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.87,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P19-EXTRA-ARTIFACT",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf",
+      "Result": {
+        "Stage": "P19-EXTRA-ARTIFACT",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\.lake\\oc\\76f0fa45839b",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: changed complete compiled artifact inventory"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\.lake\\oc\\76f0fa45839b",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: changed complete compiled artifact inventory"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 26.331,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P19-EXTRA-ARTIFACT-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf",
+      "Result": {
+        "Stage": "P19-EXTRA-ARTIFACT-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.951,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P20-SHADOW-DIRECTORY-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf",
+      "Result": {
+        "Stage": "P20-SHADOW-DIRECTORY-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.949,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P20-SHADOW-DIRECTORY",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf",
+      "Result": {
+        "Stage": "P20-SHADOW-DIRECTORY",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\.lake\\oc\\b238e9ae8bfd",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: changed complete compiled artifact inventory"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\.lake\\oc\\b238e9ae8bfd",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: changed complete compiled artifact inventory"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 27.008,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P20-SHADOW-DIRECTORY-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf",
+      "Result": {
+        "Stage": "P20-SHADOW-DIRECTORY-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.956,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P21-ARTIFACT-SIDECAR-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf",
+      "Result": {
+        "Stage": "P21-ARTIFACT-SIDECAR-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.957,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P21-ARTIFACT-SIDECAR",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-LibrarySelfTestOnly",
+        "-StageDeadlineSeconds",
+        "600",
+        "-CampaignDeadlineSeconds",
+        "850"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf",
+      "Result": {
+        "Stage": "P21-ARTIFACT-SIDECAR",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\.lake\\oc\\5674118bf144",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: changed complete compiled artifact inventory"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\.lake\\oc\\5674118bf144",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-PROFILE: changed complete compiled artifact inventory"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 32.043,
+        "DeadlineSeconds": 900,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "P21-ARTIFACT-SIDECAR-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf",
+      "Result": {
+        "Stage": "P21-ARTIFACT-SIDECAR-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.472,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "C01-OMITTED",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\C01-OMITTED-boundary.ps1",
+        "-Target",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "C01-OMITTED",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-CERT-SELECTOR PROBE PASS bound=False selected=80 ids=A01-UNCHANGED,A02-COMMENT,D01-allocationResidualLittleO,W01-allocationResidualLittleO,D02-completeResidualLittleO,W02-completeResidualLittleO,D03-widthBounds,W03-widthBounds,D04-dataCapacity,W04-dataCapacity,D05-completeCapacity,W05-completeCapacity,D06-memoryWordsFit,W06-memoryWordsFit,D07-allocationAddressesFit,W07-allocationAddressesFit,D08-programFieldsFit,W08-programFieldsFit,D09-budgetExact,W09-budgetExact,D10-programLength,W10-programLength,D11-encodedProgramLength,W11-encodedProgramLength,D12-programReduction,W12-programReduction,D13-emittedProgram,W13-emittedProgram,D14-originalExecutionBound,W14-originalExecutionBound,D15-originalReducedFuel,W15-originalReducedFuel,D16-arbitraryMemoryObservations,W16-arbitraryMemoryObservations,D17-completedExecution,W17-completedExecution,D18-adequateFuel,W18-adequateFuel,D19-registerCount,W19-registerCount,D20-scratchCount,W20-scratchCount,D21-unusedRegisters,W21-unusedRegisters,D22-validInputs,W22-validInputs,D23-natContract,W23-natContract,D24-leftmost,W24-leftmost,D25-result,W25-result,D26-halt,W26-halt,D27-invalidGuard,W27-invalidGuard,D28-stepBound,W28-stepBound,D29-categoryPartition,W29-categoryPartition,D30-finalStateFit,W30-finalStateFit,D31-transitionSafety,W31-transitionSafety,D32-prefixSafety,W32-prefixSafety,D33-readWidth,W33-readWidth,D34-positionalReadBacking,W34-positionalReadBacking,D35-orderedLogicalRefinement,W35-orderedLogicalRefinement,D36-logicalReadOnly,W36-logicalReadOnly,D37-suppliedMemoryAgreement,W37-suppliedMemoryAgreement,D38-specResult,W38-specResult,D39-noFailedLoads,W39-noFailedLoads"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-SELECTOR PROBE PASS bound=False selected=80 ids=A01-UNCHANGED,A02-COMMENT,D01-allocationResidualLittleO,W01-allocationResidualLittleO,D02-completeResidualLittleO,W02-completeResidualLittleO,D03-widthBounds,W03-widthBounds,D04-dataCapacity,W04-dataCapacity,D05-completeCapacity,W05-completeCapacity,D06-memoryWordsFit,W06-memoryWordsFit,D07-allocationAddressesFit,W07-allocationAddressesFit,D08-programFieldsFit,W08-programFieldsFit,D09-budgetExact,W09-budgetExact,D10-programLength,W10-programLength,D11-encodedProgramLength,W11-encodedProgramLength,D12-programReduction,W12-programReduction,D13-emittedProgram,W13-emittedProgram,D14-originalExecutionBound,W14-originalExecutionBound,D15-originalReducedFuel,W15-originalReducedFuel,D16-arbitraryMemoryObservations,W16-arbitraryMemoryObservations,D17-completedExecution,W17-completedExecution,D18-adequateFuel,W18-adequateFuel,D19-registerCount,W19-registerCount,D20-scratchCount,W20-scratchCount,D21-unusedRegisters,W21-unusedRegisters,D22-validInputs,W22-validInputs,D23-natContract,W23-natContract,D24-leftmost,W24-leftmost,D25-result,W25-result,D26-halt,W26-halt,D27-invalidGuard,W27-invalidGuard,D28-stepBound,W28-stepBound,D29-categoryPartition,W29-categoryPartition,D30-finalStateFit,W30-finalStateFit,D31-transitionSafety,W31-transitionSafety,D32-prefixSafety,W32-prefixSafety,D33-readWidth,W33-readWidth,D34-positionalReadBacking,W34-positionalReadBacking,D35-orderedLogicalRefinement,W35-orderedLogicalRefinement,D36-logicalReadOnly,W36-logicalReadOnly,D37-suppliedMemoryAgreement,W37-suppliedMemoryAgreement,D38-specResult,W38-specResult,D39-noFailedLoads,W39-noFailedLoads"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.348,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "C02-VALID",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\C02-VALID-boundary.ps1",
+        "-Target",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "C02-VALID",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-CERT-SELECTOR PROBE PASS bound=True selected=1 ids=A01-UNCHANGED"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-SELECTOR PROBE PASS bound=True selected=1 ids=A01-UNCHANGED"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.254,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "C03-EMPTY",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\C03-EMPTY-boundary.ps1",
+        "-Target",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "C03-EMPTY",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-SELECTOR: explicitly empty selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-CERT-SELECTOR: explicitly empty selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.603,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "C04-WHITESPACE",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\C04-WHITESPACE-boundary.ps1",
+        "-Target",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "C04-WHITESPACE",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-SELECTOR: explicitly empty selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-CERT-SELECTOR: explicitly empty selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.493,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "C05-PADDED",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\C05-PADDED-boundary.ps1",
+        "-Target",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "C05-PADDED",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-SELECTOR: malformed selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-CERT-SELECTOR: malformed selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.499,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "C06-MALFORMED",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\C06-MALFORMED-boundary.ps1",
+        "-Target",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "C06-MALFORMED",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-SELECTOR: malformed selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-CERT-SELECTOR: malformed selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.54,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "C07-UNKNOWN",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\C07-UNKNOWN-boundary.ps1",
+        "-Target",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "C07-UNKNOWN",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-SELECTOR: unknown selector D99-unknown"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-CERT-SELECTOR: unknown selector D99-unknown"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.719,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "C08-CONTRADICTORY",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\C08-CONTRADICTORY-boundary.ps1",
+        "-Target",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_certificate_replay.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "C08-CONTRADICTORY",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-SELECTOR: incompatible modes"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-CERT-SELECTOR: incompatible modes"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 3.2,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "C09-MIDDLE-OMITTED-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "C09-MIDDLE-OMITTED-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.256,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "C09-MIDDLE-OMITTED",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-SelectorProbeOnly"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "C09-MIDDLE-OMITTED",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-REGISTRY: Markdown cases missing, duplicate, extra, reordered or changed"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-CERT-REGISTRY: Markdown cases missing, duplicate, extra, reordered or changed"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.717,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "C09-MIDDLE-OMITTED-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "C09-MIDDLE-OMITTED-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.181,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "C10-MIDDLE-DUPLICATE-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "C10-MIDDLE-DUPLICATE-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.241,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "C10-MIDDLE-DUPLICATE",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_certificate_replay.ps1",
+        "-SelectorProbeOnly"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "C10-MIDDLE-DUPLICATE",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-REGISTRY: Markdown cases missing, duplicate, extra, reordered or changed"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-CERT-REGISTRY: Markdown cases missing, duplicate, extra, reordered or changed"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.529,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "C10-MIDDLE-DUPLICATE-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "C10-MIDDLE-DUPLICATE-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.257,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "R01-OMITTED",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\R01-OMITTED-boundary.ps1",
+        "-Target",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_replay_regression.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "R01-OMITTED",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-R1-SELECTOR PROBE PASS bound=False selected=49 ids=P01-LIBRARY-LF,P02-LIBRARY-WINDOWS,P03-WEAKEN-LF,P04-WEAKEN-WINDOWS,P05-SOURCE-TOKEN,P06-ARTIFACT-TOKEN,P07-ARTIFACT-MISSING,P08-ARTIFACT-STALE,P09-SOURCE-PROFILE,P10-BUILD-RECEIPT,P11-TOOLCHAIN-TEXT,P12-IMPORT-OMITTED,P13-IMPORT-DUPLICATE,P14-SOURCE-SPACE,P15-SOURCE-UTF8,P16-SOURCE-BOM,P17-SOURCE-BARE-CR,P18-LEAN-EXECUTABLE,P19-EXTRA-ARTIFACT,P20-SHADOW-DIRECTORY,P21-ARTIFACT-SIDECAR,C01-OMITTED,C02-VALID,C03-EMPTY,C04-WHITESPACE,C05-PADDED,C06-MALFORMED,C07-UNKNOWN,C08-CONTRADICTORY,C09-MIDDLE-OMITTED,C10-MIDDLE-DUPLICATE,R01-OMITTED,R02-VALID,R03-EMPTY,R04-WHITESPACE,R05-PADDED,R06-MALFORMED,R07-UNKNOWN,R08-MIDDLE-OMITTED,R09-MIDDLE-DUPLICATE,V01-SOLE-SETUP,V02-MIXED-STDOUT,V03-SUCCESS-STDOUT,V04-WRONG-STDERR,V05-ALLOWED-PROGRESS,V06-DUPLICATE-PROGRESS,V07-REORDERED-PROGRESS,V08-EXTRA-STDERR,V09-PREFIX-HOLDOUT"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-SELECTOR PROBE PASS bound=False selected=49 ids=P01-LIBRARY-LF,P02-LIBRARY-WINDOWS,P03-WEAKEN-LF,P04-WEAKEN-WINDOWS,P05-SOURCE-TOKEN,P06-ARTIFACT-TOKEN,P07-ARTIFACT-MISSING,P08-ARTIFACT-STALE,P09-SOURCE-PROFILE,P10-BUILD-RECEIPT,P11-TOOLCHAIN-TEXT,P12-IMPORT-OMITTED,P13-IMPORT-DUPLICATE,P14-SOURCE-SPACE,P15-SOURCE-UTF8,P16-SOURCE-BOM,P17-SOURCE-BARE-CR,P18-LEAN-EXECUTABLE,P19-EXTRA-ARTIFACT,P20-SHADOW-DIRECTORY,P21-ARTIFACT-SIDECAR,C01-OMITTED,C02-VALID,C03-EMPTY,C04-WHITESPACE,C05-PADDED,C06-MALFORMED,C07-UNKNOWN,C08-CONTRADICTORY,C09-MIDDLE-OMITTED,C10-MIDDLE-DUPLICATE,R01-OMITTED,R02-VALID,R03-EMPTY,R04-WHITESPACE,R05-PADDED,R06-MALFORMED,R07-UNKNOWN,R08-MIDDLE-OMITTED,R09-MIDDLE-DUPLICATE,V01-SOLE-SETUP,V02-MIXED-STDOUT,V03-SUCCESS-STDOUT,V04-WRONG-STDERR,V05-ALLOWED-PROGRESS,V06-DUPLICATE-PROGRESS,V07-REORDERED-PROGRESS,V08-EXTRA-STDERR,V09-PREFIX-HOLDOUT"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.38,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "R02-VALID",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\R02-VALID-boundary.ps1",
+        "-Target",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_replay_regression.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "R02-VALID",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-R1-SELECTOR PROBE PASS bound=True selected=1 ids=P01-LIBRARY-LF"
+        ],
+        "StandardOutput": [
+          "OPT1-R1-SELECTOR PROBE PASS bound=True selected=1 ids=P01-LIBRARY-LF"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.58,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "R03-EMPTY",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\R03-EMPTY-boundary.ps1",
+        "-Target",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_replay_regression.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "R03-EMPTY",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-R1-SELECTOR: explicitly empty selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-R1-SELECTOR: explicitly empty selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.429,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "R04-WHITESPACE",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\R04-WHITESPACE-boundary.ps1",
+        "-Target",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_replay_regression.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "R04-WHITESPACE",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-R1-SELECTOR: explicitly empty selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-R1-SELECTOR: explicitly empty selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.215,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "R05-PADDED",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\R05-PADDED-boundary.ps1",
+        "-Target",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_replay_regression.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "R05-PADDED",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-R1-SELECTOR: malformed selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-R1-SELECTOR: malformed selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.551,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "R06-MALFORMED",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\R06-MALFORMED-boundary.ps1",
+        "-Target",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_replay_regression.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "R06-MALFORMED",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-R1-SELECTOR: malformed selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-R1-SELECTOR: malformed selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.548,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "R07-UNKNOWN",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\R07-UNKNOWN-boundary.ps1",
+        "-Target",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\scripts\\packed_optimized_replay_regression.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "R07-UNKNOWN",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-R1-SELECTOR: unknown selector P99-UNKNOWN"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-R1-SELECTOR: unknown selector P99-UNKNOWN"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.253,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "R08-MIDDLE-OMITTED-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "R08-MIDDLE-OMITTED-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.225,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "R08-MIDDLE-OMITTED",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_replay_regression.ps1",
+        "-SelectorProbeOnly"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "R08-MIDDLE-OMITTED",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-R1-REGISTRY: frozen registry bytes changed"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-R1-REGISTRY: frozen registry bytes changed"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.594,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "R08-MIDDLE-OMITTED-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "R08-MIDDLE-OMITTED-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.071,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "R09-MIDDLE-DUPLICATE-before",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "R09-MIDDLE-DUPLICATE-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 0.59,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "R09-MIDDLE-DUPLICATE",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\scripts\\packed_optimized_replay_regression.ps1",
+        "-SelectorProbeOnly"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "R09-MIDDLE-DUPLICATE",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-R1-REGISTRY: frozen registry bytes changed"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-R1-REGISTRY: frozen registry bytes changed"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.46,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "R09-MIDDLE-DUPLICATE-after",
+      "Executable": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows",
+      "Result": {
+        "Stage": "R09-MIDDLE-DUPLICATE-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.29,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "V01-SOLE-SETUP",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\V01-SOLE-SETUP-child.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "V01-SOLE-SETUP",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.196,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "V02-MIXED-STDOUT",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\V02-MIXED-STDOUT-child.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "V02-MIXED-STDOUT",
+        "ExitCode": 1,
+        "Output": [
+          "uncaught exception: unrelated filesystem failure",
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+        ],
+        "StandardOutput": [
+          "uncaught exception: unrelated filesystem failure"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.225,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "V03-SUCCESS-STDOUT",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\V03-SUCCESS-STDOUT-child.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "V03-SUCCESS-STDOUT",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-REPLAY PASS executed=80 expected=80 registry=opt1-certificate-replay-v3",
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-REPLAY PASS executed=80 expected=80 registry=opt1-certificate-replay-v3"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.175,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "V04-WRONG-STDERR",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\V04-WRONG-STDERR-child.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "V04-WRONG-STDERR",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection extra diagnostic detail"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection extra diagnostic detail"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.147,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "V05-ALLOWED-PROGRESS",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\V05-ALLOWED-PROGRESS-child.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "V05-ALLOWED-PROGRESS",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-ARTIFACTS C:/private/.lake/oc/012345abcdef",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=60s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=60s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-ARTIFACTS C:/private/.lake/oc/012345abcdef",
+          "OPT1-CERT-STAGE tracked-source-status-before deadline=60s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=60s",
+          "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.198,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "V06-DUPLICATE-PROGRESS",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\V06-DUPLICATE-PROGRESS-child.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "V06-DUPLICATE-PROGRESS",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.066,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "V07-REORDERED-PROGRESS",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\V07-REORDERED-PROGRESS-child.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "V07-REORDERED-PROGRESS",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=60s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+        ],
+        "StandardOutput": [
+          "OPT1-CERT-STAGE tracked-source-status-after deadline=60s",
+          "OPT1-CERT-STAGE import-freshness deadline=600s"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.969,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "V08-EXTRA-STDERR",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\V08-EXTRA-STDERR-child.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "V08-EXTRA-STDERR",
+        "ExitCode": 1,
+        "Output": [
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection",
+          "uncaught exception: unrelated stderr"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection",
+          "uncaught exception: unrelated stderr"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.093,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "V09-PREFIX-HOLDOUT",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\rr\\final-49\\V09-PREFIX-HOLDOUT-child.ps1"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+      "Result": {
+        "Stage": "V09-PREFIX-HOLDOUT",
+        "ExitCode": 1,
+        "Output": [
+          " OPT1-CERT-STAGE import-freshness deadline=600s",
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+        ],
+        "StandardOutput": [
+          " OPT1-CERT-STAGE import-freshness deadline=600s"
+        ],
+        "StandardError": [
+          "OPT1-CERT-IMPORT: OPT1-R1 controlled setup rejection"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.088,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      }
+    }
+  ],
+  "Expected": [
+    "P01-LIBRARY-LF",
+    "P02-LIBRARY-WINDOWS",
+    "P03-WEAKEN-LF",
+    "P04-WEAKEN-WINDOWS",
+    "P05-SOURCE-TOKEN",
+    "P06-ARTIFACT-TOKEN",
+    "P07-ARTIFACT-MISSING",
+    "P08-ARTIFACT-STALE",
+    "P09-SOURCE-PROFILE",
+    "P10-BUILD-RECEIPT",
+    "P11-TOOLCHAIN-TEXT",
+    "P12-IMPORT-OMITTED",
+    "P13-IMPORT-DUPLICATE",
+    "P14-SOURCE-SPACE",
+    "P15-SOURCE-UTF8",
+    "P16-SOURCE-BOM",
+    "P17-SOURCE-BARE-CR",
+    "P18-LEAN-EXECUTABLE",
+    "P19-EXTRA-ARTIFACT",
+    "P20-SHADOW-DIRECTORY",
+    "P21-ARTIFACT-SIDECAR",
+    "C01-OMITTED",
+    "C02-VALID",
+    "C03-EMPTY",
+    "C04-WHITESPACE",
+    "C05-PADDED",
+    "C06-MALFORMED",
+    "C07-UNKNOWN",
+    "C08-CONTRADICTORY",
+    "C09-MIDDLE-OMITTED",
+    "C10-MIDDLE-DUPLICATE",
+    "R01-OMITTED",
+    "R02-VALID",
+    "R03-EMPTY",
+    "R04-WHITESPACE",
+    "R05-PADDED",
+    "R06-MALFORMED",
+    "R07-UNKNOWN",
+    "R08-MIDDLE-OMITTED",
+    "R09-MIDDLE-DUPLICATE",
+    "V01-SOLE-SETUP",
+    "V02-MIXED-STDOUT",
+    "V03-SUCCESS-STDOUT",
+    "V04-WRONG-STDERR",
+    "V05-ALLOWED-PROGRESS",
+    "V06-DUPLICATE-PROGRESS",
+    "V07-REORDERED-PROGRESS",
+    "V08-EXTRA-STDERR",
+    "V09-PREFIX-HOLDOUT"
+  ],
+  "DurationSeconds": 1037.6576033,
+  "POSIX": "UNEXECUTED",
+  "DeadlineSeconds": 7200,
+  "Executed": [
+    "P01-LIBRARY-LF",
+    "P02-LIBRARY-WINDOWS",
+    "P03-WEAKEN-LF",
+    "P04-WEAKEN-WINDOWS",
+    "P05-SOURCE-TOKEN",
+    "P06-ARTIFACT-TOKEN",
+    "P07-ARTIFACT-MISSING",
+    "P08-ARTIFACT-STALE",
+    "P09-SOURCE-PROFILE",
+    "P10-BUILD-RECEIPT",
+    "P11-TOOLCHAIN-TEXT",
+    "P12-IMPORT-OMITTED",
+    "P13-IMPORT-DUPLICATE",
+    "P14-SOURCE-SPACE",
+    "P15-SOURCE-UTF8",
+    "P16-SOURCE-BOM",
+    "P17-SOURCE-BARE-CR",
+    "P18-LEAN-EXECUTABLE",
+    "P19-EXTRA-ARTIFACT",
+    "P20-SHADOW-DIRECTORY",
+    "P21-ARTIFACT-SIDECAR",
+    "C01-OMITTED",
+    "C02-VALID",
+    "C03-EMPTY",
+    "C04-WHITESPACE",
+    "C05-PADDED",
+    "C06-MALFORMED",
+    "C07-UNKNOWN",
+    "C08-CONTRADICTORY",
+    "C09-MIDDLE-OMITTED",
+    "C10-MIDDLE-DUPLICATE",
+    "R01-OMITTED",
+    "R02-VALID",
+    "R03-EMPTY",
+    "R04-WHITESPACE",
+    "R05-PADDED",
+    "R06-MALFORMED",
+    "R07-UNKNOWN",
+    "R08-MIDDLE-OMITTED",
+    "R09-MIDDLE-DUPLICATE",
+    "V01-SOLE-SETUP",
+    "V02-MIXED-STDOUT",
+    "V03-SUCCESS-STDOUT",
+    "V04-WRONG-STDERR",
+    "V05-ALLOWED-PROGRESS",
+    "V06-DUPLICATE-PROGRESS",
+    "V07-REORDERED-PROGRESS",
+    "V08-EXTRA-STDERR",
+    "V09-PREFIX-HOLDOUT"
+  ]
+}

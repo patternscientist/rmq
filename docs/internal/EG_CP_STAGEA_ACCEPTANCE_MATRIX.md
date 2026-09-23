@@ -260,6 +260,7 @@ Roles: D = development-loop, F = final-required, C = conditional.
 | `SA-CHK-10` | `powershell -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1 -Strict` | F (policy gate; public prose is out of write scope -- any new hit is fixed only within owned evidence paths or reported as a scope blocker) | claim policy | overclaim in owned prose |
 | `SA-CHK-11` | strict UTF-8 decode of changed docs; frozen-row byte-integrity of this matrix against the freeze-commit blob, keyed by (section, ID), with the mojibake negative control | F | `FROZEN-ACCEPTANCE-ROW-BYTE-INTEGRITY` | silent row edit or encoding corruption |
 | `SA-CHK-12` | byte-identity of `scripts/eg_cp_final_falsification_replay.ps1` against the exact base blob | F (C: its full inherited registry reruns only if it were changed -- it must not be) | `EG-CP-A12` | accidental edit of the inherited frozen campaign |
+| `SA-CHK-12` (superseded 2026-09-08) | the file above **was** changed, deliberately, by `WDD-20260908-083`: it carried the same OS-keyed shell selection that failed the gate under pwsh on Windows. Byte-identity against `3420c76c` no longer holds and must not be re-asserted. Per this row's own condition, its full inherited registry therefore **reruns**, which the aggregate gate performs | C | `EG-CP-A12` | an OS-keyed defect frozen in place because the artifact holding it was pinned |
 | `SA-CHK-13` | M03-style expected-failure probes outside Git during development (literal consumer and decisive semantic fields), restored and byte-verified immediately | D | anti-vacuity of the consumer | consumer fails to discriminate |
 | `SA-CHK-14` | aggregate `scripts/gate.ps1` | C | only if a final changed surface is not owned by `SA-CHK-01`..`SA-CHK-12`; not frozen as the aggregate owner, so the default is a recorded skip | duplicated expensive certification |
 
@@ -412,6 +413,8 @@ Entries are appended below during the campaign, keyed `EV-<row>` /
   every commit and full-range PASS (9 changed files); `SA-CHK-10` PASS
   (1525 hits, 0 strict failures); `SA-CHK-11` PASS as `EV-BYTE`;
   `SA-CHK-12` byte-identical (`3420c76c...`), inherited registry not rerun;
+    (that byte-identity was true at Stage-A acceptance and was deliberately
+    ended 2026-09-08 by `WDD-20260908-083`; see the superseding row above)
   `SA-CHK-13` both probes fail at the consumer file with SHA-verified
   restoration; `SA-CHK-14` recorded skip (not the frozen aggregate owner;
   no unowned surface).  One heavy Lean/Lake process at a time throughout;

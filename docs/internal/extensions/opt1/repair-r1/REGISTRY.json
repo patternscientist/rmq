@@ -1,0 +1,253 @@
+{
+  "Version": "opt1-r1-production-v4",
+  "Count": 49,
+  "Cases": [
+    {
+      "Id": "P01-LIBRARY-LF",
+      "Expected": "ACCEPT",
+      "Definition": "Actual LibrarySelfTestOnly on raw Git/LF source and verified canonical build artifacts."
+    },
+    {
+      "Id": "P02-LIBRARY-WINDOWS",
+      "Expected": "ACCEPT",
+      "Definition": "Actual LibrarySelfTestOnly on default Windows checkout and the same canonical artifact profile."
+    },
+    {
+      "Id": "P03-WEAKEN-LF",
+      "Expected": "REJECT_TYPED",
+      "Definition": "Actual W28-stepBound compiles both changed producers then rejects exact fixed consumer on LF source."
+    },
+    {
+      "Id": "P04-WEAKEN-WINDOWS",
+      "Expected": "REJECT_TYPED",
+      "Definition": "Actual W28-stepBound compiles both changed producers then rejects exact fixed consumer on Windows source."
+    },
+    {
+      "Id": "P05-SOURCE-TOKEN",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Append a source-token change with original mtime; reject independently anchored canonical source identity."
+    },
+    {
+      "Id": "P06-ARTIFACT-TOKEN",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Flip an artifact byte without changing freshness; reject pinned artifact identity."
+    },
+    {
+      "Id": "P07-ARTIFACT-MISSING",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Remove Backend artifact; reject before semantic case execution and restore exact bytes."
+    },
+    {
+      "Id": "P08-ARTIFACT-STALE",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Date Backend artifact before its source; reject freshness even with original bytes."
+    },
+    {
+      "Id": "P09-SOURCE-PROFILE",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Alter source-profile serialized bytes; reject fixed source-profile pin."
+    },
+    {
+      "Id": "P10-BUILD-RECEIPT",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Alter successful build receipt serialized bytes; reject fixed compilation receipt pin."
+    },
+    {
+      "Id": "P11-TOOLCHAIN-TEXT",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Change lean-toolchain version while preserving artifacts; reject configuration identity."
+    },
+    {
+      "Id": "P12-IMPORT-OMITTED",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Actual runtime import publication omits middle record; certificate expected inventory rejects."
+    },
+    {
+      "Id": "P13-IMPORT-DUPLICATE",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Actual runtime import publication duplicates middle record; certificate rejects before map collapse."
+    },
+    {
+      "Id": "P14-SOURCE-SPACE",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Append non-newline whitespace; canonical serialization preserves this significant source byte."
+    },
+    {
+      "Id": "P15-SOURCE-UTF8",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Add invalid UTF8 byte; production rejects source decoding and never credits a semantic case."
+    },
+    {
+      "Id": "P16-SOURCE-BOM",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Add UTF8 BOM; declared canonical source profile rejects."
+    },
+    {
+      "Id": "P17-SOURCE-BARE-CR",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Add bare CR; declared serialization only permits paired CRLF."
+    },
+    {
+      "Id": "P18-LEAN-EXECUTABLE",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Select PowerShell as Lean executable; production toolchain identity rejects before compilation."
+    },
+    {
+      "Id": "P19-EXTRA-ARTIFACT",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Add a foreign Init.olean to the verified cache; actual production rejects full artifact inventory and restores source/index/cache."
+    },
+    {
+      "Id": "P20-SHADOW-DIRECTORY",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Add an empty Init package directory that could shadow sysroot resolution; actual production rejects full directory inventory and restores."
+    },
+    {
+      "Id": "P21-ARTIFACT-SIDECAR",
+      "Expected": "REJECT_SETUP",
+      "Definition": "Add a Backend.olean.server sidecar that Lean could load opportunistically; actual production rejects full file inventory and restores."
+    },
+    {
+      "Id": "C01-OMITTED",
+      "Expected": "ACCEPT_PROBE",
+      "Definition": "Actual certificate script omission selects exactly80; no semantic stage."
+    },
+    {
+      "Id": "C02-VALID",
+      "Expected": "ACCEPT_PROBE",
+      "Definition": "Actual certificate script A01 selects exactly1; no semantic stage."
+    },
+    {
+      "Id": "C03-EMPTY",
+      "Expected": "REJECT_BOUNDARY",
+      "Definition": "Explicit bound-empty certificate selector rejects."
+    },
+    {
+      "Id": "C04-WHITESPACE",
+      "Expected": "REJECT_BOUNDARY",
+      "Definition": "Whitespace-only certificate selector rejects."
+    },
+    {
+      "Id": "C05-PADDED",
+      "Expected": "REJECT_BOUNDARY",
+      "Definition": "Padded otherwise-valid certificate selector rejects without trimming."
+    },
+    {
+      "Id": "C06-MALFORMED",
+      "Expected": "REJECT_BOUNDARY",
+      "Definition": "Comma-combined certificate selector rejects."
+    },
+    {
+      "Id": "C07-UNKNOWN",
+      "Expected": "REJECT_BOUNDARY",
+      "Definition": "Well-formed unknown certificate selector rejects."
+    },
+    {
+      "Id": "C08-CONTRADICTORY",
+      "Expected": "REJECT_BOUNDARY",
+      "Definition": "Certificate selector probe plus library selftest rejects incompatible modes."
+    },
+    {
+      "Id": "C09-MIDDLE-OMITTED",
+      "Expected": "REJECT_BOUNDARY",
+      "Definition": "Remove middle D/W field registry row; actual certificate script rejects."
+    },
+    {
+      "Id": "C10-MIDDLE-DUPLICATE",
+      "Expected": "REJECT_BOUNDARY",
+      "Definition": "Duplicate middle D/W field registry row; actual certificate script rejects."
+    },
+    {
+      "Id": "R01-OMITTED",
+      "Expected": "ACCEPT_PROBE",
+      "Definition": "Actual repair script omission selects exactly49; no case stage."
+    },
+    {
+      "Id": "R02-VALID",
+      "Expected": "ACCEPT_PROBE",
+      "Definition": "Actual repair script valid focus selects exactly1; no case stage."
+    },
+    {
+      "Id": "R03-EMPTY",
+      "Expected": "REJECT_BOUNDARY",
+      "Definition": "Explicit bound-empty repair selector rejects."
+    },
+    {
+      "Id": "R04-WHITESPACE",
+      "Expected": "REJECT_BOUNDARY",
+      "Definition": "Whitespace-only repair selector rejects."
+    },
+    {
+      "Id": "R05-PADDED",
+      "Expected": "REJECT_BOUNDARY",
+      "Definition": "Padded otherwise-valid repair selector rejects."
+    },
+    {
+      "Id": "R06-MALFORMED",
+      "Expected": "REJECT_BOUNDARY",
+      "Definition": "Comma-combined repair selector rejects."
+    },
+    {
+      "Id": "R07-UNKNOWN",
+      "Expected": "REJECT_BOUNDARY",
+      "Definition": "Well-formed unknown repair selector rejects."
+    },
+    {
+      "Id": "R08-MIDDLE-OMITTED",
+      "Expected": "REJECT_BOUNDARY",
+      "Definition": "Remove middle repair registry entry; actual repair entry point rejects."
+    },
+    {
+      "Id": "R09-MIDDLE-DUPLICATE",
+      "Expected": "REJECT_BOUNDARY",
+      "Definition": "Duplicate middle repair registry entry; actual repair entry point rejects."
+    },
+    {
+      "Id": "V01-SOLE-SETUP",
+      "Expected": "ACCEPT_CLASSIFIER",
+      "Definition": "Actual owned child sole intended stderr is admitted by actual Assert-R1Verdict."
+    },
+    {
+      "Id": "V02-MIXED-STDOUT",
+      "Expected": "REJECT_CLASSIFIER",
+      "Definition": "Intended stderr plus unrelated uncaught stdout must reject."
+    },
+    {
+      "Id": "V03-SUCCESS-STDOUT",
+      "Expected": "REJECT_CLASSIFIER",
+      "Definition": "Intended stderr plus semantic success receipt stdout must reject."
+    },
+    {
+      "Id": "V04-WRONG-STDERR",
+      "Expected": "REJECT_CLASSIFIER",
+      "Definition": "Expected diagnostic prefix with extra text must reject exact equality."
+    },
+    {
+      "Id": "V05-ALLOWED-PROGRESS",
+      "Expected": "ACCEPT_CLASSIFIER",
+      "Definition": "Exact ordered production setup progress and restoration records with intended stderr must accept."
+    },
+    {
+      "Id": "V06-DUPLICATE-PROGRESS",
+      "Expected": "REJECT_CLASSIFIER",
+      "Definition": "Duplicate otherwise-allowed stage record must reject."
+    },
+    {
+      "Id": "V07-REORDERED-PROGRESS",
+      "Expected": "REJECT_CLASSIFIER",
+      "Definition": "Reordered otherwise-allowed stage records must reject."
+    },
+    {
+      "Id": "V08-EXTRA-STDERR",
+      "Expected": "REJECT_CLASSIFIER",
+      "Definition": "Intended plus unrelated stderr diagnostic must reject."
+    },
+    {
+      "Id": "V09-PREFIX-HOLDOUT",
+      "Expected": "REJECT_CLASSIFIER",
+      "Definition": "Indented near-match progress record must reject unpadded grammar."
+    }
+  ],
+  "RuntimeRegistry": "runtime/REGISTRY.json; separate exact53-case registry consumed with its own production runner and final receipt",
+  "Semantics": "Setup rejections never count as typed rejections. Every mutation is private and restored in finally."
+}

@@ -1,0 +1,12 @@
+{
+  "Base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "Head": "bbbe652fa41fa40bf2530b5e2f09c4c225c0e896",
+  "ChangedFiles": 435,
+  "OutsideOwnedScope": [],
+  "SharedPackedChanges": 0,
+  "RootAliasChanges": 0,
+  "GateChanges": 0,
+  "SkillChanges": 0,
+  "ToolchainChanges": 0,
+  "Meaning": "Exact original-base path inventory respects the frozen write scope; no shared Packed or root alias change."
+}

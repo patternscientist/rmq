@@ -1,0 +1,194 @@
+{
+  "schema": "native1-binary-v3-integrity-v1",
+  "success": true,
+  "checkedUtc": "2026-09-12T12:53:16.2316138Z",
+  "buildReceipt": "commands/binary-build-20260912T122050486.json",
+  "buildReceiptSha256": "C62F6EC8198AF6636D0DDAE410CB6D122F520F784C8CEAA0FF69F2F539252BB7",
+  "manifest": "BINARY_V3_BUILD_MANIFEST.json",
+  "manifestBytes": 2779460,
+  "manifestSha256": "A4C20BCAA5E35402293DB522CE8736A81BD84FBC67FC2648693475504E5E1069",
+  "sourceCount": 31,
+  "generatedCCount": 19,
+  "artifactCount": 3,
+  "toolchainSchema": "native1-toolchain-v3",
+  "toolchainDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+  "sourceAndGeneratedCAndArtifactsMatch": true,
+  "importLibraryMatches": true,
+  "artifacts": [
+    {
+      "sha256": "7605525E9E89540D43DFD307E84DE24F03062A9632A59062682600D20E0168C4",
+      "path": "packed_rmq.dll"
+    },
+    {
+      "sha256": "7A6FB03165C0DFCBD8F58D4A7E04D383019D1633CC9E28F052B57E2FA27814D7",
+      "path": "packed-rmq-native.exe"
+    },
+    {
+      "sha256": "74F0AE4696EBD35DF6C230D25859FA83458F62BDDD2AE8EE6CAE90E59956BEC2",
+      "path": "packed-rmq-native-cpp.exe"
+    }
+  ],
+  "compilerStages": [
+    {
+      "stage": "lean-Primitive",
+      "exit": 0,
+      "seconds": 10.929,
+      "startedUtc": "2026-09-12T12:44:07.841447Z",
+      "completedUtc": "2026-09-12T12:44:18.807404Z"
+    },
+    {
+      "stage": "lean-Calculus",
+      "exit": 0,
+      "seconds": 13.495,
+      "startedUtc": "2026-09-12T12:44:18.8812445Z",
+      "completedUtc": "2026-09-12T12:44:32.4008225Z"
+    },
+    {
+      "stage": "lean-Structured",
+      "exit": 0,
+      "seconds": 9.316,
+      "startedUtc": "2026-09-12T12:44:32.4623772Z",
+      "completedUtc": "2026-09-12T12:44:41.8045803Z"
+    },
+    {
+      "stage": "lean-Compiler",
+      "exit": 0,
+      "seconds": 19.657,
+      "startedUtc": "2026-09-12T12:44:41.859663Z",
+      "completedUtc": "2026-09-12T12:45:01.5477071Z"
+    },
+    {
+      "stage": "lean-Frame",
+      "exit": 0,
+      "seconds": 8.863,
+      "startedUtc": "2026-09-12T12:45:01.6018338Z",
+      "completedUtc": "2026-09-12T12:45:10.4942906Z"
+    },
+    {
+      "stage": "lean-Scratch",
+      "exit": 0,
+      "seconds": 9.834,
+      "startedUtc": "2026-09-12T12:45:10.5462997Z",
+      "completedUtc": "2026-09-12T12:45:20.4031935Z"
+    },
+    {
+      "stage": "lean-Finite",
+      "exit": 0,
+      "seconds": 12.54,
+      "startedUtc": "2026-09-12T12:45:20.4709104Z",
+      "completedUtc": "2026-09-12T12:45:33.0453016Z"
+    },
+    {
+      "stage": "lean-Thin",
+      "exit": 0,
+      "seconds": 14.624,
+      "startedUtc": "2026-09-12T12:45:33.1141788Z",
+      "completedUtc": "2026-09-12T12:45:47.7671566Z"
+    },
+    {
+      "stage": "lean-Route",
+      "exit": 0,
+      "seconds": 13.148,
+      "startedUtc": "2026-09-12T12:45:47.8373785Z",
+      "completedUtc": "2026-09-12T12:46:01.0211294Z"
+    },
+    {
+      "stage": "lean-Limbs",
+      "exit": 0,
+      "seconds": 16.062,
+      "startedUtc": "2026-09-12T12:46:01.0921387Z",
+      "completedUtc": "2026-09-12T12:46:17.1798196Z"
+    },
+    {
+      "stage": "lean-Machine",
+      "exit": 0,
+      "seconds": 24.691,
+      "startedUtc": "2026-09-12T12:46:17.4641833Z",
+      "completedUtc": "2026-09-12T12:46:42.18112Z"
+    },
+    {
+      "stage": "lean-Observations",
+      "exit": 0,
+      "seconds": 24.854,
+      "startedUtc": "2026-09-12T12:46:42.272324Z",
+      "completedUtc": "2026-09-12T12:47:07.168318Z"
+    },
+    {
+      "stage": "lean-Codec",
+      "exit": 0,
+      "seconds": 15.366,
+      "startedUtc": "2026-09-12T12:47:07.6341362Z",
+      "completedUtc": "2026-09-12T12:47:23.0254648Z"
+    },
+    {
+      "stage": "lean-Binary",
+      "exit": 0,
+      "seconds": 36.303,
+      "startedUtc": "2026-09-12T12:47:23.1212552Z",
+      "completedUtc": "2026-09-12T12:47:59.4595326Z"
+    },
+    {
+      "stage": "lean-Bounds",
+      "exit": 0,
+      "seconds": 11.428,
+      "startedUtc": "2026-09-12T12:47:59.8215967Z",
+      "completedUtc": "2026-09-12T12:48:11.2738488Z"
+    },
+    {
+      "stage": "lean-Core",
+      "exit": 0,
+      "seconds": 18.095,
+      "startedUtc": "2026-09-12T12:48:11.4196862Z",
+      "completedUtc": "2026-09-12T12:48:29.5402393Z"
+    },
+    {
+      "stage": "lean-Cursor",
+      "exit": 0,
+      "seconds": 21.218,
+      "startedUtc": "2026-09-12T12:48:29.9302651Z",
+      "completedUtc": "2026-09-12T12:48:51.1804053Z"
+    },
+    {
+      "stage": "lean-Runtime",
+      "exit": 0,
+      "seconds": 12.077,
+      "startedUtc": "2026-09-12T12:48:51.2911443Z",
+      "completedUtc": "2026-09-12T12:49:03.4118878Z"
+    },
+    {
+      "stage": "lean-Entry",
+      "exit": 0,
+      "seconds": 14.049,
+      "startedUtc": "2026-09-12T12:49:03.488046Z",
+      "completedUtc": "2026-09-12T12:49:17.5633609Z"
+    },
+    {
+      "stage": "link-dll",
+      "exit": 0,
+      "seconds": 44.361,
+      "startedUtc": "2026-09-12T12:49:17.6553211Z",
+      "completedUtc": "2026-09-12T12:50:02.0952754Z"
+    },
+    {
+      "stage": "cargo-build",
+      "exit": 0,
+      "seconds": 5.951,
+      "startedUtc": "2026-09-12T12:50:02.1043625Z",
+      "completedUtc": "2026-09-12T12:50:08.0785933Z"
+    },
+    {
+      "stage": "cpp-import-library",
+      "exit": 0,
+      "seconds": 3.832,
+      "startedUtc": "2026-09-12T12:50:08.4362667Z",
+      "completedUtc": "2026-09-12T12:50:12.2894255Z"
+    },
+    {
+      "stage": "cpp-build",
+      "exit": 0,
+      "seconds": 11.375,
+      "startedUtc": "2026-09-12T12:50:12.2966933Z",
+      "completedUtc": "2026-09-12T12:50:23.6937765Z"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "Stage": "M07-allocationAddressesFit-producer",
+  "ExitCode": 0,
+  "Output": [],
+  "StandardOutput": [],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 13.602,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

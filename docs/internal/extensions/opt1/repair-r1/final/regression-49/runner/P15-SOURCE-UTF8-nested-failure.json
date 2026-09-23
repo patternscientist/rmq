@@ -1,0 +1,25 @@
+{
+  "ExpectedCase": "P15-SOURCE-UTF8",
+  "Intended": true,
+  "NotASemanticRejection": true,
+  "RawResult": {
+    "Stage": "import-freshness",
+    "ExitCode": 1,
+    "Output": [
+      "OPT1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\opt1-runtime-replay\\20260912T200945Z-12fdaaa273304c0e9dd685c40603b64f",
+      "Exception calling \"ReadAllText\" with \"2\" argument(s): \"Unable to translate bytes [FF] at index 0 from specified code page to Unicode.\""
+    ],
+    "StandardOutput": [
+      "OPT1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-windows\\.lake\\opt1-runtime-replay\\20260912T200945Z-12fdaaa273304c0e9dd685c40603b64f"
+    ],
+    "StandardError": [
+      "Exception calling \"ReadAllText\" with \"2\" argument(s): \"Unable to translate bytes [FF] at index 0 from specified code page to Unicode.\""
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 4.098,
+    "DeadlineSeconds": 600,
+    "Ownership": "kill-on-close-job"
+  }
+}

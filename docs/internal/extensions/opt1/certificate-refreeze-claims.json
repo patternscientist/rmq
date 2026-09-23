@@ -1,0 +1,22 @@
+{
+  "Label": "claims",
+  "Command": [
+    "powershell",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "scripts/claim_drift_scan.ps1",
+    "-Strict"
+  ],
+  "ExitCode": 0,
+  "Passed": true,
+  "DurationSeconds": 36.626,
+  "OutputSHA256": "645e20a155e82076a273e928a93e913fada108cc87e25616933b9cbd816e0b38",
+  "OutputBytes": 4854273,
+  "OutputSummary": [
+    "CLAIM-DRIFT: scan complete (1645 hits, 0 strict failures)"
+  ],
+  "Stderr": "",
+  "Scope": "final combined report/checker tree before local refreeze commit"
+}

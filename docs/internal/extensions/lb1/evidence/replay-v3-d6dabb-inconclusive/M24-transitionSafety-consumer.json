@@ -1,0 +1,43 @@
+{
+  "Stage": "M24-transitionSafety-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:191:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.transitionSafety",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    left < 2 ^ wordWidth xs.length →",
+    "      right < 2 ^ wordWidth xs.length →",
+    "        ∀ (index : Nat) (t : Transition),",
+    "          (run (reconstructedMemory xs) queryProgram queryBudget",
+    "                    (initialState xs.length left right)).transitions[index]? =",
+    "              some t →",
+    "            Instruction.Safe (wordWidth xs.length) t.before t.instruction ∧",
+    "              State.Fits (wordWidth xs.length) t.after : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:191:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.transitionSafety",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    left < 2 ^ wordWidth xs.length →",
+    "      right < 2 ^ wordWidth xs.length →",
+    "        ∀ (index : Nat) (t : Transition),",
+    "          (run (reconstructedMemory xs) queryProgram queryBudget",
+    "                    (initialState xs.length left right)).transitions[index]? =",
+    "              some t →",
+    "            Instruction.Safe (wordWidth xs.length) t.before t.instruction ∧",
+    "              State.Fits (wordWidth xs.length) t.after : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 41.332,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

@@ -1,0 +1,9 @@
+{
+  "Mode": "Production script/function regression, not a native machine performance claim",
+  "RegistrySHA256": "59DB124F0A3B42057977E2613BC0FB841EC62C8CEBD2E0E5BFD5003CFE4F9C0E",
+  "SourceCommit": "aecf4a580c591e8f694a3699e19e843198089194",
+  "WindowsCheckout": ".lake/r1/r1-windows",
+  "RunnerSHA256": "445A0BAD0E38D006840498EC6AAED33F8DFFB23CEA4384C3A9B1878102392E12",
+  "RawCheckout": ".lake/r1/r1-lf",
+  "POSIX": "UNEXECUTED"
+}

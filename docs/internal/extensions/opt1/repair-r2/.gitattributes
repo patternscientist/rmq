@@ -1,0 +1,16 @@
+# OPT-1-R2 exact local serialization; no shared, root or history rule changes.
+ACCEPTANCE_MATRIX.md text eol=lf
+RECEIPT_ARCHIVES.json text eol=lf
+verify_receipt_archives.py text eol=lf
+receipt_archive_control_helper.py text eol=lf
+receipt_archive_controls.json text eol=lf
+run_receipt_archive_controls.ps1 text eol=lf
+preservation/check_relocated.py text eol=lf
+preservation/check_relocated.ps1 text eol=lf
+preservation/relocation_controls.json text eol=lf
+REPORT.md text eol=lf
+receipts/scan-base-4cc9501.json text eol=lf
+receipts/scan-repaired-3b82967.json text eol=lf
+receipts/controls-3b82967.json text eol=lf
+receipts/preservation-3b82967.json text eol=lf
+receipts/checks-3b82967.json text eol=lf

@@ -86,6 +86,33 @@ Do not give a fresh auditor full transcripts or a previous report's conclusion.
 Use a short source-grounded digest only when history changes the delta's
 meaning.
 
+### Tag annotations: identity and scope only
+
+An audit tag's annotation is part of the packet whether or not it is listed as
+one. The prompt tells the auditor to `git checkout <tag>` and to confirm
+`git tag --points-at HEAD`, so the tag is in front of them by construction, and
+`git show <tag>` prints its annotation.
+
+**An audit-tag annotation answers exactly two questions: which commit is this,
+and what is in scope.** No verdict, no finding IDs, no requirement IDs, no
+statement about how a previous round went.
+
+This rule is written because `audit-v1-rc-3` broke it. Its annotation carried
+the prior `NOT_ACCEPTABLE` verdict, finding identifiers `P1-01` through
+`P1-03`, which requirements had been discharged, and the assertion that every
+prior finding had been reproduced and none were wrong. An auditor told what the
+last auditor found *and* that those findings were all correct is not blind: the
+cheapest path through their task has been marked for them. This contamination
+was predicted before RC-3 was commissioned, and it occurred.
+
+`scripts/tag_annotation_check.ps1` enforces it and runs in the aggregate gate.
+`audit-v1-rc-2` and `audit-v1-rc-3` are recorded there as known-contaminated:
+they are published on `origin` and were already handed to auditors, so
+rewriting them would break references someone may hold while undoing no
+contamination that has not already happened. They must not be reused for
+commissioning. The exception list is pinned by count and cannot absorb a new
+tag silently.
+
 Recommended cadence:
 
 1. fresh blind audit at every public paper capstone, trust-boundary change,

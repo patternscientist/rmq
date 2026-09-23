@@ -1,6 +1,8 @@
 name = "rmq"
 version = "0.1.0"
 defaultTargets = ["RMQ"]
+# Kernel reduction of the PRE program pins needs more than the Linux worker default.
+moreLeanArgs = ["-s", "65536"]
 
 [[lean_lib]]
 name = "RMQ"
@@ -36,3 +38,23 @@ root = "RMQ.Validation.SuccinctClassic"
 [[lean_exe]]
 name = "rmq_succinct_classic_cost_harness"
 root = "RMQ.Validation.SuccinctClassicCostHarness"
+
+[[lean_exe]]
+name = "rmq_packed_bitvector_validate"
+root = "RMQ.Validation.PackedBitvector"
+
+[[lean_exe]]
+name = "rmq_variable_payload_lower_bound"
+root = "RMQ.Validation.VariablePayloadLowerBound"
+
+[[lean_exe]]
+name = "rmq_packed_native_validate"
+root = "RMQ.Validation.PackedNative"
+
+[[lean_exe]]
+name = "rmq_packed_optimized_validate"
+root = "RMQ.Validation.PackedOptimized"
+
+[[lean_exe]]
+name = "rmq_preprocessing_validate"
+root = "RMQ.Validation.Preprocessing"

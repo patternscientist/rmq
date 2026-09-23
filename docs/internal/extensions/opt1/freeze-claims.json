@@ -1,0 +1,23 @@
+{
+  "Command": [
+    "powershell",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "scripts/claim_drift_scan.ps1",
+    "-Strict"
+  ],
+  "ExitCode": 1,
+  "Passed": false,
+  "DurationSeconds": 20.8,
+  "Stderr": "",
+  "Tree": "staged verified proof/replay source freeze over 8e355fda7788077f548865c1d6acf2ae5e88da55",
+  "FullOutputSHA256": "cc1656975b346e35e3c15f50a68f74474a8ac5f4fafb90555996665f5eb4a90c",
+  "FullOutputBytes": 4851042,
+  "OutputSummary": [
+    "CLAIM-DRIFT: strict mode found 1 unapproved sensitive match",
+    "docs/FAMILY_SUMMARY.md:3461: historical budget paragraph requires explicit baseline theorem attribution."
+  ],
+  "OutputSummaryNote": "Raw scan contains recursive quoted prior evidence. Summary preserves the actual fail and final verdict; no pass claimed."
+}

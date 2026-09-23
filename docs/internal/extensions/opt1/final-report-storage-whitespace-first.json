@@ -1,0 +1,13 @@
+{
+  "Command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "ExitCode": 1,
+  "Phase": "after byte-preservation attributes, before declaring CRLF line endings for whitespace checks",
+  "Observed": "Git identified the newly preserved carriage returns as trailing whitespace",
+  "Repair": "Retain default blank-at-eol/blank-at-eof/space-before-tab checks and add only cr-at-eol for the exact byte-preserved evidence paths",
+  "NoChangedReplayInputBytes": true
+}

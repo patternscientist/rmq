@@ -8950,3 +8950,5050 @@ Decision, three parts:
 Result: 264 lines to 165, and every remaining section is something the auditor
 acts on -- the commit, independence rules, the claim, the rows, how to treat the
 gates, and the deliverable.
+
+## WDD-20260809-028 -- repair the four gate false negatives found by external audit
+
+Status: Accepted.
+
+Date: 2026-08-09
+
+The 2026-08-09 fresh-blind audit returned `NOT_ACCEPTABLE` and demonstrated
+concrete false negatives in four required gates. Every one was reproduced here
+before being fixed, and each fix is verified against the auditor's own mutation.
+
+**Two of the four are gates this project wrote and claimed to have verified by
+injection.** They failed for the same reason in both cases: the injection tested
+the failure shape the author had in mind, not the space of failures. That is the
+defect this repository has been cataloguing in other people's checks all week,
+reproduced inside its own.
+
+| gate | defect | fix | verified by |
+| --- | --- | --- | --- |
+| `hub_closure_lint.ps1` | parsed `^import` only; Lean accepts leading whitespace, so an indented RMQ-specific import was invisible | `^\s*import` | the auditor's indented injection now exits 1; the self-test injects the indented shape |
+| `constant_sync_check.ps1` | asked only whether the numeral appeared *anywhere* in a surface; corrupting one of five `427`s left four and passed | per-surface **anchors** (claim-shaped phrases that must carry the value) **plus a pinned occurrence count** | the auditor's mutation exits 1; so does corrupting a non-anchored occurrence |
+| `claim_drift_scan.ps1` | exited 0 when a requested scan root did not exist -- a scan of nothing looked identical to a scan that found nothing | strict mode fails on any missing requested root, and on scanning nothing at all | missing root under `-Strict` exits 1; normal strict run unchanged at exit 0 |
+| `paper/check_paper.ps1` | phrase list did not cover conventional-RAM constant-time claims | six model-vocabulary patterns added, with positive fixtures | unattributed injection produces 2 failures; the same sentence attributed to a real bib key is excused |
+
+Also fixed, the fifth finding: **`gate.ps1` never invoked `paper/check_paper.ps1`**,
+so a manuscript citation, ledger, insertion-marker or claim-language failure
+could pass the advertised aggregate gate. It now runs as step 7c with
+`-SelfTest`.
+
+One design point worth recording. Extending the paper checker's patterns
+initially broke the baseline on `RELATED_WORK_LEDGER.md`, which correctly
+describes Fischer and Heun's classical constant-query-time result. The right fix
+was not to narrow the pattern but to teach the attribution allowance that a
+markdown ledger cites with a **bib key in backticks** rather than `\cite{}` --
+and to match against the keys actually parsed from `references.bib`, so the
+allowance recognises real attributions rather than anything key-shaped.
+
+The count arm of the constant check will fail on any legitimate edit that
+changes how often a constant appears. That friction is the mechanism, not a side
+effect: it forces the pin and the prose to move together, exactly as the Lean-side
+pin does.
+
+## WDD-20260809-029 -- a resumable handoff for the RC-1 correction round
+
+Status: Accepted.
+
+Date: 2026-08-09
+
+The correction round following the `NOT_ACCEPTABLE` audit is partly done and the
+remaining piece -- promoting the packed result into `RMQPaper` -- changes the
+Lean import graph and needs a full build. Starting that at the end of a long
+working stretch is how the union-find cordon was corrupted and reverted earlier
+in the same session.
+
+Decision: stop, push what is verified, and write
+`docs/internal/RC1_CORRECTION_HANDOFF.md` so the round resumes cold.
+
+It records what a resumer would otherwise have to rediscover: which auditor
+items are closed and by which verification; that `WDD-20260807-014` is currently
+**void** by its own terms until the corrected wording is re-audited; the measured
+fact that `RMQPaper`'s closure contains zero `PackedCellProbe` modules; the exact
+import chain that makes module-level `210`-independence false while
+declaration-level independence holds; that the base repin must happen **last**;
+and that the next tag must not begin with `v` or it publishes a release.
+
+Two things are recorded as unresolved rather than papered over. Promoting the
+packed result **grows** the reviewer surface the owner wants reduced -- both
+goals are legitimate and the likely resolution is a separate minimal paper root,
+which is a design decision and not something to settle silently mid-edit. And
+one claim in the parallel non-blind review is simply **wrong** -- it reports no
+`#print axioms` for the packed capstone, which exists at
+`scripts/axiom_check.lean:1232` -- so a resumer does not act on it.
+
+The handoff also carries the method rule that cost this session five separate
+file corruptions: edit CRLF files by exact-string replacement, never Python
+`str.replace`, and verify the *effect* rather than an exit status.
+
+## WDD-20260809-016 -- audit the paper's headline claim from the headline inventory
+
+Status: Accepted. Date: 2026-08-09. Pairs with DD-20260809-097.
+
+`scripts/headline_axiom_check.lean` now runs
+`#print axioms RMQ.Headlines.succinctRMQPackedCellProbeArchitecture`.
+
+The producer was already audited from `scripts/axiom_check.lean:1232`, so this
+adds no new trust coverage in the strict sense, and a reviewer who runs the full
+inventory already saw it. The reason to duplicate it anyway is that the two
+scripts answer different questions. `axiom_check.lean` is the exhaustive
+inventory; `headline_axiom_check.lean` is the short one a reviewer runs to check
+**the claims the paper actually makes**, in one command and one screenful. As of
+DD-20260809-097 the packed cell-probe architecture is a paper-exported headline
+claim, so its absence from the headline inventory was a real gap between what the
+paper asserts and what the cheap check covers -- the same class of gap as the
+`RMQPaper` closure defect that occasioned it.
+
+The 2026-08-09 parallel review asserted no `#print axioms` existed for this
+capstone at all. That was **wrong** -- `axiom_check.lean:1232` predates it. The
+change is made on the headline-surface argument above, not on that finding.
+
+Verified: `lake env lean scripts/headline_axiom_check.lean` exit 0 in 61s;
+reports `[propext, Classical.choice, Quot.sound]`; no `sorryAx`, no
+`ofReduceBool`, no errors.
+
+## WDD-20260809-017 -- make the two-`210` independence claim a checked property
+
+Status: Accepted. Date: 2026-08-09. Closes fresh-blind auditor item 7.
+
+`paper/THEOREM_LEDGER.md` row `L-PACK-00` asserts that the `210` inside
+`427 = 1 + 2*3 + 2*210` is the packed controller's structural countdown and not
+the charged-trace budget, in a precise form: "the packed proof references neither
+`SuccinctClassic.queryCost` nor `nonSyntheticWeight`". That was prose about a
+proof term. `scripts/independence_check.lean` (gate step 3b) now walks the
+transitive constant closure of `packedReviewerControllerMeasure_valid_eq_427`'s
+type and value and fails if either charged declaration appears. Observed: 1855
+constants, neither present.
+
+**Scope is deliberately narrow and matches the ledger.** The property is about
+declarations and proof terms, **not** module closures -- the packed module's
+compilation closure *does* transitively reach the charged declaration. The check
+guards the true property; guarding the false one would fail immediately and
+tempt someone to weaken it.
+
+### The vacuity guards, and why there are three
+
+Written into the script because a dependency check that examines nothing passes
+everything, and that failure is invisible from a green run.
+
+1. **Existence.** Every name is resolved first, so a rename errors instead of
+   silently checking nothing.
+2. **Two positive controls.** Control A is type-reachable; control B
+   (`valueOnlyControl`, defined in the script) has a type mentioning only
+   `TraceEvent` and `Nat`, so its witness is reachable *only* through the body.
+3. **Collapse floor** on the target's closure size (500, against an observed
+   1855).
+
+Guards 2B and 3 exist because the first version had only guard 1 and control A,
+**and injection testing broke it**:
+
+- Making the collector skip proof terms left control A green -- it finds its
+  witness in the *type* -- while the target's closure collapsed `1855 -> 16` and
+  the script still reported PASS.
+- Making the collector non-transitive left **both** controls green, because both
+  are shallow. Only the floor caught it (`74 < 500`).
+
+That is the third instance this session of the same defect class -- an injection
+that tests the failure shape the author imagined rather than the space of
+failures -- and the first caught in this project's own gate before shipping
+rather than by an external auditor. The general lesson is recorded here because
+it keeps recurring: **a check's controls must exercise every mechanism the check
+depends on, and a blunt magnitude tripwire catches the regressions the
+targeted controls cannot see.**
+
+Verified: baseline exit 0, both controls green; three injections (no proof-term
+walk, non-transitive walk, renamed target) each exit 1 with a distinct message.
+
+## WDD-20260809-018 -- cover the fixture probe count in the axiom inventory
+
+Status: Accepted. Date: 2026-08-09. Companion to DD-20260809-100.
+
+`scripts/axiom_check.lean` gains
+`#print axioms RMQ.SuccinctFinal.PackedCellProbe.egcpFixtureTraceLength`.
+
+Follows the precedent set at B6 REQ-B6-08, where the R1 repair made the rung's
+trust evidence durable in the inventories rather than leaving it as a one-time
+observation in a report. A fixture fact that documents cite by number should be
+covered by the same standing check as the theorems around it, so that a future
+change which reintroduces an axiom dependency is caught by the gate rather than
+by the next auditor. Reports: `[propext, Quot.sound]`.
+
+Deliberately in the broad inventory and **not** in
+`scripts/headline_axiom_check.lean`: the headline inventory is the short list of
+claims the paper makes (WDD-20260809-016), and this is a fixture detail, not a
+headline claim. Adding it there would dilute exactly the one-screenful property
+that makes the headline inventory worth running.
+
+## WDD-20260809-019 -- verify the design-decision gate the way CI runs it
+
+Status: Accepted. Date: 2026-08-09.
+
+`docs/internal/RC1_CORRECTION_HANDOFF.md` is classified workflow/process-sensitive
+by `scripts/design_decision_check.ps1`, so **every commit that touches it must
+also update this file**. Two commits in this round did not (`2bd03d8`, `9389655`),
+and CI failed on both.
+
+The interesting part is why local verification missed it. The gate was run
+locally as `-Base HEAD~2` / `HEAD~3` -- spanning the whole group of commits just
+made, where some other commit in the range did update this file, so the range
+looked satisfied. CI runs `-Base HEAD~1`: **each commit is checked against its own
+parent**. A range that is collectively compliant can contain individual commits
+that are not.
+
+Rule, for this repository and generally: **verify a gate at the granularity the
+gate runs at.** For `design_decision_check` that means `-Base HEAD~1` after each
+commit, not one range check at the end of a batch. Checking a wider range is not
+a conservative approximation of checking each step -- it is a weaker property that
+can hold when the real one fails.
+
+This is the same shape as the two gate defects the fresh-blind audit found and
+the collector defect caught in WDD-20260809-017: a verification that resembles
+the real check closely enough to feel conclusive while testing something weaker.
+
+## WDD-20260809-020 -- ad-hoc greps are sampling, not verification
+
+Status: Accepted. Date: 2026-08-09.
+
+Auditing the `:NNN` citations in `paper/THEOREM_LEDGER.md` took three sweeps and
+produced three different answers, the first two confidently wrong:
+
+1. Matched `:NNN` only on lines also containing a `` `....lean` `` path. The
+   `File:` line comes *after* `Declaration:` in every row, so all citations
+   written inside `Declaration:` entries were invisible. Found 9 of 27; reported
+   "nine citations, seven correct".
+2. Attributed each citation to the nearest *preceding* `.lean` mention. Found all
+   27 but pointed several at the wrong file, manufacturing three "past EOF"
+   defects that did not exist.
+3. Parsed rows, collected every `.lean` file named in the row, resolved each
+   citation against all of them. 24 resolve; 3 genuinely wrong.
+
+Sweep 1's answer was reported before sweep 3 existed. One real defect
+(`L-ARCH-01`) appears only in sweep 3.
+
+The rule this establishes: **a grep over a structured document is sampling with
+an unknown miss rate, not verification.** It is acceptable for locating things.
+It is not acceptable as the basis for a claim about *all* of something --
+"every citation resolves", "no surface mentions X" -- because the miss rate is
+invisible in a clean result. When the claim is universal, parse the structure, or
+state the claim as "a grep for P found no hits", which is a different and weaker
+sentence.
+
+This is the same defect class as the vacuous gates in WDD-20260809-017 and the
+range-versus-per-commit error in WDD-20260809-019: a check that resembles the
+real property closely enough to feel conclusive while testing something weaker.
+Three instances in one day is the argument for writing the checker rather than
+repeating the sweep.
+
+## WDD-20260809-021 -- `scripts/ledger_decl_check.lean` as gate step 3c
+
+Status: Accepted. Date: 2026-08-09. Companion to DD-20260809-102.
+
+Checks that every declaration cited by an `ACCEPTED_BASE` row of
+`paper/THEOREM_LEDGER.md` exists in the environment. A rename or removal makes
+those rows assert something false **without breaking any build**, so nothing else
+in the gate catches it.
+
+Existence only. Whether a declaration still says what its row claims belongs to
+the row's proposition text and to the audit. Saying so in the script matters:
+the failure mode for this class of check is a green run being read as more than
+it proves.
+
+Three guards, following the pattern this round has had to learn repeatedly:
+
+1. **Count floor** (`expectedCount = 53`) -- emptying the name list fails rather
+   than passes vacuously.
+2. **Negative control** -- a deliberately absent name that must not resolve. A
+   check that finds everything is as useless as one that finds nothing, and only
+   a negative control tells them apart.
+3. **Wide imports** -- the library root *and* every artifact root.
+
+Guard 3 exists because of a live near-miss. The first run reported 2 of 53
+absent. Both existed: `RMQ/Headlines.lean` is imported only by the library root
+`RMQ.lean` and is **not** in the closure of `RMQPaper`, `RMQHub`, or the spoke
+roots, though it defines headline aliases that ledger rows cite. Trusting that
+run would have produced two phantom ledger defects. An import list that is too
+narrow turns an existence check into a false-positive generator -- the mirror of
+the vacuity failures in WDD-20260809-017, and worth naming because a check that
+cries wolf gets weakened, and weakening it is how the real defect gets through.
+
+Verified: baseline PASS at 53 names; three injections each exit 1 -- a renamed
+citation, an emptied list, and a negative control made to resolve.
+
+## WDD-20260809-022 -- retarget the commissioning prompt to `audit-v1-rc-2`, add `RC-11`
+
+Status: Accepted. Date: 2026-08-09.
+
+Nine references retargeted from `audit-v1-rc-1`. **Nine, not the eight a `grep -n`
+reported** -- one line carries two occurrences, and the count assertion in the
+edit script caught it. The same line-versus-occurrence distinction had already
+bitten the citation audit and the substrate repin today; three times in one day
+is enough to state it as a rule: **`grep -c` counts lines, not occurrences, and
+for a rewrite the occurrence count is the one that matters.**
+
+New row `RC-11`, artifact-root correspondence: take the theorem
+`docs/PAPER_CLAIM_CORRESPONDENCE.md` names as the accepted claim and check that
+importing the paper artifact root actually yields it.
+
+`RC-11` exists because the defect it targets was found by a *non-blind* review
+rather than by the fresh-blind audit, and no existing row would have caught it.
+`RC-10` compares the manuscript against the theorems that exist; it never asks
+"which single import gives me the paper's theorem?", so `RMQPaper`'s closure
+could hold zero `PackedCellProbe` modules while the claim map named the packed
+theorem, and every row still discharged.
+
+The general lesson for this row set: a claim map and a build artifact can each be
+internally consistent and disagree with each other. Rows that check surfaces
+against source do not catch that; only a row that starts from the artifact and
+asks what it exports does.
+
+## WDD-20260809-023 -- RC-1 round logged; handoff reduced to a resume card
+
+Status: Accepted. Date: 2026-08-09.
+
+Writes the 2026-08-09 round-log entry in `docs/internal/AUDIT_AND_A_DESIGN.md`.
+It was **owed**: the standing default is that every audit round is logged there,
+and the RC-1 fresh-blind round had been dispositioned and corrected in full
+without an entry. Worth noting how that happened -- the round was busy and
+productive, and the log is the one artifact whose absence nothing else notices.
+A missing round-log entry has no failing gate.
+
+The entry deliberately records the non-blind review alongside the blind audit,
+because the round's sharpest finding (`RMQPaper` exporting the wrong theorem)
+came from the non-blind one and no `RC` row would have caught it. A round log
+that recorded only the commissioned audit would have made that look like a
+coincidence rather than a coverage gap, and the gap is the reusable part.
+
+`RC1_CORRECTION_HANDOFF.md` is rewritten as a short resume card. Its detailed
+working notes are kept below a "superseded" heading rather than deleted: they
+record what was believed mid-round, including one belief the ledger header later
+refuted (that per-row `ACCEPTED_BASE` commits should not move on a repin).
+Deleting them would erase evidence of a corrected mistake, which is exactly the
+evidence a later auditor wants.
+
+## WDD-20260812-024 -- the Windows descendant barrier, and the CI gap that hid it
+
+Status: Accepted. Date: 2026-08-12. Answers `P1-03` of the 2026-08-12
+fresh-blind audit: `scripts/gate.ps1` exited 1 on the required Windows path at
+the M1 owned-process deadline control, "sleeper child 19096 survived owned-tree
+termination".
+
+**Diagnosis.** The two ownership implementations were asymmetric.
+`Stop-RMQPosixOwnedProcessGroup` sends SIGTERM, **waits for the whole group to
+disappear**, escalates to SIGKILL, waits again, and throws on survivors. The
+Windows path closed the kill-on-close job and then waited on
+`$process.WaitForExit` -- the **root only**. Job termination is asynchronous, so
+a grandchild could still be enumerable when a caller asserted the tree was dead.
+The kill was never the bug; the missing wait was.
+
+**Fix.** `Stop-RMQWindowsOwnedJob` captures the job's member PID list via
+`QueryInformationJobObject(JobObjectBasicProcessIdList)` *before* closing the
+handle -- closing is what starts the kill, and members cannot be enumerated
+afterwards -- then closes, then polls until every member is gone, and throws on
+survivors. Same shape as the POSIX barrier, which is the point.
+
+**The gap that let this reach a release candidate.** Every CI job ran
+`ubuntu-24.04`. The Windows ownership path had **no CI coverage at all**, so
+"both workflows green" was, for this code, a statement about the other branch of
+an `if`. Two new jobs run the ownership self-tests standalone on
+`windows-2022` and `ubuntu-24.04`; they need no Lean build and cost about a
+minute each, where the equivalent assertions inside the M1 and topology runners
+sit behind a full build.
+
+**An inconclusive self-test now exits nonzero.** The barrier test reports
+`INCONCLUSIVE` when the grandchild never starts -- it then proves nothing, and a
+sandbox that forbids grandchild creation produces exactly that. The standalone
+entry point treats inconclusive as failure unless `-AllowInconclusive` is passed,
+which CI never does. Reporting PASS for a run that could not create the
+condition it checks would reproduce, inside the regression itself, the defect
+class this round exists to eliminate.
+
+Honest limit on the verification: the barrier was validated here against normal
+completion and the timeout path (job members enumerated, zero survivors after
+the wait), but **the grandchild case could not be exercised in this sandbox** --
+`Start-Process` from the bounded child never spawned, which is why the
+inconclusive path exists and why it is loud. The Windows CI job is what will
+actually exercise it.
+
+## WDD-20260812-025 -- guard the property, not the sentence (`independence_check` forbidden set)
+
+Status: Accepted. Date: 2026-08-12. Answers `P2-01`.
+
+The forbidden set held exactly two names, `queryCost` and `nonSyntheticWeight` --
+transcribed from the ledger sentence that names those two. A future packed proof
+could have reached the charged cost through `CanonicalRMQChargedTraceCostAlgebra`,
+the accepted instance, the aggregate value, or any `_eq` theorem, and passed
+untouched. Now all eight are listed.
+
+The instructive part is the injection history. This checker was validated with
+three injections -- a collector that skipped proof terms, a non-transitive
+collector, and a renamed target. All three tested the **mechanism**; not one
+asked whether the **set** was the right set. A dependency check is only as strong
+as its forbidden list, and a list transcribed from prose inherits the prose's
+scope rather than the property's.
+
+Rule worth keeping: when a check is derived from a sentence, the sentence is a
+*symptom* of the property, not the property. Enumerate what the property
+quantifies over.
+
+## WDD-20260812-026 -- a claim-drift rule for exactness and tightness
+
+Status: Accepted. Date: 2026-08-12. Prevention for `P1-01`.
+
+`scripts/claim_drift_scan.ps1 -Strict` exited 0 on all three live `P1-01`
+counterexamples. It had no rule for equality-versus-inequality or tightness
+language, and `constant_sync_check.ps1` reads numerals without ever seeing the
+relation around them -- so "the cost is exactly `210`" satisfies a check pinned
+to the numeral `210` perfectly.
+
+New term `current-charged-cap-exactness-or-tightness` forbids exact/tight/attained
+formulations of `210` and `427` outside `docs/internal/` and the novelty log,
+with an allowance for lines that mark a correction or state the upper-bound
+reading.
+
+Injection-verified against the **real** defects rather than imagined ones:
+reinstating the audited "is exactly `210`" wording exits 1; reinstating "a tight
+component-wise cap" exits 1; the corrected tree exits 0.
+
+One consequence worth recording, because it will bite the next editor: the
+scanner is **line-based**, so a correction note only excuses the line it sits on.
+The first repair here put "exactly `210`" and its "until 2026-08-12" excuse on
+adjacent lines and still failed. Keep the marker on the same line as the phrase.
+
+## WDD-20260812-027 -- amendment to WDD-20260812-024: the barrier masked its own diagnosis
+
+Status: Accepted. Date: 2026-08-13.
+
+The first version of the Windows barrier introduced a second defect while fixing
+the first. `Stop-RMQWindowsOwnedJob` closes the job handle and *then* throws if a
+member survives. The callers were written as
+
+    $null = Stop-RMQWindowsOwnedJob $jobHandle $process.Id
+    $jobHandle = [IntPtr]::Zero
+
+so when the barrier threw, the assignment never ran, the caller still held a
+non-zero handle, and `finally` invoked the barrier a second time. The second
+`CloseHandle` failed on an already-closed handle, and the surfaced error became
+
+    Exception calling "Close" with "1" argument(s): "The handle is invalid"
+
+which replaced the true "survived cleanup" diagnosis with a misleading one. The
+first full-gate run after the fix failed exactly this way, at
+`CLEAN-BASELINE/PORTABILITY` rather than at the deadline control.
+
+Fixed by handing ownership of the handle to the barrier **before** calling it:
+the caller zeroes its own copy first, so a throw cannot cause a second close.
+
+The lesson is narrower than the earlier ones in this round and worth keeping
+separate: **a cleanup routine that both releases a resource and validates the
+release must transfer ownership before it can fail**, or its failure path will
+corrupt the diagnosis of the very condition it exists to report. An error
+handler that destroys evidence is worse than no error handler, because a wrong
+diagnosis costs more than a missing one.
+
+## WDD-20260813-028 -- the barrier's empty-collection defect, and a pinned self-test
+
+Status: Accepted. Date: 2026-08-13. Second amendment to WDD-20260812-024.
+
+The second full-gate run failed with
+
+    The property 'Count' cannot be found on this object.
+
+A PowerShell pipeline that matches nothing yields `$null` rather than an empty
+array once it leaves a scriptblock, and `$null.Count` throws. The barrier's wait
+loop evaluated `(& $alive).Count`, so it failed **whenever no member survived**
+-- that is, on the healthy path. A barrier written to detect survivors crashed
+precisely when there were none.
+
+Fixed with a named `Get-RMQAliveProcessIds` helper whose result is wrapped in
+`@(...)` at every call site.
+
+**Three defects in one function across two days**: the missing wait (the
+original audit finding), the handle released after the throw
+(WDD-20260812-027), and this. All three were caught by running the thing, none
+by reading it, and two of the three were caught only by a ~90-minute aggregate
+gate -- an expensive oracle for a unit-level bug.
+
+So the edge cases are now pinned in `Invoke-RMQOwnedProcessCollectionSelfTest`,
+which the standalone `-SelfTest` entry point runs and which therefore executes
+in the new Windows and POSIX CI jobs in about a minute: null, empty, all-dead,
+one-live and mixed ID lists, a zero-handle barrier, and a live job with no
+surviving members.
+
+The rule worth carrying: **when a fix lands in a function reached only through a
+long integration run, write the unit assertions first.** Two of these three
+defects would have been caught in seconds by the five-line table now committed
+alongside them.
+
+## WDD-20260813-029 -- the topology deadline self-test raced its own fixture
+
+Status: Accepted. Date: 2026-08-13. A **pre-existing** defect, newly visible.
+
+With the M1 deadline control repaired, the aggregate gate reached
+`scripts/paper_topology_lint_regression.ps1` for the first time and failed there:
+
+    sleeper child PID receipt was not written
+
+Cause: that harness bounded its sleeper at `SelfTestDeadlineSeconds = 5`, while
+its twin in `m1_certificate_mutation_regression.ps1` uses `20`. The sleeper must
+complete **two sequential PowerShell startups** -- its own, then the grandchild
+it spawns via `Start-Process` -- before it can write the PID receipt the
+assertion requires. Five seconds races that on a loaded machine, and the loser
+looks like a broken harness rather than a deadline too tight for its own setup.
+Raised to 20 for parity.
+
+Two things worth recording.
+
+**This was not introduced by this round.** `git log` on that file shows no commit
+from this work. It has been fragile for some time and stayed invisible because
+the M1 control failed first on the runs where it failed at all.
+
+**Correction, same day.** An earlier draft of this entry said "the aggregate gate
+had never actually run to completion on Windows". That is **not supported**, and
+this repository's own records contradict it:
+`docs/internal/M1_REVIEWER_NATIVE_ADEQUACY_ACCEPTANCE_MATRIX.md` carries a
+Windows deadline-control PASS at `98.3s`, and a full `scripts/gate.ps1` exit 0 in
+`3101.473s` covering all 16 topology cases. (That aggregate receipt's platform is
+not named in the cell, so it settles neither reading; the Windows deadline pass
+is unambiguous.) The claim was inferred from two consecutive failures -- the
+auditor's and this round's -- which does not license "never".
+
+The accurate account is worse for the check and better for the history: the
+missing barrier did not make the Windows control *fail*, it made it a **race
+that usually wins**. Closing a kill-on-close job terminates the tree almost at
+once, and the assertion ran after a `WaitForExit(10000)` on the root, so the
+grandchild was normally already gone. It loses only under load -- which is
+exactly the topology 5s-versus-20s story as well. Windows receipts therefore
+mostly said PASS, and a genuine defect presented as an occasional flake.
+
+What made that survivable is the CI gap, which *is* separately verifiable: every
+job ran `ubuntu-24.04`, so the Windows path had no automated coverage and the
+race could never be observed repeatedly or bisected. A flake with no
+reproduction gets charged to the machine rather than to the code.
+
+**Divergent twins are a defect in themselves.** Two harnesses implementing the
+same control with a 4x difference in budget, and no comment explaining why, is
+the shape that hides this class of bug. When a check is duplicated, the
+duplicates should agree or say why they differ.
+
+General rule: **a self-test whose deadline can expire during its own fixture
+setup measures the machine, not the property.** Bound the property, and give the
+setup unconditional headroom.
+
+## WDD-20260813-030 -- RC-2 round logged; resume card written
+
+Status: Accepted. Date: 2026-08-13.
+
+Writes the 2026-08-12/13 round-log entry in `docs/internal/AUDIT_AND_A_DESIGN.md`
+and adds `docs/internal/RC2_CORRECTION_HANDOFF.md`. Same standing default as
+`WDD-20260809-023`: every audit round is logged, and a missing round-log entry is
+the one artifact whose absence no gate catches.
+
+The entry records the auditor's four `P1`s, but the reusable content is what the
+*repair* produced: three further defects, two of them introduced by the fix
+itself, none found by reading. It also carries the correction to the earlier
+"never ran on Windows" claim, because a round log that quietly drops a retracted
+statement is worth less than one that shows the retraction.
+
+The resume card states the gate cost honestly -- **>90 minutes on Windows, budget
+3-4 hours** -- and the sequencing constraint that cost this round two runs: the
+gate must be run on the exact tree to be tagged, because any edit afterwards
+invalidates the evidence it produced.
+
+## WDD-20260813-031 -- retarget the prompt to `audit-v1-rc-3`; name the ownership gate
+
+Status: Accepted. Date: 2026-08-13.
+
+Nine tag references retargeted. Two additions, both earned by this round's
+findings:
+
+- The gate table now lists `scripts/owned_process_tree.ps1 -SelfTest` and what it
+  asserts. It was previously unlisted, so an auditor enumerating the gates would
+  not have found the layer whose defect produced `P1-03`.
+- A note that `scripts/gate.ps1` must be run **to completion** with the platform
+  named, that its ownership layer has two implementations of which only one
+  executes per host -- so a green run says nothing about the other -- and that an
+  **inconclusive** self-test must be treated as uncovered rather than as
+  evidence.
+
+That last sentence is the reusable one. This round added a self-test that reports
+`INCONCLUSIVE` when it cannot create the condition it checks, precisely so a
+restricted environment cannot be mistaken for a pass. Telling the auditor how to
+read that report closes the loop; otherwise the honest signal gets rounded up to
+green by whoever reads the log next.
+
+**Tag/gate sequencing, disclosed.** The Windows `GATE PASS` was captured on
+`60c81ae`. This commit changes one markdown file under `docs/internal/`, so the
+tagged tree differs from the gate-verified tree by that file. CI re-runs the
+full aggregate gate plus both ownership jobs on the tagged commit; the local
+Windows run is cited for `60c81ae` and the delta is stated rather than papered
+over. The alternative -- another ~2.5-hour Windows gate for a prose edit -- buys
+no evidence that CI does not already provide for the changed file.
+
+## WDD-20260816-032 -- RC-4 gate and checker repairs
+
+Status: Accepted. Date: 2026-08-16. Answers `P1-2`, `P1-3`, `P2-1`, `P2-3`,
+`P2-4` and `P3-1` of the 2026-08-15 fresh-blind audit. Every finding was
+reproduced before repair.
+
+### The required gate now runs the release headline's adversarial suite (`P1-2`)
+
+`scripts/gate.ps1` invoked the 41-case M1 registry and **neither** EG-CP replay,
+so the aggregate's advertised mutation coverage excluded the packed cell-probe
+architecture -- the release headline. Both suites were committed and both pass
+when run by hand; nothing required them. A coordinated implementation/proof edit
+could keep elaboration green while making a sibling store, hidden oracle,
+fabricated cap or weakened consumer acceptable. Both now run from the aggregate
+with propagated exit codes.
+
+This survived two prior fresh-blind audits and a coordinator review. What made
+it invisible is that every individual piece was green: the suites passed, the
+gate passed, and no one asked whether the gate *contained* the suites.
+
+### Deadlines are derived, not chosen (`P1-3`)
+
+Six topology fixtures timed out at the 300 s per-case bound on the auditor's
+Windows runner; a focused warm rerun of one produced the intended reject in
+298.145 s -- 1.855 s of margin. The same cases run 120-180 s on coordinator
+hardware. The verdicts were never wrong; the budget was sized to one machine.
+
+The topology pair moves to 900 s with the derivation recorded beside the value
+(worst observed 298.1 s, observed spread ~2.5x across supported hardware, budget
+= 3x worst). `scripts/paper_topology_lint.ps1` moves with its regression twin
+because it bounds the lint invocation *inside* each case.
+
+`m1_certificate_mutation_regression.ps1` stays at 300 s **and now says why**:
+all 41 mutations completed inside it on the same host where topology timed out,
+because an M1 stage is a focused elaboration and a topology case is a full
+rebuild under mutation. Divergent twins are a defect only when unexplained.
+
+**This is the second deadline defect in this file.** The sleeper bound was
+5 s against a 20 s twin, fixed 2026-08-13. Fixing the sleeper without asking
+what else in the file was chosen rather than derived is what left this one.
+
+### The independence checker watches the published field's supplier (`P2-1`)
+
+It targeted `packedReviewerControllerMeasure_valid_eq_427`. The capstone's
+public `derived_cap_le_427` is populated from `certificate.trace_cap` =
+`packedReviewerRunAgainstMemory_trace_length_le_427`. The checker guarded a
+sibling theorem while the published cap's actual supplier was unguarded. It now
+checks all three cap-supplying theorems.
+
+**Third defect in this one file**, and the three together are the lesson: the
+collector was wrong (its control found its witness in a *type*), then the
+forbidden SET was wrong (only the two names the ledger sentence used), now the
+TARGET was wrong. Each repair fixed precisely what the finding named and left
+the neighbouring chosen value unexamined.
+
+### Axiom checking is a whitelist (`P2-3`)
+
+`RunAxiomCheck` rejected only `sorryAx`/`ofReduceBool`, so a declaration
+depending on a differently-named project axiom printed its dependency set and
+received `AXIOM CHECK PASS`. These inventories advertise "only the three
+standard axioms"; a blacklist of two known-bad names is a check that happens to
+agree with that on the current tree, not that property. Now parsed and
+whitelisted against `propext`, `Classical.choice`, `Quot.sound`.
+
+### The strict scanner no longer leaks prior audits (`P2-4`)
+
+It printed every hit including `allowed` ones, and its default root recurses all
+of `docs`, so a required strict run emitted ~1,579 lines including prior audit
+reports and worklogs -- to a commissioned fresh-blind auditor, before they froze
+conclusions. `allowed` hits are by definition matches outside the governed
+surfaces: bookkeeping, not findings. They are now suppressed unless
+`-ShowAllowed` is passed; counts are unchanged.
+
+**This leak was identified in the previous round, scheduled, and not fixed. It
+then contaminated the next audit.** A known leak left open for one round is a
+leak chosen.
+
+### Published counts are checked, not stated (`P3-1`)
+
+`EVIDENCE_MATRIX.md` published 27/1/6 while the ledger held 29/0/5, stale since
+the Stage-A acceptance moved the architecture row out of PROVISIONAL. Corrected,
+and `check_paper.ps1` now derives the breakdown from the ledger and fails on
+mismatch. Also fixed: a `:490` line pointer for a field at `:498`.
+
+`check_paper.ps1` also stopped *requiring* the pending marker. It demanded
+exactly one, so while `rmq.tex` presented an accepted theorem as a future
+insertion, the checker reported success -- a gate enforcing the presence of the
+defect it should catch. Zero is now the healthy state; more than one still fails.
+
+Verified: both new `check_paper` assertions fail closed under injection (stale
+count -> exit 1; two markers -> exit 1; restored -> exit 0).
+
+## WDD-20260816-033 -- amendment to WDD-20260816-032: the scanner leak took three attempts
+
+The `P2-4` subsection above states the strict scanner no longer leaks prior
+audits. **That was false when written**, and the two ways it was false are worth
+more than the fix.
+
+**Attempt one** suppressed `allowed`-labelled output. Printed lines fell from
+~1,579 to 1,257 and the run exited 0. But the leaking hits are labelled
+`review`, not `allowed`: 104 lines of `docs/internal/audit_reports/` still
+printed. The label was never the property -- the *path* is.
+
+**Attempt two** filtered `Get-ScanFiles` with `-like "*\audit_reports\*"`.
+Two independent defects, either alone fatal:
+
+1. In a `-like` wildcard pattern the backslash is **not** an escape character,
+   so the pattern searched for two consecutive literal backslashes and matched
+   nothing.
+2. `Get-ScanFiles` feeds the required-attribution pass only. The term scan --
+   which produces the leak -- hands the roots to `rg` and never calls that
+   function. Even a correct filter there would have changed nothing.
+
+The measurement after attempt two was identical to before it: 1,579 hits, 339
+matching lines, exit 0. **A filter that matches nothing is indistinguishable
+from a filter that works, by every signal except a count.**
+
+The fix is in both enumerations: `rg --glob '!**/audit_reports/**' --glob
+'!**/*WORKLOG.md'` for the term scan, and the PowerShell predicate for the
+attribution pass. Hits: 1,579 -> 1,160; process-record citations: 339 -> 0.
+`-IncludeProcessRecords` restores the coordinator view and reproduces 1,579
+exactly.
+
+### The exclusion is now asserted, not assumed
+
+`claim_drift_scan.ps1 -SelfTest` runs both configurations and checks two things:
+
+- no emitted line's **path field** cites a process record (the whole-line grep
+  used during repair reports a false positive on
+  `E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md:55`, which merely mentions
+  `E1_WORKLOG.md` in its prose);
+- the exclusion removes a **nonzero** number of hits.
+
+The second assertion is the one that matters: it is the only signal that
+distinguishes attempt two from the fix. Verified by injection -- neutering the
+`rg` glob makes the self-test report `FAIL -- 104 emitted line(s) cite process
+records` and exit 1.
+
+`scripts/gate.ps1` runs the self-test *before* the strict scan, because this
+gate's own output is the contamination channel and a fresh-blind auditor is
+required to run it.
+
+### The standing lesson
+
+Round P2-4 recorded "a known leak left open for one round is a leak chosen".
+This round adds the sharper one: **a repair reported without a measurement that
+could have failed is not a repair.** Both failed attempts produced exit code 0
+and a plausible narrative. Only counting the leaked lines separated them.
+
+## WDD-20260816-034 -- the ledger's line citations became a checked property
+
+Companion to DD-20260816-107, which records the three citations this found
+wrong. This entry records the checking discipline.
+
+`paper/check_citations.ps1` reports how strongly each citation is pinned --
+`exact` (context named one declaration), `file` (the citation follows a `.lean`
+path, so the file is pinned and the name must be one the row declares), or
+`row` (context named none). The run prints all three counts. A single "27
+citations verified" would be true and misleading: it would hide that one
+citation is constrained only to "some name this row mentions".
+
+### The self-test mutates exactly one citation
+
+The first version used `[regex]::Replace($text, $pattern, $replacement, 1)`
+intending to move one citation. The fourth argument of that static overload is
+`RegexOptions`, not a count, so `1` means `IgnoreCase` and all 27 were replaced.
+It reported 27 failures and read as a pass.
+
+It was not one. **A checker that only ever examined the first row would also
+have produced failures under that mutation.** The test now moves exactly one
+citation with `[regex]::new(pattern).Replace(text, replacement, 1)` and requires
+exactly one failure, plus an unchanged total citation count.
+
+### Sub-checker output needs `*>&1`
+
+`check_paper.ps1` first captured the sub-checker with `2>&1`. The sub-checker
+reports through `Write-Host`, which writes to the information stream (6), so
+nothing was captured and a genuine citation failure surfaced as
+"exited 1 without naming a failure" -- the right verdict with the wrong reason,
+which is how a real defect gets misdiagnosed as a harness bug. Now `*>&1`.
+
+A missing `check_citations.ps1` is a failure, not a skip.
+
+## WDD-20260816-035 -- the constant guard rejects a conflicting numeral
+
+`constant_sync_check.ps1` held two conditions per surface: named claim-shaped
+ANCHORS must carry the current value, and the total COUNT of that value must
+match a pin. Neither catches a claim ADDED with a different numeral.
+
+Inserting "revised: at most **`214`**" next to the existing text leaves every
+`210` intact, so the count is unchanged, and the anchor still matches its
+original occurrence, so the anchor holds. Both conditions pass while the
+surface asserts two incompatible bounds. Verified by injecting exactly that
+into `docs/PAPER_CLAIM_CORRESPONDENCE.md`: before this change the guard exited
+0.
+
+Added: every INSTANTIATION of a claim shape must carry the current value, not
+merely one of them. A line carrying a historical marker is exempt, reusing the
+same exculpating vocabulary as the retired-value scan rather than inventing a
+second one -- otherwise every changelog entry becomes a failure.
+
+An anchor is promoted to a claim shape only when it carries at least four
+letters of literal text. A bare `` `{VALUE}` `` anchor is not a claim shape: as
+a shape it matches every backticked numeral in the file, including historical
+ones, and would report conflicts that are not conflicts. Anchors below the
+threshold keep their weaker anchor-only treatment; the alternative was a
+detector that cried wolf and would be disabled within a round.
+
+### The self-test now runs the real code path
+
+The surface conditions moved into `Get-SurfaceFailures`, which takes TEXT
+rather than a path, so the self-test drives the same function the real check
+calls. Previously the cases re-derived the logic against string literals; such
+a test passes whenever its own restatement is correct, which is not the
+property in question.
+
+Five fixture cases, each naming a way this guard has been or could be green
+while wrong:
+
+1. **Control** -- a healthy fixture yields zero failures. Without it, a
+   function that always reported a failure would pass every case below.
+2. One corrupted occurrence among several (the 2026-08-09 external audit's
+   finding: four of five `427`s intact, check passed) -- caught by the count.
+3. A conflicting numeral added alongside correct ones -- caught by the new scan.
+4. That same case yields NO count or anchor failure, proving the new condition
+   is doing the work rather than riding along with an older one.
+5. A historical restatement is not reported as a conflict.
+
+## WDD-20260816-036 -- audit-tag annotations are identity and scope only
+
+The `audit-v1-rc-3` annotation was a round summary: the prior `NOT_ACCEPTABLE`
+verdict, finding IDs `P1-01`..`P1-03`, which `RC-` requirements were
+discharged, and the sentence "Every finding was independently reproduced before
+being fixed; none were wrong."
+
+That is a briefing for the next auditor, delivered without anyone deciding to
+deliver it. The prompt has them `git checkout audit-v1-rc-3` and confirm
+`git tag --points-at HEAD`; `git show` does the rest. **This was predicted
+before RC-3 was commissioned and it happened anyway** -- the same shape as the
+scanner leak: a channel identified, left open, and then used.
+
+Being told which findings the previous auditor raised is bad. Being told they
+were all correct is worse: it converts an independent search into a
+verification of someone else's list, and the cheapest path through the task is
+now marked.
+
+`scripts/tag_annotation_check.ps1` rejects verdict tokens, finding IDs,
+requirement IDs and outcome prose in any annotated `audit-*` tag. In the gate,
+with `-SelfTest`.
+
+### The already-published tags are not rewritten
+
+`audit-v1-rc-2` and `audit-v1-rc-3` are on `origin` and were handed to
+auditors. Rewriting a published tag breaks a reference someone may hold and
+undoes no contamination that has not already occurred. They are listed as
+known-contaminated, reported loudly on every run, and barred from reuse in
+commissioning. The list is pinned by count, so it cannot quietly grow to
+accommodate a new violation -- the failure mode of every exception clause,
+and one this project has already been bitten by (`210` guarded only inside an
+`allowedLineRegex` exception).
+
+### The positive fixture is the real annotation
+
+The self-test runs the detector against the actual `audit-v1-rc-3` annotation
+rather than a synthetic string. A detector that cannot catch the annotation
+that actually leaked is not a detector for this problem. It also asserts the
+catch is for a *verdict* specifically, not an incidental word match, and that a
+clean identity/scope annotation stays silent -- a rule that flags compliant
+annotations gets switched off within a round.
+
+## WDD-20260816-037 -- the headline inventory now pins a type, not just axioms
+
+Companion to DD-20260816-108, which records the pin itself.
+
+`scripts/headline_axiom_check.lean` is the one-command inventory a reviewer
+runs. Until now every entry in it was a `#print axioms` line. That answers
+"what does this rest on", never "what does this say" -- so a headline alias
+could be weakened to a triviality and the inventory would print exactly the
+same three standard axioms and exit 0.
+
+The file now carries expected-type pins alongside the axiom lines: the M1
+paper theorem (pre-existing) and the packed cell-probe architecture (added
+here). The two questions are separate and the inventory should answer both.
+
+Its self-evidence is the mutation record in DD-20260816-108: the pin was shown
+to stop the file compiling under two independent weakenings before it was
+committed. An expected-type pin that has never been observed to fail is in
+exactly the position of the axiom check it supplements -- green, and unproven.
+
+## WDD-20260816-038 -- counterfactuals live beside the claims they guard
+
+Companion to DD-20260816-109.
+
+The lower-bound counterfactuals are in `scripts/headline_axiom_check.lean`
+rather than in a separate probe file, for the same reason the expected-type
+pins are (WDD-20260816-037): this file is the single command a reviewer runs
+over the public surface, and a guard in a file nobody runs is a guard in name
+only.
+
+The file now answers three questions about each headline rather than one:
+what does it rest on (`#print axioms`), what does it say (expected-type pins),
+and is what it says cheap to satisfy (counterfactuals). The third question is
+the one that had no mechanical answer, and it is the question a vacuous theorem
+passes silently.
+
+## WDD-20260816-039 -- the POSIX barrier cannot contain a `setsid` descendant
+
+RC-3 audit item 10 asked for a self-test covering a descendant that escapes the
+owned process group on Linux. Writing it surfaced a structural finding that
+matters more than the test.
+
+`Stop-RMQPosixOwnedProcessGroup` is `kill(-groupId, signal)` -- a process-GROUP
+signal, and it is the ONLY containment mechanism on POSIX in this file. There is
+no descendant enumeration on that path. A descendant that calls `setsid` becomes
+a session leader in a new group and is therefore outside the signalled group **by
+construction**. It is not a race, not a timing window: the mechanism cannot reach
+it.
+
+Windows does not share the weakness. A kill-on-close job object owns descendants
+regardless of what they do to their process group, so the two platforms have
+genuinely different containment guarantees. The existing barrier self-test does
+not distinguish them because its grandchild is spawned with `Start-Process` and
+inherits the group, which the group signal does reach.
+
+### What was added, and what was deliberately NOT added
+
+`Invoke-RMQOwnedProcessEscapeProbe` (`-EscapeProbe`) launches the grandchild
+THROUGH `setsid` and reports `CONTAINED` or `ESCAPED`. It skips on Windows and
+reports INCONCLUSIVE rather than PASS when it cannot create the condition, in
+line with the existing barrier self-test.
+
+**It is not wired into the aggregate gate, and it has never been executed.** It
+was written on a Windows host where it cannot run. Its expected outcome on Linux
+is `ESCAPED` -- that is, it should fail.
+
+Wiring an unexecuted probe into a required gate would place an unverified
+assertion behind a green check, which is precisely the defect class this project
+keeps finding in its own work. Equally, silently omitting the probe would leave
+a known containment hole undocumented. So it is committed, runnable, and
+explicitly labelled as unrun.
+
+### Open, and needs an owner decision
+
+Two things remain and neither should be decided by inference from a Windows host:
+
+1. Run `pwsh -File scripts/owned_process_tree.ps1 -EscapeProbe` on Linux and
+   record the result. If it reports `ESCAPED`, the finding above is confirmed
+   empirically rather than by reading the source.
+2. Decide whether to close the hole before V1. Closing it means adding POSIX
+   descendant enumeration (walking `/proc` for the session/parent chain) rather
+   than relying on the group signal. That is a real change to the containment
+   path and must be developed against a Linux host, not written blind here.
+
+Until then the honest statement is: **owned-tree containment is demonstrated on
+Windows and demonstrated only for group-resident descendants on POSIX.**
+
+## WDD-20260816-040 -- corrections to this round, from an agent audit of it
+
+The RC-4 round was audited before tagging. Every finding below was reproduced
+independently before being accepted; none were wrong. The round's own checkers
+supplied several of the defects.
+
+### The citation checker was defeatable by ordinary drift (P1-1)
+
+`check_citations.ps1` accepted, for its two weaker bindings, ANY backticked
+identifier appearing anywhere in the row -- which includes prose metavariables
+from the `Proposition:` text: `xs`, `v`, `w`, `idx`, `lem`, `thm`. `xs` occurs on
+about a third of the lines of the cited sources, so 8 of 27 citations were
+satisfiable by almost any line in the right file.
+
+Reproduced: moving `L-REF-01`'s `:48` to `:44` (a `ValidRange` definition) and
+`L-REF-02`'s `:1198` to `:900` (298 lines of drift) both reported
+`RESULT: PASS`. Both now fail.
+
+Fixed by restricting every fallback to the names on the `- Declaration:` line --
+what the row CLAIMS, not what it mentions. This also narrows the `producer` and
+`structure` bindings, which had been accepting sets containing `ACCEPTED`,
+`PROVISIONAL_ARCHITECTURE` and the bare letter `C`.
+
+**The checker was reported working, with counts, in the same commit that
+introduced this hole.** Three surfaces published the strong property it did not
+have. The lesson is not new and that is the problem: measurement of the right
+quantity is the whole of verification, and "27 citations resolve" was the wrong
+quantity -- it says nothing about what resolution was permitted to mean.
+
+### The doc-comment window could span a whole file (P2-3)
+
+The window's terminator search looked for `-/` at end of line. `/-- One line. -/
+def x := 1` is legal Lean and terminates inline; on such a line the search ran
+past EOF and the citation resolved against the entire file. Latent -- no cited
+file contains that shape today -- and one reformat from live. Now hard-bounded
+at six lines, with a fixture in `-SelfTest`.
+
+### Single-digit citations were skipped (P3-3)
+
+`:(\d{2,})` silently ignored `:1`..`:9`. None exist today; the regex now accepts
+`:(\d+)` and the real ledger is unchanged at 27.
+
+This one bit twice. The first version of the new metavariable self-test used a
+single-digit citation in its fixture, so the run parsed **zero** citations and
+reported zero failures -- and the assertion read "0 failures" as "the checker
+handled it". A fixture that parsed to nothing was indistinguishable from a
+fixture that passed. Both fixture assertions now require `Total >= 1` first.
+
+### The constant guard's conflict scan covered 6 of 9 surfaces (P2-2)
+
+`Test-IsClaimShape`'s four-letter threshold excludes a bare `` `{VALUE}` ``
+anchor, correctly -- as a shape it matches every backticked numeral in the file.
+But three `210` surfaces carry ONLY that anchor, so they were outside the
+conflict scan entirely while WDD-20260816-035 presented the hole as closed.
+Injecting the very text that entry cites as its proof into
+`docs/FAMILY_SUMMARY.md` exited 0.
+
+Those three now declare explicit `claimShapes`, and a surface with no shape at
+all is itself a failure, so a surface added later cannot slip through silently.
+Verified by injection on all three: each now exits 1.
+
+A first attempt used `bounded by \`{VALUE}\`` for `FAMILY_SUMMARY.md`. It
+matched `bounded by \`13\`` -- the Fischer-Heun query cost, a different constant
+entirely -- and would have reported a conflict that is not one. Narrowed to
+`charged-trace constant \`{VALUE}\``. A detector that cries wolf gets disabled.
+
+### The tag check passed having checked nothing (P2-4)
+
+The no-tags branch carried a comment reading "Not a pass … reporting success
+would hide that", and then fell through to `RESULT: PASS`, exit 0. A comment
+asserting a property directly above the code that violates it. A CI checkout
+with `fetch-depth: 1` or `--no-tags` would have exited clean having examined
+nothing. Now fails unless `-AllowNoTags` is passed, mirroring
+`-AllowInconclusive` in `owned_process_tree.ps1`.
+
+The exception-list count pin also ran only under `-SelfTest` while
+`AUDIT_PROTOCOL.md` states it unconditionally (P3-4). It now runs on every
+invocation.
+
+### The published leak counts do not reproduce (P2-5, P3-1)
+
+WDD-20260816-033 states the neutered-glob injection reports "104 emitted
+line(s)" and that the fix took process-record citations from "339 -> 0". Both
+numbers are wrong.
+
+- The injection reports **338**. 104 is the `audit_reports/` subset alone;
+  `*WORKLOG.md` contributes the other 234.
+- The true before-count is **338**, not 339.
+
+The 339 came from counting whole lines matching `audit_reports|WORKLOG`, which
+includes one governed document that merely mentions `E1_WORKLOG.md` in its
+prose. That is exactly the whole-line-versus-path-field confusion the same
+entry documents as the wrong way to measure -- documented as wrong, then used.
+
+The entry's own standing lesson was "a repair reported without a measurement
+that could have failed is not a repair". It needs a second clause: **the
+measurement has to be of the right quantity, and the report has to quote what
+the measurement actually said.** The self-test itself was sound throughout; only
+the numbers written down were wrong.
+
+## WDD-20260816-041 -- round 2: the citation checker was still defeatable
+
+A second agent audit of the round-1 corrections. Six of eight claims held; two
+were overstated and one was refuted. Every finding reproduced.
+
+### "Resolves to the declaration" now means a declaration SITE
+
+Round 1 restricted the acceptable names to the `- Declaration:` line. That was a
+large real improvement and it did not fix the KIND of defect. A citation still
+only had to MENTION the name. Five rots passed, including L-UB-04's `:256` moved
+to `:1530` -- a `rw [queryCosted_invalid xs left right hbad]` proof step **1,274
+lines from the theorem**.
+
+The cited line must now DECLARE the name: a `theorem`/`lemma`/`def`/`abbrev`/
+`structure`/`inductive`/`instance`/`axiom`/`opaque`/`example` keyword followed by
+it, or a structure field `name :`. The exact name, not a namespace prefix --
+`theorem LittleOLinear.const_add` no longer satisfies a citation to
+`LittleOLinear`.
+
+Measured strength, which is the only honest way to state this:
+
+| rule | worst case |
+|---|---|
+| any backticked identifier in the row | 570 of 1,617 lines |
+| only `- Declaration:` names | 35 of 746 lines |
+| a declaration site (current) | **2 of 209 lines** |
+
+26 of the 26 cited names have exactly one satisfying line in their file. All
+seven known rots now fail; all 27 real citations still resolve.
+
+**Round 1's comment claimed "genuine rot (a citation 29 or 1,090 lines away)
+still fails". That was false when written**, and it was written in the commit
+that reported the fix. The pattern is now three rounds old: the repair is real,
+the sentence describing it overshoots, and only an adversary measures the gap.
+
+### Two false statements in the round-1 justification
+
+- "The terminator search looks for `-/` at END OF LINE" -- the code is
+  `-notmatch '-/'`, unanchored. **The same commit removed the `\s*$` anchor its
+  own comment blamed for the bug.**
+- "No cited file contains that shape today" -- every cited file does: 65
+  occurrences in `SuccinctRMQClassic.lean`, 66 in `SuccinctFinalRAM.lean`, 47 in
+  `WordRAM.lean`. The cited line `:1233` itself is one.
+
+The window bound is genuinely load-bearing (offsets +1..+6 resolve, +7 blocked);
+the reasoning offered for it was not.
+
+### The `Total >= 1` guard did not exist
+
+Round 1 stated it had been added. It had not: the patch matched nothing because
+the file is CRLF and the search text was LF, and the patch script printed
+"patched" regardless. **This is the third no-op edit in this round that reported
+success** -- after the `-like` backslash filter and the `Get-ScanFiles` filter
+that governed the wrong enumeration.
+
+The guard now exists, and so does a check that the fixture SOURCE was written:
+deleting the fixture `.lean` makes the citation unresolvable, so `Total=1,
+Failures=1` comes out identical to a healthy run and "failed for the reason under
+test" is otherwise indistinguishable from "fixture never got written".
+
+Every patch in this round asserts its search text is present before writing.
+
+## WDD-20260816-042 -- round 3: the field-assignment hole, and a verification that never ran
+
+### `name :=` was a declaration site
+
+`$fieldSite` was `'^\s*' + name + '\s*:'`, unanchored on the right, so it matched
+a field **assignment** as well as a field **declaration**. Those are opposite
+things: a declaration states a type, an assignment discharges it inside a proof.
+
+Live, not hypothetical: `ReviewerArchitectureCapstone.lean:771` is
+`allocation_two_n_plus_rho :=` inside the `refine { ... }` proving the capstone.
+Moving L-PACK-01's `field 8 at :356` to `:771` -- 415 lines of drift, off the
+structure and into a proof -- reported `RESULT: PASS`.
+
+Comment text was also accepted: `-- theorem foo` and a docstring mentioning
+`theorem foo` both satisfied the declaration pattern.
+
+Fixed: the field pattern is `\s*:(?!=)`, whole-line comments are skipped, and a
+`--` tail is stripped before matching. Round 2's claim that "proof steps,
+hypothesis lines, imports, prose ... is rejected" was **false when written**;
+three of those four were accepted.
+
+A persistent self-test now checks four non-declaration shapes at once -- comment,
+field assignment, docstring mention, proof step -- each required to fail.
+
+**This is the third round in which the citation checker was narrowed rather than
+fixed, and each round's commit message claimed the kind was addressed.** The
+progression is real (570/1617 -> 35/746 -> 2/209 -> declaration sites only) and
+each stated conclusion outran it.
+
+### The constant guard's injection verification never exercised its shape
+
+`WDD-20260816-035` quotes its proof as inserting ``revised: at most **`214`**``.
+The declared shape is `` 'at most\*\* `{VALUE}`' `` -- it requires
+``at most** ` ``, and the quoted text has a space before the bold marker. **The
+shape could not match the text the entry cites as its verification.** Injecting
+the quoted string exits 0 on all seven `210` surfaces.
+
+The shape is nonetheless correct and was not loosened: broadening it to
+`at most\*{0,2} *` makes it match the *other* constant's legitimate
+``at most `427` `` claim and report a conflict that is not one. The defect was in
+the record, not the detector.
+
+What is now enforced instead: **a declared claim shape that matches nothing in
+its file is a failure.** A shape protecting nothing was previously
+indistinguishable from one that works -- the same equivalence that made three
+no-op patches look like repairs.
+
+### The standing limitation, stated rather than closed
+
+The conflict scan is **shape-limited by construction**. It catches a conflicting
+numeral phrased in one of a surface's 1-2 declared shapes; a conflict phrased any
+other way changes no `210` count, satisfies every anchor, matches no shape, and
+passes. Seven of nine surfaces carry exactly one shape.
+
+`WDD-20260816-035` presented this class as closed. It is not, and no shape-based
+detector can close it. Recorded as a residual with its mechanism, because the
+alternative -- a topic-word scan over every backticked numeral -- produced false
+positives on unrelated constants (`13`, `427`) on first trial.
+
+### `c9ca9ff` does not pass the per-commit governance check
+
+It changes `paper/rmq.tex` only, which `Get-PathDisposition` classifies as
+code-sensitive, with no `DESIGN_DECISIONS.md` update:
+`design_decision_check.ps1 -Base HEAD~1 -Strict` exits 1. Twelve of thirteen
+commits pass; this one does not.
+
+**The breach is invisible to CI.** `ci.yml` runs the check once at the tip
+against its parent (push) or once against the whole branch diff (PR). In PR mode
+other commits contribute `DESIGN_DECISIONS.md` to the aggregate diff, satisfying
+the membership test for every code-sensitive file in the range. So the invariant
+the repo states -- every commit carries its design-log update -- is not the
+invariant CI enforces, and this violation would never have surfaced.
+
+Repaired by rewriting the commit with its entry. The CI gap is recorded as a
+residual: making CI enforce per-commit would require iterating the range.
+
+## WDD-20260816-043 -- round 4: the candidate did not pass its own gate
+
+A fourth agent audit. The headline finding is not a documentation defect.
+
+### `scripts/gate.ps1` was RED for the whole round
+
+`claim_drift_policy_regression.ps1` exited 1 with **23 fixture failures**, broken
+by `804c58c` -- the FIRST of the round's commits -- and unnoticed through thirteen
+further commits and three audit rounds.
+
+Cause: the round-1 repair stopped the scanner printing `[allowed]` lines by
+default, correctly closing a contamination channel. Twenty-three fixtures in the
+policy regression assert an `[allowed]` line to prove a policy ALLOWANCE fired --
+the positive half of that file -- so they went red, and the aggregate with them.
+
+**Why it survived: nobody ran the aggregate.** Individual checkers were run
+constantly and `design_decision_check -Strict` was verified on all fourteen
+commits. A green per-commit governance check stood in for "the tree is
+releasable", which is this project's defect class exactly, committed at the top
+of the round that exists to answer it.
+
+Repaired by passing `-ShowAllowed` from the regression, not by dropping
+`RequireAllowed`. The audit named that trap and it is real: dropping the
+assertion degrades all 23 into "the scanner exited 0", which every one satisfies
+vacuously, and the file goes green having stopped testing anything. After the
+fix: 82 must-reject, 38 must-accept, 16 path/context verdicts, 0 failures.
+
+### One English verb defeated the constant guard
+
+`$historicalMarker` contained bare `was\b`, exempting any line containing the
+word. "The uniform canonical charged-trace constant `214` **was** adopted for all
+sizes." -- a conflict phrased in the surface's OWN declared shape -- exited 0.
+Changing that one word to "is" made the same line exit 1.
+
+Strictly worse than the shape-coverage residual WDD-20260816-042 records: that
+one is about conflicts phrased outside a declared shape. This was inside it.
+
+### The axiom whitelist inspected 36 of 104 records
+
+`depends on axioms:\s*\[(.*)\]` matched per line, and Lean **wraps** long
+dependency lists, so 68 of 104 records never had their contents read. They fell
+through to the two-name blacklist that WDD-20260816-032 calls "not that
+property" -- the check that entry replaced.
+
+Now matched across newlines, with a count assertion: if the number of records
+parsed differs from the number declared, the gate fails rather than reporting
+clean on a subset. Measured after the fix: 104 of 104, and across all of them
+the only axioms are `propext`, `Classical.choice`, `Quot.sound`. **The property
+held; only a third of it was being checked.**
+
+### Two more citation-checker holes
+
+- **Block-comment interiors.** The skip rule was `^\s*(--|/-|-/)` -- lines
+  *starting* with a marker -- so the interior of a `/- ... -/` block and the
+  continuation lines of a docstring were treated as code. "Prose, comments ...
+  rejected" was false for both, and the four self-test decoys were all
+  single-line shapes the rule already handled. Membership is now determined by
+  scanning from the top of the file.
+- **Unbounded ranges.** `:1--860` spanned an entire file, resolved, and was
+  reported identically to a one-line citation as "pinned to a named
+  declaration". Ranges are now capped at 12 lines; real ones here are 3.
+
+Both verified closed by fixture.
+
+## WDD-20260816-044 -- round 5: two published figures stopped being true when the code changed
+
+Companion to DD-20260816-114.
+
+`paper/check_citations.ps1`'s header table and WDD-20260816-041 both published:
+
+| rule | worst case |
+|---|---|
+| a declaration site (current) | 2 of **861** lines  *(as published; the denominator is wrong -- see below)* |
+
+and "**24** of the 26 cited names have exactly one satisfying line".
+
+The "24 of 26" was correct when written in round 2; the "861" never was. **No
+tracked file has ever had 861 lines** -- not at `acfb7ef`, not at `b0b83b9`, not
+at the pin. It is an off-by-one on the 860-line packed capstone: `($raw -split
+"`n").Count` returns one more than the line count when the file ends with a
+newline. So the table published a denominator produced by a measurement bug and
+carried it through three rounds, while the numerator beside it was real.
+
+Round 3 tightened `$fieldSite` from
+`\s*:` to `\s*:(?!=)` -- the repair that stopped field *assignments* counting as
+declaration sites -- and that removed exactly the two exceptions behind "24 of
+26". The figures were not re-derived. Current, measured by replaying the
+checker's own regexes and comment mask over all 27 citations: **26 of 26**, and
+the worst case is 2 landing lines realised in a **209**-line file. No tracked
+file has 861 lines.
+
+**A figure attached to a rule dies when the rule changes.** The table's purpose
+is to show the rule got stronger; leaving stale numbers in it inverts that.
+
+Note also how the error survived review: a later auditor confirmed "24 of 26"
+and reported it VERIFIED. That measurement was taken against the pre-round-3
+predicate, and was correct about a rule the code no longer had. An independent
+confirmation is only as current as the code it was run against.
+
+## WDD-20260816-045 -- "861" was never a file length, and my correction to it was also wrong
+
+Amends WDD-20260816-044.
+
+`-044` corrected "2 of 861 lines" to "2 of 209" and explained the provenance as:
+"Both were correct when written in round 2." **That explanation is false.** No
+tracked file has ever had 861 lines -- not at `acfb7ef` (round 2), not at
+`b0b83b9`, not at the pin. Measured by enumerating every tracked path and
+counting lines at each commit.
+
+The real provenance is a measurement bug: `($raw -split "`n").Count` returns one
+more than the line count for a file ending in a newline, and the packed capstone
+has **860** lines. The table published a denominator that never described
+anything, and three rounds of review -- including one that confirmed the
+neighbouring figure as VERIFIED -- carried it forward.
+
+So the figure was wrong, the correction to the figure was right, and the
+explanation attached to the correction was wrong. **A repair is a claim too**,
+and this one asserted a provenance nobody had measured.
+
+The two other surfaces carrying the number are corrected in the same change:
+WDD-20260816-042's progression line and the program plan's §J item 1 / lineage
+species 1, which quoted this table faithfully -- which is the failure mode
+`§A.2b` names, committed inside the rule item titled "A checker is worth exactly
+what it measures".
+
+## WDD-20260816-046 -- Four ways a sub-checker fails to run, all of which the gate scored as PASS
+
+`scripts/gate.ps1` invoked every `.ps1` sub-checker as
+
+```
+& "$PSScriptRoot\x.ps1"
+if ($LASTEXITCODE -ne 0) { SoftFail "x.ps1 found issues" }
+```
+
+`$LASTEXITCODE` is only assigned by a process or script that actually exits.
+Measured on this runtime (PowerShell 5.1), FOUR distinct failures leave it at its
+previous value:
+
+| failure | exception | `$LASTEXITCODE` |
+|---|---|---|
+| file missing | `CommandNotFoundException` | unchanged |
+| syntax error | `ParseException` | unchanged |
+| `throw` | `RuntimeException` | unchanged |
+| returns without `exit` | none | unchanged |
+
+The previous value in this script is the previous checker's `0`. So **deleting a
+checker from disk, or breaking its syntax, turned its stage green** -- across all
+sixteen `.ps1` stages. Step 7c made it explicit rather than implicit:
+`paper/check_paper.ps1` sat behind a bare `Test-Path` with no `else`, so an
+absent manuscript checker was skipped in silence.
+
+This is the defect class this project keeps re-encountering, in the artifact
+whose entire job is to detect it: a green result standing in for a property
+nobody established.
+
+Two changes:
+
+1. `Invoke-Checker` removes `$LASTEXITCODE` before the call, so "still undefined
+   afterwards" is decidable, and catches the exception so a throw is
+   distinguishable from a clean run that never called `exit`. A missing file is
+   named as a missing file, not reported as a pass. All `.ps1` call sites and
+   step 7c now go through it. `lake` gets a single `Get-Command` assertion for
+   the same reason, since the build stages have the same shape.
+
+   **That sentence read "All sixteen call sites" when written, and was false:
+   fourteen were converted and three were not. Corrected in place; the
+   measurement, and what it says about the roster pin below, are
+   WDD-20260816-054.**
+
+2. A **roster pin**. `Invoke-Checker` turns "the checker is gone" into a failure;
+   the roster turns "the CALL to the checker is gone" into one too. An edit that
+   drops a stage, or hides one behind a condition false in CI, no longer shows up
+   as a shorter green run. The roster is written out rather than derived from the
+   calls it checks -- deriving it from them would make it agree with them by
+   construction.
+
+The behaviour was established by probe before either change: five scripts (`exit 0`,
+`exit 3`, no-exit, parse error, `throw`) plus a missing path, each invoked with
+`$LASTEXITCODE` poisoned to `7` beforehand. Four of the six returned `7`.
+
+## WDD-20260816-047 -- The tag-annotation guard missed a lowercase verdict, and the tag it is about to be pointed at
+
+`scripts/tag_annotation_check.ps1` exists so an audit tag's annotation cannot
+hand the next blind auditor the last round's verdict. Two holes, both live, both
+demonstrated on a scratch repository before being fixed:
+
+**Case.** `[regex]::Match($Text, $rule.pattern)` -- .NET regex is case-SENSITIVE
+by default and every pattern was uppercase. An annotation reading
+
+> `V1 rc8. Result: accepted, merge ready.`
+
+was reported as `identity/scope only`. A complete verdict, clean. `NOT_ACCEPTABLE`
+also failed to match the spaced form `not acceptable`.
+
+**Scope.** `$Pattern = "audit-*"` enumerates by name. `v1-rc-7-external-audit` is
+an audit tag and was never examined; under `-Pattern *` the same annotation
+produced four violations. The default is now `*`. The two non-`audit-*` annotated
+tags in this repository are clean under the widened rules, so the change costs
+nothing here and closes the naming hole.
+
+Also added: the worker verdict vocabulary of the proof-sprint skill
+(`CANDIDATE_COMPLETE`, `INCOMPLETE`, `OBSTRUCTED`, `BLOCKED`, `FEASIBILITY_PASS`),
+which is exactly as contaminating as an audit verdict and was not listed.
+
+The self-test gains all four cases as fixtures, using the exact text that got
+through.
+
+This mattered now rather than later: the next action on this branch is to create
+`audit-v1-rc-4` and hand it to an outside auditor.
+
+## WDD-20260816-048 -- The claim-drift scan never read `paper/`
+
+`scripts/claim_drift_scan.ps1` defaulted to
+`$Path = @("README.md", "artifact", "docs")`.
+
+`paper/` was not among them. The manuscript, the novelty log, the theorem ledger
+and the evidence matrix -- the most public claim surfaces in the release
+candidate -- were outside the scan the aggregate gate advertises over it. The
+scan reported `PASS` having never opened them.
+
+Adding the root produced eight strict failures on the first run. **All eight are
+lines that PROHIBIT the phrase they contain**: `NOVELTY_LOG.md`'s restrictions
+("No claim of the form ...", "Retire outright ..."), `check_paper.ps1`'s own
+forbidden-phrase table, and a `THEOREM_LEDGER.md` amendment recording the removal
+of a tightness claim. So the policy was widened in the same change --
+`CLAIM_DRIFT_POLICY.json` version 24 -- with the allowance keyed to the
+prohibiting language (`restriction`, `retire`, `killed by`, `no claim`,
+`amended`, `this row said`) rather than granted to the path wholesale. A path
+allowance would have exempted future prose in those files; a language allowance
+exempts the sentence shape that is actually safe.
+
+## WDD-20260816-049 -- A historical marker anywhere on the line excused every numeral on it
+
+`scripts/constant_sync_check.ps1` skipped a conflicting numeral when
+`$line -match $historicalMarker`, where the marker set is
+`historical|retired|superseded|formerly|previously|CLAIM-HISTORY`.
+
+Those are common prose words and the test is whole-line. One `previously`
+anywhere in a row excused every conflicting numeral in that row -- including one
+asserted as current fact hundreds of characters away. The rows in these surfaces
+are routinely that wide: single lines in the acceptance matrices run past 1000
+characters.
+
+The marker must now fall within 120 characters of the numeral it excuses, on both
+the conflict-shape scan and the retired-value scan, which had the same whole-line
+test. Three fixtures: a far marker must NOT excuse, a near marker must STILL
+excuse (so the rule is proximity and not a blanket removal), and the same pair on
+the retired-value path.
+
+## WDD-20260816-050 -- The ledger decl-check list was transcribed by hand and nothing compared it to the ledger
+
+`paper/README.md` said `scripts/ledger_decl_check.lean` "confirms **all** 53
+declaration names those rows cite are present". The script checks a list
+transcribed by hand from the ledger, and nothing compared the transcription to
+its source.
+
+Deriving the set instead of trusting it: the `ACCEPTED_BASE` `Declaration:`
+fields name **54** fully-qualified declarations. The list held 53.
+`RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace_getElem?_producer` was
+cited by a row and checked by nothing. The script's own `expectedCount` pin could
+not have caught it -- a pin catches a list shrinking, not a list that never grew.
+
+They also name **27** further declarations in forms the script cannot resolve as
+written: 15 elided (`...ReviewerSuccessfulReadWordFits`), 9 short-form, 3
+carrying an inline type annotation. That is not a defect in the ledger; it is the
+exact measure of what a green decl-check does not cover, and it was invisible.
+
+Three changes: the missing name is added (`expectedCount` 53 -> 54);
+`paper/check_paper.ps1` step 5c derives the expected set from the ledger and
+fails on a difference in either direction, and prints the unresolvable count
+rather than leaving a reader to assume it is zero; and the README says 54
+fully-qualified names and names what is outside the check, instead of "all".
+
+An audit reported this as "64 declarations, 11 absent". That figure comes from
+counting every backticked dotted token, which includes five filenames, a SHA, and
+five prose references. The direction was right and the numbers were not -- so the
+numbers here are the measured ones, and the finding was checked before it was
+adopted.
+
+## WDD-20260816-051 -- The evidence-matrix status vocabulary was read from the whole file
+
+`paper/check_paper.ps1` parses the permitted status vocabulary out of
+`EVIDENCE_MATRIX.md` rather than restating it, so that adding a status requires
+amending the header -- the property the header claims to have.
+
+It scanned the whole file. A bold `**BLOCKED_ONLY_ON: SOMETHING_NEW**` written
+anywhere in the body would join the permitted set and then validate its own use.
+The vocabulary is now read only from the region above the sentence
+"No other status is permitted", and its absence is a failure rather than an empty
+permitted set -- the scope of the check is now the scope of the claim.
+
+## WDD-20260816-052 -- String literals satisfied the citation checker's declaration-site test
+
+`paper/check_citations.ps1` strips `--` comments before deciding whether a line
+DECLARES the cited name. It did not strip string literals, and the pattern only
+requires whitespace before the keyword -- so `throwError "expected theorem foo"`
+is a declaration site for `foo`. No ledger row currently resolves this way; the
+strip costs nothing on real declaration lines, which contain no literals.
+
+One limit is now STATED rather than implied, in the checker itself: a
+`where`-clause binding `  foo : Nat := 3` matches the field-site pattern.
+Distinguishing it needs the enclosing declaration, which a line-local matcher
+does not have. No row in this ledger has that shape, and saying so is better than
+a comment that implies the case was handled.
+
+## WDD-20260816-053 -- A pin is not landed until a mutant has been rejected
+
+`scripts/headline_axiom_check.lean` gains three expected-type pins (DD-20260816-117).
+The process point is separate from the mathematics.
+
+An expected-type pin is a `Prop` written independently of the alias it guards,
+inhabited by that alias alone. Its whole value is that a WEAKENED theorem stops
+inhabiting it. A pin that compiles proves nothing about that on its own: a pin
+whose `Prop` is `True`, or which accidentally restates the alias, compiles just
+as happily.
+
+So the landing rule for this file, applied here and stated for the next one:
+**a pin is not landed until at least one deliberately weakened variant has been
+built and observed to REJECT.** Four were, each changing exactly one thing, each
+run through `lake env lean` from a copy outside the source tree so the landed
+file was never edited to test it.
+
+This is the same rule the packed pin followed (DD-20260816-108, "verified to fail
+closed: changing the cap to `428` ... stops this file compiling"). Recorded here
+so it is a convention rather than a habit that happened twice.
+
+One incidental: the readWord pin needs its three implicit binders NAMED in the
+`fun`. Left to inference, Lean binds the hypothesis to `segment` and reports a
+`Nat`/`Prop` mismatch that reads like a statement error rather than a binder one.
+The comment above it says so, because the next person to widen that pin will hit
+it.
+
+## WDD-20260816-054 -- Three call sites the previous entry said it had converted
+
+Corrects WDD-20260816-046, which said "All sixteen call sites and step 7c now go
+through it."
+
+Measured: **14 converted, 3 not.** `m1_certificate_mutation_regression.ps1`,
+`eg_cp_stagea_replay.ps1` and `eg_cp_final_falsification_replay.ps1` kept the raw
+`& script; if ($LASTEXITCODE -ne 0) { Fail ... }` shape -- the three heaviest
+stages in the gate, and the three whose silent non-execution would be least
+visible.
+
+**The roster pin could not catch this, by construction.** It is a hand-written
+list of what the gate should invoke, and I wrote it from the same incomplete
+enumeration I converted from, so the roster and the calls agreed with each other
+and both were short. A hand-maintained list beside the thing it tracks -- the
+species this project keeps rediscovering, here inside the fix for a different
+instance of it.
+
+What catches it is a check that reads the gate's own source and fails on any
+surviving `^& "$PSScriptRoot\...ps1"` invocation. That is not derivable from the
+roster and does not agree with it by construction; it asks a different question
+-- "is there a call site that bypasses the helper?" -- and it answers `3` on the
+tree this entry corrects.
+
+Found by re-deriving the program plan's `gate.ps1` line citations after the
+helper shifted them. The re-derivation was for the plan's benefit; the defect it
+exposed was in the gate.
+
+### The wiring regression had to move with it
+
+`design_decision_check_regression.ps1` pins the gate's wiring for two checkers by
+exact text, so converting them broke it -- correctly. The pin now matches the
+`Invoke-Checker` shape, and expresses "the design regression is HARD" as the
+ABSENCE of `-Soft` **plus** the helper's non-Soft branch actually calling `Fail`.
+Pinning the call text alone would still pass if that branch were weakened to
+`SoftFail`.
+
+Verified by mutation rather than assumed: adding `-Soft` to that one call site
+makes the regression exit 1; restoring it returns exit 0.
+
+One trap worth recording. The new patterns first ended `[^\r\n]*$` and matched
+**nothing**, silently: these files are CRLF, .NET's multiline `$` matches before
+`\n`, and a class excluding `\r` cannot consume the `\r` in between. The original
+patterns ended `\s*$` for exactly this reason. A pattern that matches nothing and
+a pattern that matches correctly produce the same exit code on a well-formed
+file, so only the negative control distinguishes them.
+
+## WDD-20260816-055 -- The helper from WDD-046 changed how six checkers were invoked, and broke two wiring pins
+
+The aggregate gate at `7352d71` returned **GATE FAIL, 8 issues**. Every one traces
+to `Invoke-Checker`, the helper introduced to stop the gate scoring a
+non-running checker as a PASS. It is worth stating plainly: **the entry that
+announced that fix shipped a regression in the same change, and the aggregate
+gate is what caught it.** Per-checker runs did not, because each checker passes
+when invoked correctly by hand.
+
+### 1. Array splatting passes a switch as a positional VALUE
+
+`& $Path @CheckerArgs` with `$CheckerArgs = @('-SelfTest')` does not pass a named
+switch. Measured on a two-parameter probe script:
+
+```
+array splat @('-SelfTest')      -> SelfTest=False  PolicyPath=-SelfTest
+hashtable splat @{SelfTest=$true} -> SelfTest=True   PolicyPath=default
+```
+
+So `-SelfTest` bound to whatever each target declares first positionally:
+
+| checker | outcome |
+|---|---|
+| `hub_closure_lint.ps1` | threw -- no positional to absorb it |
+| `constant_sync_check.ps1` | threw |
+| `paper/check_paper.ps1` | threw |
+| `claim_drift_scan.ps1` | `-SelfTest` became `$PolicyPath`; ran against a policy file that does not exist |
+| `tag_annotation_check.ps1` | `-SelfTest` became `$Pattern`; matched no tags, so it checked nothing |
+
+The three that threw are the interesting ones: under the OLD `& script; if
+($LASTEXITCODE -ne 0)` shape they would have inherited the previous checker's `0`
+and reported PASS. The new helper reported them as `DID NOT RUN`. That is the
+helper working -- on a defect the helper itself introduced.
+
+The literal `-SelfTest` written at each old call site was correct. Converting it
+to array splatting is what broke it. Now a hashtable, which binds switches
+properly.
+
+A hashtable has its own quiet failure: a key the target does not declare is
+**dropped in silence**, so the checker runs in the wrong mode with no error. The
+helper now reads the target's own parameter list via `Get-Command` and fails on
+any key the target does not declare.
+
+### 2. Two checkers pin the gate's wiring by literal text
+
+`design_decision_check_regression.ps1` (WDD-20260816-054) and
+`paper_topology_lint.ps1` both assert that `gate.ps1` contains a specific
+invocation, character for character. Removing the raw `& script` form broke both
+-- correctly, in the sense that the property they defend really did change shape.
+
+`paper_topology_lint.ps1`'s M1 pin now matches the `Invoke-Checker` form and
+still requires the call to be HARD (absence of `-Soft`). Its `A02` mutation
+fixture, which deletes the block between the anchor comment and the invocation to
+prove the pin fires, has its end marker updated to the line that now exists --
+without which the fixture deletes nothing and `A02` passes vacuously.
+
+**The general point.** A wiring pin written as literal text is a coupling between
+two files that nothing declares. There were three of them and no list; each was
+found by a different failure, one of them only because a program-plan citation
+had to be re-derived. `gate.ps1` now carries a check for raw call sites, which
+catches the reverse direction, but the pins themselves remain a hand-maintained
+coupling -- `PLAN_LINEAGE.md` species 3, at the scale of files rather than lines.
+
+## WDD-20260816-056 -- The lint that was supposed to catch what the roster could not, caught nothing
+
+From a fresh blind audit of this round.
+
+### The raw-call-site lint was inert
+
+WDD-20260816-054 added a check that reads the gate's own source and fails on any
+surviving `& "$PSScriptRoot\...ps1"` invocation, and said of it: *"it asks a
+different question -- 'is there a call site that bypasses the helper?' -- and it
+answers `3` on the tree this entry corrects."*
+
+The shipped pattern was `'(?m)^&\s*"\$PSScriptRoot\[^"]+\.ps1"'`. That `\[` is an
+**escaped literal `[`**, not a character class, so the pattern asks for a `[`
+immediately followed by a line start. It is unsatisfiable. Measured against
+`15865e1`, the tree that entry corrects:
+
+| pattern | matches |
+|---|---|
+| as shipped (`\[`) | **0** |
+| with the doubled backslash (`\[`) | **3** |
+
+So the `3` was real -- and was measured with a shell `grep`, not with the code
+that shipped. The number was true of the tree and false of the checker.
+
+The tree is currently clean, so this was a dead detector rather than a masked
+breach. It is the third time in two days that a doubled backslash collapsed to a
+single one while being written through a layer that processes escapes; the
+pattern was written through a generator that emits the backslash from `chr(92)`,
+so no escape is typed at any layer of the tooling. **The shipped file contains a
+typed doubled backslash inside a single-quoted string** -- this entry first said
+the code assembles it from `chr(92)`, which is a claim about code that does not
+exist. What defends the property is the control below, not how the literal was
+produced.
+
+**And it carries a negative control.** A detector that matches nothing and a
+detector that works produce identical output on a clean tree, and this tree is
+clean. The lint now asserts it matches a known raw call site before trusting its
+own count of zero. Verified: clean gate source -> 0, with one raw call injected -> 1.
+
+### `rg` was never asserted, and two stages depend on it entirely
+
+The same entry added `if (-not (Get-Command lake ...)) { Fail ... }` and said it
+was "for the same reason". `rg` got no such assertion, and steps 2 and 2b -- the
+proof-hygiene scan (`sorry|admit|axiom|unsafe|import Mathlib`) and the
+`native_decide` scan -- are nothing but `rg`. With `rg` absent, the
+CommandNotFoundException does not stop the run, `$hygiene` and `$nd` are never
+assigned, `if ($hygiene)` is false, and no failure is recorded. Measured on a
+probe of those two lines: issues recorded = **0**, identical to the healthy run.
+`lake`, `rg` and `git` are now asserted together.
+
+### An axiom inventory with no records reported PASS
+
+WDD-20260816-043 added `if ($examined -ne $declared)` so the parse "fails rather
+than reporting clean on a subset". Both numbers are derived from the same output,
+so an inventory emitting **no** records satisfies `0 -eq 0`. Deleting every
+`#print axioms` line from a check file was a clean pass, and nothing else pinned
+the count.
+
+The floor is now derived from the source rather than pinned by hand: every
+`#print axioms` directive emits exactly one record, either `depends on axioms:`
+or `does not depend on any axioms`, so fewer records than directives means a
+directive did not run. Not a hand-maintained number -- `PLAN_LINEAGE` species 3
+is what a hand-maintained number would be.
+
+### Corrections to earlier entries in this round
+
+- WDD-20260816-046 says the helper covers "all sixteen `.ps1` stages". Measured
+  at `03d8a71`, the tree it describes: **17**. Its own later correction
+  (`14 converted, 3 not`) already implies 17.
+- WDD-20260816-047 and `tag_annotation_check.ps1` say "the two non-`audit-*`
+  annotated tags in this repository (`v2026.07.06`, and `audit-v1-rc-1`)".
+  `audit-v1-rc-1` matches `audit-*`. There is **one**. The same paragraph cites
+  `v1-rc-7-external-audit`, which exists only in the scratch repository used to
+  demonstrate the hole, and is now labelled as such.
+
+## WDD-20260816-057 -- The repository gate would have failed in the repository's own CI
+
+From the same audit.
+
+`6541233` made `tag_annotation_check.ps1` fail when no annotated tag is present,
+which is right: "nothing was checked" is not a pass, and the script's header says
+so -- *"CI must not pass `-AllowNoTags`"*.
+
+Every workflow checks out with `fetch-depth: 2` and no `fetch-tags`.
+`actions/checkout` fetches with `--no-tags` in that configuration, so the runner
+has no tags, so the checker finds none, so it fails. The gate invokes it `-Soft`,
+which turns that into a `GATE ISSUE` and a `GATE FAIL` -- in the "Lean gate" job
+and in `artifact-repro.yml`, which runs the gate through `reproduce_artifact.sh`.
+
+Reproduced locally by deleting the tags: `RESULT: FAIL (nothing was checked ...)`,
+exit 1. **Not reproduced on a runner** -- I cannot run GitHub Actions, so the
+`--no-tags` behaviour is taken from the action's documentation plus that local
+reproduction, and the finding is recorded at that strength. `fetch-tags: true`
+costs nothing if the premise is wrong.
+
+The repair belongs in the workflow, not the checker: an external auditor's plain
+`git clone` does fetch tags, so the auditor path was never affected and softening
+the checker would have hidden a CI-only defect behind a weaker check everywhere.
+
+## WDD-20260816-058 -- The policy widening was repo-wide, and the entry describing it said the opposite
+
+WDD-20260816-048 justified the v24 widening as *"keyed to the prohibiting
+language ... rather than granted to the path wholesale. A path allowance would
+have exempted future prose in those files; a language allowance exempts the
+sentence shape that is actually safe."*
+
+`claim_drift_scan.ps1` evaluates `allowedPathRegex` and `allowedLineRegex` as
+**independent OR'd conditions**. A language allowance is therefore repo-wide --
+strictly broader than the path allowance it was chosen over. And the same change
+did add two wholesale path allowances anyway. The entry describes a design that
+was not shipped.
+
+Measured, by injecting a novelty claim into `README.md`, a governed current-fact
+surface:
+
+| injection | v24 |
+|---|---|
+| bare claim (control) | rejected |
+| same claim + the word `retired` | **allowed** |
+| same claim + the word `restriction` | **allowed** |
+| same line beginning with a quote | **allowed** |
+
+The scan already has the scoped mechanism: `allowedPathLinePathRegex` and
+`allowedPathLineRegex`, which are AND'd. Policy **v25** moves the prohibiting-
+language tokens out of `allowedLineRegex` and the two `paper/` paths out of
+`allowedPathRegex`, into that pair, for both terms touched in v24. The allowance
+is now what the entry said it was, **for the tokens v24 added.**
+
+**Both terms still carry pre-v24 repo-wide `allowedLineRegex` tokens, and this
+change does not close them.** Measured at v25, each of these one-word injections
+into a governed current-fact surface still passes the strict scan: `novelty`,
+`policy`, `search` on the novelty term (into `README.md`); `previously`,
+`historical` on the cap term (into `docs/WHAT_IS_PROVED.md`). A wholesale path
+allowance for `paper/NOVELTY_LOG.md` also remains on the cap term. These predate
+this round and are recorded as open, not folded into a claim that the term is
+now tight.
+
+After: strict scan clean with `paper/` in scope (0 strict failures, all 23
+`paper/` lines classified `review`), and the `retired` injection into
+`README.md` is rejected again. **No hit total is recorded here**: the scan counts
+files this entry lives in, so writing the number down changes it. At the commit
+that ships v25 it is 1193, and this entry first recorded 1192 -- the value from
+before its own text existed.
+
+This is also the species WDD-20260816-049 fixed in `constant_sync_check.ps1` the
+same day, by requiring a historical marker within 120 characters of the numeral
+it excuses -- while the unbounded whole-line form went into the claim-drift
+policy in the next commit.
+
+`paper/README.md` carried the matching stale sentence: it said the claim-drift
+policy scans `README.md`, `artifact/` and `docs/`, and that `paper/` "is
+deliberately outside that registry". The commit that added the scan root did not
+update the file the scan now reads. Corrected, and the narrower exclusion that
+does still apply -- `currentFactSurfacePathRegex` -- is named instead.
+
+WDD-20260816-048 also says the widened run produced "eight strict failures". A
+faithful replay reports **seven**, in `check_paper.ps1` (2), `NOVELTY_LOG.md` (4)
+and `THEOREM_LEDGER.md` (1) -- the scanner's own summary line, not a count of
+grep hits. The qualitative claim, that every one of them is a line prohibiting
+the phrase it contains, holds for all seven.
+
+## WDD-20260816-059 -- Coverage that cannot see the mode is not coverage
+
+From the same audit, as a `P3`; it is recorded here as the third distinct way the
+roster pin failed to mean what it says.
+
+`Invoke-Checker` recorded `$Label` in the roster -- a hand-written string with no
+relation to `$CheckerParams`. So a stage could be silently downgraded to a weaker
+mode while still counting as covered. Changing the claim-policy stage's
+`@{ Strict = $true }` to `@{}` left `GATE COVERAGE: 17 of 17`, `0 raw call
+site(s)`, and that stage unable to fail: measured, the same scan exits **1** with
+`-Strict` and **0** without.
+
+The roster entry is now `label [SortedParamKeys]`, so the mode is part of the
+identity. Verified by mutation: with `-Strict` removed, the roster reports
+`claim_drift_scan.ps1 -Strict [Strict]` as never invoked.
+
+**Two related gaps stay open and are stated rather than closed.** The roster
+covers `.ps1` stages only: the eight `RunAxiomCheck` inventories (including
+`headline_axiom_check.lean`, which carries every expected-type pin),
+`independence_check.lean`, `ledger_decl_check.lean`, the twelve `lake build`
+targets and steps 2/9 are outside both `Invoke-Checker` and `$expectedCheckers`.
+Deleting `RunAxiomCheck "scripts/headline_axiom_check.lean"` leaves coverage at
+17 of 17. WDD-20260816-056's directive floor closes the *other* route into that
+inventory becoming a no-op, but not this one.
+
+Naming the limit is not fixing it. It is stated because a reader of
+`GATE COVERAGE: 17 of 17` would otherwise take it for the whole gate, and the
+number covers rather less than half the stages.
+
+## WDD-20260816-060 -- A residual is a claim too
+
+`WDD-20260816-043` recorded the CI per-commit gap as a residual: *"making CI
+enforce per-commit would require iterating the range."* True, and it took one
+parameter and a `foreach`.
+
+Recorded because "would require X" is a claim about cost, and this one stood for
+a day while the invariant it protects was the one the round kept breaching. The
+work is DD-20260816-119; the point here is that a residual left in a design log
+should carry either a measured cost or a reason it is not being paid, and this
+one carried neither.
+
+## WDD-20260816-061 -- The citation checker's header described a rule the checker does not follow
+
+Companion to DD-20260816-120.
+
+`paper/check_citations.ps1`'s header said its three bindings "admit ONLY names on
+the row's `- Declaration:` line". Two hundred lines down, at the fallback site,
+the same file says *"`$RowNames` is still right for the `nearest name` binding,
+where the identifier was quoted immediately before the citation and is
+deliberate."*
+
+Both cannot be true, and the code follows the second: `L-REF-01` resolves through
+`LeftmostArgMin`, which is not on its `- Declaration:` line. The header is now
+scoped to the two fallback bindings, with the third described as it behaves.
+
+The load-bearing half of that header -- that a cited line must DECLARE the name
+rather than mention it -- is unchanged, and still rejects a citation moved off
+its declaration site.
+
+Recorded separately from DD-20260816-120 because the file is
+workflow-classified: the per-commit governance check added this round
+(DD-20260816-119) rejected the commit that carried only the `DESIGN_DECISIONS.md`
+half. The aggregate check would have accepted it, since the same commit touched
+that log for other reasons -- the blind spot, caught on the round that closed it.
+
+## WDD-20260816-062 -- Three fixes from the last round that did not do what they said
+
+A fresh blind audit of `614923a..2bd35b1` -- the commits that fixed the previous
+round's findings. **P1 empty.** All three P2s are in those fixes.
+
+### The mode-aware roster recorded parameter NAMES, not the mode
+
+`WDD-20260816-059` said "the mode is part of the identity". It recorded
+`$CheckerParams.Keys`, so `@{ Strict = $true }` and `@{ Strict = $false }`
+produced the **identical** roster entry. A one-token change disarms the
+claim-policy stage at full coverage -- the same defect that entry exists to close.
+It caught `@{}`, the one mutation it was tested against, and nothing else.
+
+`-Label` is also a free string with no relation to `-Path`, so a stage could run
+against a different script and still match its roster entry.
+
+The entry is now `label {script} [key=value]`. Verified by mutation:
+`Strict=True` and `Strict=False` now differ, and a wrong `-Path` shows
+`{decoy.ps1}`.
+
+### The raw-call-site lint could not see an indented call site
+
+`^&` anchored at column 0. Measured against the shipped pattern: an indented
+call, a dot-sourced call and a forward-slash path all matched **0** times.
+
+The indented shape is not hypothetical. At `03d8a71`, `check_paper.ps1` sat at
+`gate.ps1:275` inside `if (Test-Path ...) {` with no `else` -- the case
+`WDD-20260816-046` calls "an absent manuscript checker was silently skipped".
+**The lint would not have caught the defect it was written for.**
+
+The control could not detect this, because it was a single column-0 string: it
+tested the pattern against exactly the shape the pattern handled. The control is
+now an array -- plain, indented, dot-sourced, forward-slash -- each asserted to
+match exactly once, and the pattern accepts leading horizontal space, `&` or `.`,
+and either separator. Verified: all four controls match once;
+`Invoke-Checker -Path "..."` and a commented-out call still match zero times.
+
+### The axiom directive floor read a file from a different worktree
+
+`[IO.File]::ReadAllText($script)` resolves a relative path against .NET's
+`CurrentDirectory`, which `Set-Location` does not update. Measured: it read
+`scripts/gate.ps1` out of a **different worktree** of the same repository. When
+the path does not resolve at all it throws, `$directiveCount` stays `$null`, and
+`$null -eq 0` and `2 -lt $null` are both false -- so **neither guard fires** and
+the floor is a silent no-op while `AXIOM CHECK PASS` prints.
+
+Now `Get-Content -Raw -LiteralPath`, with `$directiveCount` initialised to `-1`
+and the guard `-lt 1`, so an unreadable source fails closed. Block comments are
+stripped before counting, since a directive inside `/- ... -/` emits no record
+and would false-fail; no such block exists in the eight inventories today.
+
+## WDD-20260816-063 -- A REJECT leg is only evidence when the ACCEPT baseline holds
+
+Not a defect found in the repository; a reporting weakness the auditor of round 8
+found **in their own evidence**, and reported against themselves.
+
+They ran `paper_topology_lint_regression.ps1` in a `git archive` extraction with
+no built `.lake`. The production lint fails there for an unrelated reason
+(`unknown module prefix 'RMQ'`), so every REJECT case -- which asserts only that
+the lint exits non-zero on a mutated tree -- passed without distinguishing **the
+mutation fired** from **everything is broken**. They declined to upgrade their own
+`PASS [A02] REJECT` line to verified, and cited the durations as the tell: 3.6s
+for `A02` against 101s for a case that really ran.
+
+The suite already fails closed in that state, because the ACCEPT cases fail and
+the run exits 1. What it did not do was say so, and a single `PASS [...] REJECT`
+line quoted out of a red run reads like evidence. The verdict now states the
+dependency, and an explicit `[accept-baseline]` failure fires if no ACCEPT case
+executed at all.
+
+Worth recording for the shape of it: the check that caught this was one auditor
+applying to their own measurement the rule this project applies to received
+findings -- *a green result is worth what it distinguishes*. The suite was sound;
+the sentence it printed was not.
+
+## WDD-20260816-064 -- The controls tested the pattern's own envelope, again
+
+Round 9 of the fresh-blind audit. **P1 empty.** The findings are in round 8's fixes.
+
+### The lint missed six shapes, including the one-line form of its own motivating case
+
+WDD-20260816-062 widened the pattern and replaced one control with four, saying
+of the old one: "it tested the pattern against exactly the shape the pattern
+handled." The four replacements were **also** exactly the new pattern's envelope
+-- leading horizontal space, call or dot-source, either separator -- so they could
+not detect any shape it missed. Measured, all matching **0**:
+
+    if (Test-Path X) { & "$PSScriptRoot\one_line_if.ps1" }
+      if ($env:CI)  { & "$PSScriptRoot\ci_guarded.ps1" }
+    $out = & "$PSScriptRoot\assigned.ps1"
+    try { & "$PSScriptRoot\in_try.ps1" } catch {}
+    & "${PSScriptRoot}\braced.ps1"
+    & "$PSScriptRoot\upper.PS1"
+
+The first is the **one-line form of the exact conditional skip this check exists
+for**. Twice now the control set has been drawn from what the pattern already did.
+
+Ten positive controls now, chosen as negative space rather than confirmation, and
+**two anti-controls** -- a converted `Invoke-Checker` line and a commented-out
+call -- asserted to match zero, because a pattern matching everything would
+otherwise satisfy every positive control.
+
+### Widening it made the gate flag its own fixtures
+
+The controls are literal raw-call text in this file, so the widened pattern found
+**4 sites in `gate.ps1` itself**, every one a control. The scan now excludes a
+sentinel region -- and asserts **both directions**: the fixtures must be visible
+BEFORE the strip, proving the pattern is live, and absent after it. A strip that
+matched nothing would hide real call sites; one that matched everything would
+hide all of them.
+
+The sentinel markers are assembled from a tag rather than written out, because a
+line containing the whole literal is itself a sentinel: the pattern definition
+matched its own text and reported two regions where there is one.
+
+### Coverage counted checkers that did not run
+
+`$script:checkersRun` was appended on entry, before the `Test-Path` and parameter
+guards, so `GATE COVERAGE: 1 of 17` printed beside `DID NOT RUN: no such file`.
+The verdict was right -- the gate exits 1 -- but the sentence was not. Recorded
+after the guards now.
+
+### Residuals, measured and left open
+
+- **The directive floor is derived from the source it checks.** Deleting two of
+  three `#print axioms` directives moves both sides equally: directiveCount 1,
+  recordCount 1, clean pass. The `-lt 1` guard closes only total deletion. Being
+  derived rather than hand-pinned is what makes partial deletion invisible, and
+  the entry introducing it presented that as a virtue.
+- **The block-comment strip does not nest**, and Lean's block comments do. A
+  nested block gives directiveCount 2 against recordCount 1 and a false failure.
+  Fails closed; no such block exists in the eight inventories, verified.
+- **Roster identity records the leaf filename only**, so two same-named scripts in
+  different directories are indistinguishable. All 25 tracked script basenames
+  are unique today.
+- **WDD-20260816-063 over-generalises.** It says every REJECT case is vacuous when
+  the lint is red; A01 and A02 additionally assert ExpectedPatterns, so the
+  `PASS [A02]` line it quotes *is* evidence the mutation fired. The remedy is
+  still right; the diagnosis covered 12 of 14 cases, not all of them.
+
+## WDD-20260816-065 -- The plan artifacts are governed paths now, and that is the point
+
+Companion to DD-20260816-123. Recorded separately because
+`design_decision_check.ps1` classifies all six new paths as
+workflow/process-sensitive -- which is the property that was missing while they
+sat in a session directory.
+
+Before this commit the plan, its lineage, the fake-attack catalogue and both
+dispositions were subject to **no** governance at all: not the design-log
+membership test, not the claim-drift scan, not the per-commit certification.
+They could be edited without any record and no checker could tell. The documents
+themselves recorded that as their central epistemic limit.
+
+They are now inside the same machinery as everything else, which means a future
+edit to the plan requires a design-log entry in the same commit -- enforced
+per-commit by DD-20260816-119, not merely stated.
+
+One consequence worth stating before it surprises someone: `paper/` and
+`docs/internal/` are both scanned by the claim-drift policy, so the plan's prose
+is now subject to the strict terms. It passed on the first scan after landing,
+and a future revision that phrases a novelty or cap claim carelessly will be
+rejected by a checker rather than by a reader.
+
+## WDD-20260816-066 -- The pin-semantics paragraph split the sentence it was clarifying
+
+Companion to DD-20260816-124. The paragraph explaining what "at this pin" means
+was inserted after the line beginning "**Verified at:**" and landed in the
+MIDDLE of that sentence, which continues "cited as a landing below is an
+ancestor of that tip". The header then read as two fragments with an explanation
+wedged between them.
+
+Caught by reading the result. Nothing measures prose continuity, and this is the
+fourth time in this effort that a scripted insertion has damaged a sentence --
+the species PLAN_LINEAGE records as 8. The rule that keeps working is the dull
+one: after a scripted edit to prose, read the region, not the diffstat.
+
+## WDD-20260816-067 -- The commissioning prompt for the outside plan audit
+
+`docs/internal/PLAN_AUDIT_PROMPT.md` is the outside auditor's only input besides
+the tag. It follows the RC-3/RC-4 candidate-prompt convention: name the tag, name
+the artifacts, state the method rules, and list what is DECLARED OPEN so the
+auditor does not spend budget rediscovering a known limit.
+
+The declared-open list matters more here than for a candidate audit, because the
+plan rests on things that are deliberately not checkable: revisions v2-v13 are on
+no ref, the RC-1/RC-2 material and the 2026-08-15 report are on no ref, the agent
+audits of the plan have no committed record, and two H items are genuinely
+undone. An auditor who does not know that will report all four as findings, and
+the report will be four fifths noise.
+
+The tag was created before this file existed and its annotation cites it, so the
+tag is moved rather than left pointing at a commit where the prompt is absent --
+the same two-commits error DD-20260816-124 corrects one entry earlier, caught
+here before publication instead of after.
+
+Three method rules in the prompt are carried over from what this project learned
+the hard way rather than from any template:
+
+- **Check the referent, not just the citation.** A round reported a claim about
+  revision v3 as contradicted, citing a sentence in v4; the citation was real and
+  v4 was simply wrong about v3.
+- **Measure before reporting.** Two rounds produced findings whose numbers came
+  from a looser regex than the one that shipped.
+- **A clean verdict is a real possible outcome.** Manufacturing findings to look
+  thorough is itself a defect, and the prompt says so.
+
+### Addendum to WDD-20260816-067 -- the prompt cannot state its own SHA
+
+The prompt first carried a line reading `Commit under audit: <40-hex>`. Every
+attempt to make it accurate failed by construction: writing the SHA in produces a
+new commit with a new SHA. Two amend-and-retag cycles disagreed by exactly that
+much before the cause was obvious.
+
+This is the fixed point DD-20260816-124 states for the plan header, hit again one
+commit later in a different file. The line is gone; the prompt tells the auditor
+to derive the SHA from the tag, which is the only formulation that can be true.
+
+## WDD-20260816-068 -- Round 10: the merge refusal would have kept CI red, and the controls matched the envelope a third time
+
+Fresh-blind audit of `77807b0..17360d1`. **P1 empty**; all four P2s are in round
+9's repairs.
+
+### The merge refusal made the certification step unpassable
+
+DD-20260816-122 made `design_decision_check.ps1` refuse a merge commit. Correct --
+a merge's first-parent diff carries the merged branch's design log. But
+`git rev-list` **enumerates** merges, and the CI loop had no way to skip one, so
+the step could never pass on a pull request: `actions/checkout` builds
+`refs/pull/N/merge`, and HEAD *is* a merge commit there.
+
+Measured on a fixture with two fully compliant PR commits:
+
+| enumeration | commits | failed | step |
+|---|---|---|---|
+| without `--no-merges` | 3 | 1 | **exits 1** |
+| with `--no-merges` | 2 | 0 | passes |
+
+The entry's green sentence -- "all 33 linear commits still certify" -- was true
+and said nothing about the property that mattered.
+
+`--no-merges` added, with the residual stated in the workflow: content a merge
+introduces alone is then certified by nothing. That is the same trade DD-122
+already took when it chose refusal over judging a merge by the union of its
+parents.
+
+**And the refusal had no regression coverage** -- `git grep -i merge` over the
+suite returned nothing, in a round where every other fix added a fixture. Two
+legs now: the checker refuses a 2-parent commit, and the enumeration drops it.
+The fixture branch touches files the trunk commits do not, because a conflicted
+merge leaves the index unresolved and the fixture cannot continue.
+
+### The wiring pin counted assignments, not derivation
+
+DD-20260816-122 said "the range DERIVATION is pinned instead". It pinned the
+*count* of `$range` assignments. Five one-line edits kept the count at three and
+certified one commit. Now pinned: the three range **values in order**, `$commits`
+assigned exactly once, the loop body's first statement, and `if: always()`
+**anchored to this step's name** -- testing for it anywhere in the file passed a
+workflow whose certification step was `if: false`, because other steps carry it.
+
+Verified against all five: constant range, `$commits` reassignment, in-loop
+`continue`, disabled step, and `Select-Object -Last 1`. Each rejected.
+
+### Third round, same control defect
+
+WDD-20260816-064 replaced four controls with ten, having written that the four
+"were also exactly the new pattern's envelope". The ten were too. Ten further
+shapes matched **0**, including `$script:rc = & "$PSScriptRoot\..."` -- the
+assignment idiom this file itself uses for `$script:checkersRun`.
+
+That one is not cosmetic: a new stage added that way is invisible to the lint
+**and** to the roster, which is the property the lint exists to establish. The
+gate said so itself and it was true.
+
+The anchor is gone. The pattern now matches anywhere in the **code portion** of a
+line, and comments are stripped first -- an anchor-free pattern matches prose,
+which is how "4 sites, every one a control" came to include this entry's own
+explanatory comment. Nineteen controls, added **before** the pattern was widened.
+
+### The sentinel exclusion was unbounded, and its liveness test was satisfied by prose
+
+Moving the `END` marker down swallowed a real call site with every assertion
+green. Emptying both control arrays also left it green: `foreach` over an empty
+array is a silent no-op, and the `-ge 1` liveness test ran over the whole file,
+where a comment satisfied it.
+
+Now: fixture counts pinned, liveness counted **inside the region only** and
+required to reach the control count, and the region's length bounded by what the
+fixtures occupy.
+
+### Two smaller ones
+
+`GATE COVERAGE` still counted a checker that threw -- a `#requires` mismatch
+executes nothing and was recorded as invoked. The append moved past the throw
+check. And `Resolve-BaseRef` hard-coded "base" while resolving the head too, so
+the head-specific message was unreachable under `-Strict`, the mode CI uses; it
+takes a `-RefKind` label now.
+
+## WDD-20260816-069 -- Round 11: the raw-call lint is now an AST walk, because five rounds of regex failed
+
+Fresh-blind audit of `17360d1..b84b9e4`. **P1 empty**; five P2s, all in round 10's
+repairs. The pattern held a fifth time.
+
+### The regex is gone
+
+Five consecutive rounds found this one check inadequate, each time inside the fix
+for the previous round:
+
+| round | what was wrong |
+|---|---|
+| 7 | the pattern was `\[` -- an escaped literal -- and matched **nothing** |
+| 8 | anchored at column 0, so an INDENTED call was invisible |
+| 9 | the four controls were exactly the pattern's own envelope |
+| 10 | ten more shapes missed incl. `$script:rc = & ...`; controls again the envelope; and it flagged its own fixtures and its own prose |
+| 11 | nineteen controls collapsed to **four** distinct consumed substrings -- a degenerate pattern dropping `$PSScriptRoot` missed 0 of 19 -- and the comment stripper written to keep prose out was cutting **four lines of live code**, counting only double quotes |
+
+Round 11 is the one that settles it. A control set that does not constrain the
+pattern cannot be repaired by adding controls, and a hand-written comment
+stripper cannot beat a parser that already knows what a comment is. **The seven
+over-stripped lines included the stripper's own two implementation lines.**
+
+So the check asks PowerShell instead. `Parser::ParseInput` gives the same
+tokenisation the shell uses; the walk collects `CommandAst` nodes whose
+`InvocationOperator` is `Ampersand` or `Dot`. Measured against a fixture carrying
+every shape from all five rounds: **21 real invocations found, 0 false
+positives.** `Invoke-Checker -Path ...` is excluded because its operator is
+`Unknown`; commented-out calls, here-string bodies and prose are excluded because
+the parser knows what they are.
+
+**The sentinel region is gone too.** It existed only because a regex cannot tell a
+call from a quotation of one; a string literal is not a `CommandAst`, so the 21
+fixtures need no exclusion. That deletes the region-length bound, the
+`fixtureChars * 3` headroom that hid twenty raw calls, and the liveness test a
+comment could satisfy -- four round-11 findings closed by one change.
+
+Dynamic invocation (`& $someVariable`) is not statically decidable. It is not
+treated as a finding; it is **pinned** -- `$Path`, Invoke-Checker's own dispatch,
+is the only one, and a new one is reported for review.
+
+### A finding that was not a finding
+
+Round 11 listed `$all = @(1, & "$PSScriptRoot\x.ps1")` among the missed shapes.
+It is a **parse error** in PowerShell -- "Missing expression after ','" -- so it
+cannot appear in a working script. The fixture-parse assertion added here is what
+surfaced that: a control catching a defect in the finding that motivated it. The
+parenthesised form is real and is a fixture.
+
+### The merge fixture passed with the refusal deleted
+
+The `[merge-refused]` leg added last round wrote a **code**-classified file while
+recording its entry in the **workflow** log, so the merge was rejected for a
+missing code entry rather than for being a merge. Setting `$parents.Count -gt 2`
+to `-gt 99` left the whole suite at exit 0.
+
+Rebased onto `$c2` with the entry in `DESIGN_DECISIONS.md` -- the log that a
+code-classified path requires. Verified: with the refusal deleted the leg now
+**fails**.
+
+### The loop pin tested placement, not filtering
+
+It pinned the loop body's first statement. Seven edits certified one commit while
+printing "all N commit(s) certified individually" and passing the pin: `break` at
+the end, the same `continue` moved to position two, `Set-Variable -Name commits`,
+a dead branch wrapping the loop, and an `$LASTEXITCODE` test that can never
+increment `$bad`.
+
+Now pinned: the loop body **whole**, `Set-Variable` rebinding of `$commits`, and
+the statement immediately before the loop -- a dead wrapper leaves the body
+byte-identical, so only its predecessor changes. Each rejected -- five named
+above, plus `$c` rebound at position two, which an audit reproduced. The count
+was first published as "seven" against an enumeration of five; the enumeration
+was the accurate half.
+
+**A note on my own measurement.** The first mutation run reported all five still
+passing. They were not landing -- `git diff` was empty, because the anchors I
+typed had the wrong indentation. A mutation that does not apply and a pin that
+does not fire produce the same output, which is the whole subject of this entry.
+The rebuilt harness derives its anchors from the file's own lines and prints the
+diffstat beside each verdict.
+
+## WDD-20260816-070 -- Round 12, and the end of the internal loop
+
+Fresh-blind audit of `b84b9e4..b2e0ace`. **P1 empty**, three P2, seven P3. This is
+the last internal round; the reasoning for stopping is at the end.
+
+### The AST was never what bounded coverage
+
+`DD-20260816-126` described the new check as "an AST walk over `CommandAst` nodes
+with a non-`Unknown` invocation operator". It omitted the line that actually
+decided what got reported:
+
+```powershell
+if ($text -match 'PSScriptRoot') { $static += $text; continue }
+```
+
+A substring test. And **0 of 21 fixtures lacked that literal**, so the fixture set
+could not detect the restriction -- the identical defect rounds 9, 10 and 11 found
+in the regex, reproduced inside the commit whose stated reason for existing was
+that a control set which does not constrain the check cannot be repaired by adding
+controls.
+
+Six working invocations were invisible, each verified by the auditor to actually
+execute a marker script:
+
+    $repoRoot = $PSScriptRoot ; & "$repoRoot\x.ps1"
+    ./scripts/x.ps1                    <- the BAREWORD form ci.yml itself uses
+    & ($checkerPath) / & "$checkerPath" / & $checkers[0] / & $h.Checker
+    pwsh -NoProfile -File "$PSScriptRoot\x.ps1"
+    Invoke-Expression ("& '" + $PSScriptRoot + "\x.ps1'")
+
+`InvocationOperator -eq 'Unknown'` was excluding **bareword path invocation**, a
+first-class PowerShell call form -- not merely `Invoke-Checker -Path ...`.
+
+The predicate now asks *does this command name a `.ps1`*, which is the question.
+Verified on 21 shapes: 10 must-report, 7 must-be-dynamic, 4 must-be-silent, **0
+failures**. Fixtures are up to **27, all distinct, 4 of them free of the
+`PSScriptRoot` literal** -- pinned, so a substring test cannot silently become the
+bound again. Distinctness is pinned too: 21 identical copies satisfied the old
+count pin.
+
+Two things the probe caught that the audit did not, because they only appear once
+the predicate is broad:
+
+- **`& lake env lean ...` landed in the dynamic bucket.** A bareword target is a
+  resolvable command name, not an unresolvable one; only a variable, index,
+  property or subexpression is undecidable. Excluded, or the check reports noise
+  as findings.
+- **The allowlist compared `Path` while the walk records `$Path`.** Recording the
+  extent text rather than `VariablePath.UserPath` was the P2-2 fix; the allowlist
+  had to move with it, or Invoke-Checker's own dispatch reports forever.
+
+### Two published numbers were wrong
+
+- *"14 real invocations found, 0 false positives."* The false-positive half is
+  exact. The count is **21** -- 14 came from an earlier 14-shape probe, not from
+  the shipped fixtures. Corrected in `DD-20260816-126` and in the commit message's
+  successor entry here.
+- Round 11's *"cutting seven lines of live code, two of them its own
+  implementation."* The second half is exact. The count is **four** (three unique
+  texts). Corrected in `WDD-20260816-069`.
+
+`DD-20260816-126` also says it is recorded in `DESIGN_DECISIONS.md` "because
+`scripts/gate.ps1` is code-classified". The repository's own classifier says
+workflow -- `NeedsCode = $isProofCode` and `$proofCodePattern = '(?i)\.lean$'`.
+The entry is harmless where it sits; the premise was wrong.
+
+### Declared open, with measurements, rather than fixed
+
+> **Superseded by `WDD-20260817-073`.** All three are now caught by the
+> wiring pin, each verified against a pre-patch control that does *not*
+> catch it. The table below is retained as the record of what round 12
+> measured, not as a statement about the current tree.
+
+Three `ci.yml` edits pass the whole regression suite while certifying fewer than
+all pushed commits. **None is live** -- `ci.yml` at this commit certifies every
+pushed non-merge commit; each requires someone deliberately editing the workflow
+to defeat its own check:
+
+| edit | certifies |
+|---|---|
+| `-notmatch '^0{40}$'` flipped to `-match` | 1 of 3 |
+| a fourth, single-quoted `$range = 'HEAD~1..HEAD'` after the chain | 1 of 3 |
+| `$bad = 0` **and** the loop wrapped in `if ($env:NEVER_SET) { ... }` | **0 of 3**, prints "all 3 commit(s) certified individually", exit 0 |
+
+The third is the strongest evasion found in twelve rounds. It survives because
+wrapping both statements keeps `$bad = 0` immediately before `foreach` and leaves
+the loop body byte-identical.
+
+Also open: the `&&` pipeline-chain shape was dropped from the fixtures without a
+note (it is a parse error under Windows PowerShell 5.1, which the fixture-parse
+assertion would trip, but that was never recorded).
+
+### Why this is the last internal round
+
+| round | P1 | P2 | where the findings lived |
+|---|---|---|---|
+| 7 | **1** | 5 | the candidate's checkers |
+| 8-12 | **0** | 3-5 each | the previous round's fixes |
+
+P1 has been zero for six consecutive rounds, and the subject migrated: rounds 7-9
+found defects in the release-facing artifact, rounds 10-12 almost entirely in the
+checking apparatus added during the loop. Round 12 states it directly -- *"nothing
+in scope is presently broken ... every finding is a property not established, not
+a live breakage."*
+
+A loop auditing its own auditing does not terminate on its own. The remaining
+gaps are recorded above and go to the external auditor as declared-open, with
+their measurements, rather than being chased through another generation of pins.
+
+## WDD-20260816-071 -- The RC-4 commissioning prompt, and its declared-open list
+
+`docs/internal/V1_RELEASE_CANDIDATE_AUDIT_PROMPT.md` is retargeted from
+`audit-v1-rc-3` to `audit-v1-rc-4` (nine references) and gains a declared-open
+section listing eleven known limits with their measurements. The count has
+moved twice since: `WDD-20260817-073` closed the three `ci.yml` evasions,
+taking it to ten, and `WDD-20260817-075` added the uncertifiable-history
+measurement, taking it back to eleven.
+
+The list exists because an auditor who does not have it spends budget
+rediscovering things the repository already records -- and because publishing
+the limits is the only way a reader can tell what a green gate does NOT
+establish. Every entry cites the design record that measured it.
+
+Three entries are the `ci.yml` evasions from round 12. They are stated with the
+measurement that makes them concrete -- one certifies **zero** commits while
+printing "all 3 commit(s) certified individually" and exiting 0 -- together with
+the fact that none is live at this tag. Declaring a gap is not the same as
+excusing it, and an auditor who finds a way to reach one of these WITHOUT
+deliberately editing the workflow has found something new. **Since superseded:** `WDD-20260817-073` closed all three, and they no longer appear in the prompt's declared-open list.
+
+The section also states what twelve internal rounds did and did not establish:
+no round found a defect in a kernel-checked theorem; the last six returned zero
+P1; and three findings from those rounds were themselves wrong and were rejected
+on measurement. The last sentence asks the auditor to measure rather than
+assert, which is the rule this project paid the most to learn.
+
+## WDD-20260816-072 -- The last two wrong numbers, corrected before the tag ships
+
+Round 12 raised seven P3s. Five were fixed with the round; two were record
+accuracy and are corrected here, because a design log that ships a known-wrong
+figure to an external auditor is the defect this entire effort was about.
+
+**"Seven mutations rejected"** appears in WDD-20260816-069 and DD-20260816-125.
+Both then enumerate **five**, and the shipped comment in
+`design_decision_check_regression.ps1` says "five edits". An audit reproduced
+**six** -- the five named plus `/c/Users/poin/bash_completion.d/*.bash` rebound at position two. Seven was supported
+by no enumeration anywhere. Both entries now say what was actually verified.
+
+**DD-20260816-126 gave a false reason for its own placement**, opening "recorded
+here because `scripts/gate.ps1` is code-classified". It is not:
+`` is `(?i)\.lean$`, so a `.ps1` file is workflow-classified,
+and the production classifier reports `0 code` for the commit that introduced
+the entry. Harmless where it sits -- the extra entry costs nothing -- but the
+stated premise was wrong, which is the same species as an over-broad universal:
+a claim made in passing that nobody measured.
+
+That closes round 12 apart from the items published as declared-open in the
+commissioning prompt, each with its measurement. The internal loop is stopped.
+
+
+## WDD-20260817-073 -- The three declared-open CI evasions are closed, not declared
+
+Round 12 measured three edits to `.github/workflows/ci.yml` that certify fewer
+than all pushed commits while the whole regression suite stays green. They were
+written up as declared-open on the grounds that none is live and each needs
+someone deliberately editing the workflow to defeat its own check.
+
+That was the wrong disposition, and a fix for all three had already been drafted
+when the decision was made. A wiring pin exists for exactly one purpose: to
+notice when the workflow stops certifying what it says it certifies. A pin that
+passes while `ci.yml` certifies **zero** commits and prints *"all 3 commit(s)
+certified individually"* is this repository's signature defect -- a green
+artifact standing in for an unestablished property -- in its sharpest available
+form. Shipping it to an external auditor as a known limit would have been
+publishing the defect rather than fixing it.
+
+### What each pin now does
+
+**Quoting.** `$actualRanges` matched `\$range = "..."` only. A fourth,
+single-quoted `$range = 'HEAD~1..HEAD'` appended after the chain was invisible to
+a check whose entire job is counting range assignments. The pattern now accepts
+either quote character.
+
+**Conditions, not just values.** Pinning the three range *values* in order fixes
+what each branch assigns and says nothing about which branch *runs*. Flipping
+`-notmatch '^0{40}$'` to `-match` leaves all three values untouched and makes the
+event-based branch unreachable on an ordinary push, so every push falls through
+to the one-commit window `DD-20260816-121` exists to close. The three branch
+conditions are now pinned verbatim and case-sensitively.
+
+**Sibling indentation.** The predecessor test `^\s*\$bad = 0\s*\r?\n\s*foreach`
+was defeated by wrapping `$bad = 0` *and* the loop together: `$bad = 0` still
+sits immediately before `foreach`, `\s*` absorbs the added indent, and the loop
+body stays byte-identical, so the whole-body pin cannot see it either. What a
+wrapper cannot hide is indentation. The six certification statements are
+siblings in one flat block, so wrapping any proper subset indents that subset and
+nothing else; each anchor must also match exactly once, so a decoy at the
+sanctioned indent cannot supply the match while the live statement sits deeper.
+
+### Measured, against a control
+
+| | pre-patch | post-patch |
+|---|---|---|
+| unmutated baseline | green | green |
+| `-notmatch` -> `-match` | **not caught** | caught |
+| single-quoted 4th `$range` | **not caught** | caught |
+| `$bad = 0` + loop wrapped dead | **not caught** | caught |
+
+The pre-patch column is the control, and it is the reason this entry can claim
+the pins are load-bearing rather than decorative. It also cost one correction:
+the first run of the probe reported the wrapping evasion as *already caught* by
+the old script. That was a broken mutation, not a working pin -- the probe
+computed the loop's extent starting from the line *after* `foreach`, which is
+already at brace depth zero, so it wrapped a single line and spliced a `}` into
+the middle of the loop. The old whole-body pin then failed on a mangled loop, for
+the wrong reason. Corrected to start the walk at the `foreach` line itself, the
+old script does not catch it. **A control that fires for the wrong reason is
+worse than no control**, because it certifies the defect as absent.
+
+### One diagnostic corrected in passing
+
+`if (-not $wired -or $stillAggregate)` is the case rollup, and it printed
+*"ci.yml does not iterate the range with -Head"* no matter which check had
+fired -- so a wrapped-block failure was reported as a range-iteration defect. It
+now states that wiring failed and points at the specific messages above it, and
+the aggregate-scan condition prints its own line. Nothing consumes the old
+string.
+
+### Disposition
+
+`WDD-20260816-070`'s declared-open table and the external packet's
+`declared open` list both carried these three as known limits. Both are
+corrected: the three are closed. What remains open there is unchanged.
+
+
+## WDD-20260817-074 -- Why `&&` is not a raw-call fixture, written down
+
+Round 12's last open item was small and entirely a record defect: the `&&`
+pipeline-chain shape had been dropped from the raw-call fixture set without a
+note, so its absence read as an oversight. A reader auditing fixture coverage had
+no way to tell a considered exclusion from a forgotten one, which is the whole
+reason the fixture set is pinned in the first place.
+
+Measured rather than asserted, on the runtime this gate actually uses:
+`[Parser]::ParseInput('./a.ps1 && ./b.ps1', ...)` returns **one** parse error
+under PowerShell **5.1.26100.9168** -- *"The token '&&' is not a valid statement
+separator in this version."* Two consequences, and the note states both:
+
+- It cannot be a fixture. `Get-RawCallSites` returns `$null` on parse errors, so
+  a `&&` fixture would exercise the predicate not at all -- it would sit in the
+  list looking like coverage while testing nothing. That is the failure mode this
+  check was rebuilt to stop, so adding it would have been worse than omitting it.
+- Its absence costs no coverage in the file actually walked. A `gate.ps1`
+  containing `&&` would not parse, and that branch is `Fail` (`exit 1`), not
+  `SoftFail` -- verified by reading the definition, not by assuming the name.
+
+### What the note does not establish
+
+Under PowerShell 7, `&&` parses into a pipeline chain, and whether the
+`CommandAst` walk descends into one is **untested**: there is no pwsh 7 on this
+machine to measure it on. Rather than assert the walk handles it -- which is
+plausible, since `FindAll` is recursive, and plausible is exactly the standard
+this project has repeatedly found insufficient -- the comment records it as the
+first thing to check if the gate is ever run under 7.
+
+This entry exists because the per-commit strict check refused the original
+commit: one workflow file changed, no design-log update. The check was right, and
+the amendment is the record it asked for.
+
+
+## WDD-20260817-075 -- The candidate's own history does not pass the check the candidate ships
+
+Sweeping `design_decision_check.ps1 -Strict` over every non-merge commit from
+`main`'s merge-base to the tip -- the range a pull request would use --
+**thirteen named below fail** (103 non-merge commits at the latest sweep;
+the denominator moves, the set does not). They are all ancestors of the
+`audit-v1-rc-4` tag. They were
+inside the candidate the entire time the internal loop was auditing it, and
+twelve rounds did not surface them, because nothing had ever run the check over
+the branch's own history.
+
+This was found only because a routine sweep was run before re-tagging. The
+single-commit invocation used after every commit in this session -- `-Base HEAD~1
+-Head HEAD` -- is green and always was. It certifies the commit in front of you
+and says nothing about the 99 behind it.
+
+### The measurement
+
+| commit | subject | ledger required | example path |
+|---|---|---|---|
+| `bb15006` | Land the paper substrate worklog, bibliography, manuscript | `DESIGN_DECISIONS.md` | `paper/references.bib` |
+| `ebdaf22` | Land the related-work ledger, evidence matrix, README | both | `paper/.gitignore` |
+| `29c688b` | Repin the paper substrate to current main | `DESIGN_DECISIONS.md` | `paper/EVIDENCE_MATRIX.md` |
+| `4c56e7e` | Harden the manuscript checker | both | `paper/EVIDENCE_MATRIX.md` |
+| `aa3d585` | Land the novelty log and split the checker surfaces | both | `paper/NOVELTY_LOG.md` |
+| `7655ee8` | Export the packed cell-probe result from RMQPaper | `WORKFLOW_DESIGN_DECISIONS.md` | `scripts/headline_axiom_check.lean` |
+| `c9cb19f` | Record the RMQPaper promotion in the handoff | `WORKFLOW_DESIGN_DECISIONS.md` | `docs/internal/RC1_CORRECTION_HANDOFF.md` |
+| `3652d4b` | Make the two-210 independence claim a checked property | `DESIGN_DECISIONS.md` | `scripts/independence_check.lean` |
+| `5c09c5a` | Mark the independence regression done in the handoff | `WORKFLOW_DESIGN_DECISIONS.md` | `docs/internal/RC1_CORRECTION_HANDOFF.md` |
+| `3265987` | Export the fixture probe count, clarify capstone field 32 | `WORKFLOW_DESIGN_DECISIONS.md` | `scripts/axiom_check.lean` |
+| `2bd03d8` | Mark P3-1 polish done in the handoff | `WORKFLOW_DESIGN_DECISIONS.md` | `docs/internal/RC1_CORRECTION_HANDOFF.md` |
+| `9389655` | Audit the ledger's line citations | both | `paper/EVIDENCE_MATRIX.md` |
+| `f8de800` | Correct the citation audit: 27 citations, 3 defective | `DESIGN_DECISIONS.md` | `paper/EVIDENCE_MATRIX.md` |
+
+Two distinct causes, and neither is "the rule did not exist yet" alone. **These
+cover 4 of the 13; `WDD-20260817-077` completes the decomposition and measures how
+much of the defect is the checker's own:**
+
+- **Wrong ledger.** `3652d4b` changed `scripts/independence_check.lean`, which is
+  code-classified, and recorded the decision in `WORKFLOW_DESIGN_DECISIONS.md`.
+  A design entry was written; it went in the other book.
+- **No entry.** `c9cb19f`, `5c09c5a` and `2bd03d8` each change exactly one
+  workflow-classified file and add no workflow-log entry at all.
+
+### Why this matters more than its size suggests
+
+`DD-20260816-122` records that a branch-creation push falls back to
+`HEAD~1..HEAD`, a one-commit window, and the declared-open list carried that as a
+limitation. It is not a limitation in the abstract. **It is exactly what would
+hide these 13.** The first push of this branch enumerates one commit and reports
+green; a pull request enumerates `origin/main..HEAD` -- all 100 -- and goes red
+with 13 failures. The published limit and the live defect are the same fact seen
+from two sides, and the limit was published without anyone checking what it was
+currently concealing.
+
+The aggregate check accepted all 13 when they landed. That is the blind spot
+`WDD-20260816-043` documented and the per-commit check was built to close; what
+was never done was pointing the new check backwards at the history the old one
+had passed. A check that only ever runs forwards certifies the future and
+launders the past.
+
+### Disposition: recorded, not repaired
+
+Not fixed here. Repair means rewriting 13 commits to add or relocate design-log
+entries, which rewrites every SHA after the earliest of them -- discarding the
+`audit-v1-rc-4` tag, the GATE PASS the tag rests on, and the per-commit
+certification of the 87 commits that currently pass. That trade is the owner's
+call, not a cleanup to be performed while preparing an audit packet.
+
+**Corrected by `WDD-20260817-076`:** the paragraph that stood here called this a
+choice between rewriting the branch and merging with a recorded exception. That
+was wrong, and wrong in the direction that overstates severity. This repository
+integrates by squash-merge, and a squash of this branch certifies cleanly, so
+the ordinary integration path needs no exception at all. What remains true is
+that a pull request would go red, and that adding a date- or path-based
+exemption so the check reports green over history it does not certify is not an
+option -- that is the defect class this candidate exists to eliminate, and it
+would be committing it inside the mechanism built to detect it.
+
+Added to the declared-open list with this measurement so an external auditor
+starts from the number rather than rediscovering it.
+
+
+## WDD-20260817-076 -- What the 13 uncertifiable commits actually cost
+
+`WDD-20260817-075` measured the defect correctly and then overstated what it
+means, which is the more instructive half. It said the choice was to rewrite the
+branch or merge with a recorded exception. Neither is required, because it never
+asked how this repository integrates.
+
+### Measured
+
+- **Main integrates by squash.** Its last 200 commits hold **3** merge commits --
+  `b98ab1e`, `22ab357`, `615c9d3`, all 2026-07-24 -- against **197** non-merges.
+  The two most recent integrations, `a0402e1` (Stage A) and `0f38672`
+  (ALLSIZE-R1), each have exactly **one parent**.
+- **A squash of this branch certifies.** `git merge --squash` of
+  `codex/rc3-corrections` onto `main` in a scratch worktree applies with **zero
+  conflicts**, and `design_decision_check.ps1 -Strict` on the resulting commit
+  returns **exit 0** over 92 changed files (55 code, 40 workflow, 2 neutral).
+  A squash carries the whole branch's ledger updates, so the one commit satisfies
+  both ledgers by construction.
+
+So on the path this project actually uses, the 13 never reach main and nothing is
+blocked. They surface on exactly one path: `ci.yml` also triggers on
+`pull_request`, whose range is `origin/main..HEAD`, which enumerates all 101.
+
+### The correction, and why it happened
+
+Two numbers moved. The count is **13 of 101**, not 13 of 100 -- the sweep ran
+when the tip was `ddb5bad`, and `dc31337` landed after, certifying. And a
+measurement of main's merge shape was published from a malformed command:
+`git rev-list --count --merges -200 main` next to `--no-merges -200` returned "82
+merges, 200 non-merges", which cannot describe one 200-commit window. `-n` limits
+how many commits are *printed*, not which window is searched, so the two counts
+came from different sets. Counting parents per commit over one fixed window gives
+3 and 197.
+
+Both errors share a shape with the defect `WDD-20260817-075` describes: a number
+was produced by a command that answered a different question than the one asked,
+and it read as an answer because it was numeric. The rule that catches this is
+not "measure" -- both were measurements. It is **state what window a number
+covers, and check the parts sum**. 82 + 200 > 200 was visible on the page.
+
+### What stands
+
+The defect is real and unrepaired: 13 commits in the tagged candidate's ancestry
+do not satisfy the per-commit check the candidate ships, for the two causes
+`WDD-20260817-075` tabulates. Repair still means rewriting history and discarding
+this tag and its GATE PASS. What changed is only the consequence: it is a
+pull-request-path defect and a record of imperfect history, not an integration
+blocker.
+
+
+## WDD-20260817-077 -- The 13 decomposed, and how much of it is the checker's fault
+
+`WDD-20260817-075` named two causes covering four commits and left the other
+nine unexplained. The dominant cause was never recorded at all. This entry
+completes the analysis and measures, rather than estimates, how much of the
+defect belongs to the check itself.
+
+### The classifier's actual rule
+
+```powershell
+$workflowRootPatterns = @('^\.agents/', '^\.codex/', '^\.github/',
+                          '^scripts/', '^AGENTS\.md$', '^docs/internal/')
+$needsWorkflow = Test-AnyPattern -Path $Path -Patterns $workflowRootPatterns
+$needsCode     = -not $needsWorkflow
+```
+
+**Everything the checker does not recognise is proof/code architecture.** That is
+a default wearing a classification's clothes. `paper/` is on neither list, so an
+entire top-level directory of prose -- manuscript, bibliography, README, even
+`.gitignore` -- landed in the bucket reserved for proof-model and theorem-surface
+decisions, and every commit touching it demanded a `DESIGN_DECISIONS.md` entry.
+
+The neutral-evidence carve-outs cannot reach it either: they are anchored
+`^docs/internal/...`, so `docs/internal/X_WORKLOG.md` is exempt evidence while
+`paper/WORKLOG.md` is code. **The same document is exempt or not according to
+which directory it sits in**, which is not a distinction the rule's own comment
+claims to be drawing -- it says these are "semantic opt-outs, not a remembered
+list of sensitive paths."
+
+### Three causes, not two
+
+| cause | commits |
+|---|---|
+| `paper/` unclassified, defaulting into code; neutral patterns root-anchored | `bb15006` `ebdaf22` `29c688b` `4c56e7e` `aa3d585` `9389655` `f8de800` |
+| `RC1_CORRECTION_HANDOFF.md` absent from the neutral list, so ticking a checkbox demands a design decision | `c9cb19f` `5c09c5a` `2bd03d8` |
+| `.lean` under `scripts/` is both proof-code and workflow, so both ledgers are required; one was written | `7655ee8` `3652d4b` `3265987` |
+
+### Measured, not estimated
+
+The check evaluates historical commits against the **current** script, so a
+classifier correction moves the sweep without touching history. Run in a scratch
+worktree at `55ab1ba`, reverted after:
+
+| classifier | of 13 certify |
+|---|---|
+| as shipped | **0** |
+| root-agnostic neutral patterns, `_HANDOFF` added | **5** |
+| the same, plus `paper/README`, `.gitignore`, `NOVELTY_LOG` neutral | **5** |
+
+The second correction bought nothing: the root-agnostic rule already covered
+`paper/WORKLOG.md`, `THEOREM_LEDGER.md`, `EVIDENCE_MATRIX.md` and
+`RELATED_WORK_LEDGER.md`.
+
+**An earlier estimate put the checker's share at 10 of 13. Measured, it is 5.**
+The estimate was formed by counting commits that *mention* a misclassified path,
+which is not the same as commits that *fail only because of one*. Same error
+shape as the two numeric corrections in `WDD-20260817-076`: a plausible number,
+never run.
+
+### What survives the correction, and why the check is right about it
+
+| commits | fail on |
+|---|---|
+| `bb15006` `ebdaf22` `29c688b` `4c56e7e` | `paper/rmq.tex`, `paper/references.bib` |
+| `ebdaf22` `4c56e7e` `aa3d585` | `paper/check_paper.ps1` |
+| `7655ee8` `3652d4b` `3265987` | `scripts/*.lean` |
+
+Strip the misclassification away and these eight are not false positives.
+`rmq.tex` is the public claim surface -- the most claim-bearing file in the
+repository -- and four commits changed it with no design record. `check_paper.ps1`
+is automation. The three `.lean` files are proof-code. The honest split is
+**5 rule defect, 8 real gaps**, and the earlier framing had it the other way
+round, in the direction that flatters the history.
+
+### Recommended, not performed
+
+Three changes, none made here, because reclassifying governed paths is a decision
+with scope beyond this candidate:
+
+1. Make the neutral-evidence patterns root-agnostic and add `_HANDOFF`. Correct
+   on its own merits -- a worklog is a worklog wherever it lives -- and now
+   demonstrably not motivated by the count, since it moves only 5.
+2. Replace `$needsCode = -not $needsWorkflow` with an explicit disposition, so an
+   unrecognised root fails loudly instead of defaulting. This is the actual bug;
+   it will swallow the next new directory exactly as it swallowed `paper/`.
+3. Write the eight missing entries, or record them as a stated exception. The
+   `rmq.tex` ones are genuinely owed: the manuscript's claim changes have no
+   design record.
+
+Until then the sweep stands at thirteen named commits -- see `WDD-20260817-078`
+for why that is not written as a ratio -- and the reason is now written down.
+
+## WDD-20260817-078 -- A count of commits cannot be stated as a ratio
+
+`13 of 100` became `13 of 101` became `13 of 103`, twice in one day, because
+every commit written to *record* the finding enlarges the set the finding counts
+over. This is the fixed-point problem for the third time in this repository --
+after the plan header that could not name the commit introducing it, and the
+commissioning prompt that could not carry its own tag's SHA -- and it was walked
+into anyway, because a ratio does not look self-referential the way a SHA does.
+
+The numerator is stable and the denominator is not. Those 13 SHAs are fixed
+facts about history: re-swept at 103 non-merge commits, the failing set is
+exactly `bb15006 ebdaf22 29c688b 4c56e7e aa3d585 7655ee8 c9cb19f 3652d4b
+5c09c5a 3265987 2bd03d8 9389655 f8de800` -- the same thirteen, unchanged, while
+the total moved twice.
+
+So the records now state the invariant and derive the rest: **thirteen named
+commits fail**, out of however many the sweep reports when it is run. The
+denominator is given as an observation at a stated tag, never as part of the
+claim.
+
+The general rule, which the plan header already got right by accident of careful
+phrasing -- it says an *ancestor of* the branch, not *the tip*, and so survived
+four candidate moves untouched: **state claims in terms of what does not move.**
+A set of SHAs does not move. A ratio whose denominator includes the document
+making the claim moves every time the document is saved.
+
+
+## WDD-20260817-079 -- The classifier stops defaulting, and eight commits get the record they owed
+
+`WDD-20260817-077` decomposed the thirteen uncertifiable commits into three
+causes and recommended three changes. All three are made here, and the branch
+now certifies **every non-merge commit**, eight of them by retrospective
+record. (Written as a count it was "104 of 104", which `WDD-20260817-078` had
+already ruled out one commit earlier: the two commits recording this fix moved
+the total to 106 and falsified it immediately.)
+
+### 1. The default is gone
+
+The classifier ended `$needsCode = -not $needsWorkflow`: every path it did not
+recognise was declared proof/code architecture. `paper/` matched no workflow
+root, so a whole top-level directory of prose became proof-model design and
+seven commits became uncertifiable for a reason nobody chose.
+
+There are now two explicit lists -- `$workflowRootPatterns` and
+`$codeRootPatterns` -- and a path matching neither is **unclassified**, which is
+a hard error naming the path, in every mode including non-strict. A check that
+cannot place a file must not report PASS; that is the defect class this
+candidate exists to remove, and the old default was an instance of it sitting
+inside the governance mechanism itself.
+
+Measured before committing: all 873 tracked paths classify, so the change adds
+no obligation to any existing file. `.audit-packets/` is gitignored and never
+reaches the checker.
+
+### 2. Neutral evidence is root-agnostic, and two roots were misfiled
+
+The neutral patterns were anchored `^docs/internal/`, so
+`docs/internal/X_WORKLOG.md` was exempt evidence while `paper/WORKLOG.md` was
+proof/code -- the same document classified by which directory it sits in, which
+is exactly what the comment above those patterns says they do not do. They are
+now root-agnostic, and `_HANDOFF` joins them: `RC1_CORRECTION_HANDOFF.md` is a
+tracker, so ticking a checkbox in it was demanding a design decision that no one
+had made.
+
+`.claude/` moves to the workflow roots. It was absent, so runtime skills counted
+as proof/code -- and `DD-20260725` exists only because of that: it says outright
+that it was written "so the repository-sensitive classification has its required
+design record", while the substantive rationale sits in `WDD-20260725-001`, a
+workflow entry. That is a decision recorded to satisfy a misclassification, and
+it is now unnecessary.
+
+Repository plumbing -- `.gitignore`, `.gitattributes` -- is neutral in either
+ledger.
+
+### 3. Eight commits, recorded rather than excused
+
+Five of the thirteen were the classifier's fault. The other eight are real:
+four changed `paper/rmq.tex`, the public claim surface, with no design record;
+three changed `paper/check_paper.ps1`; three changed `scripts/*.lean`, which is
+both proof-code and automation, and wrote one ledger of the two.
+
+Their entries cannot be added where they belong, because a commit's content is
+fixed and rewriting them discards every descendant SHA -- the tag, its GATE
+PASS, and the certification of the ninety-six that pass.
+`docs/internal/RETROSPECTIVE_CERTIFICATIONS.md` writes the decision each one
+owed and ties it to the exact commit and the exact missing paths.
+
+**Why this is a record and not an exemption.** The checker accepts only when
+`-Head` names one of the eight *and* the missing set it computes equals the
+recorded set exactly. Nine mutations were run against it, each of which must
+turn a green commit red:
+
+| mutation | result |
+|---|---|
+| recorded set widened by one path | rejected (mismatch) |
+| recorded set emptied | rejected (mismatch) |
+| `*` written in place of the set | rejected -- it is not a pattern language |
+| the row removed | rejected |
+| the whole table emptied | rejected |
+| the record file deleted | rejected |
+| the SHA swapped for another failing commit | rejected |
+| control: record intact | certified |
+| control: restored after tampering | certified |
+
+`design_decision_check_regression.ps1` gains `[retrospective-record]`, which
+pins the table to exactly those eight SHAs, **re-derives each missing set from
+the production checker** rather than trusting the file, and runs the widening
+tamper in-suite with a verified restore. So a ninth entry, or a widened one,
+fails the suite.
+
+A date- or path-based exemption was refused. It would let the check report green
+over history it does not certify, inside the mechanism built to detect exactly
+that.
+
+### Also fixed in passing
+
+`design_decision_check_regression.ps1` printed
+`PASS [final-verdict-counts] (15 reject, 10 accept)` from a string literal while
+the assertion beside it required 19 and 14 -- a success message announcing counts
+the run had not produced. It is derived from the counters now. Two cases were
+corrected rather than deleted: `unknown-repository-path-default-sensitive` pinned
+the removed default and is now `unknown-repository-path-is-unclassified`, and
+`absolute-windows-repository-root` used an unknown root incidentally while
+testing path normalisation, so it now uses a classified path and tests what its
+name says. Eight cases were added for the new behaviour, including one proving
+the unclassified failure survives non-strict mode.
+
+## WDD-20260817-080 -- The reproducibility job could not see the history it was asked to check
+
+`WDD-20260817-079` added `[retrospective-record]`, which re-derives each
+pre-policy commit's missing-path set by running the production checker over
+`<sha>~1..<sha>`. The `CI` workflow passed it. `Artifact Reproducibility` failed
+it eight times over, once per commit.
+
+The cause was not certification. `artifact-repro.yml` checked out with
+`fetch-depth: 2`, and the eight commits sit far behind the tip, so they were
+simply **not in the clone**. `<sha>~1` could not resolve, the production checker
+exited 1, and the leg reported "does not certify retrospectively" -- naming a
+governance failure where the real fault was a missing object.
+
+Two repairs, because there were two faults:
+
+- **The workflow.** `fetch-depth: 0`, matching `ci.yml`, which already fetches
+  full history for the per-commit certification loop. A job that reproduces the
+  artifact from this repository needs the repository, not its last two commits.
+- **The diagnostic.** The leg now asks `git cat-file -e <sha>^{commit}` first and,
+  when the object is absent, says so and names the remedy
+  (`git fetch --unshallow`) instead of blaming the commit. Verified by cloning
+  this branch at `--depth 2` and running the suite there: all eight lines now
+  report absence rather than failure.
+
+This is the same defect as the CI rollup corrected in `WDD-20260817-073` -- a
+check reporting one specific cause regardless of which condition actually fired.
+Twice in two days, in two different checkers, which suggests the rule is worth
+stating plainly: **a check that cannot run and a check that failed are different
+outcomes, and a message that conflates them sends the reader to the wrong place.**
+
+## WDD-20260817-081 -- The rule from 078, broken one commit after writing it
+
+`WDD-20260817-078` concluded that a claim must be stated in terms of what does
+not move, because `13 of 100` had become `13 of 101` had become `13 of 103` --
+every commit recording the finding enlarging the set it counted over.
+
+The next two entries wrote **"the branch now certifies 104 of 104"** into
+`WDD-20260817-079` and into the commissioning packet. The two commits that
+carried those words took the total to 106 and falsified them on arrival. The
+rule was one entry old.
+
+Both sites now state the invariant: **every** non-merge commit certifies, eight
+of them by retrospective record. "Every" does not drift, and eight is a property
+of history rather than of how many times this file has been saved. The branch
+total appears nowhere as part of a claim.
+
+Worth recording rather than quietly correcting, because the failure is not
+ignorance of the rule -- the rule was written, in this file, deliberately, one
+commit earlier. Knowing a rule and applying it at the moment of writing are
+different acts, and a ratio still reads as a fact rather than as a claim with a
+moving part. The durable defence is not vigilance; it is that a numerator tied
+to named objects cannot go stale, so **prefer the form that cannot be wrong over
+the form you intend to keep correct.**
+
+## WDD-20260818-081 -- RC-3 `P2-2`: the two self-tests that were accepted and never written
+
+An outside audit of the program plan found that `P2-2` is marked landed
+(`yes`, §A.2 "all landed except two") while two of the three false-success
+classes its accepted disposition named still pass. Reproduced here at `27c5641`,
+the tagged candidate:
+
+    claim_drift MUTATED exit=0   scan complete (1206 hits, 0 strict failures)
+    check_paper MUTATED exit=0   CHECK-PAPER: RESULT: PASS
+
+on the exact accepted inputs -- `the query executes in a fixed number of
+word-RAM steps` in `rmq.tex`, and `the canonical query executes in 210 word-RAM
+instructions` in `README.md`. Corroboration: **no `.ps1` in the repository
+contained either probe string**, so the "persistent self-tests" the disposition
+required were never written. `RC3_DISPOSITION.md:151-153` is explicit: "These
+exact mutation classes become persistent self-tests."
+
+The claim is not merely unqualified, it contradicts the manuscript, which says
+at `rmq.tex:739` that the model is cell-probe and "this is not word-RAM
+instruction time". The charged cap is a cell-probe quantity; stating it as a
+word-RAM instruction count is the conflation the repository retired.
+
+**`check_paper.ps1`** gains four claim-shaped patterns. `word[-\s]RAM\s+time`
+missed the sentence because it says *steps*, not *time*. Each new pattern
+refuses a directly preceding `not`, `not a`, or `not the`, so the manuscript's
+own negation passes. A negation further away still trips them -- `we do not
+claim a constant number of word-RAM instructions` fails, measured -- and that is
+deliberate: widening the lookbehind to span arbitrary words would admit `this is
+not trivial: the query executes in a fixed number of word-RAM steps`. Failing
+closed costs a rephrase; failing open is the defect this exists to remove.
+
+**`CLAIM_DRIFT_POLICY.json` v26** gains `forbidden-wordram-instruction-count`.
+Its `allowedPathRegex` admits `paper/check_paper.ps1`, because a checker's
+fixture table must contain the forbidden shapes by construction -- that is what
+makes it a test, not a claim surface. Without that, the new term fired on the
+fixtures added above and broke `claim_drift_scan -SelfTest`, which was caught by
+a control run: exit 0 without the term, exit 1 with it.
+
+**Persistent, not one-shot.** `check_paper`'s `$positives` table requires every
+claim pattern to match a concrete positive; adding the four patterns without
+fixtures failed the self-test with four cases, which is the mechanism working.
+Measured after: `check_paper -SelfTest` 0, `claim_drift_scan -Strict` 0,
+`-SelfTest` 0, `claim_drift_policy_regression` 0, and both README and rmq.tex
+mutations rejected with exit 1.
+
+One defect introduced and repaired in passing: the first write of these patterns
+put literal `0x08` bytes in the file where `\b` was intended, which rendered as
+a missing character rather than an error. Found by hexdump, not by reading --
+the terminal hides a backspace. Byte-verified 0 afterwards.
+
+## WDD-20260819-082 -- Plan v15, and what an outside audit caught that twelve inside rounds did not
+
+The outside audit of `audit-plan-v14` returned ten findings. **All ten
+reproduced**; none was rejected on measurement. Across twelve internal candidate
+rounds roughly a quarter of findings were wrong about their own referent, so this
+is worth recording as a data point about where audit value comes from: the
+auditor had the tag and the prompt and nothing else, and that constraint is the
+thing that made the findings land.
+
+`AUD-01`, `AUD-02` and `AUD-03` are one defect at three sites, and the sharpest
+kind: the plan's header states the rule -- claims about artifacts committed
+*with* a revision "say so explicitly and are true of that later commit, not of
+the pin" -- and explains that the rule exists because an earlier revision
+collapsed the two. Then three sentences collapse them again. **A rule written
+down is not a rule followed**, and the document that documents the defect is not
+immune to it.
+
+`AUD-04` was not a plan defect at all. It read a plan row asserting that RC-3
+`P2-2` had landed, went and checked, and found two of the three accepted
+false-success classes still passing on the exact inputs the disposition named.
+Closed in `WDD-20260818-081`. The transferable lesson is in the disposition
+record: **an accepted disposition is not an implemented one**, and where the
+disposition names a probe string, grepping for that string is the whole test.
+Twelve rounds read that row; none ran the grep.
+
+The remaining six are ordinary claim defects -- a rule mapped to a section that
+does not carry it, a companion filename that does not exist, a three-line
+citation standing in for a nine-line argument, `53` where the checker declares
+`54`, a defect-species record called a revision history, and a cross-reference
+attributing to §E something only §0 says.
+
+`audit-plan-v14` is not moved. It is the artifact the audit was performed
+against; moving it would destroy the referent the report cites. v15 gets its own
+tag, and the disposition in `PLAN_AUDIT_DISPOSITION_v14.md` names the audited SHA
+so the two can be read against each other.
+
+## WDD-20260908-083 -- The gate had a documented route nobody had ever run
+
+An external RC-4 audit returned NOT_ACCEPTABLE on one P1: the aggregate fails
+under PowerShell Core on Windows. Reproduced here end-to-end before touching
+anything -- `pwsh -File scripts/eg_cp_stagea_replay.ps1` at the tag exits 1 at
+`REPLAY: descendant-termination self-test`, unable to start
+`...\WindowsApps\Microsoft.PowerShell_7.6.5.0_x64__8wekyb3d8bbwe\powershell.exe`.
+
+Both replay harnesses chose the shell to spawn with
+
+    $shellExe = if ($onWindows) { Join-Path $PSHOME 'powershell.exe' }
+      else { Join-Path $PSHOME 'pwsh' }
+
+`Test-OnWindows` keys on `$IsWindows` -- the **operating system**. That is the
+right question for taskkill-versus-setsid and the wrong one here, because
+`$PSHOME` is the **running host's** own directory. Measured on this machine:
+under 5.1 `$PSHOME` holds `powershell.exe` and no `pwsh.exe`; under pwsh 7.6.5 it
+holds `pwsh.exe` and no `powershell.exe`. So the Windows branch built a path that
+cannot exist under Core.
+
+`scripts/host_shell_path.ps1` now answers the question by **measuring** the
+running process's own image, with an edition-then-`$PSHOME` fallback and a named
+failure rather than a third guess. On POSIX the fallback lands on `$PSHOME/pwsh`,
+byte-for-byte what the old else-branch produced, so the ubuntu leg cannot regress.
+Verified under both hosts: each selects its own executable, and the selection
+equals `(Get-Process -Id $PID).Path` in both.
+
+**Why it survived for the life of the project.** Every recorded local GATE PASS
+ran under Windows PowerShell 5.1, where the wrong branch happens to be right, and
+CI's gate leg is ubuntu, where the else-branch is taken. `artifact/README.md:16`
+advertises `pwsh` as a permitted route. **No one had ever run it.** A documented
+route that is never exercised is not a tested route, and the twelve internal
+rounds could not have found this: they all ran the shell that masks it.
+
+**The control.** The mandatory self-test now refuses to spawn a shell that is not
+the running host, rather than merely one that exists. Existence alone is not
+enough: on a machine with both hosts installed, reintroducing the OS-keyed choice
+would still find a real `powershell.exe` and pass. The configuration that catches
+it is the one lacking the other shell -- which is exactly the configuration
+nobody ran. So the control tests identity, not existence.
+
+**SA-CHK-12 is superseded, not quietly broken.** That row pinned byte-identity of
+`eg_cp_final_falsification_replay.ps1` against `3420c76c`, guarding against
+"accidental edit of the inherited frozen campaign". The edit here is deliberate
+and recorded, but the pin's condition still applies: it says the inherited
+registry reruns if the file changes, so it reruns. The row is marked superseded
+and the acceptance record annotated -- a pin that would otherwise have frozen a
+P1 defect in place because the artifact holding it was immutable.
+
+## WDD-20260908-084 -- Pins that test behaviour, and an exemption that must apply
+
+Two RC-4 audit findings, one root cause each.
+
+**F1: a test driven by the production list cannot survive that list.** Both
+protections added for RC-3 `P2-2` were iterated FROM the thing they protected.
+`check_paper.ps1`'s fixture loop walks `$forbiddenClaims`, so deleting a pattern
+deletes its own test and orphans its positive fixture; the policy regression
+drives its cases from the policy file, so deleting a term deletes its coverage.
+Measured at the tag: both deletions left their suites at exit 0, and the bare
+README claim then passed `-Strict` with 0 strict failures. I had told the
+external auditor these were "pinned so the patterns cannot be dropped silently".
+They were not. Asserting a pin without running the deletion is the same error as
+accepting a disposition without grepping for the probe string.
+
+The fix is behavioural, not structural. Both self-tests now assert the
+production DECISION on fixed probe text, using the production pattern array, the
+production allowance helper and the production window. A deleted pattern, a
+weakened pattern, or a widened allowance each stop a probe being rejected.
+Measured: deleting the four `check_paper` patterns now exits 1 (was 0); deleting
+the policy term now exits 1 (was 0).
+
+A structural fixture/pattern set-equality pin was considered and rejected as
+insufficient: an audit showed that WIDENING `$retirementMarker`, `$quoteWindow`
+or `$recordSurfaces` leaves every pattern in place and stops it firing. Only a
+behavioural probe sees that.
+
+**F2: an exemption keyed on the line, not on the claim.** The term added for
+`P2-2` carried `allowedLineRegex = not|never|...|policy|scan` -- a
+line-wide bare token. So "This is not merely a modeled bound: the canonical query
+executes in 210 word-RAM instructions" passed while the bare sentence failed. The
+`not` does not negate the claim; the sentence strengthens it. Worse, this is the
+same repo-wide-token shape already published as declared-open for two OTHER
+terms: the fix for one finding reproduced a known defect in a new term.
+
+The allowance now requires the negation to attach to the claim -- `does not
+execute`, `never runs`, `is not a word-RAM instruction count` -- rather than to
+share a line with it. Before narrowing, exactly ONE line in the repository relied
+on the old allowance, and it was a probe added minutes earlier by this same
+change; nothing legitimate depended on it. Measured after: the audited bypass
+exits 1, a genuine negation still exits 0, and the strict baseline is unchanged
+at 0 strict failures. Policy -> v27.
+
+## WDD-20260908-085 -- An exemption must apply, not merely be nearby
+
+F3 and F5 are one defect in two checkers: an allowance keyed on PROXIMITY rather
+than on whether the allowance actually applies.
+
+**F3.** `HasNearbyCite` excused any forbidden model-vocabulary match with a
+citation within 220 normalised characters. Measured at the tag: "Our canonical
+query executes in a fixed number of word-RAM steps." exits 1; append
+`~\cite{FischerHeun11}` to the identical sentence and it exits 0. That sentence
+asserts OUR result and the citation attributes nothing. A first-person sentence
+is now never excused -- what we claim about this development stands on this
+development's proofs, not on someone else's paper being mentioned nearby.
+
+**F5.** `Test-HistoricalContext` accepted a historical marker within 120
+characters. Measured: "The current charged-trace constant `214` applies to every
+query." exits 1; prefix "Historical background is elsewhere." and it exits 0,
+with the false current-fact assertion untouched. The window is now the SENTENCE
+holding the numeral, and a sentence asserting a current fact is never historical.
+
+Both keep the exemption working where it genuinely applies, which is the point --
+removing an exemption is easy and wrong. Measured after the fix: prior-work
+attribution with a citation still exits 0; a same-sentence historical statement
+still exits 0.
+
+**A control that could not see its own subject.** Restoring the citation probe to
+the `check_paper` self-test did NOT re-close the `$citeWindow` widening the
+earlier audit found, because the new ownership guard rejects that probe at ANY
+window -- the probe had become insensitive to the thing it was meant to pin. A
+second probe was added whose verdict genuinely depends on the window: a
+third-person claim with a citation ~350 characters away, rejected at 220 and
+excused at 100000. Measured: widening the window now exits 1.
+
+Still open and stated rather than implied: widening `$retirementMarker` alone
+still leaves the suite green, because no probe here sits on a record surface
+(`WORKLOG.md`, `NOVELTY_LOG.md`) where that allowance applies.
+
+## WDD-20260908-086 -- One expression and eight cross-references
+
+**F6.** `paper/rmq.tex:808` typeset `\log\binom{2n-1}{n-1}/(2n-1) = 2n -
+\Theta(\log n)`. Under the base-two convention the binomial is at most
+`2^(2n-1)`, so its logarithm is at most `2n-1` and the quotient at most 1, while
+the right-hand side grows linearly. The quotient belongs inside the logarithm;
+it now is. `paper/NOVELTY_LOG.md:622` quoted the same wrong form and is corrected
+with it -- the audit found that occurrence, the original report did not.
+
+**F8.** Section 11's enumeration is Controller charging (1), Preprocessing (2),
+Tightness of the constant (3), Tightness of the overhead envelope (4),
+Cell-probe lower bounds (5), Internal audit status (6). An older item was removed
+without renumbering the citations, so every reference was one too high. Eight, not
+five: `THEOREM_LEDGER.md` 599, 616, 623, 632 and 642 (the fifth wraps across two
+lines and a single-line grep misses it), plus `EVIDENCE_MATRIX.md` 42, 43 and 106,
+which the original report did not list.
+
+Applied by descending line index. An adversarial review measured that applying
+the item-4 correction before the item-3 one makes `Section 11, item 3` occur
+twice, so an ascending applier would have edited the wrong row -- the same
+index-invalidation this project has hit before.
+
+Verified after: each row's subject matches its cited ordinal (`L-OPEN-01`
+preprocessing -> 2, `L-OPEN-04` overhead -> 4, `L-OPEN-05` cell-probe -> 5,
+`L-OPEN-06` controller charging -> 1), and `check_paper.ps1`, its self-test,
+`claim_drift_scan.ps1 -Strict` and `constant_sync_check.ps1` all exit 0.
+
+## WDD-20260909-087 -- A closure walker that could not see two legal imports
+
+`hub_closure_lint.ps1` matched `^\s*import\s+(.+?)\s*$` per LINE and then split
+the remainder on whitespace. Lean puts no such constraint on a header. Measured
+2026-09-09, both of these compile and both left the lint at exit 0 while claiming
+the closure was exactly the eleven pinned modules:
+
+    import
+    RMQ.Core.Spec
+
+    import RMQ.Core.Spec/- probe -/
+
+The first never matched, because the module is not on the `import` line. The
+second matched and then split into `RMQ.Core.Spec/-`, `audit`, `probe`, `-/`,
+none of which resolves to a file. A walker that cannot see an import cannot bound
+the closure it reports, so the lint was asserting a property it had not checked --
+the same shape as every other finding in this round.
+
+It now reads the whole file, strips `/- -/` and `--` comments first (a comment can
+sit between `import` and its module), and matches `\bimport\b\s+([A-Za-z_][\w.]*)`
+with whitespace spanning newlines. The strip is deliberately NON-nesting and that
+fails safe: a nested block comment leaves trailing text visible, which can only
+add a candidate module, never hide one, and an unresolvable candidate is dropped.
+
+Both shapes are fixtures in `-SelfTest` now. Measured after: each exits 1 where it
+exited 0, an ordinary import is still caught, and the unmutated baseline is green.
+
+## WDD-20260909-088 -- The RC-6 commissioning prompt
+
+Retargeted from `audit-v1-rc-4` to `audit-v1-rc-6` (nine references, including
+the four identity checks -- an errata note could not have covered those without
+telling the auditor to check out the wrong tree).
+
+Three declared-open entries had gone stale against their own measurements and are
+corrected: the tracked `.ps1` count is 26, not 25 (`host_shell_path.ps1` was
+added by `WDD-20260908-083`); the claim-drift policy is v27, not v25, and the
+two named terms were re-measured at v27 rather than assumed; and the program plan
+is tagged `audit-plan-v15`, with v14 kept unmoved as the referent of the audit
+that produced v15.
+
+A new section states what the previous outside audit found and what was done
+about it, finding by finding, with the before/after measurement for each. An
+auditor who is not told this re-derives it at the owner's expense, and one who is
+told it can check the repairs instead. It says plainly that two of the nine were
+undercounted in that report -- the cross-references were eight, not five, and the
+malformed expression appeared twice -- so the counts are worth redoing.
+
+It also records that the repairs broke three things, each caught by the gate
+rather than by the author. A packet that lists only successes invites the reader
+to trust the process rather than check it.
+
+**Corrupted in the writing, caught before commit.** The table row quoting
+`\log\binom{...}` was written through a Python string where `\b` became a literal
+backspace byte, so the file contained `\log<BS>inom`. The first check for this
+missed it, because it scanned a hand-picked set of control characters that did
+not include 0x08. The sweep is now over all of 0-31 except tab, CR and LF. A
+verification that enumerates what it expects to find cannot see what it did not
+think of.
+
+## WDD-20260910-PQ1-001: preserve experiment bytes and serialize proof builds
+
+PQ1 imports the prior isolated RC6 experiment with its original 45-entry manifest after checking every entry length/SHA256 and the commissioned archive digest. Several original files use CRLF and one frozen specification ends with an additional blank line. The evidence-local .gitattributes disables newline rewriting, recognizes CR at end of line, and preserves that one original blank-at-EOF occurrence. It does not disable source diffs or general trailing-whitespace checks. This avoids silently changing archived executable evidence while retaining the exact manifest. New proof/code outside that frozen directory has normal whitespace checks.
+
+The first Git check exposed the original blank line; preserving raw bytes then exposed CR-as-whitespace reporting. The scoped attributes resolve both representation issues. Source/candidate manifest verification and the committed-range whitespace check remain required. Broad attributes or normalizing the old files without provenance were rejected. No public claim or production gate exemption is granted to the evidence directory.
+
+Proof workers share the authorized feature worktree with disjoint module ownership. The lead serializes narrow Lean checks via an explicit build slot and owns staging/commits and shared ledger appends. RC6 .olean/.ilean dependencies were copied into private local build output because Lean's first RMQ search root shadows later roots; no mutable output is shared with the read-only audit cache. Failed initial import resolution is an environment failure, not a semantic failure. Rechecks occurred only after the private dependency copy and narrow proof fixes.
+
+## WDD-20260910-PQ1-002: replay the public certificate against a fixed typed client
+
+The new primitive capstone has 30 mandatory fields. Its final validation plan freezes a separate ID/field/verdict table before public export. The replay runner compares a literal registry with that table, the complete certificate initializer/field inventory and 30 independently stated client propositions. Missing, duplicate, extra and reordered cases fail before a Lean child starts. Explicit empty, whitespace and unknown selectors fail; the unchanged certificate is an expected-accept case. Registry/selector controls run without requiring a completed capstone or a broad build.
+
+Each certificate mutation weakens exactly one field to True and its initializer to True.intro. The producer, actual public alias and RMQPaper root must still elaborate. The client must fail at the named check's source span; missing modules, resource limits and producer failures are not acceptable mutation verdicts. A separate public-alias mutation checks that the client depends on the exported proof. Inferring expected propositions from the current field type, relying only on axiom printing, or counting any failing command as a rejected mutation would permit the advertised dependency to disappear unnoticed and were rejected.
+
+Production replay requires a clean committed tree, saves exact source bytes and SHA256 values, mutates one case at a time, restores in finally, compares bytes, rebuilds the restored public producer/client artifacts and checks all Git status/worktree/index channels. The shared owned-process helper bounds roots and descendants and retains stage outcomes in a new per-run directory. The runner's descendant test uses hidden Windows helper windows and requires a real launched child to be absent after deadline termination. The initial deterministic registry/selector test and Windows descendant test pass; these are tooling checks only. Full mutation replay remains required after unconditional theorem closure and is not claimed by this entry.
+
+Runtime checks execute the actual numeric-memory program with literal independent expected answers. The first full attempt passed S01 through S10 in 172 seconds and correctly rejected S11's precondition: the singleton query had read every allocated cell. The S11 fixture now uses 24 increasing values with a one-element query; its actual unread-cell replacement passed in 123.506 seconds with7641 instructions and228 receipts. This is a fixture repair, not a weakening of supplied-memory agreement. The final runtime stage now has a600-second deadline, allowing this measured replacement plus the earlier cases and cold-cache margin; the development attempts used300 seconds. Broad final certification retains the separately frozen 150-minute ownership deadline and is reserved for the completed public candidate.
+
+An independent read-only review identified three holes before replay certification. Marker-local inventory could miss a31st field outside the markers; the runner now also compares the complete declarations and rejects outside-marker field/initializer fixtures. A located kernel deep-recursion error could be mistaken for expected type rejection; a positive type-diagnostic whitelist and whole-output resource/setup rejection now have deterministic positive and negative controls. Counting eleven runtime lines could accept renamed/duplicated fixture IDs; emitted IDs and the plan are now checked against a separately literal ordered runtime registry. All repaired deterministic controls pass. These findings did not change the frozen certificate requirements or permit a narrower endpoint.
+
+## WDD-20260911-PQ1-003: coordinator takeover, certifiable history and restored experiment bytes
+
+The PQ-1 worker stopped on a usage limit with its unconditional capstone, safety producers, public export, typed consumer and replay runner uncommitted. The owner directed the coordinator to continue in the same governed worktree and branch. Before any edit the coordinator copied the exact worker state onto a separate snapshot branch in another worktree, verified all 30 changed files by SHA256, rebuilt every new module from source on a clean copy of the RC6 audit cache, and ran an independent multi-lens audit. The worker worktree was idle and unchanged when the takeover began.
+
+CI certifies design-ledger coverage per commit (`design_decision_check.ps1 -Base "$c~1" -Head $c -Strict`). Five of the six worker commits changed workflow-classified prompt, matrix, report or experiment paths without a same-commit WORKFLOW_DESIGN_DECISIONS.md companion, because the worker prompts required only the aggregate form. No commit had been pushed. The six commits are therefore squashed into one commit whose tree is byte-identical to c869608, followed by one commit holding the worker's uncommitted final state; both certify. The original history remains unchanged on the local branch codex/fully-charged-packed-query-v1-worker-history. Rewriting each commit with a synthetic companion would invent per-commit rationale after the fact, and a retrospective-certification record is reserved for published history that cannot be rewritten; both were rejected. Future PQ1 worker prompts should name the per-commit form, not only the aggregate one.
+
+The experiment directory's attributes disable newline rewriting, but 15 of its 45 manifest entries and manifest.json itself were committed LF-normalized while the working tree kept the original CRLF bytes. Git's stat cache reported the files clean, so the worktree manifest check passed while the committed blobs failed it (30/45). The blobs are re-staged with `git add --renormalize`; the index now passes all 45 manifest entries and stores manifest.json byte-identically to the original directory, whose archive digest remains f108739ea4029fc94fbc2a6c5e4b6c8e420c3fad5553f42a02689b57ba8c802e. Provenance verification must read committed or indexed blobs (`git show <rev>:<path>`), not the working copy. A worktree-only check, or normalizing the originals and regenerating the manifest, would have hidden or rewritten the archived evidence and was rejected.
+
+## WDD-20260911-PQ1-004: extend the PQ1 replay to new fields, pins, a producer projection and a runtime negative control
+
+The literal registry now has 38 cases:
+- C01-C33, one per certificate field;
+- P01 and A01;
+- D01, which collapses Instruction.category's non-load arms to control, rebuilds the producer through lake build RMQPaper under ProducerRebuildDeadlineSeconds (default 2400), and requires rejection only at pinInstructionCategory;
+- R01, which changes the specResult statement from + 1 to + 2 and requires the producer to reject it, only inside the specResult initializer of the composition theorem;
+- N01, a runtime fixture with a wrong answer that must fail its result check.
+Registry rows now name the rejecting surface. The plan table, the runner registry, the complete field and initializer inventory, the consumer's checkCNN inventory and a literal 38-name pin inventory must agree exactly. Collapse and projection excerpts must occur exactly once and are matched in either checkout newline style. Restoration covers every file a case can touch, including Primitive.lean; a collapse case is restored by another lake build RMQPaper.
+
+The diagnostic whitelist now accepts Lean's "Not a definitional equality" message. The D01 spot check showed that this is how a theorem proved by rfl reports a failed pin.
+
+Self-tests inject:
+- missing, duplicate, extra, reordered and resurfaced rows;
+- a renamed check, and an extra or a missing pin;
+- a moved projection excerpt;
+- producer-span diagnostics inside and outside the target initializer;
+- the recorded D01 diagnostics at their own pin and at another pin;
+- missing and duplicated excerpts.
+
+Alternatives rejected: recompiling only three files after an upstream definition change, which would leave stale dependents; counting any producer failure as R01's verdict; deriving the pin list from the consumer. The full replay still requires a clean committed tree and was not run by this lane.
+
+## WDD-20260911-PQ1-005: script-boundary selector tests and a PowerShell 5.1-safe runtime selector channel
+
+Audit L8-F4: selector rejection was tested only in a helper with a hard-coded bound flag. Audit L8-F5: the runtime empty-selector control silently became a full run under Windows PowerShell 5.1, which drops empty native arguments.
+
+The runner now launches itself in a bounded child of the same shell, through a wrapper that binds -OnlyCase at the PowerShell level:
+- an explicitly bound empty, whitespace or unknown selector, and an empty selector with -RuntimeOnly, must fail with the PQ1-SELECTOR diagnostic and print no stage marker;
+- a valid ID in the Lean-free -SelectorProbeOnly mode must select exactly that case;
+- omission selects all 38.
+
+The Lean runtime accepts a selector through PQ1_RUNTIME_SELECTOR spelled id:<ID>, which is never an empty native argument. The runner uses only that channel for its runtime controls (empty, whitespace, unknown, malformed, one valid fixture, N01) and first clears the variable in its own process.
+
+Observed: every Lean-free mode passes under PowerShell 7.6.6 and Windows PowerShell 5.1.26100.9168. Through the owned launcher under 5.1, id: and id: followed by a space are rejected as explicitly empty and id:UNKNOWN as unknown. Requiring pwsh 7.3 or later was rejected because gate and audit hosts may run 5.1. This applies M1R5-BOUND-EMPTY-SELECTOR-IS-NOT-OMISSION at the real script boundary.
+
+## WDD-20260911-PQ1-006: runtime and rebuild deadlines from measured PQ1 timings
+
+The runtime stage now has its own deadline, RuntimeDeadlineSeconds, default 1200. Lean compile stages keep StageDeadlineSeconds 600, and Lake closure rebuilds for definition collapses use ProducerRebuildDeadlineSeconds 2400.
+
+Measurements on this Windows host, with one Lean process at a time and other applications using about half of the 14 logical processors:
+- HEAD bfffa95 registry (11 fixtures, list evaluator): 520.4 s;
+- revised 15-fixture registry: 293.7 s, and 292.4 s on the final tree;
+- an intermediate variant with two 24-element lists: 474.8 s;
+- buildMemory for one 24-element list: 60 s in one run and 169 s in another;
+- lake build RMQPaper after a definition collapse: 254-268 s in each direction.
+1200 s is about four times the measured registry, above the required three-times margin, because identical preprocessing varied by almost a factor of three on this host.
+
+Environment note: this worktree's .lake/build had no Lake trace files. The traced cache from the lead's snapshot worktree (same sources apart from line endings) was copied in, and lake build --no-build confirmed it up to date before any edit.
+
+## WDD-20260911-PQ1-007: provenance self-test against committed experiment blobs
+
+WDD-20260911-PQ1-003 required provenance checks to read committed blobs, not the working copy. The runner's -ProvenanceSelfTestOnly mode, also run in full replay mode:
+- reads manifest.json and all 45 listed files with git cat-file, copying standard output as raw bytes;
+- requires the committed directory to contain exactly those files plus manifest.json and .gitattributes;
+- compares each byte count and SHA-256;
+- requires a flipped byte and an appended byte to fail the same comparison.
+HEAD bfffa95 passes 45/45 under both hosts. The optional -ProvenanceRevision 8910d53 fails with exactly the 15 LF-normalized blobs the audit reported. The check therefore detects the committed-blob defect that the working-copy check missed. Rejected alternatives: hashing the working copy, which checkout normalization can mask; decoding git output through the shell, which re-encodes bytes.
+
+## WDD-20260911-PQ1-008: default build reach for the typed PQ1 consumer
+
+Audit L7-03 and L8-F3: no Lake target built RMQ.Validation.PackedQueryContract. scripts/headline_axiom_check.lean imported it, so a fresh clone's reproduce_artifact.sh and headline_check.ps1 failed, and inside the gate it passed only as a side effect of the replay's direct compilation.
+
+RMQ.lean now imports the consumer and RMQ.Core.WordRAM.Packed.ArrayRun, following its existing EG-CP validation imports. The default lake build elaborates every field check, pin and fit control and the array-evaluator equality, and the headline axiom check works after lake build and lake build RMQPaper. hub_closure_lint -SelfTest and shim_lint pass. The gate's replay comment no longer states a certificate field count. The headline and word-RAM axiom inventories add checkC31-C33, two pins, two fit controls, the new certificate theorems and runArray_toArray. A separate lean_exe target was rejected, because the gate builds every executable and would compile the whole closure to C.
+
+## WDD-20260911-PQ1-009: move the 210/427 occurrence pins for the PQ1 contrast sentences
+
+Context: scripts/constant_sync_check.ps1 pins the total occurrences of each current constant on each listed surface, so that corrupting any single occurrence fails (the 2026-08-09 audit corrupted one of five `427`s and a presence check passed). The PQ1 export commit added one contrast sentence (the 210 trace and 427 probe bounds keep their charge policies) to README, artifact/CLAIMS, PAPER_THEOREM_MAP and PAPER_CLAIM_CORRESPONDENCE without moving the pins. That gate stage therefore failed with six count failures: README 210 10/9, CLAIMS 11/10, THEOREM_MAP 210 14/13 and 427 6/5, CORRESPONDENCE 210 12/11 and 427 6/5. The PQ1 public-surface synchronization then added further sentences that scope uncharged-controller and non-claim statements explicitly to the 210 and 427 theorems.
+
+Decision: move each pin to the measured count in the same change, with an inline comment naming the added sentences: README 9 -> 11, artifact/CLAIMS 10 -> 13, WHAT_IS_PROVED 9 -> 10, PAPER_THEOREM_MAP 210 13 -> 16 and 427 5 -> 7, PAPER_CLAIM_CORRESPONDENCE 210 11 -> 12 and 427 5 -> 6, FAMILY_SUMMARY 7 -> 8. TRUST_AUDIT_PACKET stays at 7. Anchors and claim shapes are unchanged, and every added occurrence restates the same proved value.
+
+Alternatives rejected. Paraphrasing the numerals away ("the trace bound" instead of "the 210 trace bound") would keep the pins but delete exactly the words a reader needs to see that 837,572 replaces neither 210 nor 427. Excluding contrast sentences from the count, or dropping count pins in favour of anchors, would widen the checker to fit our own prose and reopen the corrupted-occurrence class the count exists to catch. Moving the pins in a later commit would leave a failing gate stage in between.
+
+Consequences: the count still cannot tell a contrast from a claim. A moved pin only shows that each added occurrence was deliberate, as recorded for the 2026-08-12 move; theorem-directed review still owns the wording. Any later edit that adds or removes one of these contrast sentences must move the pin in the same change.
+
+Evidence: `pwsh -NoProfile -File scripts/constant_sync_check.ps1 -SelfTest` exited 1 with 6 failures before the change and exits 0 after it (7 charged-trace surfaces and 2 probe surfaces agree; 15/15 self-test cases pass). Counts were measured with the script's own (?<![0-9])210(?![0-9]) rule.
+
+## WDD-20260911-PQ1-010: claim-drift policy v28 for the primitive-instruction budget
+
+Context: PQ1 exports RMQ.Headlines.succinctRMQFullyChargedPackedQuery, a separate candidate whose run charges every primitive instruction within 837,572 steps. The coordinator audit (L7-07/L7-08) found no policy term for 837572. The existing forbidden-wordram-instruction-count status text (cell-probe-cost-is-not-a-word-ram-instruction-count) would mislabel an accurate PQ1 sentence. Frozen row REQ-PQ9-PUBLIC requires the 210 trace and 427 probe bounds to stay distinct from the new budget and forbids labelling a prior theorem fully charged by prose.
+
+Decision: policy version 27 -> 28 adds two strict, current-fact-surface, multiline terms and rescopes one status.
+(1) required-pq1-fully-charged-attribution. Its pattern spans the maximal paragraph (run of non-blank lines) that contains 837,?572 or fully[- ]charged. The line allowance, which the scanner applies to the whole matched paragraph, requires RMQ.Headlines.succinctRMQFullyChargedPackedQuery or fullyChargedPackedQueryCapstone_holds.
+(2) forbidden-pq1-charge-on-trace-or-probe-theorem. It forbids 837,?572 or fully[- ]charged within one line or one continuation line (160 characters each way, either order) of a charged-trace or packed-probe theorem name or alias, with no path or line allowance. The names cover: costed-cost-le and its supplied-store transfer, weight-sum-le-210, query-cost-eq, the charged-trace algebra, the principled all-size charged trace, the two-sided profile, the paper main theorem, the reviewer-machine certificate with its required-facts consumer and guarded list packet, the list supplied-store cost transfer, the packed cell-probe architecture and its derived cap.
+(3) forbidden-wordram-instruction-count keeps its pattern and allowances. Its status now says that the 210 charged-trace and 427 packed-probe bounds are not word-RAM instruction counts and that the separate PQ1 bound is stated as an attributed at-most 837572 bound.
+Tests. claim_drift_scan.ps1 -SelfTest gains three must-reject probes: an unattributed budget sentence, unattributed 'fully charged', and a probe-alias attachment that the attribution term excuses, so only the attachment term can reject it. It also gains a new must-accept probe list: two attributed sentences, one contrasting the 210 and 427 numerals. claim_drift_policy_regression.ps1 gains config pins for all three terms and ten production-verdict fixtures (six reject, four accept; counts 82/38 -> 88/42). They cover: an alias in a different paragraph (reject); the core theorem name in the same paragraph across a line break (accept); a cross-line trace-alias attachment (reject); and a direct regression for the word-RAM count term, which until now had only self-test probes.
+
+Alternatives rejected:
+- A file-level requiredAttributions entry (the existing mechanism): one alias anywhere in a file would excuse every paragraph, including one that attaches the words to another theorem.
+- Line-level attribution: wrapped prose would need the alias on every line, or would invite rewrapping to evade it.
+- Covering numerals in term 2: that would reject accurate contrasts such as 'the 210 trace and 427 probe bounds are separate quantities'.
+- A negation allowance on term 2: that is the WDD-20260908-084 bypass class.
+- A PQ1 allowance on the word-RAM count term: it widens an allowlist, and 'executes in 837572 word-RAM instructions' asserts an exact count nobody proved.
+- Changing scanner logic: outside this lane and unnecessary, because multiline matches already hand the whole paragraph to the line allowance.
+
+Consequences:
+- Every current-surface paragraph that states the budget or says 'fully charged' names the alias, headings included; three headings became 'Packed primitive query (candidate)'.
+- The old E1 'fully charged' phrases on roadmaps and strategy were rewritten to point at the candidate.
+- Residual: a paragraph that names the alias and then says, in numerals only, that the 210 or 427 bound is fully charged passes both terms.
+- paper/** and DIGESTION_LOG are not current-fact surfaces and are not governed; paper/rmq.tex still calls instruction-level charging future work (audit L7-05).
+
+Evidence:
+- The strict scan went from 17 strict failures before the surface edits to exit 0 (1510 hits, 0 failures).
+- -SelfTest PASS.
+- The ten fixtures pass via -OnlyCase and in full runs.
+- Scratch-policy mutations: deleting term 1 makes the self-test exit 1 (2 probes) and the regression fail at [pq1-attribution-config]. Deleting term 2 fails both ([pq1-attachment-config]). Widening term 1's allowance to '.' fails both ([pq1-attribution-config]). Deleting the word-RAM count term fails both (3 probes; [pq1-wordram-count-scope-config]). Reverting its status fails the regression.
+- Full regression runs in the shared worktree passed all 130 fixture and 16 context verdicts, but exited 1 on tracked-state assertions caused by concurrent Lean-lane edits. A rerun on a quiescent tree is required.
+
+## WDD-20260911-PQ1-011: ledger_decl_check.lean extended to 57 names; the paper commit is a single child of 3849ecbb with no Lean change
+
+Context: scripts/ledger_decl_check.lean makes the ACCEPTED_BASE restatement at each repin checkable. It resolves every fully-qualified name that the ACCEPTED_BASE rows of paper/THEOREM_LEDGER.md cite, pins the list length with expectedCount, and checks a negative control. paper/check_paper.ps1 step 5c derives the cited set from the ledger and fails unless it equals the script's list in both directions. The repin to 3849ecbb adds ACCEPTED_BASE row L-PQ-01, whose Declaration field cites three new fully-qualified names.
+
+Decision: The script gains exactly those three names, in sorted position: RMQ.Headlines.succinctRMQFullyChargedPackedQuery, RMQ.SuccinctFinal.PackedWordRAM.FullyChargedPackedQueryCapstone and RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds. expectedCount moves from 54 to 57, with a docstring naming the date and the row. The header comment's "all 29 such rows" becomes "every such row", so the comment no longer carries a count that the next repin would falsify. No import changes. The script is in no Lake library root, so the change touches no Lean library file.
+
+The paper commit is one commit whose parent is 3849ecbb. It changes only the eight paper/ files, this script and the two design-ledger entries. It touches no Lean library file, lakefile.toml, lake-manifest.json or lean-toolchain.
+
+The reasons for a single child with no Lean change:
+- The substrate claims to describe the pinned tree, and every ACCEPTED_BASE row restates "present on the base commit" at 3849ecbb. The Lean checks that make those claims true (both builds, the three axiom inventories, the independence check and the decl check) were run on a tree identical to 3849ecbb. They carry over to the paper commit without a rerun only if its Lean library is byte-identical to its parent, which one `git diff --quiet 3849ecbb -- RMQ *.lean lakefile.toml lake-manifest.json lean-toolchain` checks. Any Lean change would void those checks and make the pin describe a different tree, which is the RC-10 class.
+- With a single child, the README's standing caveat can be checked with one `git diff --name-only`.
+- The ledger rows and the script must land together. Step 5c fails if either lists a name the other lacks, and the script's own count pin throws if the list and expectedCount disagree. Any split leaves a red intermediate commit.
+- The paper lane does not own Lean, and another process may run Lean in this worktree.
+
+Alternatives rejected:
+- Reading the ledger from the Lean script. That puts a markdown parser in the check path and duplicates step 5c, which already derives the set from the ledger.
+- Listing only the public alias. Step 5c would fail on the two capstone names the row cites, and the alias resolving does not show that they resolve.
+- Dropping the count pin or setting it below 57. The pin catches a list that shrinks, and step 5c catches one that never grew; neither covers the other's case.
+- Committing on codex/eg-cp-paper-evidence-r1 or rebasing elsewhere. The parent would no longer be the pinned tree, so the checks and the caveat would not carry over.
+- Splitting the ledger and the script into separate commits. That leaves a red intermediate state.
+- Allowing Lean edits and rerunning the checks. The pin must still equal the tree, and forbidding Lean edits makes the carry-over exact.
+
+Consequences: Any later repin that adds or removes an ACCEPTED_BASE citation must move the list and expectedCount in the same commit. The paper commit's Lean evidence is the lead's run at P, recorded in README.md and WORKLOG.md. scripts/paper_topology_lint.ps1 refuses a dirty tree, so it runs after the commit. Any later Lean change on this branch requires a new repin with the checks rerun.
+
+Evidence:
+- Lead, at P: `lake env lean scripts/ledger_decl_check.lean` reported LEDGER-DECLS: RESULT: PASS (57 names present, negative control absent).
+- `check_paper.ps1 -SelfTest` exit 0, reporting "57 fully-qualified name(s) checked" and "the decl-check list is exactly the set the ACCEPTED_BASE rows cite".
+- `git diff --name-only` shows the nine files, with no untracked files.
+- `git diff --quiet 3849ecbb` over RMQ/, the root .lean files, lakefile.toml, lake-manifest.json and lean-toolchain: exit 0.
+
+## WDD-20260911-PQ1-012: separate Git diagnostics from state and inventory elaborated certificate fields
+
+Context: the continuation audit at e1b0848 found that the full replay failed after C01 solely because Git warned about LF conversion on stderr. The shared bounded helper merged stdout/stderr, and its Git wrapper returned that combined array as repository state. Independent replay review also reproduced a legal underscore-named field escaping the ASCII inventory; a follow-up rejected treating deeper indentation as proof continuation, because Lean allows more-indented default fields.
+
+Decision: preserve the combined Output API and additionally retain StandardOutput/StandardError. The Git wrapper rejects timeout, output overflow and nonzero exit first, returns stdout, and forwards successful diagnostics as warnings. The production clean-baseline fixture requires a real LF warning during initial add, rejects nonempty stdout for that command, then checks clean LF/CRLF, dirty tracked/untracked/index and a nonzero Git command. Warning emission in later Git state queries depends on its stat cache, so the fixture does not require a warning on every invocation.
+
+Decision: keep the replay's textual field/initializer mapping as an early diagnostic, broaden member-token collection, and add unusual-name controls inside/outside both marker regions. Completeness is checked after the baseline producer rebuild by scripts/packed_query_inventory_check.lean against actual Lean structure metadata and a separately literal ordered 33-field list. Missing metadata, parents, or a different field array fail the same predicate. Compiled controls include a doc-comment-separated deeper default field, apostrophe, Unicode and escaped names; the unchanged control must pass. The replay protects the new script's bytes with the other sources. It runs before any mutation case can succeed.
+
+Rejected alternatives: suppressing all stderr or recognizing particular warning strings in the observer, which hides diagnostics and conflates channels; overriding autocrlf, which changes the repository semantics; extending an ASCII regex alone or treating all deep indentation as continuation, which cannot establish a Lean structure inventory. The only textual warning match is the regression's required real warning, never a production verdict filter.
+
+Evidence: the original in-memory production registry accepted an extra unregistered_field plus initializer. The original complete replay recorded Completed=false after restoring C01. The revised real-Git fixture, registry/diagnostic self-tests, Windows owned-process barrier, and Lean metadata controls passed. Full committed replay evidence and follow-up review are recorded in docs/internal/packed_query/PQ1_CONTINUATION_AUDIT_20260911.md. This fixes a validation boundary; PQ1 milestone acceptance still requires its aggregate gate and fresh blind audit.
+
+## WDD-20260911-PQ1-013: explicit no-role audit prompt preflight
+
+Context: the audit protocol and canonical audit-prompt skill permit a read-only auditor with no applicable project role, but worker_prompt_preflight.ps1 required a role literal unconditionally. A correctly scoped fresh audit could not pass launch preflight without claiming an unrelated role.
+
+Decision: add explicit AllowNoRequiredSkills mode for READ_ONLY prompts. Omission without the switch, a simultaneous required role, and WRITE mode fail closed. The prompt must declare applicable audit-worker roles NONE, instruct the startup no-role switch, and require the actual non-empty runtime RMQ catalog. Project skill preflight remains responsible for checking that catalog, canonical checkout and governance ancestry. All other structural and semantic launch requirements remain unchanged.
+
+Rejected alternatives: assigning the coordinator or proof role just to satisfy a checker would contradict the auditor's contract; bypassing structural preflight would discard independent launch protections; inferring no-role mode from an empty argument would turn a missing requirement into silent permission.
+
+Consequences: read-only audit dispatch can satisfy both existing protocols without a fake role. This is a launch-tooling change and makes no theorem or milestone-acceptance claim. The new regression cases cover valid no-role launch, absent opt-in, conflicting role, WRITE mode, and each missing declaration; existing role cases remain in the same suite. Both PowerShell hosts must pass the suite before final gate certification.
+
+## WDD-20260911-PQ1-014: remove the runtime selector entry rather than assigning null
+
+Context: the PowerShell 7 aggregate at 4c89378 passed all 38 mutation cases, then runtime-full rejected a malformed selector channel. The startup call to SetEnvironmentVariable with a PowerShell null left an existing empty variable on host 7.6.5. A direct probe confirmed Test-Path remained true after that call and false after Remove-Item. Lean distinguishes absent selection (full registry) from a present malformed empty value correctly.
+
+Decision: remove the environment entry through the PowerShell environment provider. Seed every existing bounded selector-boundary child with a stale selection, then require the entry to be absent after the real runner returns, including rejected selectors. A surviving entry exits 99 and fails the expected-exit check. Full runtime tests retain their independent exact registry, explicit-empty, whitespace, unknown, malformed and valid-selector controls.
+
+Rejected alternatives: accepting an empty channel as full selection would weaken explicit-input rejection; sending a special full-run selector would leave the stale-channel reset defect in place; changing Lean semantics or the shared child launcher is unnecessary. The narrow fix preserves the distinction between omitted selection and malformed supplied selection.
+
+Consequences: both hosts must pass the seeded boundary regression and runtime-only stage before another aggregate certification attempt. The first aggregate is failed evidence, not a partial gate pass; its completed 38-case replay remains independently recorded. This changes launch behavior only, with no Lean library or public theorem change. The validation plan records the strengthened startup boundary obligation.
+
+## WDD-20260912-PQ1-015: preserve audit identities while recording coordinator acceptance
+
+Trigger: the independent PQ1 audit and both-host gates had passed, but current publications still said the replay and audit were pending. The user explicitly requested the remaining fixes and merge. This is application of the existing coordinator acceptance protocol, not a new audit rule or weaker verification policy.
+
+Decision: close the frozen 34-row contract in an append-only coordinator record, correct the optional control-flow wording, synchronize the manuscript's editing-rule-5 status surfaces, and integrate the checked branch into local main. Preserve the failed original target, fresh source audit, single nonmaterial runtime-selector correction and final source certification as separate identities. The correction changed startup environment removal and its boundary regression, not Lean or rejection semantics. A local wording/status pass does not require a new whole-proof blind audit. Exact source/requirement preservation and focused consumers/checkers cover it; the already-passed full gates are reused only for unchanged mathematical and replay code.
+
+Failure-mode disposition: the runtime selector defect is already covered by WDD-20260911-PQ1-014 and committed real-host negative/positive controls; no duplicate process layer is added. The P3 terminology issue is isolated editorial precision and is closed in current public surfaces and the docstring. No claim-scanner allowance, Lean mutation case registry, model scope or trust permission is relaxed. Frozen matrix rows and old audit verdicts remain untouched. The milestone branch and active coordinator worktree are deliberately retained for provenance and ongoing work; destructive cleanup and remote publication are not inferred from merge authorization. The coordinator acceptance record supplies the lifecycle and verification evidence.
+
+## WDD-20260912-PQ1-016: classify dated internal audit reports as evidence
+
+Trigger: the merge's strict per-commit CI simulation accepted 127 of 128 incoming non-merge commits but rejected report-only commit `3c8097e57bb76a5d34cb70c9672671af06757d0d`. Its `docs/internal/packed_query/PQ1_CONTINUATION_AUDIT_20260911.md` records frozen scope, findings and evidence, without establishing a workflow decision. The classifier recognized the same evidence in `audit_reports/` or with an `_AUDIT_REPORT.md` suffix, but its generic internal-doc rule misclassified this dated convention.
+
+Decision: recognize Markdown basenames ending `_AUDIT_` plus eight date digits under `docs/internal/` as neutral evidence. Executable-extension precedence remains intact. Six committed regression cases accept the actual report path and reject adjacent Lean, PowerShell, prompt, plan and public-document paths. Run the full production classifier regression on PowerShell 7 and Windows PowerShell 5.1, then repeat strict checking of every incoming non-merge commit with the corrected production checker.
+
+The Windows PowerShell run exposed an additional fixture prerequisite: copying the edited LF checker into the per-commit test repository inherited `core.autocrlf=true`, and PowerShell 5.1 promoted Git's conversion warning to a terminating native error. Set `core.autocrlf=false` only in that disposable fixture using the existing bounded Git wrapper, matching the earlier seed fixture's explicit staging policy. This fixture measures commit membership, not line-ending behavior; the production Git-observer warning controls remain unchanged. Do not suppress diagnostics or alter the user's repository configuration. The failed attempt is retained separately from final certification.
+
+Final integration hygiene also removes one inherited trailing space from the production checker's parent-list assignment. A parser-token comparison against the already-tested follow-up proves this has no executable-token change; strict per-commit checks and whole-integration-range whitespace verification cover the cleanup without repeating the unchanged classifier regression.
+
+Rejected alternatives: rewriting the audited report's commit and descendants would invalidate frozen source identities; adding another retrospective certification would turn a classifier defect into a historical bypass; exempting the whole packed-query folder or arbitrary audit-named documents would hide future workflow or public decisions. A narrowly dated internal Markdown convention follows the existing evidence distinction without changing the eight exact retrospective exceptions.
+
+Consequences and evidence: this changes report-path classification only. It neither weakens Lean mutation rejection nor changes source semantics, accepted theorem requirements or the toolchain. New scripts and ordinary internal plans still require a workflow decision, including this change itself. The first failed history run is retained as `.lake/pq1-merge/history-design-before-fix.json`; focused regression, corrected history and final-tree checks are recorded in `.lake/pq1-merge/verification.json`. The previous full Lean gates remain evidence for unchanged mathematical/replay source; this policy correction requires its own focused regression rather than a repeat of those campaigns.
+
+## WDD-20260912-BV1-001: freeze the generic client contract and bound its feasibility checks
+
+Context: BV-1 is an isolated user-authorized extension task rooted at 0e6a00f654abc64f8b68988fa9675b9a839dca2f. It must preserve the assigned requirements, prove the full named target, and obtain evidence-dependent route review before treating an experiment as the final architecture. Infrastructure capacity retries do not amend scope or justify discarding work. PRE's separate builder contract gate does not supply a weaker endpoint for BV-1.
+
+Decision: freeze all 30 assigned, inherited and replay rows before proof edits, using the canonical matrix schema and inherited invariant text. The one-shot task-local freeze script refuses to overwrite an existing matrix. Command evidence is retained under extensions/bv1/commands, with exact arguments, exit, duration, stderr, deadline and owned-process outcome; later records also pin owned source hashes and launch time. Unique stage identifiers prevent accidental replacement of earlier results. The runner delegates subprocess ownership to scripts/owned_process_tree.ps1, uses the installed pinned Lean4.22.0 binaries after the elan shim tried an unavailable network download, and sets LEAN_NUM_THREADS=1. The build tree is task-local and compiled from source, with no mutable shared cache links or peer artifacts.
+
+The new uniquely named rmq_packed_bitvector_validate target and probe scripts exercise the actual new select source through runArray, whose equality to primitive run is already proved. Executable startup precedes one exact selector and the full registry. Version1 pins 18 distinct cases independently from the fixture array. The public probe distinguishes omitted Case from explicitly empty or whitespace values before executing Lean. A separate exact selector-control registry checks omitted, valid, empty, whitespace, malformed, unknown, padded and incompatible parameters through the production process boundary. Its repeated omitted run has the distinct purpose of verifying the PowerShell wrapper's default behavior; it is not duplicate final capstone certification. No mutation campaign or host branch is declared passed merely from these controls.
+
+Alternatives rejected: accepting an empty selected set; using the tested output as its expected result; making a timeout a gate pass; overwriting command artifacts on a retry; silently changing toolchains; starting concurrent builds in one tree; or running the full aggregate before a coordinator-scheduled host slot. The 117-module cold decoder dependency build completed in 1065.589 seconds under its 1200-second deadline with observed artifact progress. A validator API mismatch and a local proof combinator mismatch were repaired and narrowly rechecked with separate stage records. Windows WMI inspection was denied; Get-Process and owned helper results were available. Linux process/escape controls remain uncovered here. The worker keeps all composed rows open until the actual full theorem, controls and independent acceptance chain close.
+
+Phase verification exposed a process defect: placing live claim-scan stdout under docs made the scanner consume its own freshly emitted copies of baseline policy examples. The bounded run rejected seven occurrences in that transient stdout, while its earlier direct run reported zero strict failures. Move only the owned process spool to the task-local .lake/bv1-phase-process directory, then archive full completed results as compressed JSON with hashes under the task evidence folder. All actual source/prose remains in the production scan; no shared scanner or allowance changes. Keep the failed self-scanning result and its exact diagnosis, then rerun after this material spool-location correction. Compressed evidence limits output duplication; it does not exempt new public prose from checking.
+
+The phase source is frozen at 581deebcacfded874d17da7db1e9132a1eefa184. A separate evidence amendment records that commit, postcommit checks and the request for the task-mandated route review, preserving code and frozen rows. This separates a reviewable architecture/feasibility checkpoint from full-target candidate completion; all composed rows remain open and the same worker branch must resume afterward. The corrected phase verifier passed all six checks, including strict claim scanning with zero strict failures. No new mathematical or public-surface decision is introduced by this evidence amendment, so DD-BV1-001 remains its code-design record.
+
+## WDD-20260912-BV1-002: continue after the discharged route prerequisite
+
+The coordinator approved the route at 645a0502b9da9ad6444edbe44759e1c2c5661f25, after exact-source review and focused independent replays. Preserve that disposition and the original frozen matrix, update current phase prose, and append new evidence instead of rewriting historical OPEN rows. Routine helper completion, a local commit, a cold build or another proof choice no longer ends a route-review phase. The same branch continues to the original capstone unless an actual scope/model boundary or precise obstruction requires a coordinator decision.
+
+Disjoint workers own canonical regular-layout facts, numeric reader evaluation and generic controller refinement; the lead owns allocation identity and their mathematical/physical composition. All share one build tree with explicit lead-controlled build-slot handoff and one Lean job. This parallelism separates independent producer proofs while preventing overlapping writes or heavy builds. Existing owned-process tooling and unique command evidence stages remain unchanged. PRE's separate builder audit is not a dependency of this lane. Full aggregate certification still requires a coordinator-scheduled host slot on frozen candidate content.
+
+## WDD-20260912-BV1-003: test public dependencies with independently checked mutant constructors
+
+The public certificate exposes23 mandatory fields. A separate consumer quantifies an arbitrary certificate and projects every field at an independently written required proposition, plus the exact named inhabitant. Reader geometry, receipts/frame and all five execution-safety conjuncts are expanded; complete capacity names the actual numerical memory, all three encoded programs and8274 scratch words. The consumer does not recover a missing certificate claim from an implementation sibling theorem. Its final source and the producer are hashed only after both pass.
+
+Freeze a32-case public campaign: unchanged and harmless-comment expected accepts; one True weakening for each of23 fields; field deletion with its initializer removed; three coherent sibling substitutions; mutation of the public inhabitant proposition; and two capacity weakenings omitting code or scratch. Preserve content-addressed baseline snapshots, exact before/after transformations, generated constructor/consumer fixtures and a versioned manifest. Each altered constructor must first compile successfully. Only then does the same independent consumer have to reject it at the pinned projection/type surface. Resource exhaustion, unrelated errors and a stale initializer failure cannot earn a passing negative verdict. No live library source is mutated; byte/hash and scoped status checks in finally establish preservation of the shared working tree and fixture content. Exact case membership and expected verdicts are also pinned independently in the production runner.
+
+Finite operational coverage is a separate layer. Keep the historical18-case select validator and earlier failed crossing experiment intact, expand the current complete-allocation validator to46 exact cases, and retain independent List expected answers. Its four whole-operation crossings assert the actual second load, request segment/index and addressed reply. A separate12-case campaign changes decisive supplied memory, creates first-load faults and checks an oversized dormant instruction against the same complete static-fit predicate. Valid parameterized directories exercise long-superblock and sparse-local branches for both targets when small canonical fixtures cannot reach them; the record must state that canonical-global classification remains covered by universal proof. Wrong expected outputs/routes and lost registry entries require the actual production verdict to fail, followed by expected-accept restoration controls.
+
+Every new selector boundary distinguishes omitted, valid, empty, whitespace, malformed, unknown, padded and incompatible inputs. Startup and a known selector precede the omitted full registry; avoid another unchanged full run unless a distinct final replay contract requires it. One owned Lean child runs at a time, with per-command deadlines and bounded campaign ownership; process output is retained with exact exits and no silent case loss. Other workers continue disjoint offline work while a campaign owns the build slot. The aggregate host slot remains a separate coordinator decision after final content is frozen.
+
+Rejected alternatives include a text-only field-name checklist, deleting a field while leaving a broken constructor, trusting an error anywhere in a consumer file, treating a heartbeat timeout as a semantic counterexample, changing the golden registry to match a lost fixture, mutating the shared import tree, or describing small canonical cases as exceptional without observing the marked branch. The design adds replay evidence and stronger dependency checks without changing the Lean trust base, ISA, accepted width model or frozen acceptance requirements. Current checks and residual work are recorded in extensions/bv1; a green helper campaign is not full-task or coordinator acceptance.
+
+## WDD-20260912-BV1-004: preserve replay bytes across Git checkouts
+
+The exact consumer and mutation manifests hash source/fixture bytes. With core.autocrlf=true and no BV-1 attributes, a fresh checkout could change line endings even though the Git revision and Lean propositions stayed the same. The coordinator approved only the four additive -text rules in extensions/bv1/CHECKOUT_BYTES_PATCH.diff, extending this worker's scope to root .gitattributes for that purpose. The durable disposition is copied verbatim to extensions/bv1/CHECKOUT_BYTES_DISPOSITION.md. Every other rule and all 30 frozen requirements remain unchanged.
+
+The rules cover RMQ/Core/WordRAM/Bitvector/**, the one PackedBitvector validator, scripts/packed_bitvector_*, and docs/internal/extensions/bv1/**. Disable Git text conversion on these paths to retain their actual recorded bytes, including mixed existing line endings and binary evidence. Do not renormalize historical evidence or weaken a hash comparison. The attribute declaration is only the mechanism: final evidence must compare committed blobs, current source and a fresh isolated checkout under core.autocrlf=true, including the frozen matrix, public source/consumer, fixture manifests and binary archives. The exact byte-round-trip measurement will be appended when performed.
+
+Alternatives rejected were allowing either arbitrary newline variant against a fixed hash; rewriting snapshots after every checkout; applying a repository-wide line-ending policy; omitting binary/frozen evidence from the check; or stopping the mathematical work for a new route-review phase. This is an artifact-reproducibility prerequisite, with no theorem, ISA, model, checker allowance, main integration or aggregate-slot change. The existing aggregate slot remains with the other scheduled worker until the coordinator releases it.
+
+The import-closure check found one additional concrete path: of 230 public replay dependencies outside the four protected groups, lakefile.toml alone had mixed working-tree line endings. Its recorded 691 bytes/hash66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A became 696 bytes/hash5CFC20B6F1A9BED1EEF7CD96DADAFED6286C1147F22EA4F42DC19915AD4E2298 in an actual isolated autoCRLF index checkout. The coordinator independently checked that observation and approved solely a fifth `lakefile.toml -text` rule and its explanatory comment. Preserve the original four-rule disposition and retain the amended bytes separately as CHECKOUT_BYTES_LAKEFILE_DISPOSITION.md, SHA256 F43488628BCDBDED05BC7139719F6E9CCFF3B5272BB138B14B14EB316101F512.
+
+The fifth rule was applied between the numeric campaigns and leaf-consumer replay, with the manifest byte hash unchanged. Python's standard-library TOML parser independently compared it with the exact governance blob: removing precisely the owned rmq_packed_bitvector_validate target leaves the original parsed manifest unchanged; the target has exactly its expected name and root. This rules out a semantic build-configuration change hidden among newline bytes. Final staging must ensure that Git stores those actual mixed bytes, and the complete committed-blob/fresh-checkout comparison remains required. No recorded fixture, manifest or prior evidence was normalized or rewritten to make a hash pass.
+
+## WDD-20260912-BV1-005: keep mutation diagnostics semantic and byte checks exhaustive
+
+The first public mutation campaign exposed two distinct fixture problems. The smaller-memory capacity constructor used List.length_take_le, whose conclusion bounds the taken list by the requested count, where List.length_take_le' bounds it by the original list length. The constructor failed and its consumer was correctly skipped. Separately, a code-charge omission constructed successfully but its consumer exhausted Lean's ordinary heartbeat limit while comparing the large program expressions. The production runner rejected that resource failure instead of labeling it the required semantic type error. Both original receipts remain failed development evidence.
+
+Correct the one-character lemma reference and add the identical replay-only `attribute [local irreducible] RMQ.PackedBitvector.program` epilogue after every copied constructor, before the unchanged independent consumer. Include the epilogue in constructor-only fixtures too. This preserves actual program definitions, producer and consumer bytes, required propositions, primitive semantics and resource limits; it directs the elaborator to leave the large program constant unexpanded during the negative type comparison. Pin the epilogue bytes, new content-addressed fixtures and exact error locations. Recheck unchanged acceptance, both charge omissions and the repaired sibling before one full campaign on the corrected fixture generation. This materially changed test environment justifies the later full replay; no prior failure is relabeled a pass. Reject raising resource limits as a substitute for obtaining the exact diagnostic, or counting constructor failure as a public-dependency counterexample.
+
+The first epilogue startup, r7, rejected a nonlocal irreducibility attribute on the imported program definition and launched no consumer. Lean's diagnostic required the local modifier. The final boundary above includes that modifier uniformly in every fixture, preserving its intended file-local scope. Keep the original generation and r7 failure; this ordinary scoping repair does not change a theorem, permit an unsafe reducibility option, or require another route-approval stop.
+
+The program-only local boundary still exhausted the conversion budget on missing-code r9. A bounded diagnostics-only copy identified the remaining expansion as Allocation.memory: List.rec147056, List.append131280, canonicalSuperRankEntries17108, descriptorsFrom8672 and directorySegments6816 reductions. Extend the uniform local boundary to Allocation.memory and Experiment.width as well; leave completeRho and global arithmetic operators unchanged. With these three public constants held unexpanded, unchanged r11 passed28.407 seconds, missing-code r12 passed24.219 seconds with its exact semantic type mismatch at258:2, and missing-scratch r13 passed27.711 seconds. No heartbeat/depth limit changed. Exact older fixtures and diagnostics remain retained. The corrected full campaign still has to pass; these focused results alone do not close its row.
+
+The first omitted public run reached its owned 1800.807-second deadline during case 32, which therefore has no verdict. Cases 1–26 and 28–30 passed; cases 27 and 31 failed for the two reasons above. The other seven selector checks passed, and the outer record verified source/fixture bytes, scoped status and whitespace after owned cleanup. No live child survives that attempt. The corrected full replay receives a 2700-second omitted-child bound and 3000-second outer bound based on this measured duration and cold-cache margin; each Lean child retains the original 180-second bound. Record that deadline change with the material fixture repairs before the new narrow checks. Other proof consumers and operation campaigns use the build slot while this offline repair proceeds.
+
+An independent read-only review also strengthened check_checkout_bytes.ps1 before execution. Machine-readable Git status must parse stdout alone while retaining stderr diagnostics, because this host can emit a harmless global-ignore warning. Require the original protected source paths to be clean, including untracked files with user-global exclusions disabled for the individual command, so a forgotten artifact cannot disappear from a commit-only enumeration. Compare every protected file's raw Git blob identity and source/fresh-checkout SHA256, and compare the nonempty import-closure hashes from passing replay records even for dependencies outside the four attribute scopes. Use an isolated shallow clone, bounded owned processes and no cleanup or renormalization. These changes make the test fail on missing committed evidence and external dependency byte drift; they do not authorize additional source or attribute edits.
+
+
+The corrected final public generation subsequently passed all 32 cases and
+all eight selectors in 592.664 seconds, below its retained bounds, with no
+resource failures. Every constructor compiled; two consumers accepted and 30
+rejected at their exact independent semantic surfaces. The final manifest is
+55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821.
+The final selector summary and omitted-registry summary under
+extensions/bv1/controls/public_mutations/records/campaign-final-v1-20260912131342256-3b473507
+(and its -omitted sibling) preserve all 276 source/dependency hashes and all 64
+fixtures. Final static review also checked 82 standard-axiom reports across 34
+successful compiler phases. These outcomes close the campaign's local replay
+requirement; committed-byte verification, aggregate certification and independent
+coordinator acceptance remain separate obligations.
+
+
+## WDD-20260912-BV1-006: preserve pinned line endings with narrow whitespace rules
+
+The first staged final candidate exposed a distinction that the earlier plain
+working-tree diff checks did not cover: the newly added -text paths store CRLF
+literally, so Git's default whitespace rules reported 303202 terminal carriage
+returns as trailing whitespace, plus 38 actual final blank lines. A bounded
+captured diagnostic with CR-at-EOL recognition left exactly those 38 files and
+no other whitespace/indentation diagnostics. This diagnostic is failed evidence,
+not a policy pass; its count and exact path inventory are retained in
+extensions/bv1/commands/staged-whitespace-diagnostic-v1.json.
+
+The coordinator independently reproduced the 38-file result, read every path,
+and approved exactly the 1927-byte zero-context patch with SHA256
+8ADDBDB7B260ACEB3712CE30D59E066A2144C01013164F4E52352F1D464B057E.
+Add explicit blank-at-eol, blank-at-eof, space-before-tab and cr-at-eol checks to
+the five approved byte-preservation patterns. Disable only blank-at-eof for the
+seven exact patterns covering the 38 already hashed artifacts: current Capstone,
+validation mutation runner, three copied dispositions, the original hash-named
+32 constructor fixtures and the original snapshot Capstone. The hash directory
+and constructor suffix are exact; other and future files retain EOF checking.
+Ordinary trailing-space and indentation checks remain enabled on every BV path.
+
+The full authorization is archived without changing any bytes in
+extensions/bv1/CHECKOUT_WHITESPACE_DISPOSITION.md.gz; the decompressed original
+is 3517 bytes with SHA256 89358C85F25104EC65BCFCAC6B812F9F168774C73D756F751E87E25FB5C54B25.
+Compression preserves the new approval itself without requesting another EOF
+exception for its verbatim final blank line. The approved patch and all older
+dispositions remain retained. After applying precisely that patch, ordinary
+git diff --cached --check passed with no command-level whitespace override.
+Final staging and committed-range checks will repeat this on their actual trees.
+
+The raw build manifest needed a separate index correction: git add retained its
+old cached normalized blob after the attribute changed. Stage only its verified
+691 raw bytes using hash-object --no-filters and update-index cacheinfo, preserving
+mode 100644 and its recorded SHA256. The resulting index blob is
+fa57dac01b0a2a3217fe359402ac88c88709d8dc; the retained manifest-raw-staging-v1.json
+records the equality. The parsed semantic manifest check already passed. Actual
+committed-blob and fresh autoCRLF checkout equality remain required next.
+
+Rejected alternatives are normalizing recorded source/fixture/approval bytes,
+blanket -whitespace, a repository-wide core.whitespace change, treating the
+earlier unstaged check as staged coverage, or rerunning unchanged proof campaigns
+for attributes alone. This is a real, documented EOF-check exception for exact
+artifacts, not a claim that their blank lines were absent. No Lean proposition,
+model, replay verdict, frozen row, public claim allowance or aggregate permission
+changed. Coordinator acceptance remains independent.
+
+
+Final dependency review found the validation selector receipt intentionally
+records its same runner in two roles: four entries but three unique paths.
+The initial checkout checker mistakenly demanded unique per-record paths.
+Remove that unnecessary restriction while preserving every recorded entry,
+validating each SHA256 and comparing every occurrence with source and fresh
+bytes. Contradictory hashes cannot both match the actual file and therefore
+still fail. No receipt, dependency hash or replay input is rewritten. The
+independent current-file review passed 568 before/after comparisons across 280
+distinct files, including exact public producer/consumer/snapshot identities;
+the actual committed/fresh comparison remains the stronger next obligation.
+
+
+The source/replay candidate is now committed at
+763b00e68cabef2ea322a92fb7b3be354b367179. Before that commit, an exhaustive
+raw-index check found the same cached-line-ending issue on 23 historical JSON
+receipts inside the already approved evidence scope. Their current bytes were
+not edited: comparing each prior index blob with CRLF-decoded current bytes
+showed only line-ending differences, retained in index-historical-eol-v1.json.
+Stage those exact current raw bytes while preserving the older Git blobs.
+The final protected index comparison passed 716 files, then its new receipt
+was added as the 717th protected artifact. This applies the existing byte
+preservation decision; it introduces no new normalization or wider scope.
+
+The actual candidate-checkout-bytes-v1.json result passed all 717 committed
+blob/source/fresh comparisons, including 33 gzip archives, and all 552 replay
+dependency occurrences across 284 distinct paths. The shallow clone used no
+local object sharing; its exact checkout used core.autocrlf=true and was clean.
+Every bounded Git operation completed without a timeout or output cap; the
+source HEAD and original frozen matrix hash remained unchanged. The new source
+candidate's ordinary committed-range whitespace and strict per-commit design
+checks also passed. Retain those receipts in the following evidence commit,
+and explicitly distinguish its new receipts/current prose from the 717 source
+artifacts just measured. The aggregate remains under the coordinator's diagnostic
+hold; no proof, replay or aggregate is repeated merely for these retained results.
+## WDD-20260912-LB1-001: freeze the additive lane and retain bounded verification ownership
+
+The newly authorized LB-1 extension starts from clean exact base/governance 0e6a00f654abc64f8b68988fa9675b9a839dca2f in its isolated codex/lb-1-variable-payload worktree. All three canonical RMQ skills were present and the actual runtime catalog was passed to project_skill_preflight with rmq-proof-sprint required; it passed. The task freezes original assigned paragraphs and all 21 inherited invariant blocks before proof edits. The matrix includes the complete target, not a helper endpoint.
+
+Read-only independent inventories separate generic counting from the actual allocation adapter; exact generic signatures precede any parallel proof writing. Contract/route review precedes the adapter. Process evidence stays in docs/internal/extensions/lb1, and any replay will use the existing owned_process_tree tooling, exact versioned case inventory, nonempty selectors and byte restoration. This is a lane-specific application of current workflow, not a change to canonical skills or the aggregate gate. Mutable shared cache links and unscheduled full builds were rejected because peer lanes run concurrently; narrow builds use one job and a task-local cache. Final aggregate execution awaits a coordinator host slot on frozen content.
+
+## WDD-20260912-LB1-002: exact consumer attacks and bounded local build evidence
+
+The lane runner uses the existing owned-process implementation for every proof, runtime and Git subprocess, preserves exit/stdout/stderr and resource-limit results, and restores mutated source and compiled artifacts byte-for-byte in nested finally blocks. It checks worktree, index and untracked state after each mutation. A resource failure is inconclusive, not an expected semantic rejection. The first ten-second descendant fixture expired before its child PID was recorded; the retained result is inconclusive. A thirty-second fixture, chosen after observing two-shell startup, proved Windows job cleanup and descendant absence. POSIX execution is explicitly uncovered on this host.
+
+Independent development review found that the initial declaration diagnostic range admitted the following declaration's first line, and that runtime startup followed the mutation loop. The range now excludes that next line, with inside/adjacent controls exercising the actual rejection function. Bounded runtime startup and one known selector now precede the full campaign. Removal of environment entries uses the existing provider convention; assigning a PowerShell null had preserved an empty channel in the initial failed selector probe. Fresh subprocess tests distinguish omitted, valid, empty, whitespace, malformed and unknown selectors. The default toolchain launcher tried downloading an already installed pinned toolchain, so this lane uses the verified installed 4.22.0 binaries without changing the pin.
+
+The registry began with 49 mandatory field weakenings and seven public/generic/decoder/baseline cases. Version 2 adds field deletion, sibling memory/run/budget substitutions and restricted-domain exactness. Version 3 adds a deliberately harmless proof-only wrapper mutation that must pass the unchanged literal inventory and public consumer. An unchanged baseline alone would not show that rejection is selective. Historical registries remain evidence; only the current exact ordered registry and its full executed/expected result can certify replay. No unexecuted source mutation is reported passed.
+
+The local dependency builder reads only actual import headers with nested comment/string handling and keys each artifact by the pinned Lean version, source hash and recursive direct-import keys. A quoted import in a source comment exposed the first parser's overreach; a whole-file scanner was then replaced by header-only scanning to avoid needless work. Global earlier-module keys were rejected because they rebuilt unrelated dependencies. Each cold module runs once at -j1 with an owned 1800-second deadline and JSONL evidence. Quiet builds are observed through their owned session and artifacts, not restarted. This runner is narrow development tooling, not authority to run the coordinator's aggregate gate.
+
+Frozen requirement integrity is checked from the exact raw Git blob at the contract checkpoint against strict UTF-8 row bytes, including trailing whitespace. All 29 rows and seven corruption/missing/duplicate controls passed; line delimiters and added evidence prose are outside those rows. Exact field inventory uses Lean structure metadata with an independently literal list, rather than trusting a regular expression or the producer's current type. These are task-local validation decisions; canonical workflow and inherited acceptance wording are unchanged.
+
+Before the full replay, the runner recompiles the current generic producer, packed producer and validation client in dependency order. The actual metadata check follows the packed compilation. Source cleanliness alone cannot establish that a cached olean matches the candidate; relying on that implication was rejected. Mutation backups therefore capture freshly checked positive artifacts, and every mutation restores those same baseline bytes. The parent-category inventory fixture also required the pinned Lean syntax `structure WithParent : Prop extends Unchanged`; its initial compile failure and corrected category-level result are both preserved. No inventory allowance or theorem proposition changed in that repair.
+
+## WDD-20260912-LB1-003: preserve the sibling-budget attack while bounding elaboration
+
+The first full version-3 campaign at d6dabbec10648f368df9ddcd32102f84deffb281 completed 60 cases, then reached Lean's recursion limit at checkO09 for S03-SIBLING-BUDGET. The altered producer compiled, but the consumer's default type comparison unfolded the large canonical allocation formula while comparing it with arbitrary B. The runner correctly classified this as inconclusive and restored the source/artifacts. All 129 raw stages remain in the lane evidence; H01 and A02 were not executed.
+
+The repair changes only checkO09's proof elaboration to `with_reducible exact` around the same public field projection. The literal expected proposition still quantifies every n, B and UniformAllocationBudget n B and concludes shapeCount n <= 2^(B+1)-1. S03 still substitutes the canonical-budget conclusion at 2*n+allocationRho n under those same quantifiers. Restricting elaboration transparency permits the ordinary type mismatch without expanding unrelated semireducible implementation constants. The kernel still checks the unchanged proposition and public proof dependency.
+
+Counting recursion exhaustion as a rejection, weakening the mutation to a simpler fact, narrowing the expected proposition, or blindly raising a global recursion allowance were rejected. The baseline validation check passed in 42.411 seconds; a same-P/Q diagnostic returned an explicit type mismatch in 7.524 seconds. The registered S03 case remains a separate required check, followed by a new complete campaign on the repaired commit and a fresh exact-commit audit. Earlier source-target evidence stays attached to its original commit.
+
+The user chose coordinator execution and result delivery for the full build and aggregate gate. This lane continues its narrow checks and report preparation, and does not use that choice as a broad-build grant. There is no mathematical representation or theorem-type decision to revise in the design ledger; this entry records the changed validation/elaboration procedure and the evidence ownership consequences.
+
+## WDD-20260912-LB1-004: keep fresh audits clear of shared completion narratives
+
+The repaired LB-1 candidate required a fresh blind exact-commit audit. Its
+read-only proof-auditor role forbids every file edit, including a report write,
+so the lead receives the finished report as text and stages it verbatim. This
+preserves role ownership while producing the durable report required by the
+lane; it does not let the lead rewrite the auditor's findings.
+
+One fresh auditor called the collaboration agent-inventory tool to assess
+parallelism. The tool response exposed a completed sibling's narrative and
+candidate declaration. The frozen independence rule required that attempt to
+stop; it made no substantive audit finding and supplied no usable verdict.
+The replacement starts in a fresh context and detached governed checkout,
+with prior reports and completion narratives withheld and that inventory tool
+explicitly excluded. Root owns the independent execution/evidence work, so
+the bounded source auditor has no necessary parallel leaf of its own.
+
+Continuing the contaminated session with a disclaimer was rejected because it
+would not meet the frozen blind-audit condition. Granting the read-only auditor
+write permission was also rejected: the lead can preserve its exact returned
+bytes without broadening the auditor's role. The consequence is a clean
+separation between authored findings, transport, source-target identity and
+later report-sensitive checks. A report's receipt or candidate-status token
+does not confer implementation acceptance. The launch prompt, exact-target
+preflight receipts, report digest and recorded stopped attempt supply evidence
+for future delegated audits.
+
+## WDD-20260912-LB1-005: preserve scan logs without recursively reclassifying diagnostics
+
+The exact-source claim check passed, but copying its complete raw output under
+the documentation evidence directory made the subsequent report-tree scan
+classify those diagnostic lines again. Seven copied examples had allowances
+attached to their original source paths; the log path cannot supply those
+allowances. The actual source and both verbatim audit reports were not the
+failing surfaces.
+
+The complete log is now losslessly gzip archived, with archive and decoded
+byte counts and SHA256 values in the evidence manifest. Decompression was
+performed and the decoded bytes were checked against the original raw log.
+The failed report-check output is archived the same way. The actual public
+text, worker report and current audit remain directly scanned by the unchanged
+strict checker, including process records. The historical audit is checked
+after decoding by that same strict scanner.
+
+Changing the policy or adding an evidence-directory allowance was rejected:
+that would broaden the accepted claim surface. Editing or selectively removing
+captured lines would lose raw evidence. Keeping the entire raw log as a binary
+archive preserves it without treating a logger's copy as a newly authored
+assertion at a different path. No implementation, theorem or replay case changed.
+The discovery receipt and final report-tree checks document this packaging
+choice and its verification. Future evidence consumers must check decoded
+hashes when reading archived logs; archive equality alone is insufficient.
+
+The staged whitespace check also identified a deliberate Markdown hard break
+in the original d6 audit. Its complete report is therefore retained losslessly
+as a separate gzip artifact with the original 63952-byte decoded digest. A small
+Markdown pointer distinguishes the historical report from the current audit.
+This preserves the original text instead of trimming it or weakening whitespace
+checking. The decoded historical report remains part of explicit strict claim
+verification.
+
+## WDD-20260912-NATIVE1-001: freeze the native contract and produce route evidence before dependency choice
+
+Context: the governed NATIVE-1 task starts clean at 0e6a00f654abc64f8b68988fa9675b9a839dca2f on its isolated authorized branch. The acceptance matrix is frozen before proof edits, including all 21 inherited invariants and three replay boundary requirements. The task permits an incomplete route-review phase, but helpers and measured examples do not close its full native capstone.
+
+Decision: keep exact source, contract review, phase reports and bounded command receipts under docs/internal/extensions/native1. Use one task-local Lean build process/job at a time; do not link mutable shared caches. Invoke the installed pinned Lean binary directly when the elan shim attempts a network download despite the installed compiler. The route harness calls the existing owned-process helper, preserves exit/stderr/deadline outcomes, freezes nonempty exact selectors and restores source mutations byte-for-byte. Record unsupported host branches as uncovered. Final aggregate work requires a coordinator-scheduled host slot.
+
+Rationale and rejected alternatives: evidence must precede a source-dependent toolchain decision. A proposal without a full different-block execution cannot establish feasibility; a differential test cannot establish source correspondence. Reusing the exact current compiler is within the authorized route, while an external proof dependency still needs an evidence-based disposition. Repeating a quiet expensive build, sharing another lane's mutable cache or declaring completion at the first green helper are excluded.
+
+Consequences: independent finite-container and encoding lemmas can proceed during route review. The worker reports INCOMPLETE for any phase with open assigned rows and never records coordinator acceptance. The matrix, exact-type consumers, source mutation checks and command receipts are the durable review inputs. This lane introduces no PRE builder and claims no fulfillment of PRE's separate contract gate.
+
+### NATIVE-1 route-review refinements to WDD-20260912-NATIVE1-001
+
+The independent continuation review required exact source/artifact/fixture
+registries, before/after build-source pins, diagnostic-location matching for the
+core mutation, and preserving timeout process results before throwing. The
+harness implements those checks. Local generated-artifact reuse additionally
+checks an ordered source-prefix signature and the C/olean hashes; a later module
+cannot reuse output after an earlier source changes. This repairs the build
+loop without shared cache links or repeated unchanged prerequisite compilation.
+
+A bounded native startup and even the binary's argument-error path stalled in
+the sandbox with almost no CPU and no output. Owned process trees were cleaned
+at their recorded deadlines. The identical argument-error probe outside the
+sandbox returned its expected exit and stderr in 4.603 seconds, and the host
+smoke passed. Subsequent native replay therefore uses the authorized host
+execution boundary with the same owned timeouts. The sandbox timeouts remain
+INCOMPLETE evidence, not passes or semantic counterexamples. No toolchain or
+proof dependency changes to work around that execution restriction.
+
+The phase evidence wrapper retains full stdout/stderr in its durable receipt
+while limiting console display to twenty final lines. Its large claim-scan
+receipt is stored losslessly as gzip with both raw and archive hashes. This
+changes output presentation only. C++ consumption is additionally checked
+through a generated MSVC import library and the same DLL, using the committed
+export definition and example; it adds no second RMQ algorithm. Exact fixture
+comparisons and full native registry results are preserved in the phase ledger.
+
+Phase staging exposed deliberate blank final lines in three copied empty
+fixtures and ordinary redundant final lines in generated text files. The latter
+were removed. Scoped .gitattributes preserve LF and exact fixture bytes on new
+Windows checkouts; only those three named exported files exempt intentional
+blank-at-EOF whitespace, while their full content remains diff-visible and hash
+checked. No global Git configuration or whitespace policy was changed. Native
+source byte pins are rebuilt after the formatting-only source change, and the
+final phase registry is rerun against that newly pinned executable.
+
+### NATIVE-1 route submission and policy boundary
+
+The exact implementation/evidence commit is
+3329a6e90cf70bc10b3cb68b008f8a23264ce567. Its strict design check fails closed
+because the new authorized native paths have no shared classifier rule. The
+route worker retains that failure and requests coordinator-owned classification
+with regression evidence; changing the shared checker, moving source to evade
+classification, or inferring a waiver from this ledger are rejected. The
+documentation-only report commit changes no source/build pins and claims no
+acceptance. Its final base-range whitespace check is independent of the known
+unresolved design result. The continuation review also distinguishes actual
+in-process script binding controls from the still-required OS process-boundary
+selector campaign, so 8/8 phase controls cannot silently close the stronger
+frozen requirement.
+
+## WDD-20260912-NATIVE1-002: classify the authorized native package by role
+
+The reviewed route commits failed strict design checking on 28 native paths.
+The coordinator subsequently granted this worker narrow ownership of the
+production checker and regression for the package role repair. The checker now
+classifies native source/ABI, Cargo files, public README and exact operational
+fixture/program formats as code decisions; the route registry and fixture
+manifest require workflow decisions. A package-root build.rs requires both.
+Code extension identity takes precedence over evidence-like names. Existing Git
+plumbing stays neutral; unknown paths and adjacent suffixes fail closed even
+when both ledgers are present.
+
+The reviewed current set is exactly 26 code paths and 2 workflow paths. A blanket
+directory exemption, retrospective waiver and renamed source files were rejected
+because they would conceal future changes. The regression uses the production
+Git observer and final verdict, covers held-out extensions, the exact `.rmqbin`
+format, missing/both-ledger cases and unknown neighbors, and retains all original
+39 cases and eight historical records except explicit final roster counts. One
+full frozen-source run passed 98 cases (58 expected rejections, 40 expected
+accepts) in 460.683 seconds on Windows PowerShell 5.1. Preservation and strict
+checks of both earlier native commits are recorded in POLICY_REPAIR.md and its
+durable receipts. The old failure remains historical evidence; the repaired
+checker certifies those commits now. Later commits require their own check.
+
+## WDD-20260912-NATIVE1-003: pin semantic replay operations and actual build inputs
+
+The coordinator measured a dependency-coverage failure: changing only
+`source-core-mutation.kind` to `source-pin` retained the ID, passed the original
+runner and never checked the correspondence theorem. Version 3 pins the complete
+registry bytes before parsing or dispatch, including ID, operation, fixture,
+mode, expected result/exit and diagnostic anchor. Its exact 16-case roster adds
+the C++ success/error consumers. Registry evolution requires an explicit version
+and source change; ID-only validation is insufficient. Production-boundary
+controls include the measured same-ID downgrade, fixture substitution,
+load-bearing field deletion/change and unknown variants, plus the original
+positive source mutation and correctly named stale-source case. The historical
+measured receipts remain byte-for-byte. Every campaign reports its exact roster
+and preserves exits, stderr, deadlines and restoration; fixture success alone
+does not certify theorem dependency.
+
+The initial version-2 full run exposed a real harness assumption: the C++ error
+consumer correctly used stderr, while the registry expected stdout. That run
+remains INCOMPLETE evidence. Version 3 explicitly pins both the selected output
+channel and the exact other-channel output. Its 55 production controls and all
+16 native route cases passed in the final 617.614-second campaign, including
+the exact source failure at Route.lean:114 and byte/diff restoration. A separate
+focused selector repair admits the two existing camel-case proofLine IDs while
+exact roster membership continues to reject unknown case spellings.
+
+The old generated-module cache omitted compiler/import/runtime identity. This
+was a source-derived risk, not an observed different-compiler mismatch. The
+build now enforces the repository Lean pin and actual version, records compiler
+versions and byte identities of the Lean bin/include/lib tree, Rust host files
+and C++/link tools, and includes the complete digest in every generated-module
+reuse predicate. Olean/C bytes and the ordered source prefix must also match.
+Old schemas and changed identities cannot reuse generated output. Before/after
+build pins include Cargo.lock, C++ source/import metadata and the identity
+checker. The manifest pins the DLL and both language consumers. Ten production
+predicate controls passed unchanged-identity positive, changed-identity/schema/
+source/artifact negative, restored-artifact positive and Lean-pin checks. They
+do not pretend to execute another compiler or prove compiler correctness.
+
+Complete identity collection has measurable startup cost (cold inventory:
+159.128 seconds); replay budgets include it separately from query initialization.
+The repaired build passed in 239.648 seconds and rebuilt all nine old-schema
+modules. Replay remains owned and bounded on the authorized host boundary. The
+scoped dependency warmer uses topologically ordered Lake module targets, one
+process at a time, with source-pinned resumable progress and per-module receipts.
+It warms only the canonical proof dependency closure, preserving Lake traces for
+final checking. It is neither an aggregate gate nor authority to overlap the
+mutation compiler. These repairs implement the approved continuation without a
+new route decision, waived row or self-recorded coordinator acceptance.
+
+## WDD-20260912-NATIVE1-004: copy verified dependency artifacts without shared mutable caches
+
+The canonical native join imports 249 existing modules. Cold validation had
+completed 49 before another governed RMQ worktree was found to contain byte-identical
+sources and compiler artifacts. Rebuilding every identical dependency would
+consume the same host resource needed by the independent native proof leaves.
+Sharing a mutable cache directory or trusting a foreign successful build report
+was rejected: another task can mutate source or artifacts while this task runs.
+
+The hydration helper therefore copies only missing artifacts, without links or
+overwriting local outputs. It checks the frozen local source inventory, exact
+foreign source bytes, repository/compiler pins, and artifact hashes before and
+after each copy. A foreign source mismatch excludes that module. The first
+attempt stopped before copying when the foreign Packed/Capstone source changed;
+the repaired attempt copied 790 missing artifacts from 248 matching modules,
+excluding that capstone. The 49 independently compiled local object interfaces
+also matched the corresponding foreign object interfaces byte-for-byte.
+
+Copied traces retain historical command paths and are not evidence that those
+commands ran in this worktree. Lake remains the final validity check. A no-build
+probe reported pending work, so validation resumes from the source-pinned
+topological progress record, rebuilding stale entries one module at a time.
+Hydration alone does not certify the imported closure or the final theorem.
+The two hydrate receipts and the subsequent validation receipts preserve these
+distinctions; no foreign worktree was modified.
+
+## WDD-20260912-NATIVE1-005: preserve receipt bytes in Git
+
+The first repair checkpoint preserved receipt bytes in the worktree but Git's
+automatic text normalization changed CRLF JSON to LF in committed blobs. A
+direct byte comparison exposed this for both copied coordinator receipts and
+the repaired build manifest. Semantic JSON equality does not satisfy the
+required byte-preservation contract or the report's SHA-256 citations.
+
+This extension now marks JSON command receipts and named build manifests as
+non-normalizing evidence. The repair checkpoint's JSON files are re-added from
+their retained original bytes, and committed/worktree byte identity is checked.
+Historical receipt content is not rewritten or regenerated. Markdown proof
+reports already matched their committed bytes. The earlier normalized commit
+remains in history; it is not cited as the exact-byte evidence endpoint.
+
+## WDD-20260912-NATIVE1-006: include the effective C++ dependency search
+
+Further source review found a limitation in the historical version-1 toolchain
+inventory: it pinned compiler executables, Lean and Rust trees but omitted the
+MSVC/STL/SDK headers and libraries selected by Visual Studio clang. A bounded
+compiler dry run measured that this host's clang19 selects MSVC14.50.35717 for
+C++, while the configured Rust linker and librarian use MSVC14.44.35207. Both
+use Windows SDK10.0.26100.0. Calling either toolset's executable hash a complete
+dependency inventory was rejected.
+
+Version 2 discovers and pins the effective ordered include/library search,
+clang resource tree, both selected/configured MSVC header and x64 library
+trees, SDK include/ucrt/um library trees, actual C++ linker and adjacent tool
+runtime DLLs. Required roots must exist and unexpected search roots are rejected.
+Two advertised optional ATL/MFC paths are absent on this host; their absence is
+explicitly pinned, so their later appearance changes identity. Assuming they
+exist or silently dropping them would misstate the effective search.
+
+The discovery and syntax checks passed. Full hashing, version-2 cache
+invalidation and the native binary build remain next-stage evidence. Historical
+version-1 repair receipts retain their original limited inventory and are not
+retroactively promoted to version 2. OS system-library behavior remains within
+the explicit host/runtime assumption, separate from recorded tool inputs.
+
+## WDD-20260912-NATIVE1-007: freeze binary and public-contract replay obligations
+
+The binary replay extends the repaired registry principle to the final loaded-
+limb implementation. Whole registry bytes, nested semantic fields, the fixture
+producer and encoder, exact ordered source/generated-C/artifact rosters, and the
+versioned effective toolchain identity are checked before dispatch. The final
+roster has 109 logical cases expanding to 214 consumer executions. Operational
+witness files are pinned separately and checked through the same input checker
+used by execution. One-field semantic corruptions must reject at a specified
+surface after the unchanged input passes that checker. Native stdout/stderr are
+captured as raw bytes, preserving blank lines that the shared line-oriented
+process helper would otherwise erase. Actual Python executable/version/runtime
+DLL identity is recorded, and subprocess ownership still uses the shared tool.
+
+The public record has 42 mandatory fields, each consumed at a separately written
+literal proposition and identical object arguments. Its replay freezes one
+baseline, 42 field weakenings and one public-proposition collapse. For a field
+weakening, the edited producer must elaborate while the untouched independent
+consumer fails at the designated theorem and diagnostic location. Per-case
+module overlays prevent replacing the shared baseline proof artifacts. Source
+hashes and Git diffs must be restored. A failed producer alone is not evidence
+that the public consumer protects the requirement.
+
+The ABI control changes the real endpoint argument order in the C shim,
+rebuilds an isolated DLL from the exact generated C, and runs both unchanged
+clients against it. Both baseline clients must first accept the same asymmetric
+input. The mutated observation must differ from that baseline and equal the
+independently expected fault; stale-source rejection cannot stand in for this
+executed marshaling challenge. Every mutation restores exact source bytes and
+checks artifact integrity. Full omitted-selector replay is run once inside the
+control campaign; a redundant separate full replay on unchanged content adds
+no coverage.
+
+Version-2 toolchain hashing and the first binary build now passed, including
+all effective C++ dependency roots recorded in WDD-20260912-NATIVE1-006. Source
+files whose replay uses literal byte pins have explicit LF checkout attributes;
+receipts and manifests remain non-normalizing exact evidence. These workflow
+choices make the claims replayable. They do not grant acceptance before the
+campaigns, blind exact-commit audit and scheduled aggregate checks finish.
+## WDD-20260912-NATIVE1-008: make tool inventory ordering shell-independent
+
+The first production binary selector rejected the version-2 toolchain digest
+before dispatch. Comparing a fresh PowerShell 7 inventory with the build's
+PowerShell 5 inventory showed identical path-to-full-row/hash maps for 4856 Lean,
+48 Rust, 6545 C++ dependency, 145 adjacent DLL and four executable entries. Version
+text, dependency roots and optional-directory presence also matched. Only array
+order differed: the shells' culture-sensitive sorting reordered 11 Lean, 19 Rust,
+366 C++ and 23 DLL positions. The failed selector and exact delta are retained;
+there was no native result, timeout, compiler update or source mutation.
+
+The production identity moves to version 3 and declares
+`sortPolicy = ordinal-case-sensitive-utf16`. Unordered path inventories and
+unique path sets use `StringComparer.Ordinal`; property-name comparisons use
+the same ordering. Semantically ordered include and library searches retain
+their discovered order. Each byte hash, version pin, expected inventory row,
+optional-path state and strict equality check remains required. Accepting set
+equality at the replay boundary or ignoring a digest mismatch was rejected:
+that would weaken a provenance invariant to hide a serialization defect.
+
+Captured inventories provide a replayable cross-shell control for the actual
+canonicalization helper. Both shells must produce the same canonical inventory
+and digest while preserving every original map entry and search sequence.
+The changed identity invalidates the prior module cache and requires a new
+native build and known-selector comparison before the final full replay.
+Historical version-2 manifests remain exact evidence of their original build;
+they are not rewritten to claim a successful cross-shell replay.
+Source review during that repair also found that retained version-command
+metadata was not fully compared: a changed manifest command text could retain
+an unchanged digest, although the fresh actual command text still entered the
+reconstructed digest. Version 3 checks each stable command path, argument list
+and output text as well as the full C++ dependency key shape. Paths are
+normalized at capture; process timings and IDs remain historical receipt data.
+Changed recorded version/argument metadata must reject beside the unchanged
+positive control. This is a source-derived provenance correction, distinct from
+the measured order-only mismatch; no false compiler result was observed.
+
+## WDD-20260912-NATIVE1-009: validate isolated default-library cache preparation
+
+The required default library build and the explicit Native imports cover
+different closures. The default `RMQ` root reaches 372 local modules and no
+Native module; the two explicit Native import checks together reach all 28
+Native modules and the executable validator. The witness exporter and validator
+must be imported separately because each declares a global `main`. Importing
+the already checked axiom inventory preserves its 86-declaration evidence
+without needlessly repeating its print commands.
+
+An optional `-DefaultRMQ` mode in `packed_native_hydrate.ps1` prepares missing
+default-library artifacts from the registered `2fb8` checkout. The existing
+249-module canonical mode remains unchanged. The new mode derives actual import
+headers, checks all source/toolchain bytes and compiler trace markers, freezes
+the missing paths, and copies only into this task's build directory. It refuses
+existing destinations and links. Before/after hashes of foreign artifacts,
+destination hashes and final source hashes prevent a changing source checkout
+from silently supplying mixed evidence. A bounded stream buffer changes only
+how SHA256 reads bytes, not which bytes or hashes are required.
+
+The initial whole-file import regex misread a documentation sentence; the
+replacement skips line and nested block comments and stops after the header.
+An independent progress-formatting failure under PowerShell 5 also stopped
+before copying. Both zero-copy failures remain recorded. The final preparation
+copied exactly 491 files (133,498,087 bytes), preserving 997 existing artifacts,
+and verified all 372 matching source modules. It created no shared mutable
+cache and wrote nothing in the source checkout.
+
+Copying is preparation, not proof that foreign objects were compiled against
+the present imported objects. Lake must next validate dependency/output hashes
+with `--no-build`; any demonstrated stale component must be rebuilt, and the
+required ordinary default build still runs. Rebuilding hundreds of unchanged
+dependencies before checking reusable artifacts was rejected as avoidable work.
+Treating source equality alone as cache certification was also rejected.
+
+The production replay now performs pure registry, selector, source and manifest
+shape rejection before initializing process ownership. Every dispatched child
+still uses the same bounded ownership helper. Five actual rejection boundaries
+passed after that ordering change, but their measured timings did not establish
+a wall-clock speedup, so none is claimed. Similarly, large-file and 100-file
+hashing comparisons preserved exact hashes without isolating the cause of a
+slow initial toolchain collection. The validated identity implementation was
+left unchanged. The build subsequently advanced and passed; an attempted stop
+guard refused its active compiler child and did not interrupt it. These
+diagnostics remain separate from native or mutation verdicts.
+
+Lake subsequently validated the prepared dependency/output hashes with
+`--no-build build RMQ` in 20.956 seconds. The required ordinary default build
+passed in 3.980 seconds. Separate explicit imports of the Native inventory and
+the executable validator passed in 7.734 and 6.128 seconds. These receipts close
+the cache preparation's validation condition without extending the default
+root's import coverage or replacing the scheduled aggregate certification.
+
+## WDD-20260912-NATIVE1-010: bind fresh contract producers into a complete private package
+
+The first final certificate baseline failed before any consumer ran. Lean's
+`SearchPath.findWithExt` selects the first directory containing the root package
+`RMQ`; it does not search later directories separately for a missing module.
+A partial overlay containing the fresh Capstone output therefore hid the shared
+Execution dependency. This was a harness import failure, not a rejected public
+proposition. Its nonzero producer exit and complete restoration remain recorded
+in `contract-replay-20260912T131025801.json`.
+
+The repair makes one physical copy of the checked local `.olean` tree per run.
+The private package contains every required local dependency, while each case
+still has fresh producer and consumer output paths. After the producer compiles
+successfully, its exact output bytes replace only the private Capstone object.
+The runner compares the fresh output hash with that bound object before and
+after compiling the unchanged, independently typed consumer. A negative case
+also requires the fresh artifact to differ from the unchanged shared producer.
+The shared producer and consumer objects, tracked source bytes and Git diffs
+must remain unchanged after every case, including failures.
+
+This resolves the package-level lookup rule without writing mutation outputs
+into the shared build tree. A symlink or shared mutable cache would weaken the
+isolation guarantee; making 44 full dependency copies would add hundreds of
+megabytes per case without strengthening producer binding. Both alternatives
+were rejected. The frozen 44 cases, nine controls, literal propositions and
+expected rejection surfaces are unchanged. The repaired unchanged baseline
+passed with an exact 410-file physical copy (396,755,200 bytes), a fresh producer
+and a successful consumer. The field and full replay receipts separately decide
+whether the anti-bypass requirements hold; a successful baseline alone does
+not establish those negative controls.
+
+## WDD-20260912-NATIVE1-011: freeze auditable text bytes and separate candidate evidence
+
+The final packet identifies the original requirement prefix, extracted verbatim
+requirements, exact public-type digest, source reconstruction and report by
+byte hash. All six files currently contain LF bytes, but the checkout's
+`core.autocrlf=true` could convert their later checkout copies to CRLF. Specific
+`text eol=lf` attributes preserve the existing bytes and cited identities across
+fresh checkouts. They do not normalize or rewrite the frozen requirement prefix.
+Receipts and build manifests retain their existing non-normalizing attributes;
+the final packet index likewise preserves exact JSON bytes. A repository-wide
+text-policy change was unnecessary and was rejected.
+
+The final report separates current construction/verification from the earlier
+route phase, whose exact prior report bytes are retained in
+`REPORT_ROUTE_HISTORY.md`. The fresh audit receives only verbatim requirements,
+exact source/public surfaces, raw evidence and commands, with worker verdicts
+and reconstruction narratives withheld. Its prerequisite plan explicitly
+materializes Native imports in an isolated build tree because the ordinary RMQ
+root does not import them. The 86-declaration source inventory is scheduled once
+there; subsequent cached imports do not invent another inventory run. The audit
+reconstructs mathematical propositions and executable/process invariants at
+their respective evidence tiers. Candidate evidence, fresh audit, aggregate
+certification and coordinator acceptance remain distinct dispositions.
+
+The same specific LF policy covers the new executable validator, its two direct
+import-check scripts and the cited hydration helper. Staging exposed their
+otherwise implicit checkout conversion. No current source bytes changed; these
+attributes preserve the source identities already compiled and measured.
+
+## WDD-20260912-NATIVE1-012: scan maintained claims without recursively rescanning receipts
+
+The final default claim scan exceeded its owned 300-second deadline at
+302.574 seconds. It had passed both trust hygiene scans, then emitted about
+3.7 MB of review matches from archived command JSON, including earlier copies
+of the scanner's own output. The complete failed receipt is retained as
+`commands/final-static-command.json`; the owned descendants were terminated
+and their absence checked. No timeout was treated as a successful claim check.
+
+Source diagnosis found 35 `rg --json` term passes over the default roots, with
+only audit-report directories and WORKLOG files excluded. The current roots
+contained 873 files / 65,844,694 bytes, including 284 JSON files / 55,598,631
+bytes. Each matched JSON line is parsed and its full matched text is emitted.
+That mechanically repeats historical scan output and would also rescan the
+new failed receipt on an unchanged retry. The required-attribution pass had
+not yet been reached, so it was not identified as this timeout's cause.
+
+The task therefore uses the production scanner's existing `-Strict -Path`
+interface over an explicit, recorded corpus of maintained claim text, including
+current public surfaces, applicable attribution files and owned process prose.
+The rule set and allowlists remain unchanged. Byte-pinned raw receipts retain
+their role as exact execution evidence and are checked by the separate source,
+artifact, roster, byte-observation and restoration controls. Their historical
+quoted output is not reinterpreted as newly authored current claims. The corpus
+and actual results must be recorded before this verification condition is met.
+Silently dropping a live claim, broadening a policy exception, editing a failed
+receipt or repeating the same expanding default scan was rejected.
+
+The audit packet must likewise distinguish public claim checking from retained
+worker narratives: a fresh auditor is not given prior dispositions by printing
+an unfiltered scan of those process records. The coordinator separately owns
+aggregate certification and its host/output planning. This evidence-scope
+choice changes no source theorem, acceptance requirement or policy rule, and
+is not a claim that the unfinished default-root scan passed.
+
+## WDD-20260912-NATIVE1-013: freeze source before the final report and fresh audit packet
+
+Commit `52ba2a57784c1dcd234615821865b87fd31b2d31` freezes the completed
+implementation, operational registries, raw evidence and append-only requirement
+matrix. A subsequent metadata/report commit names that exact source commit;
+this avoids a document attempting to contain the hash of its own future commit.
+The compiled inputs, source propositions and registry bytes remain unchanged.
+Both the whole-base and individual candidate-commit design checks passed.
+
+The fresh audit packet is report-only on the frozen target, with verbatim
+requirements and selected raw receipts. Worker verdicts, internal reconstructions
+and broad scanner transcripts are withheld. A separate44-path public inventory
+allows the unchanged strict scanner to check current public claims without
+printing prior process narratives from extension reports or historical JSON.
+The worker separately passed all26 process claim paths and checked the finished
+report/matrix again after insertion. The auditor checks its own final report
+with IncludeProcessRecords after forming its independent findings. This preserves
+both applicable claim coverage and the fresh-audit boundary; hiding a current
+public claim or using prior verdicts as audit instructions was rejected.
+
+The coordinator separately schedules the aggregate gate and handles its
+potentially history-bearing output. The packet requests that certification and
+fresh exact-commit review; it does not record either as executed or ACCEPTED.
+No new source/representation design decision is made by this metadata follow-up,
+so the existing DD-20260912-NATIVE1 entries continue to apply unchanged.
+
+Public claim inventory rows record both the actual working-copy bytes scanned
+and the canonical Git blob bytes at the frozen target, so a fresh checkout can
+reconcile ordinary line-ending conversion without treating different source
+content as equivalent. The native build manifest, frozen requirement prefix
+and final report retain their separately enforced exact-byte policies.
+
+## WDD-20260913-NATIVE1-R1-001: archive receipts that embed claim-scanner output instead of changing the scanner
+
+The coordinator aggregate gate on the NATIVE-1 candidate
+`4edb1e14f607a809c018d569c3d4be99c0c54959` recorded two gate issues with one
+cause. The unchanged strict default-root claim scan found 17 unapproved
+sensitive matches, all inside committed NATIVE-1 command receipts that embed
+raw claim-scanner output: 14 in `commands/final-static-command.json` and 3 in
+`commands/final-claims-public.json`. The scanner self-test then failed with
+"could not read a hit count from both runs", because its strict child run cannot
+print the scan-complete line while strict failures exist. The failing lines are
+earlier scanner result lines quoted inside JSON strings. A strict term matches
+the quoted text; the term's line allowance is keyed to prohibiting language at
+the start of a line, and a JSON-quoted result line starts with quoting and the
+scanner prefix instead. WDD-20260912-NATIVE1-012 had already moved the lane's
+own claim checks to explicit `-Path` corpora for this reason. That kept the
+lane's claim evidence honest, but the default-root scan, which the aggregate
+gate runs, still read the receipts.
+
+Decision (NATIVE-1-R1). Every blob under
+`docs/internal/extensions/native1/commands/` at the base that contains at least
+one claim-scanner result line is replaced by a single-member gzip archive at the
+same path plus `.gz`, whose decompressed bytes are the exact Git blob bytes at
+the base. The selection is recomputed from Git blobs, not from a checkout, and
+gives twelve receipts. This follows the committed `.json.gz` receipts of BV-1.
+`docs/internal/extensions/native1/repair-r1/RECEIPT_ARCHIVES.json` records each
+original path, base blob id, blob SHA-256 and length, result-line count, archive
+path, archive SHA-256 and length, decompressed length and the files that refer
+to the original name at the base. `verify_receipt_archives.py` recomputes every
+value from the archives and `git cat-file` on the base. A committed controls
+runner replays positive and negative cases on disposable copies. Each archive
+path gets an exact `binary` line in the lane's `.gitattributes`, so its bytes
+never depend on Git's text heuristics. The scanner, its policy, globs,
+allowlists and exclusions are unchanged. Ripgrep skips binary files while
+traversing the scan roots, and the required-attribution pass only reads the
+current-fact surfaces, so the archives leave the scanned text corpus without any
+exception. The branch must show this on the repaired tree, not assume it.
+
+Rejected alternatives:
+
+- A policy, glob, allowlist or exclusion change, such as excluding extension
+  command directories or allowing quoted scanner lines. It would stop the gate
+  from reading every future receipt directory, which is the placement-based
+  evidence exemption the completion gate forbids, and the repair contract
+  prohibits it.
+- Moving the receipts under `audit_reports/` or giving them a `WORKLOG` name.
+  That evades the scan by placement and would expose worker verdicts to a
+  blind auditor through `-IncludeProcessRecords`.
+- Deleting the receipts or redacting their scanner lines. That discards exact
+  evidence and breaks the byte citations in `AUDIT_PACKET_INDEX.json`, the
+  NATIVE-1 report and the matrix appendix.
+- Rewriting references to the new names. The pinned index, frozen report and
+  matrix may not change; the manifest is the resolution record instead.
+- Another text encoding such as base64. The result is still text that the scan
+  reads, it avoids a pattern rather than the category, and it has no repository
+  precedent or standard reader.
+- Scanning narrower `-Path` corpora again. It does not make the gate's
+  default-root scan pass.
+
+Consequences. The default-root hit count drops by the historical result lines
+that leave the corpus; those lines were earlier scanner output, not maintained
+claims. Readers recover a receipt with `gzip -dc` or the verifier. References
+keep the original names and resolve through the manifest. Process lesson for
+later lanes: a receipt that stores claim-scanner output inside a scanned root
+makes the gate rescan its own history, so such output should be archived when
+it is recorded.
+
+Host finding while preparing the controls. On this Windows host, a process
+tree started under the MSIX-packaged pwsh 7.6.6 is not held by the
+kill-on-close job of `scripts/owned_process_tree.ps1`. A probe with a 6 s or
+8 s deadline left the timed-out root and its child alive, whether the packaged
+pwsh was the bootstrap or the launched tool; two focused claim scans on this
+host also left an orphaned `rg` after their deadlines. Under Windows PowerShell 5.1 with a non-packaged child,
+the same probe removed both. The new runner therefore reports INCONCLUSIVE
+(exit 3) under a packaged host, and its registered deadline control measures
+descendant cleanup on the host it runs on. `scripts/` is outside this repair's
+scope. The finding goes to the coordinator, whose aggregate gate uses the
+packaged pwsh.
+
+This commit freezes the NATIVE-1-R1 acceptance matrix only. The archives,
+manifest, verifier and controls land in the next commit, and its evidence is
+appended below.
+
+Implementation record (NATIVE-1-R1 repair commit). The twelve selected receipts
+hold 8,785,885 blob bytes and 4,571 claim-scanner result lines at the base; their
+archives hold 1,206,228 bytes, written by Python
+`gzip.compress(data, compresslevel=9, mtime=0)`. The selection is computed from
+every blob under the commands root at the base. As a guard, every blob that
+contains the scanner prefix at all must also contain a result line, so a
+variant line format cannot be skipped silently. The verifier recomputes the Git
+object id of each base blob from its bytes. That proves it compared raw blob
+bytes, not a checkout-normalized copy. Each negative control needs its exact
+set of failure codes, not merely a nonzero exit. Two controls pin surfaces that
+a digest check alone would hide. In one, a changed gzip header byte leaves the
+recovered bytes intact, so only the archive digest can reject it. In the other,
+a recompressed archive with an updated digest can only be rejected by comparing
+the recovered bytes. The runner registry `NATIVE1-R1-RECEIPT-ARCHIVE-CONTROLS-V1`
+has 19 cases: three positives (working tree, committed HEAD, unmutated
+disposable copy), nine archive/manifest negatives, a deadline control that
+holds a root and a child, and six selector controls run through a real child
+PowerShell process. A rehearsal in a disposable clone found two runner defects
+before this commit. First, `-like` treats `[`...`]` as a wildcard class, so
+bracketed case ids never matched. Second, Windows PowerShell 5.1
+`ConvertTo-Json` rejects an array wrapped around a generic list. Both made
+cases fail closed, never pass. They were fixed, and the full registry then
+passed there. That rehearsal is development evidence only. The certifying runs
+use the committed tree, and the report records them.
+
+Scan-cost observation for the coordinator. The policy-v28 multiline term
+`required-pq1-fully-charged-attribution` restarts a lazy paragraph expansion at
+every line of a paragraph. In a receipt without blank lines, one rg pass costs
+roughly lines times bytes. It needed 136.5 s for the 970,501-byte
+`commands/build-20260912T091755276.json` alone. None of the files it is slow on
+contains claim-scanner result lines, so this repair neither causes that cost
+nor removes it. The scan deadlines in this lane are set from that measurement
+rather than from the 171-412 s figure measured on other trees.
+
+Verification record (d0b4cef). On the clean repaired commit the unchanged
+strict default-root scan exited 0 with its scan-complete summary
+and 0 strict failures in 1265.16 s, and the self-test exited
+0 in 2312.494 s. Both ran under pwsh 7.6.6 in one
+`Global\RMQHeavyVerification` session, which first reproduced the base failure
+(1703.225 s and 2291.572 s). Ripgrep enumerated
+all thirteen `.gz` files under the commands root. Its binary detection skipped
+all of them, and `--binary` matched all of them. No policy term matched inside
+an archive. The archive bytes contain neither the scanner prefix nor the failing
+term's text. The 19-case control runner passed under Windows PowerShell 5.1,
+and preservation checks `PRES-01` to `PRES-08` passed. The report commit adds
+only the worker report, this matrix evidence appendix, the controls receipt and
+this note. The coordinator aggregate gate and continuation check on the branch
+tip remain pending. No acceptance is recorded.
+
+## WDD-20260912-OPT1-001: freeze the extension contract and separate route review from certification
+
+Context: the OPT-1 delegation authorizes a fresh isolated write branch, local commits, a verbatim acceptance matrix, an evidence-dependent route review and independent exact-commit candidate audit. It forbids shared Packed edits, public-root migration, unscheduled host aggregates and peer build-cache sharing.
+
+Decision: retain the complete frozen requirements under docs/internal/extensions/opt1 before proof editing, with append-only row-keyed evidence. Independent read-only leaves inspect the original cost bridge and compact route while one proof worker owns the sole narrow Lean/Lake process in this build tree. The same folder records commands, deadlines, source identity and external blockers. Review the compact proposal before dependent implementation; allow the independent original-code bound proof to proceed. This applies the delegated lifecycle without weakening it.
+
+The PRE C1-C4 blind contract gate in RMQ_PROGRAM_PLAN.md C.3 applies before builder construction. This query-compiler lane neither implements that builder nor certifies the PRE gate. The OPT-specific route review is retained. Full aggregate certification requires a coordinator-scheduled host slot on frozen content. No thread-title or coordinator-message tool was available in the task runtime at startup; this limitation is recorded rather than emulated by private application state edits.
+
+Rejected alternatives: treating the static estimate as execution evidence; making compact implementation precede its route producer; taking an unscheduled aggregate slot; reusing mutable external caches; or reporting a helper as full completion. The exact matrix and eventual report, rather than a compact chat response, are the deliverable. Local commits are authorized; remote publication and integration are excluded. Evidence: startup preflight PASS on the exact baseline, clean initial tree and creation of codex/opt-1-packed-compiler; verification and review outcomes are recorded separately as they occur.
+
+## WDD-20260912-OPT1-002: direct pinned single-worker Lean development and durable route review
+
+Context: the elan launcher tried a blocked toolchain download, while the exact Lean 4.22.0 binaries were already installed. That pinned Lake CLI does not accept -j1. The assignment limits each build tree to one heavy process and disallows mutable shared-cache links.
+
+Decision: use the installed exact lean.exe directly with -j1, sequential dependency order, task-local .lake/build/lib/lean and scripts/owned_process_tree.ps1. Leaf check scripts capture command arguments, source hash, base, platform, deadline, duration, exit, stdout/stderr and ownership results in their assigned evidence folders. Narrow baseline prerequisites and exact-type consumers were built before any large query import. Toolchain identity is checked; no shared source/configuration or external cache is used. A later Lake/full aggregate remains coordinator-scheduled final certification, not something these development checks replace.
+
+The fresh read-only proof auditor returned a route report instead of writing a file because its role forbids writes. The lead persisted its findings, all 35 row dispositions and positive-evidence limits in CONTRACT_AUDIT.md, then adopted both proof-interface corrections and the explicit PC premise. No requirement row was amended; an exact UTF-8 frozen-row comparison against 1f3a4199eaa95324cd1daaadbab89340ca8392c4 passed all 35 rows.
+
+Rejected alternatives: downloading/replacing the toolchain, silently allowing unconstrained Lake jobs, hiding first failed development attempts, passing low-register fit as whole-state safety, or promoting a route review to milestone acceptance. The scripts here are leaf development checks, not an acceptance mutation replay, and their reports explicitly retain the full OPT-1 target as open. Evidence: retained startup diagnosis, bounded dependency/leaf/consumer outcomes and row-integrity JSON. Source hash and theorem evidence accompany each leaf; final query/compact checks are distinct later stages.
+
+## WDD-20260912-OPT1-003: serialized cold imports, runtime registry and explicit resource-wait recovery
+
+Context: the new capstone imports 251 local modules in this fresh task-local cache. The assignment allows one heavy Lean process per lane and explicitly permits an INCOMPLETE resource-wait phase. Generic leaves checked first; subsequent compact proof workers need narrow feedback while the single cold build is still healthy.
+
+Decision: preserve the owned sequential build and all partial source/evidence rather than interrupt a healthy module or run a second Lean process. Persist its launched script version, exact topological plan and per-module source/command/deadline/output records. A future build-helper invocation can pause safely between modules via .lake/opt1-build-pause; it also invalidates local consumers when sources or direct imported artifacts are newer. The already-running invocation predates these additions and is described as such. Its initial PowerShell JSON-array enumeration failure occurred before any Lean launch; explicit enumeration repaired that startup before the active invocation.
+
+The separate optimized runtime runner uses an independent v1 registry, actual script-selector boundary controls, bounded owned subprocesses, exact exit/stderr/failure receipts and source hashes. The runtime mutations alter in-memory Program/fuel values, so no tracked source bytes are mutated by those controls. The public certificate field-deletion/weakening campaign remains separately required. Startup and a known selector precede the eventual full semantic run. Windows/PowerShell controls and unavailable host paths are distinguished in the runtime report; no timed-out or host-uncreated branch becomes a pass by prose.
+
+The lane adds only the uniquely named rmq_packed_optimized_validate Lake target. No gate, canonical skill, shared Packed implementation or external cache configuration changes. A resource report retains all unmet rows and re-entry order; it does not narrow the assigned target. The final candidate must later be clean, kernel/executable checked, independently audited and scheduled for full aggregate certification by the coordinator.
+
+Rejected alternatives: treating an incomplete cold build as a gate pass; launching parallel Lean jobs within this lane; hiding failed startup or timeout probes; accepting an empty selector as full-suite omission; relying on a copied regex as runtime evidence; and treating the helper theorem or draft code as a submitted compact capstone. Durable leaf reports and the root report provide exact hashes, timing/exit records and the next owned build-slot action.
+
+Resource-report evidence follow-up for WDD-20260912-OPT1-003: source checkpoint a44691d500f3a094b4c96480ed74172c944f69f3 preserves the drafts and initial logs. Exact-base and single-phase strict design checks and committed whitespace checks passed; the focused strict claim scan had 457 hits and zero strict failures. This report/evidence-only follow-up records those results and the continuing owned build. It introduces no new process decision and does not promote the incomplete phase to candidate completion. Later build outputs may remain outside the snapshot until resumption.
+
+## WDD-20260912-OPT1-004: explicit continuation owns the ordinary scoped slot
+
+Coordinator continuation at exact checkpoint 8e355fda7788077f548865c1d6acf2ae5e88da55 clarifies that OPT-1 retains its ordinary single-job proof slot; PRE-1 owns only host-wide aggregate scheduling. The earlier resource-wait report did not narrow or complete the target. Reattachment obtained the actual session 34305 exit: all 250 prerequisite entries passed, then concrete Capstone failed recursion-depth/reflexivity obligations in 8.808 seconds without timeout. Preserve its failure receipt and original report, repair only the changed module, then serialize compact proof/static/query consumers and runtime. A routine healthy owned build is awaited while useful authorized work continues; a new resource-wait handback requires an actual external scheduling/resource obstruction. No route/model/observation amendment is made, no duplicate build is launched, and no predecessor receipt is promoted to a capstone pass. Exact entry/frozen-row evidence is continuation-entry.json. The focused repaired concrete bound subsequently passed; the slot then transferred to the compact proof owner.
+
+OPT-1 continuation scheduling incident: root accidentally launched the independent ArrayRun prerequisite while axiom-inventory session36508 was still active, after a wait returned a live session rather than final exit. ArrayRun completed; the inventory remained the only owned Lean process. This was a violation of the one-heavy-process rule and is not counted as compliant scheduling evidence. No imported inventory source/artifact was changed by ArrayRun. All subsequent transfers require an inspected final exit in a separate step before launch. Exact results and correction are in composition-development/scheduling-overlap.json; no output or failed scheduling condition is suppressed.
+
+## WDD-20260912-OPT1-005: source-stable registries and shared axiom traversal
+
+The final verification plan separates startup diagnostics from the complete frozen-content registries. Runtime imports must have task-local artifacts at least as fresh as source and direct imports; source and artifact SHA snapshots are checked before/after execution. Exact23 positive/four negative semantic IDs preserve omitted versus explicitly empty selector behavior. The certificate registry fixes 39 field names and exact expected propositions, with 78 deletion/weakening rejections and two accepts. Altered source copies must compile their producer before the fixed consumer rejects at the matching field/type surface. Copies are restored in finally and tracked originals remain byte-identical; preparation-only transformations are not kernel rejection evidence.
+
+The first 93 separate-print axiom command exceeded 180 seconds with no flushed output and its owned PIDs were confirmed absent. Installed Lean4.22.0 source shows that each print starts a fresh CollectAxioms state. The revised script invokes the same builtin collector across all 93 exact roots with one shared visited set, checks every root exists in the kernel environment before collection (the builtin otherwise ignores missing names), and checks every root was visited afterward. It reports one exact dependency union, not93 individual distributions, plus explicit standard prints for both named public targets. The wrapper requires exact root coverage, one union, both prints and only standard permitted dependencies. This is a material algorithmic verification change; the original driver/timeout record are retained and the revised command must itself pass.
+
+A final content freeze precedes the full registries and independent audit. A newly started repeated semantic startup was intentionally interrupted for this freeze handoff before its full positive-registry stage; it remains INCOMPLETE with process cleanup evidence. No gate pass is inferred from startup or preparation controls. The earlier one-slot scheduling incident remains recorded separately and is not erased by subsequent successful checks. Timestamped root build receipts preserve every attempt. Only the coordinator may schedule host-wide aggregate certification; ordinary single-job proof work continues independently of PRE.
+
+WDD-OPT1-005 checked outcome: the revised shared builtin collector passed in 8.710 seconds with exactly93 covered roots and only propext/Classical.choice/Quot.sound; both explicit standard public prints were present. This confirms the material traversal change, not a larger unchanged retry. Runtime kernel/startup/known-selector checks passed before the source freeze; full registries follow the committed snapshot.
+
+## WDD-20260912-OPT1-006: reject mixed diagnostics before dependency certification
+
+An independent source review of the frozen certificate runner produced a concrete boundary witness: the production rejection checker accepted a located mismatch at the intended field even when the output also contained an unlocated setup error. The actual field campaign had not run; the witness is a checker defect, not a failed Lean theorem. Tighten the production verdict over the ordinary Lean diagnostic-header category: reject top-level unlocated error headers, and require every located error to identify the selected exact consumer field and the allowed deletion/type-mismatch surface. Known setup/resource failures are rejected separately; indented quoted diagnostic detail is not a new top-level header. Preserve positive controls and add mixed/unlocated diagnostic controls that call the actual checker. An ordinary process exit one, a selected-field substring, or one matching error cannot certify a campaign case when another diagnostic remains unclassified.
+
+The semantic runtime campaign closed its exact-source/artifact snapshots before this repair window. Its full positive/negative/selector evidence remains tied to ac5af8e416f906391dc117f083a883acc053a268. The certificate runner is refrozen before executing its altered producer and fixed-consumer cases; the 39 field types and exact 80-case registry remain unchanged. Rejected alternatives were accepting the first matching error, using a copied regex as final evidence, treating startup/preparation as a kernel campaign, or widening a diagnostic allowance to absorb an unrelated failure. Retain the pre-fix witness and all actual outcomes, then certify only completed cases with exact restoration. This changes verification logic, not the compiler, word model, observation relation or proof target; no mathematical design-decision amendment is needed.
+
+## WDD-20260912-OPT1-007: complete isolated import roots and bind checked dependencies
+
+The first actual unchanged certificate control at 15e5266888c35a38733ca14846e4ad53ed119ebe stopped during Certificate setup with a missing QueryProof.olean. Lean selected the first RMQ package directory and did not fill missing descendants from the later original-cache prefix. The runner correctly rejected setup, never ran Capstone or Consumers, restored its source copies and retained the failure. A source-only review of the intended producer-before-consumer order was insufficient to establish executable library isolation.
+
+The corrective design must provide the complete checked RMQ import hierarchy in each case, reserving Certificate/Capstone outputs as private files. Snapshot immutable imports once per campaign and, where supported and verified, link those private snapshot dependencies into each case; never link mutable producer outputs or depend on writes to the original build cache. Measure the closure size, pin every copied/linked byte to known checked hashes, and verify the original cache remains unchanged. This avoids both missing-package fallback and repeated whole-library duplication. A shared mutable producer cache, implicit lookup fallback, timestamp-only provenance, and changing the current consumer to tolerate missing facts were rejected.
+
+The committed full-runtime receipt supplies earlier checked source/artifact identities for the unchanged Lean source. The campaign must consume that fixed manifest rather than create its expectations from whatever files happen to be present at launch. Stable before/after bytes and favorable timestamps alone cannot exclude an artifact already stale before the run. This evidence binding supplements prior explicit proof-build/axiom/runtime receipts; it does not turn a hash into a compilation proof.
+
+A separate fresh source review also produced a mixed diagnostic with an intended field mismatch and an uncaught-exception message. It was accepted by the old parser, although no actual compile-only case had produced it. Reject that supported exception prefix in the compile-only verdict and exercise both the mixed rejection and ordinary indented-detail acceptance through the production function. Preserve the distinction from runtime controls, whose expected user errors use a different exception contract. These are runner/provenance repairs; all 39 field types, 80 case IDs, Lean sources and mathematical design choices stay fixed. Actual focused controls and the complete field campaign remain mandatory after refreeze.
+
+Implementation outcome: the immutable closure is 259 files and 264276816 bytes. The runner copies it once into a private read-only snapshot, verifies per-case hardlinks and excludes all three mutable module outputs. Only the complete case library is supplied as LEAN_PATH, removing implicit mutable-cache fallback. Production library controls reject existing or aliased outputs, escaped paths and altered provenance. The registry and mixed-header controls preserve valid rejection/acceptance controls. Their zero-Lean results establish these setup boundaries, not the outstanding 80-case kernel campaign.
+
+WDD-OPT1-007 actual campaign outcome: on clean bbbe652fa41fa40bf2530b5e2f09c4c225c0e896, focused unchanged/deleted/weakened width-bound controls passed, followed by the complete 80-case registry. All 160 producer compilations succeeded before 80 fixed-consumer checks; two accepts and 78 exact selected-field rejections were recorded with no stderr, timeout or output-limit event. The wrapper exited zero after exact source/import/status/private-snapshot restoration. The 243 retained stages include those 240 compilations and three probes. Root independently checked commands, stage order, actual diagnostics, private output hashes and restored bytes. A bounded continuation reviewer separately resolved the two demonstrated checker findings against the final source and controls. Neither source review nor these execution receipts is coordinator acceptance; the explicitly assigned final aggregate remains external. Repeating unchanged proof/runtime suites after documentation-only consolidation was rejected because no dependency they consume changed.
+
+## WDD-20260912-OPT1-008: preserve evidence bytes and bound final scan ownership
+
+The final staged-blob check found that Git's text conversion normalized CRLF evidence to LF. The tested worktree FIELDS.json and full-runtime.json still matched the runner's literal SHA pins, but their indexed blobs did not. The completed full80 receipt and requested final REPORT byte hash had the same storage distinction. Content comparison established that the differences were exclusively CRLF conversion. This is an evidence-storage defect, not a field, theorem, runner or replay-input mutation.
+
+Add narrowly scoped -text attributes under the owned OPT-1 evidence folder for the literal-pinned inputs, certificate evidence and final hash-bearing artifacts. Re-stage their existing bytes and verify indexed blobs against recorded raw hashes; do not normalize the originals and regenerate expectations. Checked source hashes remain explicitly the actual Windows worktree bytes; record Git blob identities and exact CRLF-only correspondence separately for source files that retain normal repository text handling. Historical source refs remain historical; the final evidence commit preserves the tested receipt bytes directly. This changes storage metadata and committed line endings only. The already completed campaign consumed exactly the bytes now retained, so no Lean or full replay rerun is invalidated. Rejected alternatives were silently labeling a worktree hash a Git-blob hash, changing the runner's pin to untested bytes, or weakening its comparison.
+
+The first final-report claim scan also exceeded the old 180-second wrapper deadline after adding 2317762 bytes of raw full/focused certificate evidence. Three parallel light checks passed; the claim result is INCOMPLETE, never a pass. The ad hoc Python subprocess wrapper did not supervise descendants. Contemporaneous Python/rg PIDs were gone before native command-line identification; ownership of that rg process was not established and nothing was killed. Another observed claim scan belonged to a different named lane and was left alone. The final scan uses the repository's owned-process-tree helper, preserves its output and deadline outcome, and uses a 900-second bound with margin over the observed 284-second rg CPU sample and increased scan volume. Preserve the failed attempt; do not copy policy-fixture output into a new claim surface. No claim policy, scanner, allowance, scan roots or aggregate gate is changed.
+
+The first staged whitespace check after -text correctly exposed preserved CR characters under Git's default LF expectation. The same narrow paths now declare cr-at-eol while retaining blank-at-eol, blank-at-eof and space-before-tab checks. No trailing space is stripped from evidence or ignored globally. The failed whitespace result is preserved, followed by ordinary git diff --check and direct byte identity checks. This recognizes the artifact's line-ending format rather than changing the recorded bytes or exempting evidence from whitespace checking.
+
+## WDD-20260912-OPT1-R1-001: exclusive runtime diagnostics and reproducible source provenance
+
+Context: exact candidate aecf4a580c591e8f694a3699e19e843198089194 failed two independently reproduced production controls. The runtime check accepted an expected exception alongside an unrelated exception. The certificate library positive rejected a fresh raw Git checkout even when all261 historical artifact hashes matched, because251 source hashes encoded undocumented checkout newlines. Earlier WDD-OPT1-006/007 recognized analogous diagnostic exclusivity in the certificate path; that invariant was not transferred to the runtime path. Preserving raw JSON bytes did not establish fresh-checkout reproducibility.
+
+Decision: freeze all35 historical row-content byte strings and append four repair requirements in repair-r1 before implementation. Require the production runtime rejection grammar to accept exactly the intended retained nonempty diagnostic across both streams with bounded exit1. Test its complete allowance boundary with real owned children and category holdouts, retaining the pre-fix counterexample. Add a separately versioned canonical source profile anchored to immutable Git source bytes, with genuine private compilation and exact toolchain/dependency/artifact receipts. Keep raw live hashes for restoration. The old source/artifact receipts remain immutable history and are not relabeled as canonical build evidence.
+
+Rationale: accepting a matching substring cannot exclude an unrelated failure, and copying a historical artifact cannot prove a new source profile compiled. The profile identity must precede compilation, which must precede certificate consumers. Strict UTF8 and only CRLF-to-LF conversion identify a declared serialization equivalence; all other source bytes stay significant. A live input cannot supply its own expected hash. The full runtime closure, not the incomplete earlier development plan, is required. Private artifact installation checks linkage and bytes; timestamps describe installation/freshness and do not establish provenance.
+
+Rejected alternatives: broad error blacklists, copied self-test detectors, undocumented mixed-newline reconstruction, changing shared source/attributes, timestamp-only reuse, ignoring imports, hashing live inputs as baseline, weakening fields or consumers, and treating startup as a complete campaign. All27 runtime cases, all80 certificate cases, the new exact repair registry, both checkout-profile positives and decisive typed negatives, restoration, bounded descendant cleanup and final local checks remain required. Coordinator aggregate/final audit and acceptance are later external stages. No shared gate/policy/skill change is made. Evidence: repair-r1/ACCEPTANCE_MATRIX.md, runtime/frozen-reproduction and provenance-reproduction; repaired measurements are appended separately after execution.
+
+WDD-OPT1-R1-001 implementation detail: runtime/replay.ps1 pins53 explicit fixtures by complete registry SHA256 and independent ordered IDs, extracts unique actual production AST functions for classifier controls and calls real script entry points for selectors. The separate production regression runner pins its profile/certificate/repair boundary and output-verdict cases (49 in the final version opt1-r1-production-v4) and preserves exact registry bytes with enumerated local attributes. Omitted and duplicated middle records are challenged at actual publication/entry boundaries; the certificate path rejects duplicate records before converting them to a keyed hash map. Bounded overflow results follow the unchanged owned-helper representation, which discards over-ceiling streams; emitted-line witnesses are separate from the retained result and never represented as full overflow output. These process choices preserve full ordinary exit/stderr evidence while failing closed on incomplete captures. Final runtime/profile/certificate measurements remain distinct from their development and historical receipts.
+
+WDD-OPT1-R1-001 adversarial follow-up: an independent read-only review tested the new repair wrapper's Assert-R1Verdict with three actual owned children. Its initial prefix-based stderr check accepted unrelated exception or semantic-success stdout beside the intended setup error, even though the repaired production runtime classifier was already exclusive. Preserve that exact pre-fix wrapper and receipts under runtime/review. The wrapper now requires one exact stderr diagnostic and an explicit ordered stdout grammar containing only declared setup progress/restoration records, with no duplicate/reordered/indented allowance. Nine new actual-child controls extended the production repair registry to version 2 with 46 cases; the independent runtime registry remains 53. Version 3 then added three cache-inventory controls (P19 foreign Init.olean, P20 empty Init shadow directory, P21 Backend.olean.server sidecar) after an independent review noted that an extra artifact in the import search path could shadow a pinned compiler library without changing any expected artifact hash; the production profile now requires the exact 263-file/ancestor-directory cache inventory. Version 4 corrected only the stale R01 definition text (46 to 49) and repinned the registry hash; no case was added or removed. Missing/stale/invalidUTF8 import controls additionally inspect the real nested import-freshness result so a generic setup wrapper failure cannot be credited as the intended cause. This corrects a new test-wrapper defect before production campaign execution; it is not a mathematical finding or a waiver of either original defect. A draft V02 invocation failed closed on its still-placeholder registry pin after a patch transaction failed; no child case ran and it received no semantic credit. The pin was filled from the fixed versioned registry and the actual mixed-stdout focused case passed.
+
+WDD-OPT1-R1-001 execution follow-up at f7cf20da8ae52c1f8295e5cedd4326bb8d44cbb3: the continuation worker (a Claude session authorized after the Codex session reached a usage limit) re-verified every inherited receipt, corrected the stale R01 definition text by publishing registry version opt1-r1-production-v4 with a repinned hash, completed the enumerated local attribute coverage (adding cr-at-eol whitespace handling for preserved CRLF evidence and covering the final receipt directory), and executed the campaigns through the versioned command adapter with recorded deadlines carrying 2x margin over measured durations. Measured costs are recorded rather than tuned away: the exact toolchain-inventory profile makes a library self-test take about 130 s under pwsh 7.6.6 and about 465 s under Windows PowerShell 5.1. One session interruption occurred after the regression launch; the owned campaign completed unattended and was re-verified from receipts before later steps, which is the intended behavior of bounded owned execution. Lake build evidence was obtained on a byte-verified private copy of the author cache rather than a fresh full compile, because no Lean source changed and the profile receipt already compiled all 263 modules from canonical source; this reuse is recorded, not hidden. Lake 5.0.0 (Lean 4.22.0) accepts no -j/--jobs option, so the first attempt with -j1 failed immediately (unknown short option; the failed receipt is kept under final/lake-build-attempt1-wrong-flag) and the recorded build enforces one job through LEAN_NUM_THREADS=1 in the child environment, the same plain `lake build` invocation the coordinator used for the base. POSIX ownership remains unexecuted on this host. No gate, policy, skill or shared script changed.
+
+WDD-OPT1-R1-001 claim-surface follow-up: the first report-bearing strict claim scan passed, but the second failed strictly with seven forbidden-2pow128-canonical-activation matches, all inside the first scan's raw stdout log that had been committed-to-be under docs/internal/extensions/opt1/repair-r1/final/. Raw scanner output quotes hit lines out of their allowed contexts, so storing it under a scanned root manufactures a new claim surface; the earlier WDD-OPT1 warning against copying policy-fixture output into a claim surface applies to scanner logs too. The raw hit logs now live only in untracked .lake scratch with their SHA-256 recorded in the committed receipt, the failed run B receipt is preserved, and run C on the final bytes is the report-bearing evidence. No scanner root, policy or allowance changed.
+
+WDD-OPT1-R1-001 receipt commit correction: the receipt-only commit 8f2f9b091b92f0533d5fc9539528d3c6915513c2 recorded the final-mode preservation run against evidence commit d766e84b22c933a852d90cdb44ac123819fe75a4 with an empty result, but that run FAILED with ROW_DUPLICATE for REQ-OPT-R1-EXCLUSIVE-REJECTION (receipt preserved unchanged under docs/internal/extensions/opt1/repair-r1/final/preservation-c2/). The cause was the evidence appendix appended to the repair matrix by this continuation: its rows reused the frozen rows' first-cell format, so the checker correctly found two rows for one ID; no protected Git object, frozen row byte string or field type changed. The appendix rows are now labelled `Evidence for` and the report records the failure. The chain step that wrote the empty result assumed a passing receipt; it now reads status and error code and stops on failure. A new final-mode run against the corrected commit is recorded in the following receipt-only commit.
+
+WDD-OPT1-R1-001 receipt commit: the corrected evidence commit 2b229867b864e1e91da901bd3fcb728612209964 was checked by the final-mode preservation checker after it existed (receipt docs/internal/extensions/opt1/repair-r1/final/preservation-c4/result.json, SHA-256 d180c5ec6281f297dce3091687f6da136d83784650b3b0846c4b789e06510313, result `PASS/17/510/True` as status/controls/protected-total/old-matrix-blob-equal). This receipt-only commit adds that receipt and this line; no script, registry, matrix row or report conclusion changes. A receipt cannot be included in the commit it certifies, so the coordinator's aggregate and audit re-run the checker on the final head.
+
+## WDD-20260913-OPT1-R2-001: archive OPT-1 receipts whose embedded scanner summary misleads the self-test
+
+Context. The coordinator aggregate gate on the OPT-1-R1 final head
+`4cc95012a31cda9459d06d87b3371c8c172bb973` passed every stage except one: the
+unchanged `scripts/claim_drift_scan.ps1 -SelfTest` reported that the
+process-record exclusion removed nothing, with the same count, 457, for the run
+with records and the run without. Separate strict runs on the same tree report
+two different totals (1831 without records, 2262 with), so the exclusion works
+and the measurement is wrong. The self-test reads each child run's hit count
+from the first output line anywhere that contains the scan-complete summary
+shape followed by a number. Two committed OPT-1 receipts,
+`docs/internal/extensions/opt1/checkpoint-claims.json` and
+`checkpoint-report-claims.json`, store an earlier focused scan's complete
+stdout as one JSON string on one physical line, including that scan's own
+summary. Several review-only terms match that line, the scanner prints it as a
+review hit, and it is printed before the real summary in both child runs. The
+self-test therefore parsed the embedded count from the receipt twice. The
+outcome depends on emission order: the other receipt embeds 136, and this
+lane's own reproduction on the same clean tree read 136 in both child runs,
+while its separate strict runs emitted the 136 receipt line first without
+records and the 457 line first with records. That last ordering, inside the
+self-test, would have let the defective tree pass. This is
+the same defect class as NATIVE-1-R1 (WDD-20260913-NATIVE1-R1-001), reached
+through the self-test parser rather than through a strict term. It is an
+evidence-storage defect; no theorem, runner, profile, registry or replay input
+is implicated.
+
+Decision (OPT-1-R2). Recompute from Git blobs, not from a checkout, every file
+under `docs/internal/extensions/opt1/` at the base that contains a claim-scanner
+result line (the scanner's emission shape: prefix, rule bracket, status bracket,
+verdict bracket), and replace each by a single-member gzip archive at the same
+path plus `.gz` whose decompressed bytes are the exact base blob bytes. Files
+that only quote summary text keep their bytes. Record every original path, base
+blob id and mode, blob SHA-256 and length, embedded and physical result-line
+counts, archive SHA-256 and length, decompressed length, and the files that
+refer to each original name, in `repair-r2/RECEIPT_ARCHIVES.json`. Commit a
+verifier that trusts none of those values and recomputes all of them from Git
+objects, and a controls runner with an exact case registry, disposable copies,
+owned bounded subprocesses and restoration checks. Mark each archive `binary`
+by an append-only entry in the lane's `.gitattributes`. References to the
+original names in other evidence files stay unrewritten; the manifest is their
+resolution record.
+
+Preservation. The OPT-1-R1 preservation checker protects the whole history
+directory and must stay byte-identical, so it necessarily rejects this repair.
+The coordinator amended `REQ-OPT-R1-PRESERVATION` for this lane: the history
+scope may differ from the base only by the enumerated relocations, new files
+under `repair-r2/` and the append-only attributes entry. The repair demonstrates
+the amendment twice. The unchanged checker is run and its failure is recorded
+as an expected controlled difference, never as a pass; because it stops at the
+first failing category, a companion enumeration calls the same unchanged
+comparison functions repeatedly and restores only the paths each rejection
+names, until the complete difference is known and can be compared with the
+admitted set. A separate relocation-aware run imports the unchanged checker,
+substitutes the decompressed archive bytes for each original path, requires the
+mapped protected map to equal the base map exactly, and reproduces every
+OPT-1-R1 check with PASS, with its own registered controls showing that the
+mapping cannot hide an unrelated deletion, blob or mode change, or addition.
+
+Rejected alternatives.
+
+- Changing the scanner, its self-test, the policy, globs, allowlists or
+  exclusions. Anchoring the self-test's hit-count parser to the final summary
+  line would fix the measurement for every lane, but it is shared tooling owned
+  by the coordinator's integration governance commit and explicitly deferred
+  there. A lane repair that edits the gate's own checker would also certify
+  itself with a modified instrument.
+- Relocating the receipts under an excluded path (an `audit_reports` directory
+  or a worklog name). That would misuse the process-record exclusion, whose
+  purpose is to hide prior verdicts from blind auditors, as a storage exemption,
+  and the default scan would still read them in the records run.
+- Deleting the receipts. They are referenced evidence of how the OPT-1 claims
+  were checked; deletion without a byte-exact recoverable copy destroys history
+  that the preservation contract protects.
+- Rewriting the receipts as escaped or summarized text. Any in-place text
+  transformation changes the bytes that the referring receipts and the
+  preservation checker identify, and a summary is not recoverable.
+- Moving only the embedded summary out of the JSON string. That is a
+  semantic edit of a historical receipt and leaves the embedded result lines in
+  the scanned corpus, where a later policy term could emit them again.
+
+Consequences. The scanned corpus no longer contains the receipts' embedded
+output, because ripgrep stops reading a file at its first NUL byte during
+traversal and a gzip header has NUL bytes at fixed offsets; the repaired tree's
+scans must show this rather than assume it. The relocation is visible as two
+deletions and two additions and needs the manifest to be resolved. The
+self-test parser remains unanchored, so any future committed text that is
+emitted as a hit and contains the summary shape can reproduce the defect; the
+repair's own new documents are written to avoid that shape except where the
+frozen contract requires verbatim text, and the scan receipts count the
+summary-shaped output lines to show only the real summary remains. Evidence:
+`docs/internal/extensions/opt1/repair-r2/ACCEPTANCE_MATRIX.md`; the
+implementation, receipts and report follow in later commits on the same branch.
+
+WDD-20260913-OPT1-R2-001 verification note: the repaired commit `3b8296767f93cd11fed7eb6a257ce94683430228` carries the certifying evidence. On the clean base, in one heavy-verification session, the unchanged self-test failed with the exclusion reported as removing nothing, at 136 in both runs; the separate strict runs gave 1831 and 2262. The gate's 457 and this reproduction's 136 are the two receipts' embedded counts, selected by ripgrep's emission order. On `3b8296767f93cd11fed7eb6a257ce94683430228`, in the same session, the self-test passed with the exclusion removing 431 hits (2241 to 1810), matching the separate strict runs, and the strict default-root scan exited 0 with 0 strict failures. The 20-case archive controls, both preservation demonstrations, the whitespace and strict design checks, and both hygiene scans passed or gave their expected verdicts. Curated receipts under `repair-r2/receipts/` avoid the scanner's emission and summary shapes: raw scanner logs and large JSON dumps stay outside the repository, identified by SHA-256. A 614 KB pretty-printed receipt costs about 40 s per strict scan under the multiline attribution term, and a committed raw scan log would reintroduce the defect. This note, the report, the matrix appendix and the receipts are the only additions after `3b8296767f93cd11fed7eb6a257ce94683430228`.
+
+## WDD-20260912-PRE1-001: replay the contract at exact producer and consumer surfaces
+
+Context: PRE-1's first authorized phase is a mandatory contract prerequisite, not builder implementation. The historical plan has no PRE-specific checker and its aggregate does not discover new unimported modules. The frozen matrix precedes all new proof edits. The initial bounded child build attempted a toolchain download through the elan proxy, while the pinned installed Lake binary was available locally.
+
+Decision: add a lane-local contract firewall, exact versioned replay registry and bounded replay runner using the existing owned_process_tree tooling. Resolve the installed pinned toolchain directly, record its path and Lean version, serialize focused target builds with LEAN_NUM_THREADS=1, and keep mutable artifacts in this worktree's .lake. Producer rebuild precedes independent typed-consumer elaboration on every mutation and restoration. Imports and primitive evaluator bytes are frozen; the complete expected registry and diagnostic stage/location are independently pinned. Restore raw source bytes in finally and compare all source/manifest hashes plus full Git state, including initially untracked files.
+
+Alternatives rejected: a report-only mutation transcript; adapting consumers to mutable proposition aliases; accepting any compiler failure containing a broad filename; silently empty selector success; relying on stale oleans; proxy-triggered downloads; shared mutable cache links; and launching a host aggregate before coordinator scheduling. Registry, selector, deadline and diagnostic-matcher controls exercise the production verdict path. Only CRLF/LF transport is normalized for registry/manifest content pins; raw restoration remains byte-exact. An unavailable host condition is inconclusive rather than a pass.
+
+Consequences and evidence: scripts/preprocessing_contract_replay.ps1, preprocessing_contract_firewall.ps1, preprocessing_contract_check.lean and extensions/pre1/REPLAY_DESIGN.md record the reproducible route. Startup and one exact selector precede the complete registry. Each author command records duration, deadline, exit and stderr. A frozen contract commit then waits for the coordinator-scheduled aggregate and fresh blind audit; no local green check authorizes the builder or self-records acceptance. Full extension validation and public synchronization remain later consumers of this prerequisite.
+
+### PRE-1 author replay disposition and scheduled gate bounds
+
+The final unchanged contract runner passed 18/18 cases, 28 harness self-tests
+and all 198 recorded stages, including exact restored bytes and Git state.
+The first full attempt stopped before mutations with an inconclusive missing
+child marker under a 12-second test deadline; preceding shell startup took
+8.997 seconds. Both owned processes were absent after cleanup. The existing
+30-second sleeper parameter passed a focused test with a real descendant and
+then the full run; the 120-second child sleep, missing-marker failure and
+semantic deadlines were preserved. Extending measured startup margin was
+chosen over weakening coverage or treating a non-created condition as PASS.
+The receipts retain both attempts and identify the actual Windows host;
+POSIX execution remains uncovered.
+
+The coordinator reserved the aggregate slot. The clean frozen commit and
+exact registry/logpaths must be reported before launching unchanged gate.ps1.
+A 14,400-second owned deadline and 256 MiB output ceiling allow cold-cache
+margin over the prior 5,654.834-second PQ1 gate. One serial build tree uses the
+installed Lean 4.22.0 binary and LEAN_NUM_THREADS=1. Durable transcript and
+structured exit/stderr receipts are retained separately from PRE-1 replay.
+Aggregate completion, failure or abandonment releases the slot explicitly.
+This scheduling authorization does not authorize builder work before the
+independent contract audit.
+
+## WDD-20260912-PRE1-002: preserve the failed aggregate and hold certification
+
+Context: the first scheduled aggregate on frozen PRE-1 source
+26d6b5c2b10ed06ae4f72d9075d746ede987bdab recorded two claim-policy fixture
+failures with empty captured child output, then hit its fixed four-hour limit
+during topology-regression startup/boundary controls. The inherited regression
+failure reporter omits its child exit, timeout and cleanup fields; neither an
+execution failure nor a semantic false acceptance can be proved from that
+omission. The fixture inputs are isolated, and checker/policy source is unchanged
+from governance. PRE-1's own 18-case replay had already passed independently.
+
+Decision: retain the complete failed invocation, clean postflight and separate
+owned-process absence check; explicitly release the shared gate slot; run only
+the two exact existing fixtures and restored PRE contract consumer; and report
+INCOMPLETE with the topology regression uncertified. Both focused fixtures
+passed their original expected rejections. This narrows diagnosis but does not
+erase the original failures or supply a gate pass. The coordinator acknowledged
+release and directed a diagnostic hold on further aggregates, with no builder
+work or full-gate retry. The following commit changes reports/evidence only,
+preserving the exact source commit tested by the gate.
+
+Rejected alternatives: extending a running deadline, accepting empty output
+as a semantic verdict, substituting focused successes for an aggregate pass,
+silently rerunning a four-hour gate, changing shared checker policy from this
+worker lane, or promoting author replay success to contract readiness. Each
+would discard an actual verification boundary or exceed the authorized phase.
+
+Consequences and evidence: aggregate-gate.zip and aggregate-summary.json under
+docs/internal/extensions/pre1/evidence preserve launch, transcript, stdout,
+stderr, result, postflight and cleanup. The bounded duration was 14,402.710s,
+exit -1, timedOut true, outputLimitExceeded false; the wrapper exited 1.
+Recorded owned processes 13644, 21976, 9456 and 10540 were absent after cleanup.
+HEAD and clean Git state were unchanged. The two focused fixture durations
+were 52.174s and 23.742s, after a successful 16.079s governance preflight. The
+restored contract build/consumer passed in 5.706s and 9.871s, with eleven source
+hashes unchanged. Final report-tree checks and their receipts are separate
+from the frozen-source failed gate. No mathematical or operational source
+decision changed after the first contract commit, so no additional DD entry
+is required for this evidence-only disposition.
+
+## WDD-20260912-PRE1-003: layer the builder firewall over the frozen contract guard and reach both from the gate
+
+Context: audit finding P2-1 showed that no gate or CI reaches the PRE-1 contract modules; amendment A4 requires two aggregate-gate checkers; coordinator ruling Q4 requires a layered builder guard with the contract guard and primitive_manifest.json byte-identical (their surfaces are frozen by contract cases C17/C18); recommendation R2 requires set equality of failing consumer lines; the route study fixes a builder registry version 1 with its own runner and the contract registry v1 untouched and rerun as regression.
+
+Decision: (1) `scripts/preprocessing_builder_firewall.ps1` runs the frozen contract guard as a child process and requires its exact PASS line, then checks the exact allowed-imports table of the seven closure modules (Program, Calculus, Safety, Structured, Compiler, Loop, ArrayRun; Builder/*.lean entries are appended per stage), rejects any unregistered file under Builder/, walks the transitive import closure against {Std, Primitive, Input, Model, closure} and checks `docs/internal/extensions/pre1/builder_manifest.json` (version 1, strict-UTF-8 CRLF-to-LF normalized SHA-256 per module). (2) `scripts/preprocessing_builder_replay.ps1` adapts the contract runner: registry `builder_cases.json` version 1 with an independent ordered ID list and a normalized content pin; stages firewall, producer (`lake build` of Loop, ArrayRun and HeaderUse), consumer (`lake env lean scripts/preprocessing_builder_check.lean`); a consumer rejection requires the SET of failing consumer lines to equal the registered set; a frozen-contract-surface regression compares normalized hashes of the contract registry, runner, guard and manifest at every Lean-mode start; deadlines 600/120/45 s with their evidence recorded in the parameter comments and BUILDER_REPLAY_DESIGN.md. (3) `scripts/preprocessing_contract_gate.ps1` (label `PRE1-CONTRACT-GATE`: contract guard, `lake build RMQ.Core.WordRAM.Construction.Contract`, `lake env lean scripts/preprocessing_contract_check.lean`, each an owned bounded stage) and `scripts/preprocessing_builder_gate.ps1` (label `PRE1-BUILDER-REPLAY`: the builder replay in full as one owned bounded child with a measured outer deadline of at least 2x) are added to the `scripts/gate.ps1` roster and call sites following the existing Invoke-Checker pattern; the roster grows from 18 to 20. (4) CONTRACT.md, AMENDMENTS.md and ATTACK_TABLE.md receive append-only version-2 entries recording AMEND-1..4, R1-R4, the accepted route-study clauses and the coordinator rulings Q1-Q10; BUILDER_PLAN.md and the audit report are copied byte-identical.
+
+Alternatives rejected: editing the contract guard or primitive_manifest.json (frozen by the 18-case registry); `Contains` matching of consumer diagnostics (a shotgun mutation could satisfy every case); a guard that rewrites its own manifest; letting the lane run the aggregate gate; a single combined checker (the contract layer must fail independently of the builder replay's runtime).
+
+Consequences and evidence: the contract replay is rerun in full as regression (18/18 expected unchanged); the builder replay is run `-StartupOnly`, then one `-OnlyCase`, then in full; both checkers are executed in isolation; the new runner is parsed and its registry/selector self-tests are run under Windows PowerShell 5.1 as well; every command, duration, deadline and exit is recorded in BUILDER_STAGE_LOG.md. The 20-of-20 GATE COVERAGE line is established by the coordinator's next aggregate on the frozen final candidate, not by this lane. Registry cases that mutate a closure module always fail at the firewall's hash surface; producer-stage semantic mutations of closure modules will require a registry-driven manifest re-hash in a later stage and are recorded as a planned extension, not as coverage. Weakening the syntactic `headerFirst` field breaks the certificate's own derived defaults at the producer; the consumer-level anti-bypass evidence is carried by the other field cases. Measured outcomes: contract replay full 18/18 in 557.7 s with registry and runner hashes unchanged; builder replay full 13/13 in 516.8 s; the `PRE1-BUILDER-REPLAY` outer deadline was set to 1800 s (3.48x that measurement) before the checker ran in isolation, where the replay child took 633.1 s (1800 s is still 2.84x); `PRE1-CONTRACT-GATE` passed in isolation in 11.8 s.
+
+## WDD-20260913-PRE1-004: a separate typed consumer for the PRE-1 machine-free specification stage
+
+Context: PRE-1 stage S1 adds reference-side specification modules (RMQ/Core/WordRAM/Construction/Spec/*) while the continuation audit of the Stage 0 commit 5f325dd runs. The existing direct consumer `scripts/preprocessing_builder_check.lean` is an input of the frozen builder replay registry version 1: its consumer-line pins (B05-B11, B13) and the replay's recorded source hashes would move with any edit, which would force a registry and manifest revision and a full builder replay rerun on a tree that is under audit.
+
+Decision: add `scripts/preprocessing_spec_check.lean`, run as `lake env lean scripts/preprocessing_spec_check.lean` with the pinned toolchain and `LEAN_NUM_THREADS=1`, ending in the line `PRE1-SPEC-TYPED-CONSUMERS PASS`. It restates every S1 exit theorem at an independently written full type, pins the named plan segments to explicit reference expressions by `rfl`, uses kernel `decide` only on tiny pure reference lists and trees (rulings Q9/Q9a), evaluates the reference `buildMemory` against the plan on the four fixture lists with `#guard` as a smoke check, and prints `#print axioms` for every new declaration. The builder replay registry, its runner, the builder firewall, the builder manifest, the contract registry and `scripts/gate.ps1` are unchanged.
+
+Alternatives rejected: editing `preprocessing_builder_check.lean` (moves registry line pins mid-audit); adding the spec consumer to the builder replay or to a gate checker now (that is a registry/roster change that belongs to the stage that also adds mutation cases for these theorems, and the aggregate is coordinator-scheduled on the final candidate); kernel evaluation of `buildMemory` (well-founded recursion in `Cartesian.shape`).
+
+Consequences: the spec consumer is a development-loop and stage-evidence check, not yet gate-reached; INV-VALIDATION-REACH and INV-MUTATION-REPRODUCIBILITY for these theorems stay open until a later builder registry version consumes them. Measured runs: 59.8 s to 78.1 s on the shared host (no per-section breakdown was measured).
+
+## WDD-20260913-PRE1-005: extend the single S1 spec consumer instead of adding a second one
+
+Context: the S1 envelope module (Spec/Envelope.lean) needs typed consumers, and WDD-20260913-PRE1-004 introduced `scripts/preprocessing_spec_check.lean` as the standalone S1 consumer outside the frozen builder replay registry.
+
+Decision: extend the same consumer (new import, full-type projections of every envelope, two extra `decide` fixture theorems on the plan lists, `#print axioms` for every new declaration) rather than adding a second script, so the stage has one consumer command and one PASS line. The builder registry, runner, firewall, manifests and `scripts/gate.ps1` stay unchanged.
+
+Consequences: one standalone S1 consumer run covers all S1 modules; it remains outside the builder replay and the gate (reach and mutation replay stay open as recorded in WDD-20260913-PRE1-004). Measured runs after the extension: 74.2 s and 51.4 s on the shared host.
+
+## WDD-20260913-PRE1-006: record the PRE-1 continuation-audit conditions and their stage deadlines
+
+Context: the coordinator accepted the continuation audit's conditions C1 (before S2), C2 (before S7 instantiates `HeaderUse` at the constants) and C3 (per-mutation manifest re-hash and V2-2 case (i) before S7; consumer-reaching foundation cases before the S8 candidate is frozen), with recommendations P3-1 and P3-7 folded into C3, authorized S2 once the C1 commit exists, and added two process rules: `scripts/claim_drift_scan.ps1 -Strict` with default roots (outer bound at least 900 s) for every commit that adds or changes public-facing or `docs/` text before the final candidate, with no raw claim-scanner hit logs committed under a scanned root; and `Global\RMQHeavyVerification` for every command expected to exceed five minutes, while a coordinator aggregate gate may hold it for hours.
+
+Decision: land C1 as its own text-only commit (CONTRACT.md V3-1..V3-10, AMENDMENTS.md version 3, BUILDER_PLAN.md naming), with the replay-case shapes of V3-7 (optional-parameter mutations through the C3 re-hash, one consumer-numeral mutation per numeral with exact line sets) and the relocation case of V3-1 fixed now as registry obligations; schedule C2 and C3 before S7 and the foundation cases before the S8 freeze; record the disposition, deadlines and process rules in BUILDER_STAGE_LOG.md and REPORT.md. The builder registry, runner, firewall, manifests and `scripts/gate.ps1` are unchanged by this commit.
+
+Alternatives rejected: implementing C2/C3 before S2 (not required by the coordinator's schedule, and the registry would be revised again when the constants exist); folding C1 into a builder-source commit (C1 must precede S2 and be reviewable on its own).
+
+Consequences: S2-S6 proceed on the frozen surfaces; the registry version, runner self-tests and manifest mechanism change only when C2/C3 land; claim-drift evidence is collected under `.lake` or summarized, never committed as raw scanner output under `docs/`.
+
+## WDD-20260913-PRE1-007: register builder modules in the layered firewall and add a builder-stage consumer
+
+Context: stage S2 adds the first `Builder/*.lean` modules. The layered builder firewall rejects any unregistered file under `Builder/` and hashes every registered module (WDD-20260912-PRE1-003). The builder replay registry's consumer file `scripts/preprocessing_builder_check.lean` is pinned by line and its producer stage builds only the Stage 0 targets, so importing stage proofs there would break a clean-checkout replay.
+
+Decision: append one allowed-imports entry per new module to `scripts/preprocessing_builder_firewall.ps1` (Registers imports Loop; Emit imports Registers; Geometry imports Emit; Interior imports Geometry) and one strict-UTF-8, CRLF-to-LF normalized SHA-256 entry per module to `builder_manifest.json` (version unchanged, as the version-1 design prescribes for new Builder modules). Add `scripts/preprocessing_stage_check.lean`, a standalone typed consumer for builder-stage specifications (S2 onward) that also runs executable `evalF` smoke checks on the actual source fragments against reference payloads; it prints `PRE1-STAGE-TYPED-CONSUMERS PASS` after the axiom inventory. The builder replay registry, runner and `scripts/gate.ps1` are unchanged.
+
+Alternatives rejected: a new manifest version (the version-1 schema already covers appended Builder entries); adding stage proofs to the replay consumer before the C3 re-hash mechanism exists; evaluating the builder fragments in the kernel (ruling Q9).
+
+Consequences: every later Builder module is registered the same way in its own commit; the stage consumer stays outside the replay and the gate until the registry revision that C2/C3 require; as with the other consumers, its exit code, not the PASS line, is the verdict (audit P3-1, to be fixed with C3). Measured: firewall 5.70 s; stage consumer 16.62 s and 11.92 s.
+
+## WDD-20260913-PRE1-008: re-hash changed builder modules, extend the stage consumer, bound discovery evaluations
+
+Context: completing stage S2 changed the program text of `Builder/Registers.lean`, `Builder/Emit.lean` and `Builder/Geometry.lean` (their imports are unchanged) and added three proof modules outside the firewall. A scratch executable comparison of the geometry prelude against reference values, run before the proofs, included an input of size 100000 whose reference layout went through `Cartesian.shape`; the interpreter hit its recursion limit only after 316.91 s (exit 127). The run was expected to take seconds and was started without the heavy-verification mutex that the coordinator requires for commands over five minutes.
+
+Decision: update the three `sha256` entries of `builder_manifest.json` (version 1 unchanged, normalization unchanged; the allowed-imports table is unchanged) in the same commit as the text change. Extend `scripts/preprocessing_stage_check.lean` to import `Proof.GeometryBank`, restate the new exit theorems at full type, pin the bank's reference identities and two source blocks by `rfl`, run five `evalF` checks of the whole prelude, and print an axiom inventory for every new declaration (498 in total). Scratch discovery evaluations now run under an explicit outer `timeout 280`, and use the size-only reference definitions (`packedInteriorLayout n`) instead of shape-based ones.
+
+Alternatives rejected: a manifest version bump (the version-1 schema covers changed hashes); moving the geometry smoke checks into the builder replay before the C3 re-hash mechanism exists; retroactively taking the mutex (the run had already ended).
+
+Consequences: the recorded deviation stands in BUILDER_STAGE_LOG.md and REPORT.md. Every later text change to a hashed builder module re-hashes its entry in the same commit.
+
+## WDD-20260913-PRE1-009: register the Cartesian phase and the program host module; array-backed stage fixtures
+
+Context: stage S3 adds `Builder/Cartesian.lean` and creates `Builder/Program.lean` (leaves only) and extends `Builder/Registers.lean`. The structured evaluator `evalF` keeps registers and memory as nested closures; on the stack pass over 64 keys the interpreter hit its recursion limit (exit 127), so stage fixtures over loops need the array-backed interpreter.
+
+Decision: append firewall table entries `Builder/Cartesian.lean` (imports `Builder.Interior`) and `Builder/Program.lean` (imports `Builder.Cartesian`), add their manifest hashes and re-hash `Builder/Registers.lean` (manifest version 1). The builder replay registry references only `Construction/Program.lean`, the interpreter, so none of its cases changes. The stage consumer runs `runArray` from `Construction/ArrayRun.lean` on `(Block.seq (.action (.load 1 0)) ...).compileAt 0 ++ [⟨.halt 3⟩]` from the array input states and compares the emitted cells with `(Cartesian.shape xs).bpCode.map bitToNat` for both leaves.
+
+Alternatives rejected: raising the interpreter stack for `evalF`; creating `Builder/Program.lean` only at S7 (the leaf specifications must be about the frozen constants).
+
+Consequences: `Builder/Program.lean`'s import entry changes as later phases join it; the stage consumer's fixtures exercise the compiled program, not the structured semantics.
+## WDD-20260913-PRE1-010: re-hash the interior phase and register tables; stage consumer for the S4 checkpoint
+
+Context: the S4 checkpoint extends `Builder/Registers.lean` (registers 115-134) and `Builder/Interior.lean` (block statistics and summary-table blocks), both hashed in `builder_manifest.json`; `emitTable_spec` gains an argument in its entry premise, which the stage consumer restates at full type.
+
+Decision: update the two `sha256` entries (manifest version 1; imports unchanged, so the firewall table is unchanged). The stage consumer now imports `Proof.SummaryTables`, updates `spec_emitTable`, pins `maxActs`, `blockStatsBlock`, `summaryTablesBlock` and `relativeEntryBlock` by `rfl`, restates the S4 exit theorems and the frame predicates, and runs `runArray` on a harness program (stack pass, four `reserveArray` statistics arrays, BP emission, a marker cell, `blockStatsBlock; summaryTablesBlock`) against the first four interior segments of the emission plan for 17 inputs.
+
+Alternatives rejected: placing the array harness in builder text before S6 fixes the layout; running the S4 fixtures in both input models (the interior close reads only BP cells; the models differ only in the leaf, which S3 covers).
+
+Consequences: the harness is test code in the consumer, not builder text; S6 replaces it with the real reservation order. The consumer's inventory grows by 88 entries.
+
+## WDD-20260913-PRE1-011: re-hash for the S4 completion; stage consumer for the close segment; heavy-command deviation and mitigation
+
+Context: the S4 completion extends `Builder/Registers.lean` (registers 135-158) and `Builder/Interior.lean` (memos, sparse entries, `interiorCloseBlock`). During the work, one `lake build` of `Proof.SummaryTables` ran 409.31 s without `Global\RMQHeavyVerification` (row S4-20). It was expected to rebuild one module, but the builder edit had invalidated the whole proof chain.
+
+Decision: update the two `sha256` entries (manifest version 1; imports and firewall table unchanged). The stage consumer imports `Proof.InteriorClose`. It pins `betterActs`, `memoLevelsBlock`, `localMemoBlock`, `globalMemoBlock` and `interiorCloseBlock` by `rfl`. It restates the S4 completion theorems at full type, with the binder lists copied from the sources and unused hypothesis names replaced by `_`. It runs `runArray` on a harness that also reserves both memos, against all eight interior segments, for 24 inputs. Mitigation for the deviation: after any builder text change the proof chain is rebuilt module by module, and any command expected to exceed five minutes goes through a scratch wrapper that holds the mutex (`pre1_mutex_lake.ps1`, outside the repository).
+
+Alternatives rejected: hand-writing the long restatements in arrow form (the binder form is a full type as well and avoids transcription errors); retroactively taking the mutex (the run had ended).
+
+Consequences: the recorded deviation stands in BUILDER_STAGE_LOG.md and REPORT.md. The consumer grows by 95 inventory entries.
+
+## WDD-20260913-PRE1-012: register the access phase; stage consumer for the access half
+
+Context: stage S5 adds `Builder/Access.lean`, a new module under `Builder/`. The layered builder firewall rejects unregistered files there and hashes every registered module (WDD-20260912-PRE1-003, WDD-20260913-PRE1-006). The S5 proofs live in six new modules outside the firewall.
+
+Decision: append one allowed-imports entry (`Builder/Access.lean` imports `Builder.Interior`) to `scripts/preprocessing_builder_firewall.ps1` and one strict-UTF-8, CRLF-to-LF normalized SHA-256 entry to `builder_manifest.json` (version 1 unchanged, as that design prescribes for new Builder modules). The stage consumer imports `Proof.AccessHalf`. It pins the 26 program definitions of `Builder/Access.lean` by `rfl`, with register names replaced by their numbers. It pins the write and frame predicates and `flagNat` by `Iff.rfl`/`rfl`. It restates 42 S5 theorems at full type, with binder lists copied from the sources and unused hypothesis names replaced by `_`. It runs `runArray` on a harness that reserves the six access arrays in the order of `accessHalf_spec`, against all eighteen access segments, for 20 inputs (`#guard`). The inventory covers every new declaration of the eight S5 modules and of the consumer section. The long-super threshold runs need `--tstack` and about 75 s each, so they stay scratch evidence recorded in BUILDER_STAGE_LOG.md and are not consumer lines.
+
+Alternatives rejected: a separate fixture script for the long-super inputs (a new script with a non-default stack option, outside the consumer command, for evidence already recorded); registering the proof modules in the firewall (they are outside the builder closure by design).
+
+Consequences: the consumer grows by 242 inventory entries (1032 total) and still runs in about 65 s without extra options. The builder replay registry, its runner and `scripts/gate.ps1` are unchanged.
+
+## WDD-20260913-PRE1-013: register the microtable and finish phases; stage consumer for the bit buffer; re-check of the S5 mutation
+
+Context: stage S6 adds two modules under `Builder/` (`Micro.lean`, `Finish.lean`); the layered builder firewall rejects unregistered files there and hashes every registered module (WDD-20260912-PRE1-003, WDD-20260913-PRE1-006). The S6 proofs live in four modules outside the firewall. While preparing the S6 mutation, a scratch file that declared the mutated block inside a nested `Builder` namespace failed at an unknown identifier instead of at the mutation (row S6-15 run 1). The S5 mutation file (row S5-17) used the same nesting, so its rejection may not have been caused by the mutation.
+
+Decision: append two allowed-imports entries (`Builder/Micro.lean` imports `Builder.Access`; `Builder/Finish.lean` imports `Builder.Micro` and `Builder.Cartesian`) to `scripts/preprocessing_builder_firewall.ps1` and two strict-UTF-8, CRLF-to-LF normalized SHA-256 entries to `builder_manifest.json` (version 1 unchanged). The stage consumer imports `Proof.Buffer`. It pins the 13 program definitions of the two modules by `rfl` with register numbers, pins `MicroWrites`, `BufferKept`, `BufferFrame`, `EmitsFrom` and `denseBitsOf` by `Iff.rfl`/`rfl`, restates 33 S6 theorems at full type (binder lists copied from the sources, unused hypothesis names replaced by `_`), and runs `runArray` on two harnesses: the microtables after a marker for `n ∈ {0, 1, 5, 127, 128}`, and the whole buffer in the layout of `bufferStage_spec` (access and interior arrays, stack arrays, stack pass, `bufferBlock`) against the dense reference buffer for 20 inputs. The inventory covers every new declaration of the six S6 modules and of the consumer section. Mutations are declared in the scratch file's own namespace and are paired with an unmutated control that must elaborate. The S5 mutation was re-run that way (row S6-16): rejected with names resolved, control passed.
+
+Alternatives rejected: consumer fixtures for the long-count input and the `L = D` edge (they need `--tstack` and about 97 s, or a reference buffer that did not finish in 285 s at `n = 1116`; they stay scratch evidence in BUILDER_STAGE_LOG.md); rewriting the S5 log row (the log is append-only; the re-check is recorded as an S6 row).
+
+Consequences: the consumer grows by 170 inventory entries (1202 total) and runs in about 86-137 s without extra options. The builder replay registry, its runner and `scripts/gate.ps1` are unchanged.
+
+## WDD-20260913-PRE1-014: condition C2, a consumer-reaching case for `headerFirst`
+
+Context: the continuation audit PRE-1-A1C (finding P2-3, condition C2, accepted as CONTRACT.md V3-10) found that no registered case reaches the consumer projection of `HeaderUse.headerFirst` (`scripts/preprocessing_builder_check.lean:20`): B04 weakens the field and stops at the producer, because every run-level default proof consumes it. C2 must land before S7 instantiates `HeaderUse` at the program constants.
+
+Decision: append `B14_HEADERFIRST_CONSUMER` to `builder_cases.json` (registry version 1) and pin it in `scripts/preprocessing_builder_replay.ps1` (`$script:ExpectedIds` gains the ID; `$script:ExpectedRegistrySha256` becomes `ac8d76e70f636445ec9f431379c42150545fa5cdc35fa513369392065a382182`). The case follows the audit text: path `RMQ/Core/WordRAM/Construction/HeaderUse.lean`; `before` is the source from `structure HeaderUse (program : List BInstr) : Prop where` through `    tailNeverWritesR1 := by first | exact htail | trivial }`; `after` has `headerFirst : True`, the four run-level fields without default proofs, `oracleExtentOne` unchanged, the docstring of `headerUse_of_program` unchanged, and a constructor supplying `headerFirst := trivial`, `tailNeverWritesR1 := htail`, both missing-header fields by `run_missing_header program hhead ... rfl rfl rfl (by simp [put]) fuel hf` and both receipts by `wordHeaderReceipt_of_head program hhead` and `comparisonHeaderReceipt_of_head program hhead`; `expected` reject, `expectedStage` consumer, `expectedSurface` `preprocessing_builder_check.lean:20:`. B04 stays as the producer-stage case. BUILDER_REPLAY_DESIGN.md gains the B14 row.
+
+Alternatives rejected: replacing B04 (it is still a valid producer-stage rejection, and the audit keeps it); matching the audit probe's mutation bytes (the probe's SHA-256 e6f2af3e... is over a CRLF copy whose exact `after` text the report does not reproduce; the registered text meets the stated shape, and the focused replay reproduces the probe's outcome, consumer failing line set exactly {20}).
+
+Consequences: the registry has 14 cases; the full replay grows by one case (about 40 s). The builder gate's measured-deadline note still cites the 13-case run until a new full run is measured.
+
+## WDD-20260913-PRE1-015: condition C3 before S7, a registry-driven manifest re-hash, the nested contract-guard deadline and verdict-gated consumer markers
+
+Context: the continuation audit PRE-1-A1C found that every semantic mutation of a hashed closure module stops at the builder firewall's hash surface, so no case can reach the consumer lines that project the foundations (P2-4, condition C3); that the builder firewall runs the contract guard as a child with no deadline of its own (P3-7); and that both typed consumers print their PASS marker even after elaboration errors (P3-1). CONTRACT.md V3-10 requires, before S7 registers the constants' cases, the re-hash mechanism (and V3-7 case (i) through it, which needs the S7 constants), with P3-7 and P3-1; the consumer-reaching foundation cases are due before the S8 candidate is frozen.
+
+Decision: (1) `scripts/preprocessing_builder_replay.ps1`: a case may carry the optional field `"manifest": "rehash"`, allowed only on the seven hashed closure modules the registry may mutate (Program, Calculus, Safety, Structured, Compiler, Loop, ArrayRun) and never with a firewall-stage expectation (`PRE-REGISTRY` otherwise; three new registry self-tests: bad value, unhashed path, firewall stage). For such a case the runner checks that exactly one manifest entry for the path holds the unmutated source's normalized digest, writes the manifest with only that digest replaced by the mutant's, writes the mutant, and in the same `finally` restores both files, then requires the manifest's raw bytes to equal the recorded pre-case bytes before re-running firewall, producer and consumer; the case evidence records `manifestBeforeSha256`, `manifestMutationSha256` and `manifestAfterSha256`. Registry version 1 is unchanged; cases without the field behave as before (B02 still rejects at the hash surface). (2) The first case through the mechanism, `B15_ARRAYRUN_FINAL_WEAKEN`: `runArray_abstract` loses its last conjunct (`final.abstract` agreement) and keeps a valid proof, expected consumer rejection at exactly {335}; the remaining foundation cases (`EvalG.compile_realizes`, `SafeEval.compile_safe`, `run_write_at`, `run_load_at`, `writes_replay`, `run_agree_of_reads`, `RunsTo.fuel_extension`, `Prim.Safe`/`Run.Safe`) are registered before the S8 freeze, and V3-7 case (i) with the S7 constants. (3) `scripts/preprocessing_builder_firewall.ps1` runs the contract guard through `Invoke-RMQOwnedBoundedProcess` with `-ContractGuardDeadlineSeconds` (default 60 s; standalone guard 2.2 s, firewall stage bound 120 s); a timeout or output-limit hit fails as inconclusive, and the rejection message format that B03 pins is unchanged. (4) Both typed consumers (`scripts/preprocessing_builder_check.lean`, `scripts/preprocessing_contract_check.lean`) gain `import Lean` on their last import line (no line moves) and end with `consumerWitness`, a definition referring to every theorem and definition of the file (the contract consumer also restates its seven anonymous examples), and, in the builder consumer, `consumerGuards`, the conjunction of its five `#guard` checks. The final command prints the marker only if the witness exists and `collectAxioms` of it has no `sorryAx` (and the guards hold); otherwise it prints nothing and adds no diagnostic, so registered failing line sets stay exact. The exit code remains the verdict.
+
+Alternatives rejected: a message-log check in the final command (the command state's message log is per command in this Lean version: after two errors it reported `hasErrors=false`, probe p31_probe); a term reference to the witness in `#eval` (a sorry-dependent term aborts with an error at the marker line, adding a line to every rejected case's failing set); removing the marker (both registries' accept controls pin it, and the contract registry is frozen); re-hashing the manifest in the registry data itself (the committed manifest would no longer describe the committed sources); registering all foundation cases now (their deadline is the S8 freeze, and each closure re-hash case adds a rebuild pair to the full replay).
+
+Consequences: the builder registry has 15 cases; its pin is `e9e4445629ef93db4ed8bbc115f7f42008037032723dc02a0560a3b991cff208`. Standalone firewall runs take longer (about 9 s instead of 2.4 s) because the guard now runs under the owned-process harness. The stage consumer `scripts/preprocessing_stage_check.lean` still prints its marker unconditionally (it is not one of the two typed consumers named by P3-1); its exit code is the verdict. Full builder and contract replays on the C3 commit must run under `Global\RMQHeavyVerification`, which was held by another process when they were first scheduled.
+
+## WDD-20260913-PRE1-016: record the missing design entry for the C3 consumer change
+
+Context: the per-commit design check of `75a6301f5db7d3d6e893cbb2a1a73e1ed5522a13` (C3) failed: `scripts/preprocessing_builder_check.lean` and `scripts/preprocessing_contract_check.lean` are classified as code and the commit carried only a workflow entry. The aggregate strict check against `c1c970b` passed because earlier commits in the range touched DESIGN_DECISIONS.md, which is exactly the masking WDD-20260816-043 describes.
+
+Decision: do not rewrite the commit (history is never rewritten in this lane); add DD-20260913-PRE1-013 in the next commit, record the failure in BUILDER_STAGE_LOG.md row C3-10 and in REPORT.md, and run the per-commit check for every commit before reporting it, not only the aggregate check.
+
+Consequences: `75a6301` remains a commit that fails the per-commit design check; the record that it lacks is in the following commit.
+
+## WDD-20260913-PRE1-017: S7 checkpoint registration, stage-consumer section and the V3-6 escalation
+
+Context: the S7 checkpoint adds a builder closure module (`Builder/Output.lean`), five proof modules, a specification module, and strengthens the buffer theorem's frame. A scratch fixture command ran past five minutes without `Global\RMQHeavyVerification` while another gate held it (BUILDER_STAGE_LOG.md S7-6). The V3-6 fuel body blocks the program constants.
+
+Decision: register `Builder/Output.lean` in `scripts/preprocessing_builder_firewall.ps1` (imports `Builder.Finish`) and in `builder_manifest.json` (17 modules); add an S7 section to `scripts/preprocessing_stage_check.lean` (exact-type restatements of the S7 exit theorems, three source pins, a whole-harness `#guard` on `[]` and `[4, -3, -3, 8]`, and axiom inventories for every new declaration); bound every later scratch `lake env lean` run with `timeout 295` or less; stop at the V3-6 obstruction and report it with the kernel evidence instead of landing constants that deviate from the contract text.
+
+Alternatives rejected: landing `builderBudget n = D + C * n` ahead of a ruling (V3-6 is frozen contract text); landing the constants without the V3-6 extraction pins (V3-6 requires them); running the leaf restructure's tower rebuild in several sub-five-minute commands (it is one heavy build and waits for the mutex).
+
+Consequences: the stage consumer grows to 1786 inventories and about 138-154 s; its marker is still unconditional. The builder replay registry, its runner and `scripts/gate.ps1` are unchanged. The five-minute deviation is recorded here and in REPORT.md.
+
+## WDD-20260913-PRE1-018: pre-constants records under rulings R-S7-5..R-S7-9
+
+Context: the coordinator adopted option (a) for the V3-6 fuel body (R-S7-5), approved the V3-4 traversal route (R-S7-6) and the leaf restructure (R-S7-7), and sequenced the work (R-S7-9): the amendment records, the V3-4 lemma in scratch, stage-consumer marker gating and the builder gate deadline note come before the mutex frees; the leaf restructure and the constants come after.
+
+Decision: record amendment V3-6a append-only (a dated note under the V3-6 fuel sentence in CONTRACT.md quoting the superseded text, and an O-BITS / O-WRITE version 3 amendment entry in AMENDMENTS.md, both citing the ruling record and both reproduction tables); gate the stage consumer's marker (DD-20260913-PRE1-015); extend the measured-deadline note of `scripts/preprocessing_builder_gate.ps1` with the focused B14/B15 measurements and a projection for the 15-case registry, keeping the 1800 s default (2.79 x the projection); keep the V3-4 traversal lemma in scratch until the constants land. The WDD entry for the amendment itself lands again with the constants commit, as the ruling requires.
+
+Alternatives rejected: lowering the gate deadline to the projection (a deadline is revised only on a measured run); landing the V3-4 lemma before the constants (it would have no consumer).
+
+Consequences: CONTRACT.md grows by one amendment note (no later line citation shifts: none cite past line 690); the builder gate still has no measured 15-case run.
+
+## WDD-20260913-PRE1-019: leaf restructure records, and the missing workflow entry of 6ccfb5c
+
+Context: the R-S7-7 leaf restructure commit `6ccfb5c` changed the stage consumer `scripts/preprocessing_stage_check.lean` (one import) and the lane records BUILDER_STAGE_LOG.md and REPORT.md, which the design check classifies as workflow paths, but it carried only the code entry DD-20260913-PRE1-016. `scripts/design_decision_check.ps1 -Strict -Base 48e590c -Head 6ccfb5c` therefore reported one missing design-log update (exit status of the script 0, strict verdict FAIL). Ruling R-S7-3 forbids history rewrites.
+
+Decision: land this entry in a follow-up commit instead of amending `6ccfb5c`. It records the workflow side of the restructure: the stage consumer imports `Proof.Leaves` so its restatements of `keyLeaf_spec`, `wordLeaf_spec`, `cartesianBP_key` and `cartesianBP_word` keep their full types; the tower rebuild, the stage consumer and the after inventory ran in one process blocked on `WaitOne` of `Global\RMQHeavyVerification`; the stage log records the restructure as rows L-1..L-6 with the seven-minute overlap of scratch checks as a deviation; REPORT.md carries the signature inventory. From this commit on, the per-commit strict check runs before the lane report is final and before the next commit is started.
+
+Alternatives rejected: amending `6ccfb5c` (a history rewrite); leaving the gap unrecorded.
+
+Consequences: `6ccfb5c` alone fails the per-commit strict check; the range from `48e590c` to this commit passes it. The failure is logged (BUILDER_STAGE_LOG.md row L-7).
+
+## WDD-20260913-PRE1-020: amendment V3-6a in the constants commit; builder firewall, manifest and replay registry for the program constants
+
+Context: ruling R-S7-5 condition (1) requires a WDD entry for amendment V3-6a in the constants commit (the dated CONTRACT.md note and the AMENDMENTS.md entry landed in `48e590c`, WDD-20260913-PRE1-018). Ruling R-S7-1 requires V3-7 case (i) in the same commit as the constants and passing before any S8 work, and the case (ii) numerals in the same commit; V3-1 requires a registered relocation case with the declarations.
+
+Decision: (1) Amendment V3-6a is realized: `builderBudget n = 1000000000 + 1000000000 * n` in `Builder/Program.lean`, `builderBudget_eq_mul_add` proved by `omega` (not `rfl`, not `decide`) and restated at full type in the stage consumer, and the fuel body pinned by `rfl` in the builder consumer, with one registry case per numeral (`B33_D_NUMERAL`, `B34_C_NUMERAL`); fuel sufficiency for every `n` is `budget_ge` from the stage cost theorems (record: `PRE1_S7_V36_RULING.md`, reproduction tables BUILDER_STAGE_LOG.md S7-14..S7-16 and the coordinator's `pre1-v36-repro/`). (2) `scripts/preprocessing_builder_firewall.ps1`: the allowed import of `Builder/Program.lean` becomes `Builder.Output`; `builder_manifest.json`: the entry of `Builder/Program.lean` is re-hashed to the new normalized bytes (F1303956...); still 17 modules. (3) `scripts/preprocessing_builder_replay.ps1`: `Proof.Constants` joins the producer targets; `Builder/Program.lean` joins the re-hashable and registrable paths; a case may carry one `companion` edit restricted to `Proof/Constants.lean`, applied and restored with the primary edit, with its own byte-exact restoration check and four new registry self-tests; 19 new IDs in registry order and the new registry pin. (4) `builder_cases.json` version 1 grows from 15 to 34 cases: B16/B17 (V3-7 (i), parameter on each constant, re-hash), B18 (V3-1 relocation of `efficientBuild` into `Proof/Constants.lean`, re-hash plus companion), B19-B34 (V3-7 (ii): `L` at both instances, `B`, `B'`, the ten elements of `P`, `D`, `C`), each with a measured single-line consumer surface. (5) BUILDER_REPLAY_DESIGN.md appends the 19 rows and the runner changes.
+
+Alternatives rejected: a second consumer script for the constants (V3-1..V3-7 name the builder consumer); moving `efficientBuild` into `Proof/Exact.lean` for the relocation case (outside the replay's producer targets, so the mutant would not be compiled); one `L` case only (the numeral appears in both instances; a second case costs one consumer run).
+
+Consequences: the builder gate's 1800 s deadline must be re-measured on the 34-case registry before the final candidate (never shortened); `Cw` and `Dw` cases follow with the S8 workspace theorem; the remaining C3 foundation cases follow before the S8 freeze.
+
+## WDD-20260913-PRE1-021: builder gate deadline raised on the measured 34-case replay; claim-scan self-test finding
+
+Context: the full builder replay on `48702c2` (34 cases) took 1535.87 s wall (BUILDER_STAGE_LOG.md C7-11). The PRE1-BUILDER-REPLAY checker's default outer deadline was 1800 s, 1.17 x that run, below AMEND-4's rule of at least 2 x the measured full run. Separately, `scripts/claim_drift_scan.ps1 -SelfTest` fails at this commit (C7-13): its hit-count parser takes the first output line containing `scan complete (N hits` anywhere, and with `-IncludeProcessRecords` one emitted hit quotes line 911 of the Stage 0 verbatim copy of the PRE-1-A1 audit report, which contains such a summary line (`11 hits`).
+
+Decision: raise the default of `scripts/preprocessing_builder_gate.ps1` to 3600 s (2.34 x measured) and extend its measured-deadline note with the run's evidence directory, stage and self-test counts; revise again on the final candidate's measured run and never shorten. Record the self-test failure and its diagnosis (a temporary probe copy with the regex anchored at `^CLAIM-DRIFT: scan complete` passes, `exclusion removed 444 hits`) without changing the scanner or the audit report copy: the scanner is outside this lane's write scope and the report must stay byte-identical.
+
+Alternatives rejected: keeping 1800 s (below 2 x); editing `scripts/claim_drift_scan.ps1` or the audit report (outside scope, and the copy is required unchanged).
+
+Consequences: the aggregate gate's PRE1-BUILDER-REPLAY checker allows up to one hour; the claim-scan self-test fix (anchoring `Get-ReportedHitCount`) is a coordinator item that must land before the final aggregate if `-SelfTest` is required to pass there.
+
+## WDD-20260913-PRE1-022: S8 capstone records, and the capstone consumer outside the replay until the replay extension
+
+Context: the S8 capstone commit adds the capstone and its typed consumer `RMQ/Validation/PreprocessingContract.lean`, and updates the lane records (BUILDER_STAGE_LOG.md S8-1..S8-10, the S8 matrix appendix, REPORT.md phase `S8_CAPSTONE_PROVED`). The builder replay's consumer stage elaborates only `scripts/preprocessing_builder_check.lean`, which stays independent of the proof tower (DD-20260913-PRE1-017).
+
+Decision: land the proofs and the consumer first, with their commands logged, and extend the replay in the next commit: capstone-consumer cases selected per case, the `Cw`/`Dw` numeral cases, the remaining C3 foundation cases and a validator stage. Until then the capstone consumer is checked by `lake build RMQ.Validation.PreprocessingContract` (marker printed only after a `sorry`-free witness) and not by the registry. The scratch development of S8 is logged as grouped rows with every failure mode and the durations, not one row per scratch compile.
+
+Alternatives rejected: one commit for the proofs and the replay extension (the replay changes need their own measured runs and would delay the proof evidence); logging each of the about 50 scratch compiles as a row.
+
+Consequences: at this commit no registry case reaches the capstone consumer; REPORT.md lists that residual.
+
+## WDD-20260913-PRE1-023: builder replay reaches the capstone, the validator and the C3 foundations (52 cases)
+
+Context: after the S8 capstone commit no registry case reached the capstone consumer, the validator executable was not run by the replay, and condition C3's consumer-reaching foundation cases (CONTRACT.md V3-10) were due before the S8 freeze. The builder consumer must stay independent of the proof tower (DD-20260913-PRE1-017).
+
+Decision: `scripts/preprocessing_builder_replay.ps1` gains compile profiles selected per case by an optional `profile` field: `builder` (default; closure targets and the builder consumer), `capstone` (builds `Capstone`, elaborates `RMQ/Validation/PreprocessingContract.lean`, surfaces `PreprocessingContract.lean:<line>:`) and `stackpass` (builds `Proof.StackPass`). Consumer line sets are matched per profile; the registry validator rejects an unknown or explicit `builder` profile and a surface file that does not match the profile (three new self-tests). The baseline compiles both the builder and the capstone profile and requires the capstone marker. In full mode a validator stage builds `rmq_preprocessing_validate` through Lake, runs it in full (requiring `PRE1-VALIDATE PASS ... mode=full`) and runs each negative control through `PRE1_VALIDATE_SELECTOR`, requiring a nonzero exit with its pinned message; its deadline is a new parameter (default 1800 s, 6.7 x the measured 267.5 s executable run). `Builder/Cartesian.lean` becomes re-hashable. `builder_cases.json` grows from 34 to 52 cases, each surface observed by a focused run before registration: B35-B42 (C3 foundations: `EvalG.compile_realizes'` loses the exact-cost conjunct, `SafeEval.compile_safe` loses the final fit, `run_write_at` loses its fault branch, `run_load_at` loses its backward conjunct, `writes_replay` becomes a sibling fact, `run_agree_of_reads`/`run_agree_of_supplied` require key agreement everywhere, `RunsTo.fuel_extension` keeps only the final state, the arithmetic arm of `Prim.SafeAt` loses its shift-amount obligation), each rejected at exactly its builder-consumer line(s) 218, 228, 108, 123, 128, {154, 161}, 142, 450; B43 (V2-7.6 quadratic control: each stack step first counts a copy of the current index down to zero, rejected by the stack-pass proofs at `Proof/StackPass.lean:287`); B44 (a semantic import into the program host module, rejected at the firewall); B45-B49 (work, workspace `Cw` and `Dw`, zero input writes and register bank weakened in `BuilderRunFacts`, each rejected at exactly the two capstone-consumer projections of the comparison and word runs); B50-B51 (V3-7 (ii) `Cw` and `Dw` numerals in the capstone consumer, line 275); B52 (accept control on the capstone docstring). BUILDER_REPLAY_DESIGN.md records the rows.
+
+Alternatives rejected: a separate runner for the capstone (duplicated selector, deadline and restoration machinery); running the validator per case (the executable run does not depend on a mutated proof file); deleting capstone fields as cases (a deletion also removes the initializer in the same file, two fragments one runner edit cannot express); the first B42 candidate, a `reserve`-arm drift (rejected at the producer `Safety.lean:162`, so it did not reach the consumer).
+
+Consequences: the builder gate's full replay grows by eighteen cases, the capstone baseline and the validator stage; its deadline is revised on the measured run before the final candidate (never shortened).
+
+## WDD-20260913-PRE1-024: builder gate deadline on the measured 52-case replay; family and digestion entries
+
+Context: the full builder replay on `cb2ba2cf9f6b0bcd2a6d1dca490c2dccd51cab3a` (52 cases, capstone baseline, validator stage) took 4573.59 s, above the builder gate's 3600 s default (AMEND-4 requires at least 2x the measured full run). The candidate also needs its one family-summary entry and one digestion entry (write scope: one appended entry each at the end).
+
+Decision: `scripts/preprocessing_builder_gate.ps1` default `OuterDeadlineSeconds` 3600 -> 10800 (2.36 x measured), with the measurement appended to its deadline note. `docs/FAMILY_SUMMARY.md` gains the section "PRE-1 efficient builder candidate (2026-09-14, pending gate and audit)" and `docs/DIGESTION_LOG.md` the entry "PRE-1: an efficient builder candidate for the packed allocation"; both state candidate status, the crude literals, the Q3 query-join limit and that headline and paper identities are unchanged.
+
+Alternatives rejected: 7200 s (1.57 x, below the 2x rule); splitting the gate replay into two checkers (a roster change outside the two permitted entries); omitting the entries until acceptance (the brief requires them in the candidate).
+
+Consequences: an aggregate gate run can spend up to three hours in this checker. `claim_drift_scan.ps1 -Strict` runs on the tree with both entries before the final candidate.
+
+## WDD-20260913-PRE1-025: final candidate records - author row review, report status and aggregate slot request
+
+Context: the final checks on `babfbef` passed (BUILDER_STAGE_LOG.md R-11..R-14) and every frozen row was reviewed against the candidate. The brief requires REPORT.md to open with `Status: CANDIDATE_COMPLETE` only when every frozen row is met, and to request the host-wide aggregate slot when the candidate is frozen. The report commit `02aa9455e9c7b57ca57b8a2b05d1f8da0d1a21dd` changed three workflow paths under `docs/internal/extensions/pre1/` without this entry, so its per-commit design check failed; this commit supplies the entry (no history rewrite) and names the frozen candidate precisely.
+
+Decision: ACCEPTANCE_MATRIX.md gains the append-only section "Final candidate review" with one row per frozen ID, each marked "MET in author review" with its evidence and residual (ruling Q3, the unexecuted `n = 1116` edge and select-flag thresholds, the uncovered POSIX branch); REPORT.md opens with the brief's candidate status lines, `Phase: FINAL_CANDIDATE` and the aggregate slot request, and records the checked statements, command outcomes, unexecuted checks, limits, digestion and lane history; the frozen candidate is the commit that adds this entry.
+
+Alternatives rejected: `Status: INCOMPLETE` with an empty unmet-row list (the brief reserves it for unmet rows); amending `02aa945` (no history rewrite); marking rows accepted (acceptance is the coordinator's).
+
+Consequences: the coordinator schedules `scripts/gate.ps1` (the builder checker needs up to 10800 s) and the fresh blind audit on the frozen candidate; a finding reopens the affected rows.
+
+## WDD-20260914-PRE1-R1-001: archive the PRE-1 claim-scan receipts and reword the quoted summaries instead of changing the scanner
+
+Status: Accepted for PRE-1-R1 (worker decision under the frozen repair contract; coordinator acceptance pending)
+
+Context. Before the aggregate gate on the PRE-1 final candidate
+`84ae12f6f6bad99fd3215c5bdd5b2a93e3779897`, the coordinator found that the
+unchanged `scripts/claim_drift_scan.ps1 -SelfTest` fails there with its
+removed-nothing form (1609 hits with records and 1609 without), although the
+separate strict runs report 1612 hits without process records and 2056 with
+them. The PRE-1 author had recorded the same failure with 11 hits with records
+(BUILDER_STAGE_LOG.md C7-13, C7-14, R-11i) and left the scanner, which is
+outside that lane's scope, unchanged.
+
+Mechanism. The self-test reads each run's hit count from the first output line
+anywhere that matches its hit-count regex. The scanner prints every review and
+fail hit as a result line that quotes the matched document line. Lane documents
+quote earlier scanner summaries, so an emitted result line can carry a stale
+count ahead of the real summary. PRE-1-R1 reproduced both forms with an
+order-independent detector: at the base the stage-log row R-11h (line 488,
+matched by the terms `fast-regime-118` and `live-compatibility-352`) is emitted
+before the scanner's summary in both runs, so both parses read 1609; on the
+author's R-11i tree `babfbef`, where that row did not yet exist, the first quote
+in the records run was line 911 of the PRE-1-A1 audit report copy (terms
+`principled-charged-trace-76` and `historical-silent-sparse-level-207`), so the
+parse read 11. The scanner runs one ripgrep process per term in policy order, so
+which quote comes first is fixed by term order and tree content; ripgrep's file
+order matters only among lines one term matches in several files. The repair
+therefore removes every emitted quote rather than reordering anything.
+
+Decision. On branch `codex/pre-1-r1-claim-receipts`:
+
+- The byte-exact audit report `docs/internal/audit_reports/2026-09-12_PRE1_contract_fresh_blind.md`
+  (added unchanged by `5f325ddb856b9095d1ad2aacc0bc69eda571d447`) leaves
+  `audit_reports/` and is stored as a single-member gzip archive at
+  `docs/internal/extensions/pre1/evidence/audit-archive/2026-09-12_PRE1_contract_fresh_blind.md.gz`.
+  The archive sits in the lane's evidence directory because the design check
+  treats only Markdown under `audit_reports/` as neutral and rejects other
+  extensions there.
+- Every blob under `docs/internal/extensions/pre1/` at the base whose raw bytes
+  hold a claim-scanner result line becomes a gzip archive at its own path plus
+  `.gz`; the recomputed set is `evidence/author-final-checks-summary.json`.
+- Each archive decompresses to the exact base blob bytes (header
+  `1f8b08000000000002ff`, level 9, mtime 0). `repair-r1/RECEIPT_ARCHIVES.json`
+  records the original path, base blob id and mode, SHA-256, lengths, line
+  counts, archive digest and the files that refer to each original name; the
+  lane `.gitattributes` gains one exact `binary` line per archive. References
+  elsewhere keep the original names; the manifest resolves them.
+- The five lane Markdown lines that quote a scanner summary (BUILDER_STAGE_LOG.md
+  427, 428 and 488; REPORT.md 245 and 246) are reworded to state the same counts
+  and outcome in prose with the same ordered integers; nothing else in those
+  files changes except appended R1 sections. `repair-r1/REWORDS.json` records the
+  base line and new line hashes and integer lists.
+- Committed verifiers recompute both manifests from Git objects, a registered
+  control runner replays their positives and negatives on disposable copies, and
+  a preservation checker proves the changed-path set, the unchanged Lean,
+  script, registry and contract bytes, the append-only ledgers and the
+  byte-identical frozen rows.
+
+Rejected alternatives:
+
+- Anchoring the self-test parser to the scanner's final line, or any policy,
+  glob, allowlist or exclusion change. That is the right shared-tooling fix, but
+  it is a governance change for the coordinator's integration commit, and this
+  repair contract forbids touching the scanner or its policy.
+- Editing the audit report's bytes (redacting or rewording line 909 or 911). The
+  report is byte-exact audit evidence; its identity would no longer match the
+  audited record, and the contract forbids any edit to it.
+- Archiving the whole BUILDER_STAGE_LOG.md or REPORT.md. Both are maintained lane
+  records that the coordinator, the blind audit and later rows read and append
+  to; compressing them would hide 246,943 bytes of live text to remove five
+  lines, and every later append would have to rebuild an archive.
+- Leaving the audit report in `audit_reports/` and excluding it by another rule,
+  or moving files under excluded paths. That is placement-based evasion and still
+  leaves the records run parsing the quote.
+- Base64 or another text encoding of the receipts. It remains scanned text,
+  avoids a spelling rather than a category, and has no repository precedent.
+
+Consequences. The strict and records hit counts drop by the archived lines and
+may change by the appended R1 text; the self-test must pass on the repaired tip
+with counts equal to the separate runs, and the detector must find no emitted
+quote. Restoring the readable audit report under `audit_reports/` is an
+integration step after the shared parser fix lands. Process lesson: a lane
+record that quotes a scanner summary inside a scanned root turns every later
+self-test into a read of its own history; record counts in prose.
+
+## WDD-20260914-PRE1-R1-002: PRE-1-R1 repair commit - archives, rewordings, verifiers, registered controls and the preservation checker
+
+Context: WDD-20260914-PRE1-R1-001 fixed the encoding; this commit applies it and
+adds the tools that let a reader recompute it from Git objects. The frozen rows
+REQ-PRE-R1-ARCHIVE, REQ-PRE-R1-REWORD, REQ-PRE-R1-PRESERVATION and
+CHK-PRE-R1-VERIFICATION require manifests, verifiers with registered negative
+controls on disposable copies, and a preservation proof.
+
+Decision: `repair-r1/build_repair.py` (producer, run once) reads only base
+objects and writes the two gzip archives, the lane `.gitattributes`, the five
+reworded lines (stored as full new lines checked against each base line's
+SHA-256 and integer list, never as substitutions of the base text) and both
+manifests. `verify_receipt_archives.py` recomputes the result-line selection from
+every base blob under the lane root, checks the named audit report against the
+commit that added it, recomputes every digest, length and line count, requires
+the originals absent, rejects unlisted archives and any other lane file that
+still holds a result line, and in committed mode checks the exact attribute
+bytes and `git check-attr`. It records, and does not archive, the three zip
+containers whose compressed members hold scanner output, because the scanner
+does not read inside them. `verify_rewords.py` recomputes the pattern-line set
+of every lane Markdown blob, checks each base line hash and integer list, checks
+that each recorded file is its base blob with only the recorded lines replaced
+plus a tail, and rejects the pattern anywhere under the lane root and, in
+committed mode, any changed text path of the range that gains a pattern line. The
+two stage-log files that the archive verifier lists as scanner text without a
+result line are exempted from its unchanged-file check only because the reword
+verifier checks them line by line. `run_repair_controls.ps1` replays the 34-case
+registry `repair_controls.json` (both verifiers' positives and required
+negatives plus additional negatives, a descendant-cleanup deadline case, three
+registry-integrity cases and seven selector cases) under
+`scripts/owned_process_tree.ps1`; copies are exported from committed blob bytes,
+not from the CRLF checkout, and the runner reports INCONCLUSIVE for the deadline
+case under the MSIX-packaged pwsh, where NATIVE-1-R1 showed that the
+kill-on-close job does not hold descendants. `check_preservation.py` pins the
+write scope, the protected tree and blob ids, append-only ledgers, the 31
+inherited rows' bytes and the checker inputs read from the six checker scripts.
+`claim_scan_detector.py`, `run_claim_scans.ps1` and `run_checker_modes.ps1` are
+the freeze-time tools, committed byte-identical to the copies that reproduced
+the defect on the base.
+
+Alternatives rejected: normalizing CRLF in the reword verifier's tree mode (it
+would accept a checkout that differs from the committed bytes; exact exports
+and committed mode are used instead); a single combined verifier (the two
+manifests have different selection rules and failure surfaces); substitution
+pairs in the producer (they would put the base summary text into committed
+source); archiving the zip containers (they are already binary containers the
+scanner cannot read, and they are cited evidence outside the write scope).
+
+Consequences: the scans, verifiers, controls, preservation proof and checker
+modes run on this commit and on the report commit that follows; their receipts,
+the R1 sections of the stage log and report, and the worker report are appended
+there.
+
+## WDD-20260914-PRE1-R1-003: control runner - no descendant sleeper under a packaged host, and .NET hashing
+
+Context: the first full control run on the repaired commit `e977053d8355d0d429da33d71a42251cfa5e964a` (queued behind `Global\RMQHeavyVerification` for 8,414.5 s) found two runner defects, neither in a verifier. Under the MSIX-packaged pwsh 7.6.6, 33 of 34 cases passed but `deadline-descendant-cleanup` failed with a runner error: the owned job did not hold the sleeper's child (the NATIVE-1-R1 host finding), the surviving child kept the redirected stdout file locked, and `Invoke-RMQOwnedBoundedProcess` threw before the runner's packaged-host branch could classify the case, leaving two orphaned sleepers (stopped by hand). The Windows PowerShell 5.1 run, launched from a pwsh queue wrapper, stopped at its first `Get-FileHash` call, because a 5.1 child of pwsh inherits a module path under which that cmdlet does not load; no case ran.
+
+Decision: `run_repair_controls.ps1` reports the deadline case INCONCLUSIVE under a packaged host without starting the sleeper, since the condition cannot be created there and starting it only produces orphans; on other hosts it catches a failed owned launch, stops any recorded survivor and reports FAIL with the reason. File hashes use `System.Security.Cryptography.SHA256` instead of `Get-FileHash`. The registry, verifiers, helper and every expected code set are unchanged. Focused reruns of the changed runner: the deadline case PASS under Windows PowerShell 5.1 (root and child absent after the 5 s deadline), INCONCLUSIVE with exit 3 under the packaged pwsh with no process left, and a committed-mode case PASS under a 5.1 child of pwsh.
+
+Alternatives rejected: refusing the whole run under a packaged host (NATIVE-1-R1's choice; it discards 33 host-independent cases); widening the deadline so the sleeper exits before the output read (it would measure nothing about descendant ownership); changing `scripts/owned_process_tree.ps1` (outside this repair's write scope).
+
+Consequences: the full registry reruns on this commit under both hosts, and those receipts, not the failed attempt, are the control evidence; the failed attempt is recorded as incomplete.
+
+## WDD-20260914-PRE1-R1-004: PRE-1-R1 evidence commit - receipts without scanner text, tip checks in the submission, and the refined self-test mechanism
+
+Context: the repaired commit `e977053d8355d0d429da33d71a42251cfa5e964a` needed durable evidence for the frozen R1 rows. The evidence itself lives under a scanned root, so a careless receipt would recreate the defect it documents; and the commit that adds the evidence cannot contain results of checks run on itself.
+
+Decision: the receipts under `docs/internal/extensions/pre1/repair-r1/receipts/` hold exits, durations, deadlines, mutex waits, digests, counts, rule ids and cited paths, never scanner output lines; each was checked for the summary pattern and for a result line before it was written, and the tip's verifiers recheck the whole lane root. The committed receipts cover the base reproduction (`84ae12f`), the author's-tree reproduction (`babfbef` export), the repaired commit's scans on both PowerShell hosts, the per-path hit accounting, both verifiers, the preservation proof, the checker modes at base and repaired commit, the design, whitespace and trust checks, and the control registry on both hosts. BUILDER_STAGE_LOG.md and REPORT.md gain appended R1 sections, the R1 matrix an evidence appendix, and `repair-r1/REPORT.md` holds the worker record with status INCOMPLETE and phase AWAITING_COORDINATOR_CERTIFICATION. The scans, detector, verifiers, preservation check and design and whitespace checks are rerun on the exact tip after committing and reported in the submission, with the aggregate gate request for that tip.
+
+Finding for the deferred shared-tooling fix: the first-match parser does not depend on ripgrep's file order alone. The scanner runs one ripgrep process per policy term in policy order, so a quoted summary on a line matched by an earlier term is always emitted first; on `84ae12f` the stage-log quote (term index 8) always preceded the audit-report quote (term index 12), and the author's different reading came from an earlier tree. Anchoring the parser to the scanner's own final summary line removes both paths.
+
+Alternatives rejected: committing raw scanner stdout as receipts (it would put result lines and summary text back under the scanned root); a further commit that records the tip's scan results (it would itself be an unscanned tip; the coordinator gate reruns the scans on the exact tip anyway); omitting the failed queue attempt from the ledger (a setup failure is recorded as incomplete, not hidden).
+
+Consequences: the coordinator runs the aggregate gate on the tip named in the submission; the audit disposition and acceptance remain coordinator steps; restoring the readable audit report under `audit_reports/` waits for the parser fix at integration.
+
+## WDD-20260914-PRE1-R2-001: PRE-1-R2 frozen matrix - reproduce every marker failure class before any edit, and three scope readings
+
+Context: the fresh blind audit PRE-1-A2 of the PRE-1 builder candidate (report 53,979 bytes, SHA-256 `bda5f41450dddaf4cec8fc898e63d99881a12fece96f4ccc476b3fa2f82ed180`) found a gate hygiene hit in the capstone consumer's docstring (P1-1), typed consumers that print their PASS markers while failing (P2-1), a `work` field that holds for every program and no case that weakens `halts` (P2-2), an unrecorded consumer placement of the `Cw`/`Dw` cases (P3-1), four stale places in BUILDER_REPLAY_DESIGN.md (P3-2) and no case that mutates `Run.Safe` (P3-4). The repair prompt `PRE1_R2_CONSUMER_MARKERS.md` (18,929 bytes, SHA-256 `60499BD23101670392C011EA08B4D4B78C23FF9B6B629C655940CD43C9267C2B`) requires reproducing P1-1, every P2-1 failure class and P2-2 on the unchanged base before freezing six R2 rows.
+
+Decision: `docs/internal/extensions/pre1/repair-r2/ACCEPTANCE_MATRIX.md` freezes the six R2 rows verbatim, restates the three REPLAY rows for the builder runner change and a new control runner, references the 31 frozen PRE-1 rows and the five PRE-1-R1 rows by exact source line and SHA-256 at the base, and records the freeze-time reproduction. The marker reproduction is a registry-driven control matrix (`run_marker_controls.ps1 -Observe`, run from a scratch copy that the implementation commit adds byte-identical) over disposable consumer copies outside the repository, with every failure class injected by an anchored edit and required to produce its diagnostic at the injected line, so a negative cannot pass by not failing. The registry cases B16-B18 were reproduced through the production runner's focused mode, and the audit's capstone probes CAB2 and CAB4 in a disposable clone whose copied build directory was checked to be a no-op build. Three readings are recorded for the coordinator: REQ-PRE-R2-MARKER's "apply the same mechanism" to any of the contract, spec and stage consumers that prints its marker on failure governs the prompt's narrower file list, so those consumers' verdict-marker commands (and, for the spec consumer, an `import Lean` appended to its last import line) are in scope; REQ-PRE-R2-HYGIENE's line-count sentence constrains the docstring rewording, while the verdict-marker command at the end of the same file grows after every registered surface; and REQ-PRE-R1-PRESERVATION, a property of the R1 range, is re-established by rerunning its checker at the R1 tip while the R1 verifiers and the claim-scan detector run on the R2 tip.
+
+Alternatives rejected: reproducing the marker defect only on the classes the audit named (the prompt asks for five classes on five consumers, and the stage and spec consumers are run by no gate); editing consumers in the worktree for the reproduction (the base must stay byte-identical and the focused replays compare Git state); a second cold build for a disposable clone (the copied build directory replays without rebuilding); treating the spec and stage consumers as out of scope because the file list omits them (that would narrow a frozen row without a coordinator amendment).
+
+Consequences: the base reproduction shows every consumer printing its marker on a failing run in at least four classes, so the mechanism is applied to all five and the contract consumer change is recorded as a contract amendment; the implementation commit follows with its own ledger entries.
+
+## WDD-20260914-PRE1-R2-002: builder replay registry version 2 - marker-absent rejections, `halts` and `Run.Safe` controls, a committed marker control matrix, and the replay design and amendment records
+
+Context: PRE-1-A2 found that the builder replay accepted B16-B18 as rejections although their consumer printed its PASS marker (P2-1), that no case weakens `halts` although `work` holds for every program (P2-2), that no case mutates `Run.Safe` (P3-4), that the `Cw`/`Dw` placement was unrecorded (P3-1), and that BUILDER_REPLAY_DESIGN.md was stale in four places (P3-2). The consumer mechanism itself is DD-20260914-PRE1-R2-001.
+
+Decision: (1) `scripts/preprocessing_builder_replay.ps1`: `Test-CaseVerdict` rejects a consumer-stage rejection whose stage output contains the case profile's marker, before the exact line-set comparison; four matcher fixtures (builder and capstone profile, rejection with and without the marker) join the self-tests; `$script:ExpectedRegistryVersion = 2` replaces the literal version check (the registry self-test's stale-version case now uses version 1); `$script:ExpectedIds` gains B53-B55 and the content pin moves from `0bc1fba4b974e05cd94830ff0d6038d6927d33b5928bb65587fc9a2dc166ffe7` to `3e27e7626f4af805820071777246d3a5c2ac101e7adbb3db028219b2f46ae495` (the only live pin; the older value survives only in dated records). (2) `builder_cases.json` version 2 appends `B53_RUNFACTS_HALTS_WEAKEN` (`halts` becomes `∃ fuel, (run program fuel s0).final.status = s0.status`, true of every program's run at fuel 0 and without the halted status, proof `⟨0, rfl⟩`) and `B54_RUNFACTS_HALTS_FUEL_LARGER` (`halts` at the literal budget `2000000000 + 2000000000 * xs.length`, proved from the same run by `RunsTo.fuel_extension`), both capstone profile and rejected at `PreprocessingContract.lean:227:` and `:349:`, and `B55_RUN_SAFE_LENGTH_WEAKEN` (`Run.Safe` checks each transition's `Prim.Safe` at `program.length + 1`, with a proved monotonicity lemma `Prim.Safe.succ_length` and a `Coe` instance so the unchanged `Run.Safe.of_transitions` elaborates; manifest re-hash as B35-B42), rejected at `preprocessing_builder_check.lean:457:`, the `Iff.rfl` definition pin. The fragments of B53 and B54 span from the structure field to its proof in the same file because the runner admits one contiguous fragment. (3) `docs/internal/extensions/pre1/repair-r2/marker_controls.json` (version `PRE1-R2-MARKER-CONTROLS-V1`, 45 cases) and `run_marker_controls.ps1`: 33 consumer cases (unchanged copy and injected classes per consumer), a descendant-sleeper deadline case, four registry cases and seven selector cases; every Lean, Git and child run through `Invoke-RMQOwnedBoundedProcess`, copies outside the repository, repository state and watched hashes compared around every case; the development probes used to design the cases are committed under `repair-r2/tools/`. (4) BUILDER_REPLAY_DESIGN.md is corrected where the audit found it stale (four producer targets, the 15-path closed set and optional fields, the gate default of 10800 s with its revision history, the validator stage before the cases) and where registry version 2 changes it (version and pins, the marker-absence rule and fixtures, the marker mechanism, the B53-B55 surfaces), plus the stale `Assert-SourceHashes` list noticed while editing. (5) CONTRACT.md V3-7a/V3-10a and the matching AMENDMENTS.md entries record the `Cw`/`Dw` placement with the superseded V3-7 (ii) text and the marker refinement, including the contract consumer.
+
+Alternatives rejected: dropping `Run.Safe`'s post-state fit conjunct, the prompt's example (probed in a disposable clone: the producer stops at `Compiler.lean:60`, `:77` and `:96`, where `of_transitions` constructs and `not_fault` and `final_fits` project the conjuncts, so the consumer pin is never reached); any single-file weakening without a coercion (the unchanged introduction proof `exact ⟨hsafe t ht, _⟩` accepts only a definitionally equal conjunct, which the `Iff.rfl` pin would also accept); extending the runner's companion mechanism to closure modules (a runner change outside the verdict matcher and its self-tests); a `halts` weakening whose producer proof is left unchanged (it fails at the producer); counting the marker by line equality instead of containment (a marker embedded in another line would escape the absence check).
+
+Consequences: B16, B17 and B18 become regression controls for the marker rule; every consumer-stage rejection is now also a marker-absence check. The capstone consumer and the builder consumer run twice as long, so the full builder replay is re-measured and the gate checker's deadline follows the measurement under its never-shorten rule.
+
+## WDD-20260917-PRE1-R2-003: PRE-1-R2 resumption - receipts committed after every heavy step, and the before/after consumer-stage timings measured in one queue on one build
+
+Context: the first PRE-1-R2 worker session ended by an account usage limit on 2026-09-14 after committing the matrix freeze `9e06fe77fd06bc537c48260f1b056fe46593b0d1` and the repair `341bc2803dc26a123c48b1b8d0566e5e1583de7a`; a host cleanup then deleted the worktree, and every uncommitted receipt of that session (marker-control receipts, replay receipts, the worker record, the log and report appends, the matrix evidence appendix) was lost. The coordinator recreated the worktree clean at `341bc28` and the resumption prompt requires the committed repair to be reviewed against every R2 row, every verification rerun on the tip, and receipts committed as soon as each heavy step produces them. Coordinator ruling R-R2-1 additionally asks for the measured durations of the builder-consumer and capstone-consumer stages before and after the repair, and for a gate-checker deadline revision if the full builder replay exceeds 60 percent of its 10,800 s deadline.
+
+Decision: (1) Every heavy step runs in the committed queue `repair-r2/tools/queue.ps1` under `Global\RMQHeavyVerification` as an owned bounded process with LEAN_NUM_THREADS=1, and its receipt is committed before the next heavy step starts, under `docs/internal/extensions/pre1/repair-r2/receipts/` as JSON built from the queue summary and step logs: per step the command, arguments, working directory, deadline, start, end, duration, exit, timeout and output-limit flags, the step log's SHA-256, byte and line counts, the number of output lines carrying each known verdict marker, the number of Lean error locations and a six-line tail; the header carries the revision, `git status --porcelain`, host, mutex wait and queue timestamps. Scanner steps never carry scanner text (the R1 runner `repair-r1/run_claim_scans.ps1` produces those receipts). (2) Each receipts commit carries its own workflow-ledger entry, because `docs/internal/` is a workflow root and the per-commit strict design check requires the entry in the same commit. (3) The before/after timings are measured in the same queue on the same cold build and host: the base blobs of `scripts/preprocessing_builder_check.lean` and `RMQ/Validation/PreprocessingContract.lean` at `a0c93e9` run as copies outside the repository through `lake env lean` from the repository root, immediately after the tip consumers. Measured: builder consumer 3.46 s (base) and 10.95 s (tip); capstone consumer 56.09 s (base) and 120.58 s (tip); the other tip consumers contract 4.71 s, spec 86.88 s, stage 287.47 s; the cold build of the five consumers' producer targets and `rmq_preprocessing_validate` 2071.4 s (590 jobs). Receipt `receipts/q1-build-consumers-341bc28.json`.
+
+Alternatives rejected: holding receipts until the end of the session (the first session lost every uncommitted artifact that way); one ledger entry for the whole commit chain (a commit without its entry fails the per-commit strict design check); taking the "before" durations from the first session's records (measured under a different host load; the same-queue measurement is the comparable one); measuring the base consumers by checking out the base (the worktree must stay at the tip and clean).
+
+Consequences: the commit chain after `341bc28` changes only `docs/internal/` (receipts, ledger entries, appended sections and the matrix evidence appendix), except a gate-checker deadline commit if ruling R-R2-1 triggers; the Lean sources, runners, registries and manifests of `341bc28` are the content tree every receipt describes. The re-elaboration roughly triples the builder consumer and doubles the capstone consumer on this host, so the full builder replay's wall time is compared with the gate deadline before the report is written.
+
+## WDD-20260917-PRE1-R2-004: PRE-1-R2 focused replays of the three new cases and the B16 regression control before the full campaign, with digests of the evidence reports as receipts
+
+Context: the builder replay runner's own contract is "StartupOnly, then one OnlyCase, before full mode", and the completion gate requires a bounded startup smoke test and one exact selector before a full campaign whose import closure changed. The three registered R2 cases (B53, B54, B55) and the marker-absence rule had been exercised only in the first session's lost evidence. A replay evidence directory's `report.json` holds every stage's full output (314 KB for the startup run alone), so committing the raw reports would put hundreds of kilobytes of stage output per run under `docs/internal/`.
+
+Decision: (1) Q2 ran `scripts/preprocessing_builder_replay.ps1 -StartupOnly` (exit 0, 149.2 s, registry 55, both baseline profiles with their markers), then `-OnlyCase` for `B55_RUN_SAFE_LENGTH_WEAKEN` (424.8 s), `B53_RUNFACTS_HALTS_WEAKEN` (427.5 s), `B54_RUNFACTS_HALTS_FUEL_LARGER` (424.7 s) and the regression control `B16_PROGRAM_PARAMETER` (383.7 s), each exit 0 with `PRE-BUILDER-REPLAY: PASS mode=focused executed=1`. In every case the mutant consumer stage exited 1 without the profile's marker and with exactly the registered line set (B55 {457}; B53 and B54 {227, 349}; B16 {370}), the restored consumer exited 0 with the marker, the mutant producer built (B55 128.5 s and 120.0 s with the manifest re-hash; B53 19.9 s; B54 16.7 s and 17.7 s; B16 92.8 s and 105.6 s), and the source and manifest bytes were restored exactly. (2) The committed receipt is a digest of each evidence `report.json` (`receipts/q2-focused-replays-c33f2a8.digest.json`: report SHA-256 and size, mode, verdict, registry and runner digests, selected and executed IDs, per case the expectation, profile, manifest mode, verdict, before/mutation/after hashes, and per stage the exit, duration, deadline, timeout flag, the consumer error line set and marker presence) beside the queue receipt (`receipts/q2-focused-replays-c33f2a8.json`); the evidence directories stay under `.lake/preprocessing-builder-replay` on the host.
+
+Alternatives rejected: skipping the focused runs because the full replay repeats them (the runner's own startup-then-one-case contract, and a failing new case is cheaper to diagnose focused); committing the raw `report.json` files (stage outputs under a scanned docs root); digesting only the verdict line (the exact line set and marker absence are the evidence the R2 rows need).
+
+Consequences: B53, B54 and B55 are established as exact-surface rejections and B16 as a marker-absence regression control before the full campaign; the full replay's per-case results are digested the same way.
+
+## WDD-20260917-PRE1-R2-005: PRE-1-R2 marker control matrix, attempt 1 recorded as a setup failure caused by a work-root path over the Windows path limit
+
+Context: the marker control runner `repair-r2/run_marker_controls.ps1` copies each consumer into a disposable directory under `-WorkRoot`, which must lie outside the repository, and defaults that root to `%TEMP%\pre1-r2-marker-controls-<guid>` (about 70 characters). The resumed session passed an explicit `-WorkRoot` under its scratchpad, whose prefix is about 175 characters. Three consumer runs then exited 1 after about 0.5 s with two stderr lines and no Lean output: `contract-d-unknown-identifier` in the full Windows PowerShell 5.1 run (the case whose id and consumer file name are the longest, copy path 268 characters when reproduced) and `contract-unchanged` inside the `selector-valid` child on both hosts (the child adds `selector-valid/child-work/` to every copy path). The runner reported each as FAIL because no diagnostic was located at the injected line, so the 5.1 run (45 of 45 executed, 3682.0 s) and the pwsh non-Lean run (12 of 12) both ended FAIL. Reproduced directly on the tip: `lake env lean` on the contract consumer copied to a 268-character path fails with `no such file or directory (error code: 2)` on stderr, exit 1, in under a second; the same copy at an 82-character path exits 0 with its marker.
+
+Decision: attempt 1 is recorded as a setup failure, not as a PASS and not as a marker defect, with its queue receipt and both runner receipts committed (`receipts/q3-marker-controls-e935f84-attempt1*.json`; every case restored the repository state and removed its copy, the deadline case passed on 5.1 with root and child absent after its 45 s deadline and was INCONCLUSIVE under the packaged pwsh host as designed, and the four registry and the other six selector cases passed on both hosts). Attempt 2 reruns the full registry on Windows PowerShell 5.1 and the non-Lean cases on pwsh 7.6.6 with the runner's default work root, which the first session also used; only that run's receipts can close REQ-PRE-R2-MARKER.
+
+Alternatives rejected: counting the 42 passing cases of attempt 1 as the control matrix (a partial run is not a pass; the registry contract requires executed = selected with every case passing); rerunning only the failed cases (the frozen requirement names a committed control matrix run, and a case that did not elaborate has no result to complement); teaching the runner to reject an over-long work root (a runner change in a repair whose runner is committed and pinned; the default already avoids the condition, and this entry records the boundary for the coordinator's follow-up list).
+
+Consequences: the work-root path length is a recorded operational boundary of the control runner on Windows (copy paths must stay under 260 characters); the marker mechanism itself was not contradicted by attempt 1, since every case that elaborated behaved as registered.
+
+## WDD-20260917-PRE1-R2-006: PRE-1-R2 marker control matrix, attempt 2 - the committed registry passes on Windows PowerShell 5.1 and the non-Lean cases run on pwsh 7.6.6
+
+Context: REQ-PRE-R2-MARKER requires the committed control matrix (`repair-r2/marker_controls.json`, 45 cases, with `run_marker_controls.ps1`) to be run on the tip in disposable copies, and the frozen coverage plan runs the full registry under Windows PowerShell 5.1 (the only host on which the descendant-sleeper deadline case can be established) and the non-Lean cases under pwsh 7.6.6. Attempt 1 (WDD-005) was a work-root path-length setup failure.
+
+Decision: attempt 2 ran in the queue on `26b175e` (content tree of `341bc28`) with the runner's default work root under `%TEMP%`. Windows PowerShell 5.1.26100.9444: RESULT PASS, 45 of 45 executed and passed in 3630.5 s: for each of the five consumers the unchanged copy exits 0 with exactly one marker line and no error, and each injected class exits 1 with zero marker lines, its registered diagnostic and an error at the injected line (builder: example, `#guard`, `run_cmd` V3-1 check, maximum recursion, unknown identifier, unreferenced declaration, trailing `#guard` after the marker, lines 503/352/525/627; capstone: the same classes at lines 1070/1092/1246; contract at 98/119; spec at 719; stage at 4552/4574/4926); the deadline case timed out at 45 s with root and child both absent; the four registry mutations exit 1 before any case; the seven selector cases behave as pinned (omitted selects 45, a valid id executes exactly that case, bound empty, whitespace, malformed, unknown and duplicate exit 2 before any case); every copy was removed and the repository state (HEAD, status, worktree and index diffs, watched hashes) was unchanged around every case. pwsh 7.6.6 (MSIX-packaged host): the twelve non-Lean cases, 12 of 12 executed, eleven PASS and `deadline-descendant-cleanup` INCONCLUSIVE with the sleeper not started, exit 3, as the runner and the frozen matrix pre-record for a packaged host. Per-consumer run durations on the tip: builder about 10-11 s, capstone 108-127 s, contract 5-6 s, spec 91-119 s, stage 280-321 s. Receipts `receipts/q3-marker-controls-26b175e.json` (queue) with the runner receipts `-ps51.json` and `-pwsh.json`.
+
+Alternatives rejected: running the full registry on pwsh as well (the Lean cases are host-independent and the deadline case is INCONCLUSIVE there by design; the plan's split covers both hosts' distinct evidence); treating the pwsh INCONCLUSIVE as a failure (a condition the host cannot create is uncovered, not failed, and the 5.1 run establishes it).
+
+Consequences: REQ-PRE-R2-MARKER's committed control matrix is established on the tip for all five consumers and both hosts' roles; the REPLAY rows for the control runner (exact registry, selector non-vacuity, bounded subprocesses with verified restoration) are established by the same receipts.
+
+## WDD-20260917-PRE1-R2-007: PRE-1-R2 complete builder replay on the repaired tree - 55 of 55 with marker-absent rejections, and the measured wall time for the gate deadline
+
+Context: CHK-PRE-R2-VERIFICATION requires the complete builder replay (every case including B53-B55, with executed and expected IDs) on the tip; REQ-PRE-R2-RECORDS makes B16-B18 regression controls for the marker-absence rule; coordinator ruling R-R2-1 requires the run's wall time to be compared with the gate checker's 10,800 s deadline.
+
+Decision: `scripts/preprocessing_builder_replay.ps1` in full mode (no selector) ran in the queue on `f5d6128` (content tree of `341bc28`, mutex wait 0.0 s) under pwsh 7.6.6, LEAN_NUM_THREADS=1, no concurrent Lean process: `PRE-BUILDER-REPLAY: PASS mode=full executed=55 registry=55`, exit 0, owned-process wall 8674.82 s (evidence directory `20260917-132238-092add735903413b878e3fdfb7b1e977` created 13:22:38, `report.json` written 15:47:12), 7999.1 s summed over 571 stages; 58 self-tests PASS (23 registry, 23 matcher including the four marker fixtures, 9 selector, 3 deadline); both baseline profiles printed their markers; the validator stage's full executable run PASS and its four negative controls rejected with their pinned messages; all 55 cases PASS with exact restoration of source and manifest bytes and the repository state at `f5d6128` clean before and after. Every consumer-stage rejection has its exact registered line set with the profile's marker absent: the regression controls B16 {370}, B17 {371} and B18 {352} (which printed the marker on the base), the new cases B53 and B54 {227, 349} and B55 {457}, and every earlier case as registered; the accept controls B12 and B52 print their markers. The committed receipt is the queue receipt `receipts/q4-builder-replay-full-f5d6128.json` with a per-case digest of the evidence report (`.digest.json`: per stage exit, duration, deadline, timeout flag, consumer error line set and marker presence; the 16.2 MB `report.json` stays on the host).
+
+Alternatives rejected: committing the raw evidence report (16.2 MB of stage output under a scanned docs root); treating the focused runs of Q2 as the campaign (the frozen row names the complete registry with executed = expected).
+
+Consequences: REQ-PRE-R2-HALTS, REQ-PRE-R2-RUNSAFE, the B16-B18 regression clause of REQ-PRE-R2-RECORDS and the builder-replay parts of the REPLAY rows are established on the tip. 8674.82 s is 80 percent of the 10,800 s gate deadline, above the 60 percent line of ruling R-R2-1, so the gate checker's default is raised in the next commit.
+
+## WDD-20260917-PRE1-R2-008: builder gate checker deadline raised to 23,400 s under coordinator ruling R-R2-1 against the measured 55-case run
+
+Context: `scripts/preprocessing_builder_gate.ps1` runs the complete builder replay as one owned bounded child under `-OuterDeadlineSeconds`, whose default was raised on measured runs from 1800 s (13 cases, 516.8 s) to 3600 s (34 cases, 1535.87 s) to 10,800 s (52 cases, 4573.59 s), never shortened. Repair PRE-1-R2 makes every consumer stage re-elaborate its file (builder consumer 3.46 s to 10.95 s, capstone consumer 56.09 s to 120.58 s on this host) and adds B53-B55. Coordinator ruling R-R2-1 (2026-09-17): after the full builder replay on the tip, if its wall time exceeds 60 percent of the checker deadline, raise the default to the measured duration times 2.5 rounded up to a multiple of 1,800 s, in its own commit with a design entry citing the measured run; no other change to the checker.
+
+Decision: the measured run is the complete replay of WDD-007 on `f5d6128` (evidence `20260917-132238-092add735903413b878e3fdfb7b1e977`, `mode=full`, 55/55 cases, 571 stages, 58 self-tests, capstone baseline and validator stage included, pwsh 7.6.6, no concurrent Lean process): 8674.82 s owned-process wall, 7999.1 s summed stages. 8674.82 s is 80 percent of 10,800 s, above the 60 percent line, so the default becomes 8674.82 x 2.5 = 21,687.05 s rounded up to a multiple of 1,800 s, 23,400 s = 2.70 x measured. The revision is recorded at the `MEASURED-DEADLINE` comment with the same fields as the earlier revisions, and the gate paragraph of BUILDER_REPLAY_DESIGN.md (which states the default and its revision history, one of the four places PRE-1-A2 P3-2 found stale) now lists the new value against this run. Nothing else in the checker changes; the replay runner, its per-stage deadlines and the registry are untouched.
+
+Alternatives rejected: leaving 10,800 s (1.24 x the measured run, below the checker's own at-least-2x rule and the ruling's line); rounding to the ruling's product without the 1,800 s step (the ruling fixes the rounding); revising the replay runner's stage deadlines (no stage approached its 600 s, 1800 s validator or 120 s administrative deadline: the longest stages were the B42 producer rebuilds at 201.5 s and 234.3 s and the validator's full executable run).
+
+Consequences: the coordinator aggregate gate's builder-replay step has a deadline with 2.70x margin over this run; a later host or registry change re-measures and revises on evidence, never shortening.
+
+## WDD-20260917-PRE1-R2-009: PRE-1-R2 contract replay, validator, firewall, self-tests on both hosts, P2-2 probe and mechanism toy on the tip
+
+Context: CHK-PRE-R2-VERIFICATION names the complete 18-case contract replay (the contract consumer's verdict-marker command changed under amendment V3-10a), `lake build` of the capstone, the consumers and `rmq_preprocessing_validate` with `lake exe rmq_preprocessing_validate`, the builder firewall, and the registry, selector-boundary and deadline self-tests on pwsh 7.6.6 and Windows PowerShell 5.1; REQ-PRE-R2-HALTS and REQ-PRE-R2-MARKER are served by the committed P2-2 probe and the import-free mechanism toy rerun on the tip.
+
+Decision: one queue on `f7bdf20` (mutex wait 0.0 s, held 15:50:13-16:04:49): contract replay `PASS mode=full executed=18 registry=18` (378.7 s; the changed contract consumer rejects every registered case at its exact line set and accepts C14); `lake build RMQ.Core.WordRAM.Construction.Capstone RMQ.Validation.PreprocessingContract rmq_preprocessing_validate` exit 0 (71.1 s, the capstone consumer compiled as a module); `lake exe rmq_preprocessing_validate` `PRE1-VALIDATE PASS cases=11 mode=full` (257.7 s); firewall PASS (17 modules, 6.0 s); the three self-tests PASS on both hosts (pwsh 2.7 s, 14.9 s, 48.4 s; 5.1 1.6 s, 7.6 s, 46.9 s), the deadline self-test's sleeper root and child absent on both; `lake env lean` of `repair-r2/tools/p2_2_work_probe.lean` exit 0 with `work_literal_is_fuel` and `empty_program_work` on `[propext, Quot.sound]` and `empty_program_never_halts` on `[propext]` (1.6 s); the mechanism toy's eleven variants (38.7 s, scratch directory outside the repository): base and CRLF print the marker with exit 0, the eight failing classes exit 1 without it, and the unreferenced explicit-placeholder variant prints it (a warning, the recorded boundary of DD-20260914-PRE1-R2-001). Receipts `receipts/q5-contract-validator-selftests-f7bdf20.json` with the digest of the contract-replay and self-test evidence reports.
+
+Alternatives rejected: skipping the validator run because the full builder replay's validator stage already ran it (the frozen row names it separately and it is cheap); running the toy inside the repository (a scratch `base.lean` and variant files would dirty the tree).
+
+Consequences: every command CHK-PRE-R2-VERIFICATION names has run on the tip except the coordinator-owned aggregate gate; the remaining static checks, the log and report appends and the matrix evidence appendix follow in the closing commits.
+
+
+## WDD-20260917-PRE1-R2-010: PRE-1-R2 closing records - static checks, the appended log and report sections, the matrix evidence appendix, and the worker record delivered in the submission because the runtime refused to create it
+
+Context: the resumption prompt requires appended sections of BUILDER_STAGE_LOG.md and REPORT.md, an evidence appendix to `repair-r2/ACCEPTANCE_MATRIX.md`, receipts for the static checks, and the durable worker record `repair-r2/REPORT.md`; the Claude-runtime adaptation of the prompt says a runtime refusal to create a required file is to be reported as a blocker, not worked around.
+
+Decision: (1) The static checks on `9598f72` (both gate hygiene commands, `verify_receipt_archives.py --committed HEAD`, `verify_rewords.py --committed HEAD`, `check_preservation.py --head a0c93e9`, the R1 claim-scan runner with its detector, `git diff --check` on the working tree and on `a0c93e9..HEAD`, and `design_decision_check.ps1 -Strict -Base a0c93e9 -Head 9598f72`) all pass and are recorded in `receipts/q6-static-checks-9598f72.json` (command, exit, duration, note, with the verifier result files) and `receipts/q6-claim-scans-9598f72.json` (the R1 runner's receipt, which never holds scanner text). (2) The R2 section of BUILDER_STAGE_LOG.md (rows R2-1 to R2-20), the PRE-1-R2 section of REPORT.md (with the fuel-triviality reading of `work` and the `halts`-with-`work` statement REQ-PRE-R2-HALTS requires, and the before/after consumer-stage durations of ruling R-R2-1) and the evidence appendix of the R2 matrix are appended after the last line of each file; each file's earlier bytes are unchanged. (3) The second session's runtime refused to create `docs/internal/extensions/pre1/repair-r2/REPORT.md` (the Write tool answered that subagents return findings as text and do not write report files, for the required path itself); the refusal is recorded here and in the appended REPORT.md section, the worker record's full content is delivered in the submission message for the coordinator to persist, and no other route was used to create that file. (4) Defect of this session's own process, recorded rather than repaired by rewriting: the assembly step that was to write the two static-check receipts, the three appends and this entry in one commit aborted on an over-cautious assertion in the worker's script (it required the words of the scanner's summary pattern to be absent from the R1 scan-runner receipt, which names that pattern in the same way as the committed R1 receipts), and the shell did not stop, so commit `3ce9b89` contains only the two receipts and fails its per-commit strict design check (workflow paths without a ledger update) while the range check passes; the prompt forbids rewriting history, so `3ce9b89` stands and this commit carries the entry covering its receipts. CHK-PRE-R2-VERIFICATION's per-commit clause is therefore not met for that one commit. (5) The closing commit cannot record its own SHA or the checks run on it; the per-commit and range design checks, both whitespace checks, the hygiene commands, the R1 verifiers and the claim-scan runner are rerun on the exact tip and reported in the submission message, as the R1 repair did.
+
+Alternatives rejected: creating the worker record through a shell redirection after the tool refusal (the prompt forbids working around a runtime refusal of a required file); folding the worker record into the appended REPORT.md section (that section is a summary by design, and the record's row-by-row evidence, command ledger and digestion belong to the durable artifact the coordinator will persist); a further commit recording the tip's own scan results (it would itself be an unscanned tip; the coordinator gate reruns the scans on the exact tip anyway).
+
+Consequences: the worker returns `Status: INCOMPLETE` with `Phase: AWAITING_COORDINATOR_CERTIFICATION`, names the missing durable artifact as the one open item of its own, and requests the continuation audit and the coordinator aggregate gate on the exact tip; the six R2 rows are met in worker review on the repaired content tree of `341bc28` with the gate deadline of `f7bdf20`.
+
+## WDD-20260917-PRE1-R2-011: the PRE-1-R2 worker record persisted from the submission message by the coordinator, committed with its bytes unchanged
+
+Context: WDD-010 recorded that the second PRE-1-R2 session's runtime refused to create the required durable artifact `docs/internal/extensions/pre1/repair-r2/REPORT.md` and that the record's content was delivered in the submission message (28,120 bytes, SHA-256 `fe92063f3d6497b3198f7a27f8337e5df71eb8e25495d0deb9098b2f2cf8bdf6`, UTF-8 with LF line endings). The coordinator recovered that text byte-exactly from the submission message and placed it, untracked, at that path in the worker's worktree at `d36b7e5b57e195b653ab5e7a024973493ecb6e4e`, then instructed the worker to verify the digest and make one final commit containing exactly that file and this entry.
+
+Decision: the worker recomputed the placed file's SHA-256 (`fe92063f3d6497b3198f7a27f8337e5df71eb8e25495d0deb9098b2f2cf8bdf6`, 28,120 bytes, no CRLF) and found it equal to the digest reported in the submission; the file is committed without any edit, together with this entry, and nothing else changes in the commit. The report's persisted bytes were supplied by the coordinator from the worker's submission message; the report itself is not edited to say so, this entry records it. The report's own opening (`Status: INCOMPLETE`, `Phase: AWAITING_COORDINATOR_CERTIFICATION`) and its Limits section, which describe the artifact as missing from the repository at the time of writing, stand as the record of that session; this commit is the repair of that one limit.
+
+Alternatives rejected: editing the report to note its provenance (its digest is the identity the submission message pins); leaving the record uncommitted (the durable artifact would still be absent from the branch the continuation audit and aggregate gate examine); rewriting `d36b7e5` to include it (history is not rewritten).
+
+Consequences: the durable completion artifact `repair-r2/REPORT.md` exists on the branch with the pinned digest; the checks on this closing commit (per-commit strict design check against `d36b7e5`, both gate hygiene commands, `git diff --check` on the working tree and on `a0c93e9..HEAD`) are reported in the reply to the coordinator, since a commit cannot record its own SHA.
+
+## WDD-20260919-INT-001: two gate tools fixed for the integrated tree - the topology lint prefilters whole files, and the PRE-1 builder checker builds its own prerequisites
+
+Context: the first aggregate gates on the integration candidate failed for tooling reasons, not content. (1) `scripts/paper_topology_lint.ps1` walked every line of every tracked text file with a regex per removed spelling; the integrated tree tracks about six times the bytes of main (most of them lane evidence logs), one lint run took about 1,590 s, and `paper_topology_lint_regression.ps1` runs the lint once per case under a 900 s budget, so every full-lint case timed out while the lint's own verdict was PASS. (2) `scripts/preprocessing_builder_gate.ps1` started the builder replay on a tree where the Construction closure had never been built; the replay's baseline capstone build then ran under the replay's per-stage deadline and was inconclusive. Earlier PRE-1 gates passed only because a worker had built the closure in the same worktree; CI checks out cold.
+
+Decision: (1) the lint reads each file once and skips it when its whole text contains neither the snapshot marker nor any removed spelling (case-insensitive substring test, matching the case-insensitive `-match` used per line); registered snapshot files are always walked. Every finding of that loop requires the marker or a removed spelling on a line, so verdicts are unchanged; the 16-case regression is the evidence. (2) the builder checker first builds the replay's producer targets, the capstone, its typed consumer and the validator as an owned bounded child with its own deadline parameter (`-WarmDeadlineSeconds`, default 7200 s, at least twice the measured cold build), and fails as inconclusive if that build fails or times out.
+
+Alternatives rejected: raising the regression's per-case budget (capped by the script and it would put the gate near twelve hours); raising the replay's per-stage deadline (hides a cold build inside a mutation stage and changes a lane-frozen runner); restructuring the scanners' scope or tiering the gate now (owner direction of 2026-09-19: integrate first, keep tooling changes minimal; those go to a later tooling lane).
+
+Consequences: no checker is removed or weakened; the replay runner, its registry and every pin are unchanged. Measurements after the change are recorded by the coordinator with the next gate evidence.
+
+## WDD-20260920-INT-002: CI and the artifact reproduction script raise the stack limit before running the gate
+
+Context: the first CI run on any commit that contains the fully charged packed query (the integration branch at `7b227c4`; `origin/main` had not been updated since before that work) failed both required checks, Lean gate and Reproduce artifact, at the same place: the packed-query replay's runtime stage runs its fixtures with `lean --run`, and on Linux the interpreter reported deep recursion in `PackedWordRAM.runArray` at about eighteen thousand frames, so a negative control could not be evaluated and the checker reported that it did not run. Linux gives the main thread 8 MiB of stack by default; the Windows `lean.exe` reserves far more, so every local gate passed. A WSL toy confirms the mechanism on the pinned toolchain: a non-tail recursion of depth three hundred thousand fails under the default limit and passes under a 1 GiB limit. The same limit was needed for the LB-1 replay campaign under WSL.
+
+Decision: `.github/workflows/ci.yml` runs the gate step under bash with `ulimit -s 1048576` before invoking `pwsh ... scripts/gate.ps1`, and `scripts/reproduce_artifact.sh` raises the limit the same way (falling back to the hard limit) before its gate call; both print the limit in force. Child processes inherit it, including the owned bounded children.
+
+Alternatives rejected: changing the frozen packed-query replay runner to wrap its runtime stage (it is pinned by its lane's provenance checks); rewriting `runArray` to be tail-recursive for the interpreter (a proof-bearing definition; out of scope for integration); running the fixtures through a compiled executable only (changes what the lane's replay certifies).
+
+Consequences: a user running the gate directly on Linux or macOS without the reproduction script must raise the stack limit themselves; the README's reproduction path goes through the script. Whether the whole gate fits the hosted job time limit is still unmeasured and is tracked separately.
+
+## WDD-20260923-CI-001: preserve the complete bounded PRE warm-up failure log
+
+Context: required Linux CI at bf31f983 reported a failed Constants module but the PRE warm-up wrapper kept only its last forty lines, dropping the actual compiler error among parallel build messages. A clean Ubuntu reproduction retained the full output and identified a Lean worker stack overflow (DD-20260923-CI-001).
+
+Decision: keep the complete owned-process warm-up output for the existing failure handler, bounded by the unchanged 16 MiB output limit. Successful warm-ups still print only their existing progress and duration. Exit, timeout, overflow predicates, deadlines, full replay and mutation registry stay unchanged. No failure is reclassified as a successful rejection.
+
+Alternatives: first-and-last excerpts can still omit a middle diagnostic; weakening or skipping the warm-up would hide the required build. No new wrapper or special-case success path is introduced.
+
+Consequences: subsequent hosted failures expose their diagnostic in the normal workflow log. The user explicitly authorized repair and normal protected-main promotion of the accepted integration checkpoint; required checks and branch protection remain binding, and the separate lifecycle candidate is not included. The incoming 121 non-merge commits already pass the production strict per-commit design checker; new repair commits must pass it independently.

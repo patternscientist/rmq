@@ -1,0 +1,26 @@
+{
+  "SourceCommit": "aecf4a580c591e8f694a3699e19e843198089194",
+  "SourceProfileSHA256": "b83ada3baa438d812da076b48422c0a92f88ce686cd48ef982f39de7701699c9",
+  "Command": [
+    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "--version"
+  ],
+  "AmbientLeanVariables": [],
+  "Result": {
+    "Stage": "opt1-r1-toolchain-version",
+    "ExitCode": 0,
+    "Output": [
+      "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+    ],
+    "StandardOutput": [
+      "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 2.696,
+    "DeadlineSeconds": 30,
+    "Ownership": "kill-on-close-job"
+  }
+}

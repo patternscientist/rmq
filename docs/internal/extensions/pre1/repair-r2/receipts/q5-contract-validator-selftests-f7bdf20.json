@@ -1,0 +1,419 @@
+{
+  "version": "PRE1-R2-RECEIPT-V1",
+  "label": "Q5: complete contract replay, validator build and run, builder firewall, replay self-tests on both hosts, P2-2 probe and mechanism toy on f7bdf20",
+  "repo": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+  "revision": "f7bdf20df8aa4949495ff892828bc8c8a2277ccc",
+  "status": "?? docs/internal/extensions/pre1/repair-r2/receipts/q5-contract-replay-and-selftests-f7bdf20.digest.json",
+  "host": "PoinPad",
+  "os": "Windows-11-10.0.26200-SP0",
+  "mutex": "Global\\RMQHeavyVerification",
+  "mutexWaitSeconds": 0.0,
+  "requested": "2026-09-17T15:50:13.3571571-07:00",
+  "acquired": "2026-09-17T15:50:13.3880254-07:00",
+  "released": "2026-09-17T16:04:49.2524005-07:00",
+  "queueStatus": "DONE",
+  "steps": [
+    {
+      "label": "contract-replay-full",
+      "command": "C:/Users/poin/AppData/Local/Microsoft/WindowsApps/pwsh.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/scripts/preprocessing_contract_replay.ps1"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 3600,
+      "start": "2026-09-17T15:50:13.3947112-07:00",
+      "end": "2026-09-17T15:56:32.1319748-07:00",
+      "seconds": 378.656,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "a43634fd606279a3ef25e5acd1528165dc36c0b9d045c3c31ef4cf0a90c0db61",
+      "logBytes": 1604,
+      "logLines": 22,
+      "markerLines": {
+        "PRE-CONTRACT-REPLAY: PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "PRE-CASE: C14_ACCEPT_COMMENT PASS, exact restoration verified",
+        "PRE-CASE: C15_CODE_ALIAS PASS, exact restoration verified",
+        "PRE-CASE: C16_CODE_COUNT PASS, exact restoration verified",
+        "PRE-CASE: C17_FIREWALL_IMPORT PASS, exact restoration verified",
+        "PRE-CASE: C18_PRIMITIVE_BYTES PASS, exact restoration verified",
+        "PRE-CONTRACT-REPLAY: PASS mode=full executed=18 registry=18 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r2-consumer-markers\\.lake\\preprocessing-contract-replay\\20260917-155014-f799411b"
+      ]
+    },
+    {
+      "label": "validator-build",
+      "command": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+      "arguments": [
+        "build",
+        "RMQ.Core.WordRAM.Construction.Capstone",
+        "RMQ.Validation.PreprocessingContract",
+        "rmq_preprocessing_validate"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 3600,
+      "start": "2026-09-17T15:56:32.1398303-07:00",
+      "end": "2026-09-17T15:57:43.2052974-07:00",
+      "seconds": 71.052,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "f8139915cd57284414e4abf95c0c9ad31db81a32dc75d1dfad2f9bf2a6b4aa27",
+      "logBytes": 133177,
+      "logLines": 1560,
+      "markerLines": {
+        "PRE1-CAPSTONE-TYPED-CONSUMERS PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "info: RMQ/Validation/PreprocessingContract.lean:1066:0: 'RMQ.SuccinctFinal.PackedConstruction.Structured.Block.compile_targets' depends on axioms: [propext, Quot.sound]",
+        "info: RMQ/Validation/PreprocessingContract.lean:1067:0: 'RMQ.SuccinctFinal.PackedConstruction.Proof.program_static' depends on axioms: [propext, Quot.sound]",
+        "info: RMQ/Validation/PreprocessingContract.lean:1068:0: 'RMQ.SuccinctFinal.PackedConstruction.Proof.builderProgram_static' depends on axioms: [propext, Quot.sound]",
+        "info: RMQ/Validation/PreprocessingContract.lean:1069:0: 'RMQ.SuccinctFinal.PackedConstruction.Proof.builderProgramWord_static' depends on axioms: [propext, Quot.sound]",
+        "info: RMQ/Validation/PreprocessingContract.lean:1217:0: PRE1-CAPSTONE-TYPED-CONSUMERS PASS",
+        "Build completed successfully."
+      ]
+    },
+    {
+      "label": "validator-exe",
+      "command": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+      "arguments": [
+        "exe",
+        "rmq_preprocessing_validate"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 3600,
+      "start": "2026-09-17T15:57:43.2069191-07:00",
+      "end": "2026-09-17T16:02:00.9719094-07:00",
+      "seconds": 257.746,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "4b8832e8296b66eedc6025018767fa5410b3345a73e4054edebc5bde509e9ec2",
+      "logBytes": 94621,
+      "logLines": 1296,
+      "markerLines": {
+        "PRE1-VALIDATE PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "info: RMQ/Validation/Preprocessing.lean:220:0: 'RMQ.Validation.Preprocessing.checkBuild' depends on axioms: [propext]",
+        "info: RMQ/Validation/Preprocessing.lean:221:0: 'RMQ.Validation.Preprocessing.runFixture' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "info: RMQ/Validation/Preprocessing.lean:222:0: 'RMQ.Validation.Preprocessing.findFixture' depends on axioms: [propext]",
+        "info: RMQ/Validation/Preprocessing.lean:223:0: 'RMQ.Validation.Preprocessing.selection' depends on axioms: [propext]",
+        "info: RMQ/Validation/Preprocessing.lean:224:0: 'RMQ.Validation.Preprocessing.mainImpl' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "info: RMQ/Validation/Preprocessing.lean:225:0: 'main' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      ]
+    },
+    {
+      "label": "firewall",
+      "command": "C:/Users/poin/AppData/Local/Microsoft/WindowsApps/pwsh.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/scripts/preprocessing_builder_firewall.ps1"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 600,
+      "start": "2026-09-17T16:02:00.9728688-07:00",
+      "end": "2026-09-17T16:02:06.9392843-07:00",
+      "seconds": 5.957,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "f40412996abb7e52e2d6b35a72b8cb85e86b45347a8e6d71433f551ae549cd66",
+      "logBytes": 80,
+      "logLines": 1,
+      "markerLines": {
+        "PRE1-BUILDER-FIREWALL PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "PRE1-BUILDER-FIREWALL PASS: layered closure over the contract guard, 17 modules"
+      ]
+    },
+    {
+      "label": "selftest-registry-pwsh",
+      "command": "C:/Users/poin/AppData/Local/Microsoft/WindowsApps/pwsh.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/scripts/preprocessing_builder_replay.ps1",
+        "-RegistrySelfTestOnly"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 600,
+      "start": "2026-09-17T16:02:06.9403896-07:00",
+      "end": "2026-09-17T16:02:09.6056792-07:00",
+      "seconds": 2.654,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "1774dedf9d31465a73182dad4e877fb805f4ce3de7d66326c0c51aa908a7357d",
+      "logBytes": 235,
+      "logLines": 1,
+      "markerLines": {
+        "PRE-BUILDER-REPLAY: PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "PRE-BUILDER-REPLAY: PASS mode=registry-selftest executed=0 registry=55 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r2-consumer-markers\\.lake\\preprocessing-builder-replay\\20260917-16020"
+      ]
+    },
+    {
+      "label": "selftest-selector-pwsh",
+      "command": "C:/Users/poin/AppData/Local/Microsoft/WindowsApps/pwsh.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/scripts/preprocessing_builder_replay.ps1",
+        "-SelectorBoundarySelfTestOnly"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 900,
+      "start": "2026-09-17T16:02:09.6067340-07:00",
+      "end": "2026-09-17T16:02:24.4736255-07:00",
+      "seconds": 14.859,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "6d27bebbac6e8e6475e329531306bf6b7238450bf2c536aaa8263da1170b2bed",
+      "logBytes": 235,
+      "logLines": 1,
+      "markerLines": {
+        "PRE-BUILDER-REPLAY: PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "PRE-BUILDER-REPLAY: PASS mode=selector-selftest executed=0 registry=55 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r2-consumer-markers\\.lake\\preprocessing-builder-replay\\20260917-16021"
+      ]
+    },
+    {
+      "label": "selftest-deadline-pwsh",
+      "command": "C:/Users/poin/AppData/Local/Microsoft/WindowsApps/pwsh.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/scripts/preprocessing_builder_replay.ps1",
+        "-DeadlineSelfTestOnly"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 900,
+      "start": "2026-09-17T16:02:24.4747922-07:00",
+      "end": "2026-09-17T16:03:12.8850357-07:00",
+      "seconds": 48.395,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "01bc161daa8432ff351346fb9a2256012f2938510c2d47d526bbe16ea4168c1a",
+      "logBytes": 566,
+      "logLines": 4,
+      "markerLines": {
+        "PRE-BUILDER-REPLAY: PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "OWNED-PROCESS application-path regression PASS [M1R5R2-SCALAR-APPLICATION-PATH] duplicate aliases selected one path",
+        "OWNED-PROCESS deterministic production-plan PASS (Windows kill-on-close job; POSIX setsid/negative-pgid termination)",
+        "OWNED-PROCESS COLLECTION SELF-TEST PASS (5 alive-query cases; zero-handle and empty-job barriers)",
+        "PRE-BUILDER-REPLAY: PASS mode=deadline-selftest executed=0 registry=55 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r2-consumer-markers\\.lake\\preprocessing-builder-replay\\20260917-16022"
+      ]
+    },
+    {
+      "label": "selftest-registry-ps51",
+      "command": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/scripts/preprocessing_builder_replay.ps1",
+        "-RegistrySelfTestOnly"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 600,
+      "start": "2026-09-17T16:03:12.8875416-07:00",
+      "end": "2026-09-17T16:03:14.4957956-07:00",
+      "seconds": 1.602,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "6d4459572aaa2db50d762d2eff152d9c5891aa542187ce6caefacc1f59fd66ab",
+      "logBytes": 235,
+      "logLines": 1,
+      "markerLines": {
+        "PRE-BUILDER-REPLAY: PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "PRE-BUILDER-REPLAY: PASS mode=registry-selftest executed=0 registry=55 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r2-consumer-markers\\.lake\\preprocessing-builder-replay\\20260917-16031"
+      ]
+    },
+    {
+      "label": "selftest-selector-ps51",
+      "command": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/scripts/preprocessing_builder_replay.ps1",
+        "-SelectorBoundarySelfTestOnly"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 900,
+      "start": "2026-09-17T16:03:14.4965720-07:00",
+      "end": "2026-09-17T16:03:22.1117999-07:00",
+      "seconds": 7.607,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "9775fb430bb476cd8b31aa1202a66b7db9cb8157313d6b603119f683367c25c5",
+      "logBytes": 235,
+      "logLines": 1,
+      "markerLines": {
+        "PRE-BUILDER-REPLAY: PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "PRE-BUILDER-REPLAY: PASS mode=selector-selftest executed=0 registry=55 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r2-consumer-markers\\.lake\\preprocessing-builder-replay\\20260917-16031"
+      ]
+    },
+    {
+      "label": "selftest-deadline-ps51",
+      "command": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/scripts/preprocessing_builder_replay.ps1",
+        "-DeadlineSelfTestOnly"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 900,
+      "start": "2026-09-17T16:03:22.1134631-07:00",
+      "end": "2026-09-17T16:04:08.9848166-07:00",
+      "seconds": 46.858,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "4aabacded576d7a7f5428f8494715f3362db4df66e23a8d8796d6f189af9f332",
+      "logBytes": 566,
+      "logLines": 4,
+      "markerLines": {
+        "PRE-BUILDER-REPLAY: PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "OWNED-PROCESS application-path regression PASS [M1R5R2-SCALAR-APPLICATION-PATH] duplicate aliases selected one path",
+        "OWNED-PROCESS deterministic production-plan PASS (Windows kill-on-close job; POSIX setsid/negative-pgid termination)",
+        "OWNED-PROCESS COLLECTION SELF-TEST PASS (5 alive-query cases; zero-handle and empty-job barriers)",
+        "PRE-BUILDER-REPLAY: PASS mode=deadline-selftest executed=0 registry=55 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r2-consumer-markers\\.lake\\preprocessing-builder-replay\\20260917-16032"
+      ]
+    },
+    {
+      "label": "p2-2-probe",
+      "command": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+      "arguments": [
+        "env",
+        "lean",
+        "docs/internal/extensions/pre1/repair-r2/tools/p2_2_work_probe.lean"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 600,
+      "start": "2026-09-17T16:04:08.9862562-07:00",
+      "end": "2026-09-17T16:04:10.5525807-07:00",
+      "seconds": 1.552,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "ef72e6454c0fdaed20317e7def80b4f011b75f42b196e40ff1031f2db30848d6",
+      "logBytes": 231,
+      "logLines": 3,
+      "markerLines": {},
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "'PRE1R2WorkProbe.work_literal_is_fuel' depends on axioms: [propext, Quot.sound]",
+        "'PRE1R2WorkProbe.empty_program_work' depends on axioms: [propext, Quot.sound]",
+        "'PRE1R2WorkProbe.empty_program_never_halts' depends on axioms: [propext]"
+      ]
+    },
+    {
+      "label": "mechanism-toy",
+      "command": "C:/Python314/python.exe",
+      "arguments": [
+        "mechanism_toy_variants.py"
+      ],
+      "workingDirectory": "C:/Users/poin/AppData/Local/Temp/claude/C--Users-poin-Documents-RMQ--claude-worktrees-pq1-preprocessing-native-bounds-b3fee3/e89e3ad0-2cc5-4b25-95d1-280ec16233b7/scratchpad/pre1-r2/q5/toy",
+      "deadlineSeconds": 1200,
+      "start": "2026-09-17T16:04:10.5549188-07:00",
+      "end": "2026-09-17T16:04:49.2513526-07:00",
+      "seconds": 38.685,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "0eb2d0dca87604761888f1bef46b83819cef0f450a2f0fe3e1c46287187aec7d",
+      "logBytes": 1460,
+      "logLines": 11,
+      "markerLines": {},
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "d_unknown                        exit=1 dur=  3.8s errlines=1 DIAG fileClean=false witnessClean=false guards=true nestedErrors=1",
+        "e_unreferenced                   exit=1 dur=  3.8s errlines=2 DIAG fileClean=false witnessClean=true guards=true nestedErrors=2",
+        "f_after_marker                   exit=1 dur=  3.7s errlines=1 DIAG fileClean=false witnessClean=true guards=true nestedErrors=1",
+        "g_bad_end                        exit=1 dur=  3.6s errlines=1 DIAG fileClean=false witnessClean=true guards=true nestedErrors=1",
+        "h_sorry_warning_unreferenced     exit=0 dur=  3.7s errlines=0 DIAG fileClean=true witnessClean=true guards=true nestedErrors=0 | MECH-PROBE PASS",
+        "i_crlf                           exit=0 dur=  3.6s errlines=0 DIAG fileClean=true witnessClean=true guards=true nestedErrors=0 | MECH-PROBE PASS"
+      ]
+    }
+  ],
+  "outcome": "Q5 on f7bdf20 (content tree of 341bc28 plus the gate-deadline commit): contract replay PASS mode=full executed=18 registry=18 (378.7 s); lake build of RMQ.Core.WordRAM.Construction.Capstone, RMQ.Validation.PreprocessingContract and rmq_preprocessing_validate exit 0 (71.1 s; the capstone consumer compiled as a module); lake exe rmq_preprocessing_validate printed PRE1-VALIDATE PASS cases=11 mode=full (257.7 s); scripts/preprocessing_builder_firewall.ps1 PASS over the 17-module closure; builder replay -RegistrySelfTestOnly, -SelectorBoundarySelfTestOnly and -DeadlineSelfTestOnly PASS on pwsh 7.6.6 (2.7, 14.9, 48.4 s) and on Windows PowerShell 5.1 (1.6, 7.6, 46.9 s); lake env lean of repair-r2/tools/p2_2_work_probe.lean exit 0 with work_literal_is_fuel and empty_program_work depending on [propext, Quot.sound] and empty_program_never_halts on [propext]; the import-free mechanism toy (tools/mechanism_toy.lean with mechanism_toy_variants.py, run in a scratch directory outside the repository) shows base and CRLF variants printing MECH-PROBE PASS with exit 0, the classes a-example, b-guard, b-runcmd, c-maxrec, d-unknown, e-unreferenced, f-after-marker and g-bad-end exiting 1 without the marker (fileClean false), and h-sorry-warning-unreferenced (an explicit placeholder in an unreferenced declaration, a warning) exiting 0 with the marker, the recorded boundary.",
+  "digests": "q5-contract-replay-and-selftests-f7bdf20.digest.json (contract replay evidence report and the six self-test evidence reports)"
+}

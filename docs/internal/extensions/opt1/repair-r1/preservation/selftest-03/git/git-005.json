@@ -1,0 +1,41 @@
+{
+  "command": [
+    "git",
+    "--no-pager",
+    "-c",
+    "core.fsmonitor=false",
+    "-c",
+    "core.untrackedCache=false",
+    "ls-files",
+    "--stage",
+    "-z",
+    "--",
+    "RMQ/Core/WordRAM/Optimization/",
+    "RMQ/Core/WordRAM/Packed/",
+    "RMQ/Validation/PackedOptimized.lean",
+    "scripts/packed_optimized_axiom_check.ps1",
+    "scripts/packed_optimized_axiom_union.lean",
+    "scripts/packed_optimized_axioms.lean",
+    "docs/internal/extensions/opt1/"
+  ],
+  "cwd": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ",
+  "exit": 0,
+  "expected_exit": 0,
+  "duration_seconds": 0.1823955999861937,
+  "deadline_seconds": 30.0,
+  "output_limit_bytes": 8388608,
+  "timed_out": false,
+  "overflow": false,
+  "stream_bytes": [
+    66829,
+    0
+  ],
+  "stdout_file": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\docs\\internal\\extensions\\opt1\\repair-r1\\preservation\\selftest-03\\git\\git-005.stdout.bin",
+  "stderr_file": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\docs\\internal\\extensions\\opt1\\repair-r1\\preservation\\selftest-03\\git\\git-005.stderr.bin",
+  "stdout_sha256": "b0d9df27cf51042a17f4be283545c7c19b330e25fd0fa7e2971977b483fa2f5a",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "capture_errors": [],
+  "capture_complete": true,
+  "root_absent": true,
+  "descendant_ownership": "Inherited from check.ps1 owned supervisor; see process.json"
+}

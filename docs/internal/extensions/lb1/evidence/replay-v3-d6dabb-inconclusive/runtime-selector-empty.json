@@ -1,0 +1,17 @@
+{
+  "Stage": "runtime-selector-empty",
+  "ExitCode": 1,
+  "Output": [
+    "uncaught exception: LB1-RUNTIME empty selector"
+  ],
+  "StandardOutput": [],
+  "StandardError": [
+    "uncaught exception: LB1-RUNTIME empty selector"
+  ],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 38.173,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

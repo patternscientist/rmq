@@ -1,0 +1,45 @@
+{
+  "Command": [
+    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "-j1",
+    "-o",
+    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\docs\\internal\\extensions\\opt1\\compact-static-development\\Measure.olean",
+    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\docs\\internal\\extensions\\opt1\\compact-static-development\\Measure.lean"
+  ],
+  "SourceSHA256": "9D5E94BB5E6D321D68682961BD05FF151838E06506D73670DC2263D5DCF4F7B9",
+  "Base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "Platform": "Microsoft Windows NT 10.0.26200.0",
+  "Result": {
+    "Stage": "compact-static-Measure",
+    "ExitCode": 0,
+    "Output": [
+      "literalInstructions=212964",
+      "literalEncodingWords=722339",
+      "recurrenceInstructions=212964",
+      "recurrenceEncodingWords=722339",
+      "chargedBound=151978",
+      "depth=1",
+      "maximumCount=33",
+      "registerBank=8273",
+      "scratchWords=8276"
+    ],
+    "StandardOutput": [
+      "literalInstructions=212964",
+      "literalEncodingWords=722339",
+      "recurrenceInstructions=212964",
+      "recurrenceEncodingWords=722339",
+      "chargedBound=151978",
+      "depth=1",
+      "maximumCount=33",
+      "registerBank=8273",
+      "scratchWords=8276"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 27.9,
+    "DeadlineSeconds": 300,
+    "Ownership": "kill-on-close-job"
+  }
+}

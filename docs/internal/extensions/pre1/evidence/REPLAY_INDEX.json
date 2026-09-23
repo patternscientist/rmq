@@ -1,0 +1,122 @@
+[
+  {
+    "name": "replay-full",
+    "originalDirectory": "C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\preprocessing-contract-replay\\20260912-011044-6a87f7de7fdc463d89d0d35821e9e029",
+    "archive": "replay-full.zip",
+    "bytes": 394230,
+    "sha256": "2c27a21720206014042ddb7b1ee57b4322ac665bf1b4d2c999ad6ce7705c6a12",
+    "verdict": "PASS",
+    "mode": "full",
+    "executed": 18,
+    "registrySha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+    "runnerSha256": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c"
+  },
+  {
+    "name": "replay-inconclusive-startup",
+    "originalDirectory": "C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\preprocessing-contract-replay\\20260912-010514-43a6110df1e54d41bb8364ddd5b420af",
+    "archive": "replay-inconclusive-startup.zip",
+    "bytes": 28326,
+    "sha256": "f611f107c1fea26241505a3dd6eb0e7725e1d7d42290985c5b01657b3f5bc2d6",
+    "verdict": "FAIL",
+    "mode": "full",
+    "executed": 0,
+    "registrySha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+    "runnerSha256": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c"
+  },
+  {
+    "name": "deadline-margin-check",
+    "originalDirectory": "C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\preprocessing-contract-replay\\20260912-010941-d1b35f4663b54f43bab909adee0d359d",
+    "archive": "deadline-margin-check.zip",
+    "bytes": 3398,
+    "sha256": "58564bf8b345a85e942bf0f3f6744f697eea934b354cf22e4ada0e8040d50084",
+    "verdict": "PASS",
+    "mode": "deadline-selftest",
+    "executed": 0,
+    "registrySha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+    "runnerSha256": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c"
+  },
+  {
+    "name": "startup",
+    "originalDirectory": "C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\preprocessing-contract-replay\\20260912-005931-415115833aa34fdeb0ac6d587b98507c",
+    "archive": "startup.zip",
+    "bytes": 31912,
+    "sha256": "cf0251628b1aa2d2408768addca688d37145f885f877712d73bcd7b478ea6662",
+    "verdict": "PASS",
+    "mode": "startup",
+    "executed": 0,
+    "registrySha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+    "runnerSha256": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c"
+  },
+  {
+    "name": "focused-C01",
+    "originalDirectory": "C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\preprocessing-contract-replay\\20260912-010110-4ec10f68c18b4265abcb7215482fd35e",
+    "archive": "focused-C01.zip",
+    "bytes": 51920,
+    "sha256": "4a57aa1f63f36acd9dafcb4c843ca8d468aa9270939d8c3cd0acea6a7e04bd71",
+    "verdict": "PASS",
+    "mode": "focused",
+    "executed": 1,
+    "registrySha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+    "runnerSha256": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c"
+  },
+  {
+    "name": "ps7-registry-matcher",
+    "originalDirectory": "C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\preprocessing-contract-replay\\20260912-005252-9183a7a8e2124314ae694ec80abe1e54",
+    "archive": "ps7-registry-matcher.zip",
+    "bytes": 943,
+    "sha256": "fc01a94307ad981bd5763967839be836c98e826997f677dd1eb0b00a4a09be14",
+    "verdict": "PASS",
+    "mode": "registry-selftest",
+    "executed": 0,
+    "registrySha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+    "runnerSha256": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c"
+  },
+  {
+    "name": "ps7-selectors",
+    "originalDirectory": "C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\preprocessing-contract-replay\\20260912-005311-194bab596e4f4eeeb9746f56ea69d511",
+    "archive": "ps7-selectors.zip",
+    "bytes": 9186,
+    "sha256": "4d518769461b29daf0b5ea21a7f281ef62b44c3f59718cce2006f0b4fea93e3e",
+    "verdict": "PASS",
+    "mode": "selector-selftest",
+    "executed": 0,
+    "registrySha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+    "runnerSha256": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c"
+  },
+  {
+    "name": "ps7-deadline",
+    "originalDirectory": "C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\preprocessing-contract-replay\\20260912-005310-2fb02c4e19124f5b99bf6227b34a3dfb",
+    "archive": "ps7-deadline.zip",
+    "bytes": 3406,
+    "sha256": "0dfe2785591c500414070524a714786a6f8dd423fc105473c3868b995b9cbe90",
+    "verdict": "PASS",
+    "mode": "deadline-selftest",
+    "executed": 0,
+    "registrySha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+    "runnerSha256": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c"
+  },
+  {
+    "name": "ps5-registry-matcher",
+    "originalDirectory": "C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\preprocessing-contract-replay\\20260912-005520-2b9c8cb5f9ef4e9f96e31f0b89d5b8d1",
+    "archive": "ps5-registry-matcher.zip",
+    "bytes": 1008,
+    "sha256": "4d8418a4aff2cb02fb4ddfd31c30e1c131a3545ca34b8f34c231d3f4c473877c",
+    "verdict": "PASS",
+    "mode": "registry-selftest",
+    "executed": 0,
+    "registrySha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+    "runnerSha256": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c"
+  },
+  {
+    "name": "ps5-selectors",
+    "originalDirectory": "C:\\Users\\poin\\.codex\\worktrees\\2fb8\\RMQ\\.lake\\preprocessing-contract-replay\\20260912-005518-26e0cbbcd1804e23996735ca367fed69",
+    "archive": "ps5-selectors.zip",
+    "bytes": 9813,
+    "sha256": "278e2095f846d88236f6b67f75b0938c0e11e9ba8ca1e6262471a27d3e8f2cc9",
+    "verdict": "PASS",
+    "mode": "selector-selftest",
+    "executed": 0,
+    "registrySha256": "aaec37a62bc74b483d09362a5d16f62afc2ae3a7be007577bc13e4c87c98574e",
+    "runnerSha256": "b85ff767098d3a3249a86b78d2e9e96e63d7822dd82a3752fac933479cf5424c"
+  }
+]

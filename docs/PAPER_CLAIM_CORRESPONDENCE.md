@@ -1,10 +1,25 @@
 # Paper Claim Correspondence
 
+## Packed primitive query (accepted)
+
+| Claim | Public alias | Source theorem and file | Check |
+| --- | --- | --- | --- |
+| For every ordinary list, one query-independent numeric allocation and one closed loop-free primitive program of 837,572 instructions answer every valid half-open query with the leftmost minimum and reject representable invalid ranges with the packet `0` and no memory reads. For every representable endpoint pair the run halts within at most 837,572 steps, the program length; every stored word, operand and prefix state fits one logarithmic width; and memory, literal program encoding and registers occupy `2n + o(n)` bits. The word model assumes unit-cost multiplication, division, remainder, variable shifts and bitwise operations. | `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`; proposition `RMQ.Headlines.SuccinctRMQFullyChargedPackedQuery`, via `RMQPaper` | `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`, `RMQ/Core/WordRAM/Packed/Capstone.lean` | Independent typed client `RMQ/Validation/PackedQueryContract.lean`; `lake env lean scripts/headline_axiom_check.lean`; committed replay `scripts/packed_query_replay.ps1`, aggregate gate and fresh blind audit (passed; see the coordinator acceptance record) |
+
+Status: ACCEPTED. The theorem is kernel checked and every certificate field
+has an independently stated public consumer; the committed replay campaign,
+the aggregate gate and a fresh blind source audit with its tooling correction review have passed. Endpoints
+outside the word domain are rejected by an uncharged value-level check, the
+code and scratch term is lower order only asymptotically, and preprocessing is
+unclaimed. The 210 trace and 427 probe rows below keep their original
+execution objects and charge policies, and the 837,572-step budget of
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` reinterprets neither.
+
 ## Canonical Claim Rows
 
 | Paper claim | Public alias | Source theorem | Source file | Check |
 | --- | --- | --- | --- | --- |
-| Uniform all-size canonical global trace has principled charged-trace cost `210`: every actual event is `readWord`, the synthetic fallback is absent, and the `nonSyntheticWeight` certificate sum equals both trace length and the `Costed` cost of the same execution. | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`, `...SyntheticCostOnlyPrimitiveNotMem`, `...NonSyntheticWeightSumEqTraceLength`, `...NonSyntheticWeightSumEqCost`, `...NonSyntheticWeightSumLe210` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only` and corresponding non-synthetic/cost theorems | `RMQ/Core/SuccinctFinalRAM.lean` | `lake env lean scripts/headline_axiom_check.lean` |
+| Uniform all-size canonical global trace has principled charged-trace cost **at most** `210`: every actual event is `readWord`, the synthetic fallback is absent, and the `nonSyntheticWeight` certificate sum equals both trace length and the `Costed` cost of the same execution. | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`, `...SyntheticCostOnlyPrimitiveNotMem`, `...NonSyntheticWeightSumEqTraceLength`, `...NonSyntheticWeightSumEqCost`, `...NonSyntheticWeightSumLe210` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only` and corresponding non-synthetic/cost theorems | `RMQ/Core/SuccinctFinalRAM.lean` | `lake env lean scripts/headline_axiom_check.lean` |
 | The named component cap is `2*select35 + (2*rank11 + 2*fringe37 + interior33) + rank11 = 210`; `TraceResult.toCosted` charges trace length, while a synthetic event cannot satisfy the genuine-event classification and its presence makes the `nonSyntheticWeight` certificate sum differ from trace length. | `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra`, `RMQ.Headlines.succinctRMQQueryCostEq`, `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveNotReadWordOrWordRankOrWordSelect`, `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksNonSyntheticWeightLengthEquality` | `RMQ.SuccinctFinal.CanonicalRMQChargedTraceCostAlgebra`; `RMQ.WordRAM.TraceEvent.syntheticCostOnlyPrimitive_not_readWord_or_wordRank_or_wordSelect`; `...sum_nonSyntheticWeight_ne_length_of_synthetic_mem` | `RMQ/Core/SuccinctFinalRAM.lean`; `RMQ/Core/WordRAM.lean` | `lake env lean scripts/headline_axiom_check.lean` |
 | Footprint-agreeing supplied stores preserve the canonical result and `210` bound. | `RMQ.Headlines.succinctRMQPrincipledAllSizeChargedTraceFinalFullModelCostLeOfFootprintGlobal` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_principledAllSizeChargedTrace` | `RMQ/Core/SuccinctFinalModelAdequacy.lean` | `lake env lean scripts/headline_axiom_check.lean` |
 | Ordinary lists inherit the same principled supplied-store cost transfer. | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` | `RMQ.SuccinctClassic.listIntPrincipledAllSizeChargedTraceCostLeOfFootprintGlobal` | `RMQ/Core/SuccinctRMQClassic.lean` | `lake build RMQPaper` |
@@ -109,10 +124,10 @@ capstones, or their current obstruction/history rows.
 
 | Claim | Public identity | Source declaration | File | Check |
 | --- | --- | --- | --- | --- |
-| One allocated `header ++ buildPayload ++ padding` packed memory answers every valid half-open query with the leftmost minimum's index, in at most `427` attempted aligned `w(n)`-bit cell probes into that same memory, with complete allocated capacity `2n + o(n)`, under a closed controller whose dynamic inputs are exactly `n`, the endpoints, and prior probe replies. | `RMQ.SuccinctFinal.PackedCellProbe.PackedReviewerArchitectureCapstone` | `RMQ.SuccinctFinal.PackedCellProbe.packedReviewerArchitectureCapstone_holds` | `RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerArchitectureCapstone.lean` | `lake env lean scripts/axiom_check.lean` |
+| One allocated `header ++ buildPayload ++ padding` packed memory answers every valid half-open query with the leftmost minimum's index, in at most `427` attempted aligned `w(n)`-bit cell probes into that same memory, with complete allocated capacity `2n + o(n)`, under a closed controller whose dynamic inputs are exactly `n`, the endpoints, and prior probe replies. | `RMQ.Headlines.succinctRMQPackedCellProbeArchitecture` (type: `RMQ.Headlines.SuccinctRMQPackedCellProbeArchitecture`) — exported from `RMQPaper` | `RMQ.SuccinctFinal.PackedCellProbe.packedReviewerArchitectureCapstone_holds` | `RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerArchitectureCapstone.lean` | `lake build RMQPaper`; `lake env lean scripts/headline_axiom_check.lean` |
 | Complete allocated capacity, counting header cell, every payload cell and final padding at full cell width, is at most `2n + rho(n)` with `rho` little-`o`-linear. | field 8 `allocation_two_n_plus_rho` with field 9 `rho_little_o` | same producer | same file (`:356`, `:361`) | same |
 | Every valid half-open query's terminal state carries an index equal to the reference leftmost-minimum answer. | field 39 `valid_answer_is_index` | same producer | same file | same |
-| Attempted probes are capped by the derived numeral `427`. | field `derived_cap_le_427` | same producer | same file (`:490`) | same |
+| Attempted probes are capped by the derived numeral `427`. | field `derived_cap_le_427` | same producer | same file (`:498`) | same |
 
 Reading rules for this block, each of which a reader will otherwise get wrong:
 
@@ -120,7 +135,9 @@ Reading rules for this block, each of which a reader will otherwise get wrong:
   attainment claim; the pinned fixture issues 68 probes.
 - The result is **cell-probe**: computation between probes is free and
   controller steps are uncharged. It is not word-RAM time, not preprocessing
-  time, not measured runtime.
+  time, not measured runtime. The accepted construction in the first table,
+  `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, charges every primitive
+  instruction of its own, different execution; it does not change this row.
 - The `210` in `427 = 1 + 2*3 + 2*210` is the packed controller's structural
   fuel and is **a different quantity** from the canonical route's charged-trace
   `210` in the table above, despite being the same numeral. They are provably

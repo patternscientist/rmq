@@ -1,0 +1,16 @@
+{
+  "Label": "whitespace",
+  "Command": [
+    "git",
+    "diff",
+    "--check"
+  ],
+  "Passed": true,
+  "ExitCode": 0,
+  "DurationSeconds": 0.259,
+  "OutputBytes": 0,
+  "OutputSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "OutputSummary": [],
+  "Stderr": "",
+  "Scope": "Final report and exact-byte storage tree before local final evidence commit"
+}

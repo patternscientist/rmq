@@ -1,5 +1,42 @@
 # Final RMQ Model Adequacy
 
+## Separate Accepted Primitive Machine
+
+This file is about the charged-trace model of the canonical reviewer route. A
+separate accepted theorem, `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`
+(producer `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`),
+uses a different machine and a different execution, so its adequacy argument
+is summarized here rather than merged into the sections below.
+
+Its machine is a register machine over a numeric memory (`List Nat`). The nine
+instruction forms are load, constant, move, arithmetic (add, sub, mul, div,
+mod, shl, shr, and, or, xor), comparison (lt, le, eq), jump, register jump,
+branch-if-zero and halt, and each executed instruction is exactly one step.
+Multiplication, division, remainder, variable shifts and bitwise operations
+are therefore unit-cost word operations, an arithmetic word-RAM convention.
+Integer division and remainder go beyond the multiplication model of the
+word-RAM literature and are an explicit additional assumption
+(DD-20260911-PQ1-018).
+The evaluator uses natural numbers, but every executed operation is proved not
+to overflow `w(n)` bits, underflow, divide by zero or shift by at least
+`w(n)`, so on these runs it coincides with `w(n)`-bit arithmetic. A load from a
+missing address faults the machine; the canonical run is proved to halt, so it
+performs no failing load (certificate field `noFailedLoads`). Every
+representable invalid input is rejected within six guard steps
+(`invalidGuardSteps`). On a valid range its ordered load receipts are
+exactly 174 metadata loads followed by the physical expansion of the canonical
+logical trace: one load per present logical read, two when its stored bit span
+crosses a word boundary, and none for a logically absent or dead read or a
+zero-length span. Agreement of any
+supplied memory with `buildMemory xs` at the read addresses determines the
+entire run. The program of `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`
+is one fixed loop-free program of 837,572 instructions for every input;
+its literal encoding and 8,271 registers plus three control words are charged
+in the `2n + o(n)` capacity statement, and the step budget equals the program
+length. Endpoints outside the word domain are rejected by an uncharged
+value-level check. Preprocessing cost is not claimed, Lean runtime is not
+claimed, and the budget is not claimed tight. Status: ACCEPTED, following the replay campaign, both-host aggregate gates and independent audit. Details are in `docs/WORD_RAM_REVIEW_PACKET.md`.
+
 ## Canonical Machine Adequacy
 
 The reviewer path uses one pre-execution list,
@@ -92,8 +129,11 @@ The safe final-layout footprint remains useful to callers, but it is not the
 primary equality premise. Safe agreement first implies agreement on the first
 execution's ordered dynamic reads; exact complete-result equality is applied
 there, and value, backing, cost, and exactness are projections. This rung does
-not decode or query raw `List Bool` serialized payload bits; that is S1, while
-charged controller simulation is E1.
+not decode or query raw `List Bool` serialized payload bits; that is S1. It
+also does not charge the controller. That job, once assigned to an E1
+simulation of this execution, is now carried by the separate accepted theorem
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, which charges every
+primitive instruction of its own distinct execution (see the first section).
 
 This remains a mathematical Word-RAM/cost model. It is not a compiled Lean
 runtime or hardware timing claim.
@@ -295,12 +335,16 @@ depends on input size. No input-size-dependent or unbounded event-silent loop
 remains on the accepted route. Bounded event-silent computation does remain:
 instruction dispatch, register moves, fixed-width decoding, bounded
 arithmetic/comparison, option tests, branching, candidate merging, trace
-assembly, and validity guards. The E1 machine (the amended
-E1 target of `OPTION_B_CHARGED_FRINGE_DESIGN.md`) will define the richer
-instruction semantics that individually charges every controller, decode,
-arithmetic, comparison, branch, and register step, and prove a separate
-literal total; until then these omissions are documentary and enumerated
-here, not silently absorbed into an unbounded primitive.
+assembly, and validity guards. In this charged-trace theorem these omissions
+are documentary and enumerated here, not silently absorbed into an unbounded
+primitive. The amended E1 target of `OPTION_B_CHARGED_FRINGE_DESIGN.md` was to
+charge each of them by simulating this execution with a richer instruction
+semantics. That plan is superseded by the separate accepted theorem
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`: it compiles a distinct
+loop-free primitive program over a densely repacked allocation, charges
+every executed controller, decode, arithmetic, comparison, branch and register
+instruction of that program, and proves a separate literal budget. It is
+accepted after independent audit and does not change the enumeration above.
 
 ## No Synthetic Cost-Only Events
 
@@ -420,9 +464,11 @@ CPU implementation.
 The charged/uncharged boundary is the declared charge policy in the Events
 section above: attempted payload-word reads are the only charged trace
 events, the uncharged remainder is enumerated there and is bounded-per-step
-register computation, and the current theorem does not define a substitute
-controller vocabulary or prove conventional word-RAM complexity. E1 must
-define its richer instruction semantics and prove a simulation separately.
+register computation, and the charged-trace theorem does not define a
+substitute controller vocabulary or prove conventional word-RAM complexity.
+Instruction-level charging is carried instead by the separate accepted theorem
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` for its own distinct
+execution, not by a simulation of this one.
 
 ## Non-Claims
 

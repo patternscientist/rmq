@@ -1,0 +1,113 @@
+{
+  "PrepareOnly": false,
+  "TrackedSourceMutations": 0,
+  "Version": "opt1-certificate-replay-v3",
+  "ExitCode": 0,
+  "LibrarySelfTestOnly": true,
+  "ReplayIdentity": {
+    "SourceCommit": "aecf4a580c591e8f694a3699e19e843198089194",
+    "SourceProfileSHA256": "b83ada3baa438d812da076b48422c0a92f88ce686cd48ef982f39de7701699c9",
+    "BuildReceiptSHA256": "eed1ecee4a031a9c3cfcadea445307d8e15e70e732e6ffdd5b166d135292b64e",
+    "HistoricalReceiptSHA256": "a7eb5831a88a7431607d5fe1d7189318d41978391e0a10be3ed336c014563661",
+    "RunnerSHA256": "c64ad401a1236dea7c9638fcf59709728a397b489b5f08ca00942b4d6f7a15e3",
+    "SourceSerialization": "strict UTF-8, only CRLF-to-LF; every other byte significant",
+    "Execution": "Lean compiler producer/expected-type consumer checks; not a native machine performance measurement"
+  },
+  "Stages": [
+    {
+      "Name": "tracked-source-status-before",
+      "Executable": "C:\\Program Files\\Git\\cmd\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no",
+        "--",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+        "docs/internal/extensions/opt1/certificate-replay/FIELDS.json"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf",
+      "Environment": {},
+      "Result": {
+        "Stage": "tracked-source-status-before",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.705,
+        "DeadlineSeconds": 600,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "import-freshness",
+      "Executable": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+      "Arguments": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\scripts\\packed_optimized_runtime.ps1",
+        "-ArtifactCheckOnly"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf",
+      "Environment": {},
+      "Result": {
+        "Stage": "import-freshness",
+        "ExitCode": 0,
+        "Output": [
+          "OPT1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\.lake\\opt1-runtime-replay\\20260912T194011Z-e96f838a8a7141d3b796b5a3fa253c12",
+          "OPT1-IMPORT PASS checked=261 source/artifact/dependency freshness; no Lean launched"
+        ],
+        "StandardOutput": [
+          "OPT1-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf\\.lake\\opt1-runtime-replay\\20260912T194011Z-e96f838a8a7141d3b796b5a3fa253c12",
+          "OPT1-IMPORT PASS checked=261 source/artifact/dependency freshness; no Lean launched"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 20.021,
+        "DeadlineSeconds": 600,
+        "Ownership": "kill-on-close-job"
+      }
+    },
+    {
+      "Name": "tracked-source-status-after",
+      "Executable": "C:\\Program Files\\Git\\cmd\\git.exe",
+      "Arguments": [
+        "-c",
+        "core.excludesfile=",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no",
+        "--",
+        "RMQ/Core/WordRAM/Optimization/Certificate.lean",
+        "RMQ/Core/WordRAM/Optimization/Capstone.lean",
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean",
+        "docs/internal/extensions/opt1/certificate-replay/FIELDS.json"
+      ],
+      "Directory": "C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\r1-lf",
+      "Environment": {},
+      "Result": {
+        "Stage": "tracked-source-status-after",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.459,
+        "DeadlineSeconds": 600,
+        "Ownership": "kill-on-close-job"
+      }
+    }
+  ]
+}

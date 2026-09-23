@@ -1,0 +1,90 @@
+{
+  "Status": "INCOMPLETE_RESOURCE_WAIT",
+  "ObservedHEAD": "0cdfcc307a14d39da19fdd8721ab80918c55d3e3",
+  "Files": [
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/BranchBound.lean",
+      "Bytes": 17383,
+      "SHA256": "277a92ebf330770d992795d510ddbcebf2cc51cad49666e3c70e92e9083e8004",
+      "Disposition": "KERNEL_CHECKED_GENERIC_LEAF_AT_0cdfcc307a14d39da19fdd8721ab80918c55d3e3"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/Capstone.lean",
+      "Bytes": 3895,
+      "SHA256": "198878d7ec47e8f1545ec5927f1f250ddabc8a11aa021ff6463b229d03eccf2b",
+      "Disposition": "UNVERIFIED_DRAFT"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/Compact.lean",
+      "Bytes": 3133,
+      "SHA256": "a616631acd50296408d5cd5d9bb6122c6f84c517c452c9ffe2dee4177f63c434",
+      "Disposition": "UNVERIFIED_DRAFT"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/CompactProof.lean",
+      "Bytes": 30033,
+      "SHA256": "253cf7c1d5709cb319b88d2ac00ba326bf7366874e850e1e0c9df9bbc6797bdb",
+      "Disposition": "UNVERIFIED_DRAFT"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/CompactSafety.lean",
+      "Bytes": 33556,
+      "SHA256": "5f569537047695dc789fb4505bfd84ee8d33622ebab0395d478f9edde66ee360",
+      "Disposition": "UNVERIFIED_DRAFT"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/CompactStatic.lean",
+      "Bytes": 16825,
+      "SHA256": "8a931333ba8313b33e8b2273179380e8a98894d601f3b2c300087fadaaa66bd4",
+      "Disposition": "UNVERIFIED_DRAFT"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/Query.lean",
+      "Bytes": 6334,
+      "SHA256": "56ce4fa157888b90f1893c1ce84c1d5c6d08d5b4cb67d598f4401e6a8082f0b7",
+      "Disposition": "UNVERIFIED_DRAFT"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/QueryProof.lean",
+      "Bytes": 3674,
+      "SHA256": "6854755329f401d00f67f32d5c13a7c11231e5711f8e05b6583264c8238e90b0",
+      "Disposition": "UNVERIFIED_DRAFT"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/QuerySafety.lean",
+      "Bytes": 2304,
+      "SHA256": "df5e80e268a64f7131a07fab9b8ded139e948a7465e010e0d8e357d657d7535f",
+      "Disposition": "UNVERIFIED_DRAFT"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/SourceRelations.lean",
+      "Bytes": 17214,
+      "SHA256": "26b26ed4bfcbefba130a9a6fd26ce51fa564313707f141527763792be39b8efb",
+      "Disposition": "KERNEL_CHECKED_GENERIC_LEAF_AT_0cdfcc307a14d39da19fdd8721ab80918c55d3e3"
+    },
+    {
+      "Path": "RMQ/Validation/PackedOptimized.lean",
+      "Bytes": 10352,
+      "SHA256": "71084880d41a1260461ceb154a2e6c59d411351a957c256972959460a5e11875",
+      "Disposition": "UNVERIFIED_DRAFT"
+    },
+    {
+      "Path": "scripts/packed_optimized_build.ps1",
+      "Bytes": 4281,
+      "SHA256": "49f1f8ab62079fa3db591621de1289be5453247adb14c3ad0db5c13fa910efe6",
+      "Disposition": "ACTIVE_BUILD_USES_RECORDED_PRIOR_VERSION_FUTURE_CHANGES_UNEXERCISED"
+    },
+    {
+      "Path": "scripts/packed_optimized_runtime.ps1",
+      "Bytes": 21614,
+      "SHA256": "2ec085767325be42f3288fb11868fd6c2ef0145198f9fef40b7f08022570adab",
+      "Disposition": "SCRIPT_CONTROLS_CHECKED_SEMANTIC_REPLAY_PENDING"
+    },
+    {
+      "Path": "lakefile.toml",
+      "Bytes": 691,
+      "SHA256": "f79d1a8cd8d565ecf9075a658a618fb1a6f18c98fa63310b5f52d0a05d93469c",
+      "Disposition": "UNVERIFIED_DRAFT"
+    }
+  ]
+}

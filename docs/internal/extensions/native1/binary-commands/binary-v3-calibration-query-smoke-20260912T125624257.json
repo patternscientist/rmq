@@ -1,0 +1,36 @@
+{
+  "schema": "native1-binary-calibration-wrapper-v1",
+  "startedUTC": "2026-09-12T12:56:24.2043047Z",
+  "completedUTC": "2026-09-12T12:57:51.2764742Z",
+  "case": "query-smoke",
+  "command": [
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_binary_replay.ps1",
+    "-Case",
+    "query-smoke"
+  ],
+  "manifestSHA256": "A4C20BCAA5E35402293DB522CE8736A81BD84FBC67FC2648693475504E5E1069",
+  "runnerSHA256": "36774810EB0BA670594D11D11DBD22924032CE8F67554027B5ED5F02CB80DCF6",
+  "result": {
+    "Stage": "binary-v3-calibration-query-smoke",
+    "ExitCode": 0,
+    "Output": [
+      "NATIVE1-BINARY PASS query-smoke/packed-rmq-native.exe",
+      "NATIVE1-BINARY PASS query-smoke/packed-rmq-native-cpp.exe"
+    ],
+    "StandardOutput": [
+      "NATIVE1-BINARY PASS query-smoke/packed-rmq-native.exe",
+      "NATIVE1-BINARY PASS query-smoke/packed-rmq-native-cpp.exe"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 86.639,
+    "DeadlineSeconds": 600,
+    "Ownership": "kill-on-close-job"
+  }
+}

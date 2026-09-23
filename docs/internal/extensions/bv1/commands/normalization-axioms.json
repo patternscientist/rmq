@@ -1,0 +1,54 @@
+{
+  "stage": "normalization-axioms",
+  "platform": "Windows",
+  "head": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "dirty": [
+    " M lakefile.toml",
+    "?? RMQ/Core/WordRAM/Bitvector/",
+    "?? RMQ/Validation/PackedBitvector.lean",
+    "?? docs/internal/extensions/"
+  ],
+  "executable": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+  "arguments": [
+    "env",
+    "lean",
+    "C:\\Users\\poin\\AppData\\Local\\Temp\\bv1-normalization-exact-types.lean"
+  ],
+  "deadlineSeconds": 120,
+  "leanNumThreads": 1,
+  "result": {
+    "Stage": "normalization-axioms",
+    "ExitCode": 0,
+    "Output": [
+      "'RMQ.PackedBitvector.normalize_length' depends on axioms: [propext]",
+      "'RMQ.PackedBitvector.rankPrefix_normalize' depends on axioms: [propext]",
+      "'RMQ.PackedBitvector.selectFrom_normalize' depends on axioms: [propext]",
+      "'RMQ.PackedBitvector.select_normalize' depends on axioms: [propext]",
+      "'RMQ.PackedBitvector.normalize_numeric' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.normalize_numeric_packet' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.normalize_optional_numeric_packet' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.normalization_semantics' depends on axioms: [propext]",
+      "'RMQ.PackedBitvector.identity_rank_transport_fails' depends on axioms: [propext]",
+      "'RMQ.PackedBitvector.identity_select_transport_fails' depends on axioms: [propext]"
+    ],
+    "StandardOutput": [
+      "'RMQ.PackedBitvector.normalize_length' depends on axioms: [propext]",
+      "'RMQ.PackedBitvector.rankPrefix_normalize' depends on axioms: [propext]",
+      "'RMQ.PackedBitvector.selectFrom_normalize' depends on axioms: [propext]",
+      "'RMQ.PackedBitvector.select_normalize' depends on axioms: [propext]",
+      "'RMQ.PackedBitvector.normalize_numeric' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.normalize_numeric_packet' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.normalize_optional_numeric_packet' depends on axioms: [propext, Quot.sound]",
+      "'RMQ.PackedBitvector.normalization_semantics' depends on axioms: [propext]",
+      "'RMQ.PackedBitvector.identity_rank_transport_fails' depends on axioms: [propext]",
+      "'RMQ.PackedBitvector.identity_select_transport_fails' depends on axioms: [propext]"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 11.49,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  }
+}

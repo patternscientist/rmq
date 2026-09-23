@@ -15,7 +15,15 @@
 #      rmq.tex and '#### <ID>' rows in THEOREM_LEDGER.md; every row carries
 #      exactly one status, associated with that row, drawn case-sensitively
 #      from ACCEPTED_BASE / PROVISIONAL_ARCHITECTURE / OPEN.
-#   5. Exactly one literal ARCHITECTURE_RESULT_PENDING marker in rmq.tex.
+#   5. AT MOST ONE literal ARCHITECTURE_RESULT_PENDING marker in rmq.tex. Zero
+#      is the healthy state: the result was absorbed into Section 9 on
+#      2026-08-16. This header read "Exactly one" for the whole RC-4 round
+#      AFTER the code was changed to `-gt 1` -- a file's own documentation
+#      describing the behaviour that file was edited to stop having.
+#   6. Evidence-matrix statuses come from the vocabulary EVIDENCE_MATRIX.md's
+#      own header declares.
+#   7. Every :NNN citation in THEOREM_LEDGER.md resolves to a declaration site
+#      (delegated to check_citations.ps1).
 #
 # Run with -SelfTest to additionally verify that the detectors above actually
 # fire. Every self-test case corresponds to a defect found by audit on
@@ -186,7 +194,40 @@ $forbiddenClaims = @(
   'succinct\s+RMQ\s+in\s+constant\s+time',
   '\bin\s+O\(1\)\s+time',
   '\bO\(1\)\s+query\s+time',
-  '\bO\(1\)[-\s]time\b'
+  '\bO\(1\)[-\s]time\b',
+  # Added after an external audit on 2026-08-09 passed a manuscript sentence
+  # asserting constant query time on a conventional RAM model, phrased outside
+  # the patterns above. The MODEL word is what makes such a claim false here,
+  # not the word "constant" -- the repository's house term is "constant modeled
+  # query cost", which these patterns deliberately leave alone.
+  'conventional\s+RAM',
+  'standard\s+RAM\s+model',
+  'RAM\s+model[^.]{0,40}constant',
+  'constant[^.]{0,40}\bRAM\s+model',
+  'constant\s+query\s+time',
+  'queries?\s+in\s+constant\s+time',
+  # RC-3 `P2-2` accepted that this exact class becomes a persistent self-test:
+  # an external auditor passed `the query executes in a fixed number of
+  # word-RAM steps`, which asserts a word-RAM instruction count for a
+  # cost the repository charges in the CELL-PROBE model. The manuscript says so
+  # itself at the `not word-RAM instruction time` line, so the claim is not
+  # merely unqualified, it contradicts the paper. `word[-\s]RAM\s+time` above
+  # missed it because the sentence says `steps`, not `time`.
+  #
+  # Negation handling, stated exactly. Each pattern refuses a directly
+  # preceding `not`, `not a`, or `not the`, so the manuscript's own
+  # `this is not word-RAM instruction time` and `not a fixed number of
+  # word-RAM steps` both pass. A negation FURTHER away still trips them --
+  # `we do not claim a constant number of word-RAM instructions` fails,
+  # measured. That is deliberate: widening the lookbehind to span arbitrary
+  # words would admit `this is not trivial: the query executes in a fixed
+  # number of word-RAM steps`, letting a real claim through. Failing closed
+  # costs a rephrase; failing open is the defect class this repository
+  # exists to remove.
+  '(?<!\bnot\s)(?<!\bnot\sa\s)(?<!\bnot\sthe\s)fixed\s+number\s+of\s+word[-\s]RAM\s+(?:step|instruction)',
+  '(?<!\bnot\s)(?<!\bnot\sa\s)(?<!\bnot\sthe\s)constant\s+number\s+of\s+word[-\s]RAM\s+(?:step|instruction)',
+  '(?<!not\s)(?<!not\sin\s)\bin\s+\d+\s+word[-\s]RAM\s+(?:step|instruction)',
+  '\bexecutes?\s+in\s+(?:a\s+)?(?:fixed|constant|\d+)[^.]{0,30}word[-\s]RAM'
 )
 
 $allForbidden = $forbidden + $forbiddenClaims
@@ -211,10 +252,38 @@ $scanTargets = [ordered]@{
 # the first".
 
 function HasNearbyCite([string]$norm, [int]$at, [int]$len, [int]$window) {
+  # A citation is `\cite{...}` in LaTeX, but the markdown ledgers attribute with
+  # the bib key itself in backticks -- e.g. "**Fischer & Heun 2011**
+  # (`FischerHeun11`) ... constant query time in the standard model". That is a
+  # description of cited prior work, not a claim about this development, so it
+  # must be excused by the same rule. The keys are the ones actually parsed from
+  # references.bib, so this recognises real attributions rather than anything
+  # that merely looks like one.
   $lo = [Math]::Max(0, $at - $window)
   $hi = [Math]::Min($norm.Length, $at + $len + $window)
   $slice = $norm.Substring($lo, $hi - $lo)
-  return [regex]::IsMatch($slice, '\\cite[tp]?\*?(?:\[[^\]]*\])*\{')
+
+  # A citation excuses a claim only when the claim is ATTRIBUTED, not merely
+  # adjacent to a reference. Measured 2026-09-08: appending a \cite to
+  # 'Our canonical query executes in a fixed number of word-RAM steps.' flipped
+  # this checker from exit 1 to exit 0. That sentence asserts OUR result and the
+  # citation attributes nothing, so a first-person sentence is never excused:
+  # what we claim about this development stands on this development's proofs.
+  $sLo = $norm.LastIndexOfAny([char[]]@('.', ';', ':'), [Math]::Max(0, $at - 1))
+  if ($sLo -lt 0) { $sLo = 0 } else { $sLo += 1 }
+  $sHi = $norm.IndexOfAny([char[]]@('.', ';'), [Math]::Min($norm.Length - 1, $at + $len))
+  if ($sHi -lt 0) { $sHi = $norm.Length }
+  if ($sHi -gt $sLo) {
+    $sent = $norm.Substring($sLo, $sHi - $sLo)
+    if ($sent -match '(?i)\b(?:we|our|ours|this\s+paper|this\s+work|this\s+development)\b') {
+      return $false
+    }
+  }
+  if ([regex]::IsMatch($slice, '\\cite[tp]?\*?(?:\[[^\]]*\])*\{')) { return $true }
+  foreach ($k in $bibKeySet) {
+    if ($slice -match ('`' + [regex]::Escape($k) + '`')) { return $true }
+  }
+  return $false
 }
 
 foreach ($name in $scanTargets.Keys) {
@@ -326,13 +395,178 @@ for ($i = 0; $i -lt $rowIds.Count; $i++) {
 }
 InfoIfClean $before ("ledger coverage: {0} anchors <-> {1} rows, one legal status per row" -f $texLedger.Count, $ledgerIds.Count)
 
-# ------------------------------------------- 5. single pending-result marker
+# ------------------------------------------- 5. pending-result marker
+#
+# This REQUIRED exactly one marker until 2026-08-16, which made it enforce the
+# presence of a defect: while `rmq.tex` carried the marker, the manuscript
+# presented an already-accepted theorem as a future editorial insertion, and
+# this checker reported success for it. The 2026-08-15 fresh-blind audit failed
+# RC-10 on exactly that (P1-1) and noted the checker reinforcing the mismatch.
+#
+# The marker is now permitted but never required: zero is the healthy state once
+# a result is absorbed; more than one is still a defect.
 $before = $failures
 $markerCount = ([regex]::Matches($tex, 'ARCHITECTURE_RESULT_PENDING')).Count
-if ($markerCount -ne 1) {
-  Fail ("rmq.tex must contain exactly one ARCHITECTURE_RESULT_PENDING marker, found {0}" -f $markerCount)
+if ($markerCount -gt 1) {
+  Fail ("rmq.tex must contain at most one ARCHITECTURE_RESULT_PENDING marker, found {0}" -f $markerCount)
 }
-InfoIfClean $before "insertion-point marker: exactly one in rmq.tex"
+InfoIfClean $before ("insertion-point marker: {0} in rmq.tex (0 = absorbed, 1 = pending, >1 fails)" -f $markerCount)
+
+# ------------------------- 5c. the decl-check list is DERIVED, not trusted
+#
+# `paper/README.md` says `scripts/ledger_decl_check.lean` confirms the
+# declaration names the ACCEPTED_BASE rows cite. That script checks a list
+# TRANSCRIBED BY HAND, and nothing compared the transcription to the ledger. It
+# was short by one: `...WholeQueryProgram.evalGlobalWordTrace_getElem?_producer`
+# was named by a row and checked by nothing, and the script's own count pin
+# could not see it -- a pin catches a list shrinking, not a list that never
+# grew. This derives the expected set from the ledger and compares both ways.
+$before = $failures
+$declCheckPath = Join-Path $PSScriptRoot '..\scripts\ledger_decl_check.lean'
+if (-not (Test-Path -LiteralPath $declCheckPath)) {
+  Fail 'scripts/ledger_decl_check.lean is missing; the ledger declaration-coverage check cannot run'
+} else {
+  $declCheckText = [IO.File]::ReadAllText($declCheckPath)
+  $listed = @([regex]::Matches($declCheckText, "(?m)^\s*``(RMQ\.[A-Za-z0-9_.'?]+),?\s*$") |
+    ForEach-Object { $_.Groups[1].Value })
+
+  # Declaration fields of ACCEPTED_BASE entries only. A field runs from its
+  # `- Declaration:` line to the next `- Field:` line.
+  $cited = @()
+  $unresolvable = @()
+  $entries = [regex]::Split($ledger, '(?m)^(?=#{2,4}\s+`?L-)')
+  foreach ($entry in $entries) {
+    if ($entry -notmatch '(?m)^- Status: ACCEPTED_BASE\s*$') { continue }
+    $m = [regex]::Match($entry, '(?ms)^- Declaration:(.*?)(?=^- [A-Za-z][A-Za-z ]*:|\z)')
+    if (-not $m.Success) { continue }
+    foreach ($t in [regex]::Matches($m.Groups[1].Value, '`([^`\r\n]+)`')) {
+      $tok = $t.Groups[1].Value
+      if ($tok -match '\.(lean|ps1|tex|md|json)$') { continue }
+      if ($tok -match "^RMQ\.[A-Za-z0-9_.'?]+$") { $cited += $tok }
+      else { $unresolvable += $tok }
+    }
+  }
+  $cited = @($cited | Sort-Object -Unique)
+  $unresolvable = @($unresolvable | Sort-Object -Unique)
+
+  $notChecked = @($cited | Where-Object { $listed -cnotcontains $_ })
+  $notCited   = @($listed | Where-Object { $cited -cnotcontains $_ })
+  if ($notChecked.Count -gt 0) {
+    Fail ("ledger_decl_check.lean omits {0} declaration(s) an ACCEPTED_BASE row cites: {1}" -f $notChecked.Count, ($notChecked -join ', '))
+  }
+  if ($notCited.Count -gt 0) {
+    Fail ("ledger_decl_check.lean checks {0} name(s) no ACCEPTED_BASE row cites: {1}" -f $notCited.Count, ($notCited -join ', '))
+  }
+
+  # Named-but-unresolvable references are NOT a failure -- elided (`...Foo`),
+  # short-form and annotated forms are legitimate ledger prose. They are the
+  # exact measure of what a green decl-check does NOT cover, so the number is
+  # printed rather than left for a reader to assume it is zero.
+  Info ("ledger declaration coverage: {0} fully-qualified name(s) checked; {1} further reference(s) named in elided/short/annotated form are outside the decl-check by construction" -f $cited.Count, $unresolvable.Count)
+}
+InfoIfClean $before 'ledger declaration coverage: the decl-check list is exactly the set the ACCEPTED_BASE rows cite'
+# ------------------------------------- 5b. ledger status counts are CHECKED
+#
+# `paper/EVIDENCE_MATRIX.md` publishes the ledger's status breakdown. It stated
+# 27/1/6 while the ledger held 29/0/5 -- stale because the Stage-A acceptance
+# moved the architecture row out of PROVISIONAL and nothing re-derived the
+# published figure (2026-08-15 audit, P3-1). A count stated in prose beside one
+# derivable from source is a claim; it is derived here instead of asserted.
+$before = $failures
+$ledgerAccepted = ([regex]::Matches($ledger, '(?m)^- Status: ACCEPTED_BASE\s*$')).Count
+$ledgerProvisional = ([regex]::Matches($ledger, '(?m)^- Status: PROVISIONAL_ARCHITECTURE\s*$')).Count
+$ledgerOpen = ([regex]::Matches($ledger, '(?m)^- Status: OPEN\s*$')).Count
+# EVIDENCE_MATRIX statuses must come from the vocabulary its own header declares.
+#
+# The header says "No other status is permitted for this substrate", and nothing
+# checked it: the RC-4 round appended `BLOCKED_ONLY_ON: FRESH_BLIND_ACCEPTANCE`
+# to EV-07 while the header listed only two statuses, so the file asserted a rule
+# it violated one screen later. Parsing the permitted set FROM the header rather
+# than restating it here means adding a status requires amending the header,
+# which is the property the header claims to have.
+$before = $failures
+$matrixPathForStatus = Join-Path $PSScriptRoot 'EVIDENCE_MATRIX.md'
+if (Test-Path -LiteralPath $matrixPathForStatus) {
+  $matrixText = [IO.File]::ReadAllText($matrixPathForStatus)
+  # The vocabulary is read from the HEADER, not from the whole file. Scanning
+  # the whole file let a status permit itself: a bold `**BLOCKED_ONLY_ON: X**`
+  # written anywhere in the body joined the permitted set and then validated
+  # its own use. The header is the region up to the sentence that makes the
+  # claim, so the scope of the check is the scope of the claim.
+  $headerEnd = [regex]::Match($matrixText, 'No other status is permitted')
+  if (-not $headerEnd.Success) {
+    Fail 'EVIDENCE_MATRIX.md no longer states "No other status is permitted"; the status check has no header to read its vocabulary from'
+    $matrixHeader = ''
+  } else {
+    $matrixHeader = $matrixText.Substring(0, $headerEnd.Index)
+  }
+  $permitted = @()
+  foreach ($m in [regex]::Matches($matrixHeader, '\*\*(CLOSED|BLOCKED_ONLY_ON:\s*[A-Z_]+)\*\*')) {
+    $permitted += ($m.Groups[1].Value -replace '\s+', ' ')
+  }
+  $permitted = @($permitted | Sort-Object -Unique)
+  if ($permitted.Count -eq 0) {
+    Fail "EVIDENCE_MATRIX.md declares no permitted status vocabulary; the status check cannot run"
+  } else {
+    foreach ($m in [regex]::Matches($matrixText, '(?m)^- Status[^:]*:\s*(.+?)\s*$')) {
+      $used = ($m.Groups[1].Value -replace '\s+', ' ').Trim().TrimEnd('.')
+      # Statuses carry trailing prose; compare on the leading token.
+      $head = if ($used -match '^(BLOCKED_ONLY_ON:\s*[A-Z_]+)') { $Matches[1] -replace '\s+', ' ' }
+              elseif ($used -match '^(CLOSED)') { $Matches[1] } else { $used }
+      if ($permitted -cnotcontains $head) {
+        Fail ("EVIDENCE_MATRIX.md uses status '{0}', which its own header does not permit (permitted: {1})" -f $head, ($permitted -join ', '))
+      }
+    }
+  }
+}
+InfoIfClean $before "evidence-matrix statuses all come from the vocabulary the header declares"
+
+$matrixPath = Join-Path $PSScriptRoot 'EVIDENCE_MATRIX.md'
+if (Test-Path -LiteralPath $matrixPath) {
+  $matrix = [IO.File]::ReadAllText($matrixPath)
+  $stated = [regex]::Match($matrix,
+    '(\d+)\s+rows:\s*(\d+)\s+ACCEPTED_BASE,\s*(\d+)\s*[\r\n]+\s*PROVISIONAL_ARCHITECTURE,\s*(\d+)\s+OPEN')
+  if (-not $stated.Success) {
+    Fail "EVIDENCE_MATRIX.md no longer states a parseable ledger status breakdown; the count check cannot run"
+  } elseif ([int]$stated.Groups[2].Value -ne $ledgerAccepted -or
+            [int]$stated.Groups[3].Value -ne $ledgerProvisional -or
+            [int]$stated.Groups[4].Value -ne $ledgerOpen -or
+            [int]$stated.Groups[1].Value -ne $ledgerIds.Count) {
+    Fail ("EVIDENCE_MATRIX.md states {0} rows {1}/{2}/{3} accepted/provisional/open; the ledger has {4} rows {5}/{6}/{7}" -f
+      $stated.Groups[1].Value, $stated.Groups[2].Value, $stated.Groups[3].Value, $stated.Groups[4].Value,
+      $ledgerIds.Count, $ledgerAccepted, $ledgerProvisional, $ledgerOpen)
+  }
+}
+InfoIfClean $before ("ledger status counts: {0} rows, {1}/{2}/{3} accepted/provisional/open, matching EVIDENCE_MATRIX.md" -f $ledgerIds.Count, $ledgerAccepted, $ledgerProvisional, $ledgerOpen)
+
+# ----------------------------------------- 5c. `:NNN` source citations resolve
+#
+# Scheduled since the RC-1 correction handoff and deferred through two rounds.
+# Line numbers rot silently: the `:723` producer pointer in L-ARCH-01/L-PACK-01
+# was corrected from `:702` in August and had drifted again to `:752` by this
+# round -- wrong three times -- and L-UB-12's `:1324` pointed at
+# `queryCostedWithStore_...` while naming `queryTraceResultWithStore_...`, a
+# different theorem with a near-identical name. A reviewer following either one
+# lands somewhere plausible and wrong, which is worse than a dangling pointer.
+#
+# `check_citations.ps1` carries the reasoning and its own -SelfTest.
+$before = $failures
+$citationScript = Join-Path $PSScriptRoot 'check_citations.ps1'
+if (-not (Test-Path -LiteralPath $citationScript)) {
+  Fail "check_citations.ps1 is missing; source citations are unverified"
+} else {
+  # `*>&1`, not `2>&1`: the sub-checker reports through Write-Host, which writes
+  # to the information stream (6). Redirecting only stderr captured nothing, so
+  # a real citation failure surfaced as "exited 1 without naming a failure".
+  $citationOutput = @(& $citationScript *>&1 | ForEach-Object { [string]$_ })
+  if ($LASTEXITCODE -ne 0) {
+    foreach ($citationLine in $citationOutput) {
+      if ($citationLine -match 'FAIL') { Fail $citationLine }
+    }
+    if ($failures -eq $before) { Fail "check_citations.ps1 exited $LASTEXITCODE without naming a failure" }
+  }
+}
+InfoIfClean $before "source citations: every :NNN in THEOREM_LEDGER.md resolves to the declaration its row names"
 
 # ------------------------------------------------------------------ selftest
 if ($SelfTest) {
@@ -366,7 +600,58 @@ if ($SelfTest) {
     '\bin\s+O\(1\)\s+time'                 = 'answered in O(1) time'
     '\bO\(1\)\s+query\s+time'              = 'with O(1) query time'
     '\bO\(1\)[-\s]time\b'                  = 'an O(1)-time query'
+    'conventional\s+RAM'                   = 'constant query time on a conventional RAM machine'
+    'standard\s+RAM\s+model'               = 'queries in the standard RAM model'
+    'RAM\s+model[^.]{0,40}constant'        = 'in the RAM model this is constant'
+    'constant[^.]{0,40}\bRAM\s+model'      = 'constant query time in a RAM model'
+    'constant\s+query\s+time'              = 'the structure has constant query time'
+    'queries?\s+in\s+constant\s+time'      = 'answers queries in constant time'
+      '(?<!\bnot\s)(?<!\bnot\sa\s)(?<!\bnot\sthe\s)fixed\s+number\s+of\s+word[-\s]RAM\s+(?:step|instruction)' = 'the query executes in a fixed number of word-RAM steps'
+      '(?<!\bnot\s)(?<!\bnot\sa\s)(?<!\bnot\sthe\s)constant\s+number\s+of\s+word[-\s]RAM\s+(?:step|instruction)' = 'a constant number of word-RAM instructions'
+      '(?<!not\s)(?<!not\sin\s)\bin\s+\d+\s+word[-\s]RAM\s+(?:step|instruction)' = 'the canonical query runs in 210 word-RAM steps'
+      '\bexecutes?\s+in\s+(?:a\s+)?(?:fixed|constant|\d+)[^.]{0,30}word[-\s]RAM' = 'it executes in a fixed 210 word-RAM operations'
   }
+  # ---------------------------------------------------------------------------
+  # BEHAVIOURAL pin, not a structural one. The loop below iterates the PRODUCTION
+  # array, so deleting a pattern deletes its own test and orphans its fixture --
+  # measured 2026-09-08: removing the four word-RAM patterns left this self-test
+  # at exit 0, "RESULT: PASS". A structural fixture/pattern set-equality pin
+  # would close deletion and nothing else: an audit then showed that WIDENING
+  # $retirementMarker, $quoteWindow or $recordSurfaces alone leaves every pattern
+  # in place and stops them firing, still exit 0.
+  #
+  # So these probes assert the production DECISION on fixed text, using the
+  # production array, the production allowance helper and the production window.
+  # A deleted pattern, a weakened pattern, or a widened citation window each make
+  # a probe stop being rejected, and this fails.
+  $protectedProbes = @(
+    @{ name = 'RC-3 P2-2 fixed-step class';
+       text = 'Our canonical query executes in a fixed number of word-RAM steps.' },
+    @{ name = 'constant-count variant';
+       text = 'The query completes in a constant number of word-RAM instructions.' },
+    @{ name = 'literal-count variant';
+       text = 'The canonical query executes in 210 word-RAM instructions.' },
+    @{ name = 'irrelevant citation must not excuse an own claim';
+       text = 'Our canonical query executes in a fixed number of word-RAM steps~\cite{FischerHeun11}.' },
+    # This probe's verdict DEPENDS ON $citeWindow: a third-person claim with a
+    # citation ~350 characters away is rejected at 220 and excused at 100000.
+    # Without it, widening the window silently disarms the citation rule --
+    # measured: the first-person probe above cannot see that, because the
+    # ownership guard rejects it at any window.
+    @{ name = 'distant citation must not excuse (pins $citeWindow)';
+       text = 'The structure answers every query in a fixed number of word-RAM steps. padding text that carries no attribution whatsoever padding text that carries no attribution whatsoever padding text that carries no attribution whatsoever padding text that carries no attribution whatsoever padding text that carries no attribution whatsoever padding text that carries no attribution whatsoever padding text that carries no attribution whatsoever ~\cite{FischerHeun11}' }
+  )
+  foreach ($probe in $protectedProbes) {
+    $pnorm = ($probe.text -replace '\s+', ' ')
+    $rejected = $false
+    foreach ($pat in $forbiddenClaims) {
+      foreach ($m in [regex]::Matches($pnorm, $pat, 'IgnoreCase')) {
+        if (-not (HasNearbyCite $pnorm $m.Index $m.Length $citeWindow)) { $rejected = $true }
+      }
+    }
+    STCase "protected claim class is rejected: $($probe.name)" $rejected
+  }
+
   foreach ($pat in $forbiddenClaims) {
     if ($positives.ContainsKey($pat)) {
       STCase "detects '$pat'" ([regex]::IsMatch($positives[$pat], $pat, 'IgnoreCase'))
@@ -432,6 +717,16 @@ if ($SelfTest) {
     if ($cnt -ne 1) { $caught = $true }
   }
   STCase "per-row status detects a moved status (total preserved)" $caught
+
+  # The citation checker owns the harder self-test (mutate exactly one citation,
+  # demand exactly one failure). Delegate rather than restate it, but require it
+  # to actually run: a missing sub-checker must not read as a silent pass.
+  $citationSelfTestOk = $false
+  if (Test-Path -LiteralPath $citationScript) {
+    $null = & $citationScript -SelfTest 2>&1
+    $citationSelfTestOk = ($LASTEXITCODE -eq 0)
+  }
+  STCase "check_citations.ps1 self-test passes (fails closed on a moved citation)" $citationSelfTestOk
 
   # Status comparison must be case-sensitive.
   STCase "status check is case-sensitive" (@('ACCEPTED_BASE','PROVISIONAL_ARCHITECTURE','OPEN') -cnotcontains 'open')

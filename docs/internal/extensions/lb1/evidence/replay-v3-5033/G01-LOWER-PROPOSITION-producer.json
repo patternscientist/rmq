@@ -1,0 +1,19 @@
+{
+  "Stage": "G01-LOWER-PROPOSITION-producer",
+  "ExitCode": 0,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Core\\EncodingVariableLowerBound.lean:205:33: warning: unused variable `E`",
+    "Note: This linter can be disabled with `set_option linter.unusedVariables false`"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Core\\EncodingVariableLowerBound.lean:205:33: warning: unused variable `E`",
+    "Note: This linter can be disabled with `set_option linter.unusedVariables false`"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 4.247,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

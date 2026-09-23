@@ -1,0 +1,1009 @@
+{
+  "schema": "rmq.opt1.repair-r2.preservation-receipt.v1",
+  "note": "Curated from the three raw result files and process.json, which stay outside the repository and are identified below by SHA-256 together with every Git capture hash they record. Rerun repair-r2/preservation/check_relocated.ps1 to regenerate them.",
+  "process": {
+    "Version": "opt1-r2-preservation-process-v1",
+    "CandidateRef": "3b8296767f93cd11fed7eb6a257ce94683430228",
+    "FreezeRef": "55f0f64fc03e7c5a3ca2a30271174d67b3a1f2ad",
+    "RepoRoot": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\opt1-r2-claim-receipts",
+    "Host": "POINPAD",
+    "OS": "Microsoft Windows NT 10.0.26200.0",
+    "PowerShell": "5.1.26100.9444",
+    "HostPath": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "Python": "C:\\Python314\\python.exe",
+    "PythonSHA256": "7CA24F26D6E3F463419EE4F537DDD3ACD312C38FE45E678CCE08572F26A8BD1A",
+    "WrapperSHA256": "8F3E53880AF81CF6AF3B3F325043F924632923ECD969B8EDD309C53B419D891F",
+    "CheckerSHA256": "DA0DC413F1AF56727F5E009A79DF115D4933272854DC17967F15879020D2060C",
+    "R1WrapperSHA256": "288B8DEF19720BD53F448EC80598CD658CDCD3C287178D0677C8515F5D5FB496",
+    "R1CheckerSHA256": "AB47AF51D7074C00B1A3A8C73CA5321EC5447B284C0EDEBA04CE2A5D8954A38A",
+    "SupervisorSHA256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+    "DeadlineSeconds": 900,
+    "AllExpected": true
+  },
+  "stages": [
+    {
+      "name": "unchanged-r1",
+      "verdict": "EXPECTED_FAILURE",
+      "expected": "exit 1, status FAIL, code LIVE_PROTECTED_MISSING on docs/internal/extensions/opt1/checkpoint-claims.json",
+      "exit": 1,
+      "seconds": 4.037,
+      "deadline": 900,
+      "timedOut": false,
+      "overflow": false,
+      "ownership": "kill-on-close-job",
+      "status": "FAIL",
+      "failureCode": "LIVE_PROTECTED_MISSING",
+      "failureDetail": "LIVE_PROTECTED_MISSING: docs/internal/extensions/opt1/checkpoint-claims.json",
+      "resultSha256": "AAF9CAF344A003861C13CA116EA9F55A8C7189B1E359801BD78E0C412BAC6F7D",
+      "stdout": [
+        "OPT1-R1-PRESERVATION FAIL selftest=False controls=0/17",
+        "{\"code\": \"LIVE_PROTECTED_MISSING\", \"detail\": \"LIVE_PROTECTED_MISSING: docs/internal/extensions/opt1/checkpoint-claims.json\"}"
+      ],
+      "stderr": []
+    },
+    {
+      "name": "controlled-difference",
+      "verdict": "EXPECTED_CONTROLLED_DIFFERENCE",
+      "expected": "exit 0, status EXPECTED_CONTROLLED_DIFFERENCE",
+      "exit": 0,
+      "seconds": 4.74,
+      "deadline": 900,
+      "timedOut": false,
+      "overflow": false,
+      "ownership": "kill-on-close-job",
+      "status": "EXPECTED_CONTROLLED_DIFFERENCE",
+      "failureCode": null,
+      "failureDetail": null,
+      "resultSha256": "8C50ADD4246AE1A81A8015C0B140877228606D5E439061AE3241D112FDCE6B0C",
+      "stdout": [
+        "OPT1-R2-PRESERVATION EXPECTED_CONTROLLED_DIFFERENCE mode=controlled-difference r1-controls=0/17 relocation-controls=0/10"
+      ],
+      "stderr": []
+    },
+    {
+      "name": "relocated",
+      "verdict": "PASS",
+      "expected": "exit 0, status PASS",
+      "exit": 0,
+      "seconds": 8.351,
+      "deadline": 900,
+      "timedOut": false,
+      "overflow": false,
+      "ownership": "kill-on-close-job",
+      "status": "PASS",
+      "failureCode": null,
+      "failureDetail": null,
+      "resultSha256": "46A9FC02B5C2B5D533B520F5A150585DA57BC5C999D9B3DBB855B8F3FD780197",
+      "stdout": [
+        "OPT1-R2-PRESERVATION PASS mode=relocated r1-controls=17/17 relocation-controls=10/10"
+      ],
+      "stderr": []
+    }
+  ],
+  "rawFilesOutsideRepository": [
+    {
+      "path": "final/preservation-3b82967/process.json",
+      "sha256": "6010D6333B77F30841E484846A67350F62191BC110E0255A3A3E8552C5E31026",
+      "bytes": 4862
+    },
+    {
+      "path": "final/preservation-3b82967/unchanged-r1/process.json",
+      "sha256": "E8767686FD28D8E46441BE912AD43EBB8446A95BC5AC41E88AD888371B773A5C",
+      "bytes": 1850
+    },
+    {
+      "path": "final/preservation-3b82967/unchanged-r1/result.json",
+      "sha256": "AAF9CAF344A003861C13CA116EA9F55A8C7189B1E359801BD78E0C412BAC6F7D",
+      "bytes": 8043
+    },
+    {
+      "path": "final/preservation-3b82967/controlled-difference/result.json",
+      "sha256": "8C50ADD4246AE1A81A8015C0B140877228606D5E439061AE3241D112FDCE6B0C",
+      "bytes": 51219
+    },
+    {
+      "path": "final/preservation-3b82967/relocated/result.json",
+      "sha256": "46A9FC02B5C2B5D533B520F5A150585DA57BC5C999D9B3DBB855B8F3FD780197",
+      "bytes": 610217
+    }
+  ],
+  "demonstrationA_unchangedChecker": {
+    "status": "FAIL",
+    "failure": {
+      "code": "LIVE_PROTECTED_MISSING",
+      "detail": "LIVE_PROTECTED_MISSING: docs/internal/extensions/opt1/checkpoint-claims.json"
+    },
+    "creditedAsPass": false,
+    "checker": {
+      "CheckerSHA256": "AB47AF51D7074C00B1A3A8C73CA5321EC5447B284C0EDEBA04CE2A5D8954A38A",
+      "exitSupervised": 1,
+      "seconds": 2.655,
+      "ownership": "kill-on-close-job"
+    },
+    "gitCaptures": [
+      {
+        "command": [
+          "rev-parse",
+          "--verify",
+          "3b8296767f93cd11fed7eb6a257ce94683430228^{commit}"
+        ],
+        "exit": 0,
+        "stdout_sha256": "80384f75ea836a40fb76f9c0f6621a7f0d7723bbe2adada19d71bfea6e52b92a"
+      },
+      {
+        "command": [
+          "merge-base",
+          "--is-ancestor",
+          "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+          "3b8296767f93cd11fed7eb6a257ce94683430228"
+        ],
+        "exit": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": [
+          "merge-base",
+          "--is-ancestor",
+          "aecf4a580c591e8f694a3699e19e843198089194",
+          "3b8296767f93cd11fed7eb6a257ce94683430228"
+        ],
+        "exit": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": [
+          "ls-tree",
+          "-r",
+          "-z",
+          "aecf4a580c591e8f694a3699e19e843198089194",
+          "--",
+          "RMQ/Core/WordRAM/Optimization/",
+          "RMQ/Core/WordRAM/Packed/",
+          "RMQ/Validation/PackedOptimized.lean",
+          "scripts/packed_optimized_axiom_check.ps1",
+          "scripts/packed_optimized_axiom_union.lean",
+          "scripts/packed_optimized_axioms.lean",
+          "docs/internal/extensions/opt1/"
+        ],
+        "exit": 0,
+        "stdout_sha256": "954f4354774e6571fc392a678b8cff302a7c2f361166558bc2d5607cb400ab20"
+      }
+    ]
+  },
+  "demonstrationA_controlledDifference": {
+    "status": "EXPECTED_CONTROLLED_DIFFERENCE",
+    "failure": null,
+    "creditedAsPass": false,
+    "differencesReportedByUnchangedFunctions": {
+      "candidate_tree": [
+        {
+          "surface": "candidate-tree",
+          "code": "PROTECTED_OMISSION",
+          "paths": [
+            "docs/internal/extensions/opt1/checkpoint-claims.json",
+            "docs/internal/extensions/opt1/checkpoint-report-claims.json"
+          ]
+        },
+        {
+          "surface": "candidate-tree",
+          "code": "PROTECTED_ADDITION",
+          "paths": [
+            "docs/internal/extensions/opt1/checkpoint-claims.json.gz",
+            "docs/internal/extensions/opt1/checkpoint-report-claims.json.gz",
+            "docs/internal/extensions/opt1/repair-r2/.gitattributes",
+            "docs/internal/extensions/opt1/repair-r2/ACCEPTANCE_MATRIX.md",
+            "docs/internal/extensions/opt1/repair-r2/RECEIPT_ARCHIVES.json",
+            "docs/internal/extensions/opt1/repair-r2/preservation/check_relocated.ps1",
+            "docs/internal/extensions/opt1/repair-r2/preservation/check_relocated.py",
+            "docs/internal/extensions/opt1/repair-r2/preservation/relocation_controls.json",
+            "docs/internal/extensions/opt1/repair-r2/receipt_archive_control_helper.py",
+            "docs/internal/extensions/opt1/repair-r2/receipt_archive_controls.json",
+            "docs/internal/extensions/opt1/repair-r2/run_receipt_archive_controls.ps1",
+            "docs/internal/extensions/opt1/repair-r2/verify_receipt_archives.py"
+          ]
+        },
+        {
+          "surface": "candidate-tree",
+          "code": "PROTECTED_IDENTITY",
+          "paths": [
+            "docs/internal/extensions/opt1/.gitattributes"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "surface": "index",
+          "code": "PROTECTED_OMISSION",
+          "paths": [
+            "docs/internal/extensions/opt1/checkpoint-claims.json",
+            "docs/internal/extensions/opt1/checkpoint-report-claims.json"
+          ]
+        },
+        {
+          "surface": "index",
+          "code": "PROTECTED_ADDITION",
+          "paths": [
+            "docs/internal/extensions/opt1/checkpoint-claims.json.gz",
+            "docs/internal/extensions/opt1/checkpoint-report-claims.json.gz",
+            "docs/internal/extensions/opt1/repair-r2/.gitattributes",
+            "docs/internal/extensions/opt1/repair-r2/ACCEPTANCE_MATRIX.md",
+            "docs/internal/extensions/opt1/repair-r2/RECEIPT_ARCHIVES.json",
+            "docs/internal/extensions/opt1/repair-r2/preservation/check_relocated.ps1",
+            "docs/internal/extensions/opt1/repair-r2/preservation/check_relocated.py",
+            "docs/internal/extensions/opt1/repair-r2/preservation/relocation_controls.json",
+            "docs/internal/extensions/opt1/repair-r2/receipt_archive_control_helper.py",
+            "docs/internal/extensions/opt1/repair-r2/receipt_archive_controls.json",
+            "docs/internal/extensions/opt1/repair-r2/run_receipt_archive_controls.ps1",
+            "docs/internal/extensions/opt1/repair-r2/verify_receipt_archives.py"
+          ]
+        },
+        {
+          "surface": "index",
+          "code": "PROTECTED_IDENTITY",
+          "paths": [
+            "docs/internal/extensions/opt1/.gitattributes"
+          ]
+        }
+      ],
+      "live_snapshot": [
+        {
+          "code": "LIVE_PROTECTED_MISSING",
+          "path": "docs/internal/extensions/opt1/checkpoint-claims.json"
+        },
+        {
+          "code": "LIVE_PROTECTED_MISSING",
+          "path": "docs/internal/extensions/opt1/checkpoint-report-claims.json"
+        }
+      ]
+    },
+    "enumeratedAdmittedDifference": {
+      "PROTECTED_OMISSION": [
+        "docs/internal/extensions/opt1/checkpoint-claims.json",
+        "docs/internal/extensions/opt1/checkpoint-report-claims.json"
+      ],
+      "PROTECTED_ADDITION": [
+        "docs/internal/extensions/opt1/checkpoint-claims.json.gz",
+        "docs/internal/extensions/opt1/checkpoint-report-claims.json.gz",
+        "docs/internal/extensions/opt1/repair-r2/.gitattributes",
+        "docs/internal/extensions/opt1/repair-r2/ACCEPTANCE_MATRIX.md",
+        "docs/internal/extensions/opt1/repair-r2/RECEIPT_ARCHIVES.json",
+        "docs/internal/extensions/opt1/repair-r2/preservation/check_relocated.ps1",
+        "docs/internal/extensions/opt1/repair-r2/preservation/check_relocated.py",
+        "docs/internal/extensions/opt1/repair-r2/preservation/relocation_controls.json",
+        "docs/internal/extensions/opt1/repair-r2/receipt_archive_control_helper.py",
+        "docs/internal/extensions/opt1/repair-r2/receipt_archive_controls.json",
+        "docs/internal/extensions/opt1/repair-r2/run_receipt_archive_controls.ps1",
+        "docs/internal/extensions/opt1/repair-r2/verify_receipt_archives.py"
+      ],
+      "PROTECTED_IDENTITY": [
+        "docs/internal/extensions/opt1/.gitattributes"
+      ]
+    },
+    "differenceEqualsEnumeration": {
+      "candidate_tree": true,
+      "index": true,
+      "live_snapshot": true
+    },
+    "frozenRowsWithoutMapping": {
+      "candidateOld": {
+        "rows": 35,
+        "allByteEqual": true,
+        "rowSha256": {
+          "REQ-OPT-BUDGET": "d21c015b80433577ce14c5c7a5f40c5552815d45fc1fc04f8b095f20ea4e8a35",
+          "REQ-OPT-COMPILE": "6efd35337fef1fba2e30cced7c5fde063f61c31ae0bd51c40bef5fd268f8bf13",
+          "REQ-OPT-RUN": "8c79ef0c33bc34f0fd596454416cd15b16c89b6aa9d4696927f00bc460a52c07",
+          "REQ-OPT-SPACE": "2a645d13443ff9b9cd61df82a9dffa32658dca6d03122e9123cd39fcad9dd2e0",
+          "REQ-OPT-CONSUMER": "19e882fef43cfb082e4c36061353daca80b0c0abdcf7b74f8523bed6be1f1b76",
+          "CHK-OPT-CONTROLS": "66598bdbc9a52d8b16e1b9306f8b20b5d7e17fedff00193eea39fb39702f1798",
+          "REPLAY-EXACT-REGISTRY": "00afb3142a9314fac38df2110a6323ae2c51d5390a197b4e473a20e760173c59",
+          "REPLAY-SELECTOR-NONVACUITY": "944ae64b5c1a4f331fd2f39a07ecbf66b7f81d7193b9bbcfab324a553e5a45dc",
+          "REPLAY-SUBPROCESS-DEADLINE": "23b4e8de125df3349201a672bcbf796c91a5719e578879e5cd75f69327342309",
+          "CHK-OPT-DEVELOPMENT": "cf93808a3395e82e5e9bc44374a35331b6bc544e5a56dde368d20382253c1d05",
+          "CHK-OPT-FINAL": "a19b846fe93a2156de8fc2186669e9f296db55c62c5d190c68c060ea3c36cdbc",
+          "CHK-OPT-TRUST": "5d6555573fc3abbbc85ce43f6c4838072506165cd2183fd1fb48149d588c58c2",
+          "CHK-OPT-CONDITIONAL": "21350aedfa4fc0ea94b627f837311993bbcab119eca904e0db38658661112fd1",
+          "CHK-OPT-AUDIT": "13105bda9a061d00c8468a5edb850da2468fa37fa75dd06f982fbd17c477203e",
+          "INV-STORE-IDENTITY": "dbfbab77297dcdc45b42901b0209a93d347c15354d6d495d7b7f8cc8462856e7",
+          "INV-VALUE-DEPENDENCY": "3a950f0e7cbacb65f266f6fff47fb76324cffb3837cef14b8a7b6efd564439e7",
+          "INV-SEMANTIC-NONVACUITY": "6fd3f5a600e51a46c3cdaf0355ef1fd684ba39ea522379df30b1e09c0205e6aa",
+          "INV-TRACE-EXECUTION": "1740def2ead11fc3b2b8f8ec656407655c9c90242d7f3081120ac3924fb770fe",
+          "INV-STORE-AGREEMENT": "382c23318f891d4d96798254f8148bcb792cc9708d644fc3b6eb85996a06ba00",
+          "INV-READ-BACKING": "cec852bfc04252ab095eb771556f5283df4bd8315606eb9305bccdf8f865c6f5",
+          "INV-WORD-WIDTH": "75c370064c8849570cbdda58e07546125eba7a1b87fb08a3dd21aaa6374959b3",
+          "INV-ADDRESS-WIDTH": "a16b791dc460d3b8560ac599a5d16c48247ba042b4c5609cbc11dc69bf8c063f",
+          "INV-INSTRUCTION-ATOMICITY": "f354f92947f93d3790caa190b1ce3ac588391692138c127bfc661f8d2a3d253a",
+          "INV-PROGRAM-ACCOUNTING": "2fd931f649d280e5051371cbb563849a57324fee3e7601e6a8d5f5a3a1e49265",
+          "INV-ORACLE-INDEPENDENCE": "61f75c804b9ff71fc369d5e1b738e7ceadf33fc98cb163d681bc5e4a97ad53ca",
+          "INV-VALIDATION-REACH": "acb04642ac4b040cb3e978bcb216a77eae3192d6a6543af3d3f7a657a9dc5245",
+          "INV-ALL-SIZE": "5b679ece6ba0dc3a7ac9cc5aa81e5cc26854be4c6cd16cca5138c9f9b0e9e798",
+          "INV-PROOF-SEPARATION": "0a3b2b09fc34690fac4e339e5775bb47b778bc12d7a3672e8fde9b190ca89614",
+          "INV-NO-SYNTHETIC": "5a4babb2fd809798410dc5b72592afccabbe6f4324ba491cacca92e736468d8f",
+          "INV-CATEGORY-SEPARATION": "d254bdd9f3d99a494ad6881cc07326156455559593f32ac494cd344a1338279e",
+          "INV-PUBLIC-COMPOSITION": "39d5ddbd4672630931e393870e2cdc9c0f49b1ca0501ab94556faeb04b54862b",
+          "INV-CERTIFICATE-ANTI-BYPASS": "4f38537c2262edb1c0d55a3f3ec6009e34b67d6378c472e7516b999da5409f94",
+          "INV-MUTATION-REPRODUCIBILITY": "bcc61ae48d7fca7836429f5df946463efb485a974f66e2c8daef504e8affd894",
+          "INV-GLOBAL-PHYSICAL-MACHINE": "9deeb0e3890839e3cea82aa354120a634bdcd18a8476f0f73e9a1407740ad820",
+          "INV-WIDTH-SCALING": "39350262b5322c23ba5e8f3e38d542808fdcc667716f85bbb8d53e8cab8f4d7b"
+        }
+      },
+      "candidateRepair": {
+        "rows": 35,
+        "allByteEqual": true,
+        "rowSha256": {
+          "REQ-OPT-BUDGET": "d21c015b80433577ce14c5c7a5f40c5552815d45fc1fc04f8b095f20ea4e8a35",
+          "REQ-OPT-COMPILE": "6efd35337fef1fba2e30cced7c5fde063f61c31ae0bd51c40bef5fd268f8bf13",
+          "REQ-OPT-RUN": "8c79ef0c33bc34f0fd596454416cd15b16c89b6aa9d4696927f00bc460a52c07",
+          "REQ-OPT-SPACE": "2a645d13443ff9b9cd61df82a9dffa32658dca6d03122e9123cd39fcad9dd2e0",
+          "REQ-OPT-CONSUMER": "19e882fef43cfb082e4c36061353daca80b0c0abdcf7b74f8523bed6be1f1b76",
+          "CHK-OPT-CONTROLS": "66598bdbc9a52d8b16e1b9306f8b20b5d7e17fedff00193eea39fb39702f1798",
+          "REPLAY-EXACT-REGISTRY": "00afb3142a9314fac38df2110a6323ae2c51d5390a197b4e473a20e760173c59",
+          "REPLAY-SELECTOR-NONVACUITY": "944ae64b5c1a4f331fd2f39a07ecbf66b7f81d7193b9bbcfab324a553e5a45dc",
+          "REPLAY-SUBPROCESS-DEADLINE": "23b4e8de125df3349201a672bcbf796c91a5719e578879e5cd75f69327342309",
+          "CHK-OPT-DEVELOPMENT": "cf93808a3395e82e5e9bc44374a35331b6bc544e5a56dde368d20382253c1d05",
+          "CHK-OPT-FINAL": "a19b846fe93a2156de8fc2186669e9f296db55c62c5d190c68c060ea3c36cdbc",
+          "CHK-OPT-TRUST": "5d6555573fc3abbbc85ce43f6c4838072506165cd2183fd1fb48149d588c58c2",
+          "CHK-OPT-CONDITIONAL": "21350aedfa4fc0ea94b627f837311993bbcab119eca904e0db38658661112fd1",
+          "CHK-OPT-AUDIT": "13105bda9a061d00c8468a5edb850da2468fa37fa75dd06f982fbd17c477203e",
+          "INV-STORE-IDENTITY": "dbfbab77297dcdc45b42901b0209a93d347c15354d6d495d7b7f8cc8462856e7",
+          "INV-VALUE-DEPENDENCY": "3a950f0e7cbacb65f266f6fff47fb76324cffb3837cef14b8a7b6efd564439e7",
+          "INV-SEMANTIC-NONVACUITY": "6fd3f5a600e51a46c3cdaf0355ef1fd684ba39ea522379df30b1e09c0205e6aa",
+          "INV-TRACE-EXECUTION": "1740def2ead11fc3b2b8f8ec656407655c9c90242d7f3081120ac3924fb770fe",
+          "INV-STORE-AGREEMENT": "382c23318f891d4d96798254f8148bcb792cc9708d644fc3b6eb85996a06ba00",
+          "INV-READ-BACKING": "cec852bfc04252ab095eb771556f5283df4bd8315606eb9305bccdf8f865c6f5",
+          "INV-WORD-WIDTH": "75c370064c8849570cbdda58e07546125eba7a1b87fb08a3dd21aaa6374959b3",
+          "INV-ADDRESS-WIDTH": "a16b791dc460d3b8560ac599a5d16c48247ba042b4c5609cbc11dc69bf8c063f",
+          "INV-INSTRUCTION-ATOMICITY": "f354f92947f93d3790caa190b1ce3ac588391692138c127bfc661f8d2a3d253a",
+          "INV-PROGRAM-ACCOUNTING": "2fd931f649d280e5051371cbb563849a57324fee3e7601e6a8d5f5a3a1e49265",
+          "INV-ORACLE-INDEPENDENCE": "61f75c804b9ff71fc369d5e1b738e7ceadf33fc98cb163d681bc5e4a97ad53ca",
+          "INV-VALIDATION-REACH": "acb04642ac4b040cb3e978bcb216a77eae3192d6a6543af3d3f7a657a9dc5245",
+          "INV-ALL-SIZE": "5b679ece6ba0dc3a7ac9cc5aa81e5cc26854be4c6cd16cca5138c9f9b0e9e798",
+          "INV-PROOF-SEPARATION": "0a3b2b09fc34690fac4e339e5775bb47b778bc12d7a3672e8fde9b190ca89614",
+          "INV-NO-SYNTHETIC": "5a4babb2fd809798410dc5b72592afccabbe6f4324ba491cacca92e736468d8f",
+          "INV-CATEGORY-SEPARATION": "d254bdd9f3d99a494ad6881cc07326156455559593f32ac494cd344a1338279e",
+          "INV-PUBLIC-COMPOSITION": "39d5ddbd4672630931e393870e2cdc9c0f49b1ca0501ab94556faeb04b54862b",
+          "INV-CERTIFICATE-ANTI-BYPASS": "4f38537c2262edb1c0d55a3f3ec6009e34b67d6378c472e7516b999da5409f94",
+          "INV-MUTATION-REPRODUCIBILITY": "bcc61ae48d7fca7836429f5df946463efb485a974f66e2c8daef504e8affd894",
+          "INV-GLOBAL-PHYSICAL-MACHINE": "9deeb0e3890839e3cea82aa354120a634bdcd18a8476f0f73e9a1407740ad820",
+          "INV-WIDTH-SCALING": "39350262b5322c23ba5e8f3e38d542808fdcc667716f85bbb8d53e8cab8f4d7b"
+        }
+      }
+    },
+    "r1CheckerIdentity": {
+      "docs/internal/extensions/opt1/repair-r1/preservation/check.py": {
+        "blob": "b9371490047ccd2b4d16329be4d6a499cb449410",
+        "live_sha256": "ab47af51d7074c00b1a3a8c73ca5321ec5447b284c0edeba04ce2a5d8954a38a"
+      },
+      "docs/internal/extensions/opt1/repair-r1/preservation/registry.json": {
+        "blob": "18c902e9a1ba9b6bfcc8b2639e96eccf489e3179",
+        "live_sha256": "add660412125551a7f73cdc1693e953eff5cc6ccc9582dbf09f8b21ef2e032a1"
+      }
+    },
+    "gitCaptureCount": 18,
+    "durationSeconds": 4.120713000011165
+  },
+  "demonstrationB_relocationAware": {
+    "status": "PASS",
+    "failure": null,
+    "r1CheckerIdentity": {
+      "docs/internal/extensions/opt1/repair-r1/preservation/check.py": {
+        "blob": "b9371490047ccd2b4d16329be4d6a499cb449410",
+        "live_sha256": "ab47af51d7074c00b1a3a8c73ca5321ec5447b284c0edeba04ce2a5d8954a38a"
+      },
+      "docs/internal/extensions/opt1/repair-r1/preservation/registry.json": {
+        "blob": "18c902e9a1ba9b6bfcc8b2639e96eccf489e3179",
+        "live_sha256": "add660412125551a7f73cdc1693e953eff5cc6ccc9582dbf09f8b21ef2e032a1"
+      }
+    },
+    "protectedCounts": {
+      "r1_baseline": 510,
+      "r2_base": 901,
+      "candidate": 911
+    },
+    "receiptArchiveVerifier": {
+      "exit": 0,
+      "resultLine": "RECEIPT-ARCHIVES: RESULT: PASS \u00282 of 2 required archives verified; 2 manifest entries; 0 extra archives; 11 unselected scanner-text files present; base 4cc95012a31cda9459d06d87b3371c8c172bb973)"
+    },
+    "relocation": {
+      "relocations": [
+        {
+          "original": "docs/internal/extensions/opt1/checkpoint-claims.json",
+          "archive": "docs/internal/extensions/opt1/checkpoint-claims.json.gz",
+          "archive_blob": "0fae86e162e6f220a31d747520d45e1620788fdb",
+          "archive_mode": "100644",
+          "recovered_blob": "25a2026b26c792e42e90a53a6594e0c5c2fd52d9",
+          "recovered_bytes": 78583,
+          "recovered_sha256": "4073391ecbf3ee6c16301851f0f3f392c5acf0e0e16bdd64f2b8ce68ee3df24f",
+          "base_blob": "25a2026b26c792e42e90a53a6594e0c5c2fd52d9"
+        },
+        {
+          "original": "docs/internal/extensions/opt1/checkpoint-report-claims.json",
+          "archive": "docs/internal/extensions/opt1/checkpoint-report-claims.json.gz",
+          "archive_blob": "4dbace32334765620f1ee094405b12c11e2c5ad4",
+          "archive_mode": "100644",
+          "recovered_blob": "eb59b5d20aed5491fb66c51e64e9a873ed043823",
+          "recovered_bytes": 20740,
+          "recovered_sha256": "71669aacbd57f32955738682ab135444dad065594090bb89672db30f59c3b5ab",
+          "base_blob": "eb59b5d20aed5491fb66c51e64e9a873ed043823"
+        }
+      ],
+      "repair_r2_additions": [
+        {
+          "path": "docs/internal/extensions/opt1/repair-r2/.gitattributes",
+          "mode": "100644",
+          "blob": "11ac37309d7f3bfde0e923a9d94c8d736af2f2a1"
+        },
+        {
+          "path": "docs/internal/extensions/opt1/repair-r2/ACCEPTANCE_MATRIX.md",
+          "mode": "100644",
+          "blob": "bffb5f0c8eeb61a76c18d78dc45991869089c4a3"
+        },
+        {
+          "path": "docs/internal/extensions/opt1/repair-r2/RECEIPT_ARCHIVES.json",
+          "mode": "100644",
+          "blob": "341989ae42a368d142ffe83c70e4b8f7112ff7f4"
+        },
+        {
+          "path": "docs/internal/extensions/opt1/repair-r2/preservation/check_relocated.ps1",
+          "mode": "100644",
+          "blob": "85be19e39057c10b88146e0d234422064534a1a0"
+        },
+        {
+          "path": "docs/internal/extensions/opt1/repair-r2/preservation/check_relocated.py",
+          "mode": "100644",
+          "blob": "258d37c02a4105c29fade62d9f45f18be182d562"
+        },
+        {
+          "path": "docs/internal/extensions/opt1/repair-r2/preservation/relocation_controls.json",
+          "mode": "100644",
+          "blob": "ab9776919c6579a556a08fcd4d93a4482520f4f3"
+        },
+        {
+          "path": "docs/internal/extensions/opt1/repair-r2/receipt_archive_control_helper.py",
+          "mode": "100644",
+          "blob": "5b81f42c7f92ac99f2454f44991b35a7a31634d3"
+        },
+        {
+          "path": "docs/internal/extensions/opt1/repair-r2/receipt_archive_controls.json",
+          "mode": "100644",
+          "blob": "058f480d94432b649731b6e0c147b45d86922698"
+        },
+        {
+          "path": "docs/internal/extensions/opt1/repair-r2/run_receipt_archive_controls.ps1",
+          "mode": "100644",
+          "blob": "d2328ae593630279aeb142a9c5dcaaa2baf81818"
+        },
+        {
+          "path": "docs/internal/extensions/opt1/repair-r2/verify_receipt_archives.py",
+          "mode": "100644",
+          "blob": "5507db6f73d57b7eafd1a8468762e3077ea329b3"
+        }
+      ],
+      "attributes": {
+        "candidate_blob": "85d70dcaa28b954b72e266f4bc41a4c9ac85b1f5",
+        "base_blob": "98ee7ff03f07aa528ed09248a602bbcb33ec68cf",
+        "appended_bytes": 161,
+        "appended_sha256": "70faca1ee6fa2119a71fef1559d5cb6e1853a9cc316d914eab84117d9678b957"
+      }
+    },
+    "amendmentIdentity": {
+      "protected_entries": 901,
+      "equal_to": "4cc95012a31cda9459d06d87b3371c8c172bb973"
+    },
+    "indexAmendmentIdentity": {
+      "protected_entries": 901,
+      "equal_to": "4cc95012a31cda9459d06d87b3371c8c172bb973"
+    },
+    "indexRelocationEqualToCandidate": true,
+    "r1ProtectedIdentity": {
+      "entries": 510,
+      "allEqual": true
+    },
+    "r1IndexProtectedIdentity": {
+      "entries": 510,
+      "allEqual": true
+    },
+    "frozenRows": {
+      "freeze_to_base": {
+        "rows": 35,
+        "allByteEqual": true,
+        "rowSha256": {
+          "REQ-OPT-BUDGET": "d21c015b80433577ce14c5c7a5f40c5552815d45fc1fc04f8b095f20ea4e8a35",
+          "REQ-OPT-COMPILE": "6efd35337fef1fba2e30cced7c5fde063f61c31ae0bd51c40bef5fd268f8bf13",
+          "REQ-OPT-RUN": "8c79ef0c33bc34f0fd596454416cd15b16c89b6aa9d4696927f00bc460a52c07",
+          "REQ-OPT-SPACE": "2a645d13443ff9b9cd61df82a9dffa32658dca6d03122e9123cd39fcad9dd2e0",
+          "REQ-OPT-CONSUMER": "19e882fef43cfb082e4c36061353daca80b0c0abdcf7b74f8523bed6be1f1b76",
+          "CHK-OPT-CONTROLS": "66598bdbc9a52d8b16e1b9306f8b20b5d7e17fedff00193eea39fb39702f1798",
+          "REPLAY-EXACT-REGISTRY": "00afb3142a9314fac38df2110a6323ae2c51d5390a197b4e473a20e760173c59",
+          "REPLAY-SELECTOR-NONVACUITY": "944ae64b5c1a4f331fd2f39a07ecbf66b7f81d7193b9bbcfab324a553e5a45dc",
+          "REPLAY-SUBPROCESS-DEADLINE": "23b4e8de125df3349201a672bcbf796c91a5719e578879e5cd75f69327342309",
+          "CHK-OPT-DEVELOPMENT": "cf93808a3395e82e5e9bc44374a35331b6bc544e5a56dde368d20382253c1d05",
+          "CHK-OPT-FINAL": "a19b846fe93a2156de8fc2186669e9f296db55c62c5d190c68c060ea3c36cdbc",
+          "CHK-OPT-TRUST": "5d6555573fc3abbbc85ce43f6c4838072506165cd2183fd1fb48149d588c58c2",
+          "CHK-OPT-CONDITIONAL": "21350aedfa4fc0ea94b627f837311993bbcab119eca904e0db38658661112fd1",
+          "CHK-OPT-AUDIT": "13105bda9a061d00c8468a5edb850da2468fa37fa75dd06f982fbd17c477203e",
+          "INV-STORE-IDENTITY": "dbfbab77297dcdc45b42901b0209a93d347c15354d6d495d7b7f8cc8462856e7",
+          "INV-VALUE-DEPENDENCY": "3a950f0e7cbacb65f266f6fff47fb76324cffb3837cef14b8a7b6efd564439e7",
+          "INV-SEMANTIC-NONVACUITY": "6fd3f5a600e51a46c3cdaf0355ef1fd684ba39ea522379df30b1e09c0205e6aa",
+          "INV-TRACE-EXECUTION": "1740def2ead11fc3b2b8f8ec656407655c9c90242d7f3081120ac3924fb770fe",
+          "INV-STORE-AGREEMENT": "382c23318f891d4d96798254f8148bcb792cc9708d644fc3b6eb85996a06ba00",
+          "INV-READ-BACKING": "cec852bfc04252ab095eb771556f5283df4bd8315606eb9305bccdf8f865c6f5",
+          "INV-WORD-WIDTH": "75c370064c8849570cbdda58e07546125eba7a1b87fb08a3dd21aaa6374959b3",
+          "INV-ADDRESS-WIDTH": "a16b791dc460d3b8560ac599a5d16c48247ba042b4c5609cbc11dc69bf8c063f",
+          "INV-INSTRUCTION-ATOMICITY": "f354f92947f93d3790caa190b1ce3ac588391692138c127bfc661f8d2a3d253a",
+          "INV-PROGRAM-ACCOUNTING": "2fd931f649d280e5051371cbb563849a57324fee3e7601e6a8d5f5a3a1e49265",
+          "INV-ORACLE-INDEPENDENCE": "61f75c804b9ff71fc369d5e1b738e7ceadf33fc98cb163d681bc5e4a97ad53ca",
+          "INV-VALIDATION-REACH": "acb04642ac4b040cb3e978bcb216a77eae3192d6a6543af3d3f7a657a9dc5245",
+          "INV-ALL-SIZE": "5b679ece6ba0dc3a7ac9cc5aa81e5cc26854be4c6cd16cca5138c9f9b0e9e798",
+          "INV-PROOF-SEPARATION": "0a3b2b09fc34690fac4e339e5775bb47b778bc12d7a3672e8fde9b190ca89614",
+          "INV-NO-SYNTHETIC": "5a4babb2fd809798410dc5b72592afccabbe6f4324ba491cacca92e736468d8f",
+          "INV-CATEGORY-SEPARATION": "d254bdd9f3d99a494ad6881cc07326156455559593f32ac494cd344a1338279e",
+          "INV-PUBLIC-COMPOSITION": "39d5ddbd4672630931e393870e2cdc9c0f49b1ca0501ab94556faeb04b54862b",
+          "INV-CERTIFICATE-ANTI-BYPASS": "4f38537c2262edb1c0d55a3f3ec6009e34b67d6378c472e7516b999da5409f94",
+          "INV-MUTATION-REPRODUCIBILITY": "bcc61ae48d7fca7836429f5df946463efb485a974f66e2c8daef504e8affd894",
+          "INV-GLOBAL-PHYSICAL-MACHINE": "9deeb0e3890839e3cea82aa354120a634bdcd18a8476f0f73e9a1407740ad820",
+          "INV-WIDTH-SCALING": "39350262b5322c23ba5e8f3e38d542808fdcc667716f85bbb8d53e8cab8f4d7b"
+        }
+      },
+      "freeze_to_live_old": {
+        "rows": 35,
+        "allByteEqual": true,
+        "rowSha256": {
+          "REQ-OPT-BUDGET": "d21c015b80433577ce14c5c7a5f40c5552815d45fc1fc04f8b095f20ea4e8a35",
+          "REQ-OPT-COMPILE": "6efd35337fef1fba2e30cced7c5fde063f61c31ae0bd51c40bef5fd268f8bf13",
+          "REQ-OPT-RUN": "8c79ef0c33bc34f0fd596454416cd15b16c89b6aa9d4696927f00bc460a52c07",
+          "REQ-OPT-SPACE": "2a645d13443ff9b9cd61df82a9dffa32658dca6d03122e9123cd39fcad9dd2e0",
+          "REQ-OPT-CONSUMER": "19e882fef43cfb082e4c36061353daca80b0c0abdcf7b74f8523bed6be1f1b76",
+          "CHK-OPT-CONTROLS": "66598bdbc9a52d8b16e1b9306f8b20b5d7e17fedff00193eea39fb39702f1798",
+          "REPLAY-EXACT-REGISTRY": "00afb3142a9314fac38df2110a6323ae2c51d5390a197b4e473a20e760173c59",
+          "REPLAY-SELECTOR-NONVACUITY": "944ae64b5c1a4f331fd2f39a07ecbf66b7f81d7193b9bbcfab324a553e5a45dc",
+          "REPLAY-SUBPROCESS-DEADLINE": "23b4e8de125df3349201a672bcbf796c91a5719e578879e5cd75f69327342309",
+          "CHK-OPT-DEVELOPMENT": "cf93808a3395e82e5e9bc44374a35331b6bc544e5a56dde368d20382253c1d05",
+          "CHK-OPT-FINAL": "a19b846fe93a2156de8fc2186669e9f296db55c62c5d190c68c060ea3c36cdbc",
+          "CHK-OPT-TRUST": "5d6555573fc3abbbc85ce43f6c4838072506165cd2183fd1fb48149d588c58c2",
+          "CHK-OPT-CONDITIONAL": "21350aedfa4fc0ea94b627f837311993bbcab119eca904e0db38658661112fd1",
+          "CHK-OPT-AUDIT": "13105bda9a061d00c8468a5edb850da2468fa37fa75dd06f982fbd17c477203e",
+          "INV-STORE-IDENTITY": "dbfbab77297dcdc45b42901b0209a93d347c15354d6d495d7b7f8cc8462856e7",
+          "INV-VALUE-DEPENDENCY": "3a950f0e7cbacb65f266f6fff47fb76324cffb3837cef14b8a7b6efd564439e7",
+          "INV-SEMANTIC-NONVACUITY": "6fd3f5a600e51a46c3cdaf0355ef1fd684ba39ea522379df30b1e09c0205e6aa",
+          "INV-TRACE-EXECUTION": "1740def2ead11fc3b2b8f8ec656407655c9c90242d7f3081120ac3924fb770fe",
+          "INV-STORE-AGREEMENT": "382c23318f891d4d96798254f8148bcb792cc9708d644fc3b6eb85996a06ba00",
+          "INV-READ-BACKING": "cec852bfc04252ab095eb771556f5283df4bd8315606eb9305bccdf8f865c6f5",
+          "INV-WORD-WIDTH": "75c370064c8849570cbdda58e07546125eba7a1b87fb08a3dd21aaa6374959b3",
+          "INV-ADDRESS-WIDTH": "a16b791dc460d3b8560ac599a5d16c48247ba042b4c5609cbc11dc69bf8c063f",
+          "INV-INSTRUCTION-ATOMICITY": "f354f92947f93d3790caa190b1ce3ac588391692138c127bfc661f8d2a3d253a",
+          "INV-PROGRAM-ACCOUNTING": "2fd931f649d280e5051371cbb563849a57324fee3e7601e6a8d5f5a3a1e49265",
+          "INV-ORACLE-INDEPENDENCE": "61f75c804b9ff71fc369d5e1b738e7ceadf33fc98cb163d681bc5e4a97ad53ca",
+          "INV-VALIDATION-REACH": "acb04642ac4b040cb3e978bcb216a77eae3192d6a6543af3d3f7a657a9dc5245",
+          "INV-ALL-SIZE": "5b679ece6ba0dc3a7ac9cc5aa81e5cc26854be4c6cd16cca5138c9f9b0e9e798",
+          "INV-PROOF-SEPARATION": "0a3b2b09fc34690fac4e339e5775bb47b778bc12d7a3672e8fde9b190ca89614",
+          "INV-NO-SYNTHETIC": "5a4babb2fd809798410dc5b72592afccabbe6f4324ba491cacca92e736468d8f",
+          "INV-CATEGORY-SEPARATION": "d254bdd9f3d99a494ad6881cc07326156455559593f32ac494cd344a1338279e",
+          "INV-PUBLIC-COMPOSITION": "39d5ddbd4672630931e393870e2cdc9c0f49b1ca0501ab94556faeb04b54862b",
+          "INV-CERTIFICATE-ANTI-BYPASS": "4f38537c2262edb1c0d55a3f3ec6009e34b67d6378c472e7516b999da5409f94",
+          "INV-MUTATION-REPRODUCIBILITY": "bcc61ae48d7fca7836429f5df946463efb485a974f66e2c8daef504e8affd894",
+          "INV-GLOBAL-PHYSICAL-MACHINE": "9deeb0e3890839e3cea82aa354120a634bdcd18a8476f0f73e9a1407740ad820",
+          "INV-WIDTH-SCALING": "39350262b5322c23ba5e8f3e38d542808fdcc667716f85bbb8d53e8cab8f4d7b"
+        }
+      },
+      "freeze_to_live_repair": {
+        "rows": 35,
+        "allByteEqual": true,
+        "rowSha256": {
+          "REQ-OPT-BUDGET": "d21c015b80433577ce14c5c7a5f40c5552815d45fc1fc04f8b095f20ea4e8a35",
+          "REQ-OPT-COMPILE": "6efd35337fef1fba2e30cced7c5fde063f61c31ae0bd51c40bef5fd268f8bf13",
+          "REQ-OPT-RUN": "8c79ef0c33bc34f0fd596454416cd15b16c89b6aa9d4696927f00bc460a52c07",
+          "REQ-OPT-SPACE": "2a645d13443ff9b9cd61df82a9dffa32658dca6d03122e9123cd39fcad9dd2e0",
+          "REQ-OPT-CONSUMER": "19e882fef43cfb082e4c36061353daca80b0c0abdcf7b74f8523bed6be1f1b76",
+          "CHK-OPT-CONTROLS": "66598bdbc9a52d8b16e1b9306f8b20b5d7e17fedff00193eea39fb39702f1798",
+          "REPLAY-EXACT-REGISTRY": "00afb3142a9314fac38df2110a6323ae2c51d5390a197b4e473a20e760173c59",
+          "REPLAY-SELECTOR-NONVACUITY": "944ae64b5c1a4f331fd2f39a07ecbf66b7f81d7193b9bbcfab324a553e5a45dc",
+          "REPLAY-SUBPROCESS-DEADLINE": "23b4e8de125df3349201a672bcbf796c91a5719e578879e5cd75f69327342309",
+          "CHK-OPT-DEVELOPMENT": "cf93808a3395e82e5e9bc44374a35331b6bc544e5a56dde368d20382253c1d05",
+          "CHK-OPT-FINAL": "a19b846fe93a2156de8fc2186669e9f296db55c62c5d190c68c060ea3c36cdbc",
+          "CHK-OPT-TRUST": "5d6555573fc3abbbc85ce43f6c4838072506165cd2183fd1fb48149d588c58c2",
+          "CHK-OPT-CONDITIONAL": "21350aedfa4fc0ea94b627f837311993bbcab119eca904e0db38658661112fd1",
+          "CHK-OPT-AUDIT": "13105bda9a061d00c8468a5edb850da2468fa37fa75dd06f982fbd17c477203e",
+          "INV-STORE-IDENTITY": "dbfbab77297dcdc45b42901b0209a93d347c15354d6d495d7b7f8cc8462856e7",
+          "INV-VALUE-DEPENDENCY": "3a950f0e7cbacb65f266f6fff47fb76324cffb3837cef14b8a7b6efd564439e7",
+          "INV-SEMANTIC-NONVACUITY": "6fd3f5a600e51a46c3cdaf0355ef1fd684ba39ea522379df30b1e09c0205e6aa",
+          "INV-TRACE-EXECUTION": "1740def2ead11fc3b2b8f8ec656407655c9c90242d7f3081120ac3924fb770fe",
+          "INV-STORE-AGREEMENT": "382c23318f891d4d96798254f8148bcb792cc9708d644fc3b6eb85996a06ba00",
+          "INV-READ-BACKING": "cec852bfc04252ab095eb771556f5283df4bd8315606eb9305bccdf8f865c6f5",
+          "INV-WORD-WIDTH": "75c370064c8849570cbdda58e07546125eba7a1b87fb08a3dd21aaa6374959b3",
+          "INV-ADDRESS-WIDTH": "a16b791dc460d3b8560ac599a5d16c48247ba042b4c5609cbc11dc69bf8c063f",
+          "INV-INSTRUCTION-ATOMICITY": "f354f92947f93d3790caa190b1ce3ac588391692138c127bfc661f8d2a3d253a",
+          "INV-PROGRAM-ACCOUNTING": "2fd931f649d280e5051371cbb563849a57324fee3e7601e6a8d5f5a3a1e49265",
+          "INV-ORACLE-INDEPENDENCE": "61f75c804b9ff71fc369d5e1b738e7ceadf33fc98cb163d681bc5e4a97ad53ca",
+          "INV-VALIDATION-REACH": "acb04642ac4b040cb3e978bcb216a77eae3192d6a6543af3d3f7a657a9dc5245",
+          "INV-ALL-SIZE": "5b679ece6ba0dc3a7ac9cc5aa81e5cc26854be4c6cd16cca5138c9f9b0e9e798",
+          "INV-PROOF-SEPARATION": "0a3b2b09fc34690fac4e339e5775bb47b778bc12d7a3672e8fde9b190ca89614",
+          "INV-NO-SYNTHETIC": "5a4babb2fd809798410dc5b72592afccabbe6f4324ba491cacca92e736468d8f",
+          "INV-CATEGORY-SEPARATION": "d254bdd9f3d99a494ad6881cc07326156455559593f32ac494cd344a1338279e",
+          "INV-PUBLIC-COMPOSITION": "39d5ddbd4672630931e393870e2cdc9c0f49b1ca0501ab94556faeb04b54862b",
+          "INV-CERTIFICATE-ANTI-BYPASS": "4f38537c2262edb1c0d55a3f3ec6009e34b67d6378c472e7516b999da5409f94",
+          "INV-MUTATION-REPRODUCIBILITY": "bcc61ae48d7fca7836429f5df946463efb485a974f66e2c8daef504e8affd894",
+          "INV-GLOBAL-PHYSICAL-MACHINE": "9deeb0e3890839e3cea82aa354120a634bdcd18a8476f0f73e9a1407740ad820",
+          "INV-WIDTH-SCALING": "39350262b5322c23ba5e8f3e38d542808fdcc667716f85bbb8d53e8cab8f4d7b"
+        }
+      },
+      "freeze_to_candidate_old": {
+        "rows": 35,
+        "allByteEqual": true,
+        "rowSha256": {
+          "REQ-OPT-BUDGET": "d21c015b80433577ce14c5c7a5f40c5552815d45fc1fc04f8b095f20ea4e8a35",
+          "REQ-OPT-COMPILE": "6efd35337fef1fba2e30cced7c5fde063f61c31ae0bd51c40bef5fd268f8bf13",
+          "REQ-OPT-RUN": "8c79ef0c33bc34f0fd596454416cd15b16c89b6aa9d4696927f00bc460a52c07",
+          "REQ-OPT-SPACE": "2a645d13443ff9b9cd61df82a9dffa32658dca6d03122e9123cd39fcad9dd2e0",
+          "REQ-OPT-CONSUMER": "19e882fef43cfb082e4c36061353daca80b0c0abdcf7b74f8523bed6be1f1b76",
+          "CHK-OPT-CONTROLS": "66598bdbc9a52d8b16e1b9306f8b20b5d7e17fedff00193eea39fb39702f1798",
+          "REPLAY-EXACT-REGISTRY": "00afb3142a9314fac38df2110a6323ae2c51d5390a197b4e473a20e760173c59",
+          "REPLAY-SELECTOR-NONVACUITY": "944ae64b5c1a4f331fd2f39a07ecbf66b7f81d7193b9bbcfab324a553e5a45dc",
+          "REPLAY-SUBPROCESS-DEADLINE": "23b4e8de125df3349201a672bcbf796c91a5719e578879e5cd75f69327342309",
+          "CHK-OPT-DEVELOPMENT": "cf93808a3395e82e5e9bc44374a35331b6bc544e5a56dde368d20382253c1d05",
+          "CHK-OPT-FINAL": "a19b846fe93a2156de8fc2186669e9f296db55c62c5d190c68c060ea3c36cdbc",
+          "CHK-OPT-TRUST": "5d6555573fc3abbbc85ce43f6c4838072506165cd2183fd1fb48149d588c58c2",
+          "CHK-OPT-CONDITIONAL": "21350aedfa4fc0ea94b627f837311993bbcab119eca904e0db38658661112fd1",
+          "CHK-OPT-AUDIT": "13105bda9a061d00c8468a5edb850da2468fa37fa75dd06f982fbd17c477203e",
+          "INV-STORE-IDENTITY": "dbfbab77297dcdc45b42901b0209a93d347c15354d6d495d7b7f8cc8462856e7",
+          "INV-VALUE-DEPENDENCY": "3a950f0e7cbacb65f266f6fff47fb76324cffb3837cef14b8a7b6efd564439e7",
+          "INV-SEMANTIC-NONVACUITY": "6fd3f5a600e51a46c3cdaf0355ef1fd684ba39ea522379df30b1e09c0205e6aa",
+          "INV-TRACE-EXECUTION": "1740def2ead11fc3b2b8f8ec656407655c9c90242d7f3081120ac3924fb770fe",
+          "INV-STORE-AGREEMENT": "382c23318f891d4d96798254f8148bcb792cc9708d644fc3b6eb85996a06ba00",
+          "INV-READ-BACKING": "cec852bfc04252ab095eb771556f5283df4bd8315606eb9305bccdf8f865c6f5",
+          "INV-WORD-WIDTH": "75c370064c8849570cbdda58e07546125eba7a1b87fb08a3dd21aaa6374959b3",
+          "INV-ADDRESS-WIDTH": "a16b791dc460d3b8560ac599a5d16c48247ba042b4c5609cbc11dc69bf8c063f",
+          "INV-INSTRUCTION-ATOMICITY": "f354f92947f93d3790caa190b1ce3ac588391692138c127bfc661f8d2a3d253a",
+          "INV-PROGRAM-ACCOUNTING": "2fd931f649d280e5051371cbb563849a57324fee3e7601e6a8d5f5a3a1e49265",
+          "INV-ORACLE-INDEPENDENCE": "61f75c804b9ff71fc369d5e1b738e7ceadf33fc98cb163d681bc5e4a97ad53ca",
+          "INV-VALIDATION-REACH": "acb04642ac4b040cb3e978bcb216a77eae3192d6a6543af3d3f7a657a9dc5245",
+          "INV-ALL-SIZE": "5b679ece6ba0dc3a7ac9cc5aa81e5cc26854be4c6cd16cca5138c9f9b0e9e798",
+          "INV-PROOF-SEPARATION": "0a3b2b09fc34690fac4e339e5775bb47b778bc12d7a3672e8fde9b190ca89614",
+          "INV-NO-SYNTHETIC": "5a4babb2fd809798410dc5b72592afccabbe6f4324ba491cacca92e736468d8f",
+          "INV-CATEGORY-SEPARATION": "d254bdd9f3d99a494ad6881cc07326156455559593f32ac494cd344a1338279e",
+          "INV-PUBLIC-COMPOSITION": "39d5ddbd4672630931e393870e2cdc9c0f49b1ca0501ab94556faeb04b54862b",
+          "INV-CERTIFICATE-ANTI-BYPASS": "4f38537c2262edb1c0d55a3f3ec6009e34b67d6378c472e7516b999da5409f94",
+          "INV-MUTATION-REPRODUCIBILITY": "bcc61ae48d7fca7836429f5df946463efb485a974f66e2c8daef504e8affd894",
+          "INV-GLOBAL-PHYSICAL-MACHINE": "9deeb0e3890839e3cea82aa354120a634bdcd18a8476f0f73e9a1407740ad820",
+          "INV-WIDTH-SCALING": "39350262b5322c23ba5e8f3e38d542808fdcc667716f85bbb8d53e8cab8f4d7b"
+        }
+      },
+      "freeze_to_candidate_repair": {
+        "rows": 35,
+        "allByteEqual": true,
+        "rowSha256": {
+          "REQ-OPT-BUDGET": "d21c015b80433577ce14c5c7a5f40c5552815d45fc1fc04f8b095f20ea4e8a35",
+          "REQ-OPT-COMPILE": "6efd35337fef1fba2e30cced7c5fde063f61c31ae0bd51c40bef5fd268f8bf13",
+          "REQ-OPT-RUN": "8c79ef0c33bc34f0fd596454416cd15b16c89b6aa9d4696927f00bc460a52c07",
+          "REQ-OPT-SPACE": "2a645d13443ff9b9cd61df82a9dffa32658dca6d03122e9123cd39fcad9dd2e0",
+          "REQ-OPT-CONSUMER": "19e882fef43cfb082e4c36061353daca80b0c0abdcf7b74f8523bed6be1f1b76",
+          "CHK-OPT-CONTROLS": "66598bdbc9a52d8b16e1b9306f8b20b5d7e17fedff00193eea39fb39702f1798",
+          "REPLAY-EXACT-REGISTRY": "00afb3142a9314fac38df2110a6323ae2c51d5390a197b4e473a20e760173c59",
+          "REPLAY-SELECTOR-NONVACUITY": "944ae64b5c1a4f331fd2f39a07ecbf66b7f81d7193b9bbcfab324a553e5a45dc",
+          "REPLAY-SUBPROCESS-DEADLINE": "23b4e8de125df3349201a672bcbf796c91a5719e578879e5cd75f69327342309",
+          "CHK-OPT-DEVELOPMENT": "cf93808a3395e82e5e9bc44374a35331b6bc544e5a56dde368d20382253c1d05",
+          "CHK-OPT-FINAL": "a19b846fe93a2156de8fc2186669e9f296db55c62c5d190c68c060ea3c36cdbc",
+          "CHK-OPT-TRUST": "5d6555573fc3abbbc85ce43f6c4838072506165cd2183fd1fb48149d588c58c2",
+          "CHK-OPT-CONDITIONAL": "21350aedfa4fc0ea94b627f837311993bbcab119eca904e0db38658661112fd1",
+          "CHK-OPT-AUDIT": "13105bda9a061d00c8468a5edb850da2468fa37fa75dd06f982fbd17c477203e",
+          "INV-STORE-IDENTITY": "dbfbab77297dcdc45b42901b0209a93d347c15354d6d495d7b7f8cc8462856e7",
+          "INV-VALUE-DEPENDENCY": "3a950f0e7cbacb65f266f6fff47fb76324cffb3837cef14b8a7b6efd564439e7",
+          "INV-SEMANTIC-NONVACUITY": "6fd3f5a600e51a46c3cdaf0355ef1fd684ba39ea522379df30b1e09c0205e6aa",
+          "INV-TRACE-EXECUTION": "1740def2ead11fc3b2b8f8ec656407655c9c90242d7f3081120ac3924fb770fe",
+          "INV-STORE-AGREEMENT": "382c23318f891d4d96798254f8148bcb792cc9708d644fc3b6eb85996a06ba00",
+          "INV-READ-BACKING": "cec852bfc04252ab095eb771556f5283df4bd8315606eb9305bccdf8f865c6f5",
+          "INV-WORD-WIDTH": "75c370064c8849570cbdda58e07546125eba7a1b87fb08a3dd21aaa6374959b3",
+          "INV-ADDRESS-WIDTH": "a16b791dc460d3b8560ac599a5d16c48247ba042b4c5609cbc11dc69bf8c063f",
+          "INV-INSTRUCTION-ATOMICITY": "f354f92947f93d3790caa190b1ce3ac588391692138c127bfc661f8d2a3d253a",
+          "INV-PROGRAM-ACCOUNTING": "2fd931f649d280e5051371cbb563849a57324fee3e7601e6a8d5f5a3a1e49265",
+          "INV-ORACLE-INDEPENDENCE": "61f75c804b9ff71fc369d5e1b738e7ceadf33fc98cb163d681bc5e4a97ad53ca",
+          "INV-VALIDATION-REACH": "acb04642ac4b040cb3e978bcb216a77eae3192d6a6543af3d3f7a657a9dc5245",
+          "INV-ALL-SIZE": "5b679ece6ba0dc3a7ac9cc5aa81e5cc26854be4c6cd16cca5138c9f9b0e9e798",
+          "INV-PROOF-SEPARATION": "0a3b2b09fc34690fac4e339e5775bb47b778bc12d7a3672e8fde9b190ca89614",
+          "INV-NO-SYNTHETIC": "5a4babb2fd809798410dc5b72592afccabbe6f4324ba491cacca92e736468d8f",
+          "INV-CATEGORY-SEPARATION": "d254bdd9f3d99a494ad6881cc07326156455559593f32ac494cd344a1338279e",
+          "INV-PUBLIC-COMPOSITION": "39d5ddbd4672630931e393870e2cdc9c0f49b1ca0501ab94556faeb04b54862b",
+          "INV-CERTIFICATE-ANTI-BYPASS": "4f38537c2262edb1c0d55a3f3ec6009e34b67d6378c472e7516b999da5409f94",
+          "INV-MUTATION-REPRODUCIBILITY": "bcc61ae48d7fca7836429f5df946463efb485a974f66e2c8daef504e8affd894",
+          "INV-GLOBAL-PHYSICAL-MACHINE": "9deeb0e3890839e3cea82aa354120a634bdcd18a8476f0f73e9a1407740ad820",
+          "INV-WIDTH-SCALING": "39350262b5322c23ba5e8f3e38d542808fdcc667716f85bbb8d53e8cab8f4d7b"
+        }
+      }
+    },
+    "oldMatrixEntireBlobEqual": true,
+    "r1RequirementCells": [
+      {
+        "id": "REQ-OPT-R1-EXCLUSIVE-REJECTION",
+        "freeze": "f7cf20da8ae52c1f8295e5cedd4326bb8d44cbb3",
+        "bytes": 579,
+        "sha256": "77a4dbe07f724beeb98392b9f2c1112cd52232a27ea44c30ea98820b217d0b77",
+        "byte_equal": true
+      },
+      {
+        "id": "REQ-OPT-R1-CHECKOUT-PROVENANCE",
+        "freeze": "f7cf20da8ae52c1f8295e5cedd4326bb8d44cbb3",
+        "bytes": 919,
+        "sha256": "5c4d1e86f6475661a187b6b81da5d9597fedb40881f188a6fa8494b53ccf7859",
+        "byte_equal": true
+      },
+      {
+        "id": "REQ-OPT-R1-PRESERVATION",
+        "freeze": "f7cf20da8ae52c1f8295e5cedd4326bb8d44cbb3",
+        "bytes": 603,
+        "sha256": "f96872052950970325f7c86627076a19a5a32354cf70e2c37709871b40220a4d",
+        "byte_equal": true
+      },
+      {
+        "id": "CHK-OPT-R1-PRODUCTION-REPLAY",
+        "freeze": "f7cf20da8ae52c1f8295e5cedd4326bb8d44cbb3",
+        "bytes": 826,
+        "sha256": "34e948454b922f51ba2b869341d7c9e49bcab12aa225be6e4fdfb9311cb111bf",
+        "byte_equal": true
+      }
+    ],
+    "r2MatrixRows": {
+      "freeze_ref": "55f0f64fc03e7c5a3ca2a30271174d67b3a1f2ad",
+      "rows": [
+        {
+          "id": "REQ-OPT-R2-SELFTEST",
+          "bytes": 2025,
+          "sha256": "1a3834fdef85bcbace1e41e317fef667d0e1b14fc5d207b147c1654de9e28647",
+          "byte_equal": true
+        },
+        {
+          "id": "REQ-OPT-R2-HISTORY",
+          "bytes": 2121,
+          "sha256": "93234530f5db1acfb6c7555ced81b4cad64732164f5b6d456cba5f2d110a75fa",
+          "byte_equal": true
+        },
+        {
+          "id": "REQ-OPT-R2-PRESERVATION-AMENDMENT",
+          "bytes": 2482,
+          "sha256": "91352e210355aaebdfa274f867d9d569526944ffb998d766d5a67707f10fa325",
+          "byte_equal": true
+        },
+        {
+          "id": "CHK-OPT-R2-VERIFICATION",
+          "bytes": 2058,
+          "sha256": "15f9b201a8a26fdba189277f734b659ab005286d4cbc6636c603fcc74da143d2",
+          "byte_equal": true
+        }
+      ]
+    },
+    "fieldTypes": {
+      "live": 39,
+      "candidate": 39,
+      "allExact": true,
+      "consumers": 78
+    },
+    "axiomRootCount": 93,
+    "r1Controls": [
+      {
+        "id": "P01-EXACT-ROWS",
+        "verdict": "ACCEPT",
+        "code": null,
+        "passed": true
+      },
+      {
+        "id": "P02-MISSING-MIDDLE-ROW",
+        "verdict": "REJECT",
+        "code": "ROW_IDS",
+        "passed": true
+      },
+      {
+        "id": "P03-DUPLICATE-MIDDLE-ROW",
+        "verdict": "REJECT",
+        "code": "ROW_DUPLICATE",
+        "passed": true
+      },
+      {
+        "id": "P04-CHANGED-MIDDLE-ROW",
+        "verdict": "REJECT",
+        "code": "ROW_BYTES",
+        "passed": true
+      },
+      {
+        "id": "P05-UNKNOWN-ROW",
+        "verdict": "REJECT",
+        "code": "ROW_IDS",
+        "passed": true
+      },
+      {
+        "id": "P06-MISSING-REPAIR-ROW",
+        "verdict": "REJECT",
+        "code": "ROW_IDS",
+        "passed": true
+      },
+      {
+        "id": "P07-DUPLICATE-REPAIR-ROW",
+        "verdict": "REJECT",
+        "code": "ROW_DUPLICATE",
+        "passed": true
+      },
+      {
+        "id": "P08-MOJIBAKE",
+        "verdict": "REJECT",
+        "code": "MOJIBAKE",
+        "passed": true
+      },
+      {
+        "id": "P09-ORDINARY-UNICODE",
+        "verdict": "ACCEPT",
+        "code": null,
+        "passed": true
+      },
+      {
+        "id": "P10-PROTECTED-OMISSION",
+        "verdict": "REJECT",
+        "code": "PROTECTED_OMISSION",
+        "passed": true
+      },
+      {
+        "id": "P11-PROTECTED-BLOB",
+        "verdict": "REJECT",
+        "code": "PROTECTED_IDENTITY",
+        "passed": true
+      },
+      {
+        "id": "P12-PROTECTED-MODE",
+        "verdict": "REJECT",
+        "code": "PROTECTED_IDENTITY",
+        "passed": true
+      },
+      {
+        "id": "P13-UNAUTHORIZED-ADDITION",
+        "verdict": "REJECT",
+        "code": "PROTECTED_ADDITION",
+        "passed": true
+      },
+      {
+        "id": "P14-REPAIR-ADDITION",
+        "verdict": "ACCEPT",
+        "code": null,
+        "passed": true
+      },
+      {
+        "id": "P15-INVALID-UTF8",
+        "verdict": "REJECT",
+        "code": "UTF8",
+        "passed": true
+      },
+      {
+        "id": "P16-LINE-TERMINATORS",
+        "verdict": "ACCEPT",
+        "code": null,
+        "passed": true
+      },
+      {
+        "id": "P17-FIELD-TYPE-ALTERED",
+        "verdict": "REJECT",
+        "code": "FIELD_TYPE_BYTES",
+        "passed": true
+      }
+    ],
+    "r1ExpectedControls": [
+      "P01-EXACT-ROWS",
+      "P02-MISSING-MIDDLE-ROW",
+      "P03-DUPLICATE-MIDDLE-ROW",
+      "P04-CHANGED-MIDDLE-ROW",
+      "P05-UNKNOWN-ROW",
+      "P06-MISSING-REPAIR-ROW",
+      "P07-DUPLICATE-REPAIR-ROW",
+      "P08-MOJIBAKE",
+      "P09-ORDINARY-UNICODE",
+      "P10-PROTECTED-OMISSION",
+      "P11-PROTECTED-BLOB",
+      "P12-PROTECTED-MODE",
+      "P13-UNAUTHORIZED-ADDITION",
+      "P14-REPAIR-ADDITION",
+      "P15-INVALID-UTF8",
+      "P16-LINE-TERMINATORS",
+      "P17-FIELD-TYPE-ALTERED"
+    ],
+    "r1ExecutedControls": [
+      "P01-EXACT-ROWS",
+      "P02-MISSING-MIDDLE-ROW",
+      "P03-DUPLICATE-MIDDLE-ROW",
+      "P04-CHANGED-MIDDLE-ROW",
+      "P05-UNKNOWN-ROW",
+      "P06-MISSING-REPAIR-ROW",
+      "P07-DUPLICATE-REPAIR-ROW",
+      "P08-MOJIBAKE",
+      "P09-ORDINARY-UNICODE",
+      "P10-PROTECTED-OMISSION",
+      "P11-PROTECTED-BLOB",
+      "P12-PROTECTED-MODE",
+      "P13-UNAUTHORIZED-ADDITION",
+      "P14-REPAIR-ADDITION",
+      "P15-INVALID-UTF8",
+      "P16-LINE-TERMINATORS",
+      "P17-FIELD-TYPE-ALTERED"
+    ],
+    "relocationControls": [
+      {
+        "id": "X01-EXACT-RELOCATION",
+        "verdict": "ACCEPT",
+        "code": null,
+        "passed": true
+      },
+      {
+        "id": "X02-UNENUMERATED-DELETION",
+        "verdict": "REJECT",
+        "code": "AMENDMENT_IDENTITY",
+        "passed": true
+      },
+      {
+        "id": "X03-OTHER-BLOB-CHANGED",
+        "verdict": "REJECT",
+        "code": "AMENDMENT_IDENTITY",
+        "passed": true
+      },
+      {
+        "id": "X04-ADDITION-OUTSIDE-R2",
+        "verdict": "REJECT",
+        "code": "AMENDMENT_IDENTITY",
+        "passed": true
+      },
+      {
+        "id": "X05-ORIGINAL-BESIDE-ARCHIVE",
+        "verdict": "REJECT",
+        "code": "RELOCATION_ORIGINAL_PRESENT",
+        "passed": true
+      },
+      {
+        "id": "X06-ARCHIVE-WRONG-BYTES",
+        "verdict": "REJECT",
+        "code": "RELOCATION_BYTES",
+        "passed": true
+      },
+      {
+        "id": "X07-ATTRIBUTES-NOT-APPEND-ONLY",
+        "verdict": "REJECT",
+        "code": "GITATTRIBUTES_APPEND",
+        "passed": true
+      },
+      {
+        "id": "X08-ARCHIVE-MISSING",
+        "verdict": "REJECT",
+        "code": "RELOCATION_ARCHIVE_MISSING",
+        "passed": true
+      },
+      {
+        "id": "X09-PACKED-MODE-CHANGED",
+        "verdict": "REJECT",
+        "code": "AMENDMENT_IDENTITY",
+        "passed": true
+      },
+      {
+        "id": "X10-ADDITION-UNDER-REPAIR-R1",
+        "verdict": "REJECT",
+        "code": "AMENDMENT_IDENTITY",
+        "passed": true
+      }
+    ],
+    "liveBytesUnchanged": true,
+    "indexBytesUnchanged": true,
+    "indexBeforeSha256": "3cd806b12cd7b2573e385fc4b9c09fa08dd04ffc6a0fc84cbf092ba9bf934f4c",
+    "indexAfterSha256": "3cd806b12cd7b2573e385fc4b9c09fa08dd04ffc6a0fc84cbf092ba9bf934f4c",
+    "liveRelocatedSnapshots": {
+      "docs/internal/extensions/opt1/checkpoint-claims.json": {
+        "bytes": 78583,
+        "sha256": "4073391ecbf3ee6c16301851f0f3f392c5acf0e0e16bdd64f2b8ce68ee3df24f",
+        "relocated_from": "docs/internal/extensions/opt1/checkpoint-claims.json.gz",
+        "archive_sha256": "08167e54224598f390183a4ee2038ed8a69bb2e72cd52c5b3bb8506474c9c141"
+      },
+      "docs/internal/extensions/opt1/checkpoint-report-claims.json": {
+        "bytes": 20740,
+        "sha256": "71669aacbd57f32955738682ab135444dad065594090bb89672db30f59c3b5ab",
+        "relocated_from": "docs/internal/extensions/opt1/checkpoint-report-claims.json.gz",
+        "archive_sha256": "718e2fa06ab7547546d5647b0a02536c11abc81fd0a916db2f6dc890754bfc41"
+      }
+    },
+    "liveSnapshotEntries": 512,
+    "candidateReceiptScope": "Committed candidate Git blobs with the enumerated relocation applied, plus live row, field-type, index and restoration checks",
+    "gitCaptureCount": 51,
+    "gitCapturesAllExit0": true,
+    "durationSeconds": 7.648714500013739,
+    "checkerSha256": "da0dc413f1af56727f5e009a79df115d4933272854dc17967f15879020d2060c",
+    "relocationRegistrySha256": "d0de6d0b68cc7334054210432ab0b40a6e3995dda5400a8d2423e4da64c2db6e"
+  }
+}

@@ -1,0 +1,191 @@
+{
+  "version": "PRE1-R2-RECEIPT-V1",
+  "label": "Q2: builder replay startup smoke and focused runs of B55_RUN_SAFE_LENGTH_WEAKEN, B53_RUNFACTS_HALTS_WEAKEN, B54_RUNFACTS_HALTS_FUEL_LARGER and B16_PROGRAM_PARAMETER on c33f2a8 (content tree of 341bc28)",
+  "repo": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+  "revision": "c33f2a80211c0b9d62cf8a615f945e6925861235",
+  "status": "?? docs/internal/extensions/pre1/repair-r2/receipts/q2-focused-replays-c33f2a8.digest.json",
+  "host": "PoinPad",
+  "os": "Windows-11-10.0.26200-SP0",
+  "mutex": "Global\\RMQHeavyVerification",
+  "mutexWaitSeconds": 0.0,
+  "requested": "2026-09-17T10:41:30.0992440-07:00",
+  "acquired": "2026-09-17T10:41:30.1210484-07:00",
+  "released": "2026-09-17T11:11:40.3266948-07:00",
+  "queueStatus": "DONE",
+  "steps": [
+    {
+      "label": "replay-startup",
+      "command": "C:/Users/poin/AppData/Local/Microsoft/WindowsApps/pwsh.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/scripts/preprocessing_builder_replay.ps1",
+        "-StartupOnly"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 1800,
+      "start": "2026-09-17T10:41:30.1296189-07:00",
+      "end": "2026-09-17T10:43:59.4320550-07:00",
+      "seconds": 149.171,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "5f9541087e988183ad3c7c814157ac475670dbae07f47480adbbdc000cd69b10",
+      "logBytes": 225,
+      "logLines": 1,
+      "markerLines": {
+        "PRE-BUILDER-REPLAY: PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "PRE-BUILDER-REPLAY: PASS mode=startup executed=0 registry=55 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r2-consumer-markers\\.lake\\preprocessing-builder-replay\\20260917-104131-2d99fa69"
+      ]
+    },
+    {
+      "label": "focused-B55",
+      "command": "C:/Users/poin/AppData/Local/Microsoft/WindowsApps/pwsh.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/scripts/preprocessing_builder_replay.ps1",
+        "-OnlyCase",
+        "B55_RUN_SAFE_LENGTH_WEAKEN"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 3600,
+      "start": "2026-09-17T10:43:59.4414891-07:00",
+      "end": "2026-09-17T10:51:04.2997200-07:00",
+      "seconds": 424.841,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "97c3a65cf7b4ede7a9708e306314f728be46b6549f655f5381e0639807556256",
+      "logBytes": 295,
+      "logLines": 2,
+      "markerLines": {
+        "PRE-BUILDER-REPLAY: PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "PRE-CASE: B55_RUN_SAFE_LENGTH_WEAKEN PASS, exact restoration verified",
+        "PRE-BUILDER-REPLAY: PASS mode=focused executed=1 registry=55 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r2-consumer-markers\\.lake\\preprocessing-builder-replay\\20260917-104400-b7aec362"
+      ]
+    },
+    {
+      "label": "focused-B53",
+      "command": "C:/Users/poin/AppData/Local/Microsoft/WindowsApps/pwsh.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/scripts/preprocessing_builder_replay.ps1",
+        "-OnlyCase",
+        "B53_RUNFACTS_HALTS_WEAKEN"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 3600,
+      "start": "2026-09-17T10:51:04.3010289-07:00",
+      "end": "2026-09-17T10:58:11.8405796-07:00",
+      "seconds": 427.529,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "7012666b4a0094355deffe00d333b6c40b203440a15a8c76c033b8ea1ed44700",
+      "logBytes": 294,
+      "logLines": 2,
+      "markerLines": {
+        "PRE-BUILDER-REPLAY: PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "PRE-CASE: B53_RUNFACTS_HALTS_WEAKEN PASS, exact restoration verified",
+        "PRE-BUILDER-REPLAY: PASS mode=focused executed=1 registry=55 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r2-consumer-markers\\.lake\\preprocessing-builder-replay\\20260917-105105-b4d01f53"
+      ]
+    },
+    {
+      "label": "focused-B54",
+      "command": "C:/Users/poin/AppData/Local/Microsoft/WindowsApps/pwsh.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/scripts/preprocessing_builder_replay.ps1",
+        "-OnlyCase",
+        "B54_RUNFACTS_HALTS_FUEL_LARGER"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 3600,
+      "start": "2026-09-17T10:58:11.8419406-07:00",
+      "end": "2026-09-17T11:05:16.5678072-07:00",
+      "seconds": 424.709,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "742592b16261e9325d418777f57adee4944f7444ef6a0c2adbdb190340cf2175",
+      "logBytes": 299,
+      "logLines": 2,
+      "markerLines": {
+        "PRE-BUILDER-REPLAY: PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "PRE-CASE: B54_RUNFACTS_HALTS_FUEL_LARGER PASS, exact restoration verified",
+        "PRE-BUILDER-REPLAY: PASS mode=focused executed=1 registry=55 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r2-consumer-markers\\.lake\\preprocessing-builder-replay\\20260917-105812-5281fcdc"
+      ]
+    },
+    {
+      "label": "focused-B16",
+      "command": "C:/Users/poin/AppData/Local/Microsoft/WindowsApps/pwsh.exe",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers/scripts/preprocessing_builder_replay.ps1",
+        "-OnlyCase",
+        "B16_PROGRAM_PARAMETER"
+      ],
+      "workingDirectory": "C:/Users/poin/Documents/RMQ/.claude/worktrees/pre1-r2-consumer-markers",
+      "deadlineSeconds": 3600,
+      "start": "2026-09-17T11:05:16.5700173-07:00",
+      "end": "2026-09-17T11:11:40.3247138-07:00",
+      "seconds": 383.735,
+      "exit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "error": null,
+      "logSha256": "5cf9c62bbd74315d3793ee8e1bcf2d5402f54b84264f03be22a11b5f802c2c55",
+      "logBytes": 290,
+      "logLines": 2,
+      "markerLines": {
+        "PRE-BUILDER-REPLAY: PASS": 1
+      },
+      "errorLocationLines": 0,
+      "warningLines": 0,
+      "tail": [
+        "PRE-CASE: B16_PROGRAM_PARAMETER PASS, exact restoration verified",
+        "PRE-BUILDER-REPLAY: PASS mode=focused executed=1 registry=55 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r2-consumer-markers\\.lake\\preprocessing-builder-replay\\20260917-110517-9c614b88"
+      ]
+    }
+  ],
+  "note": "Builder replay runner scripts/preprocessing_builder_replay.ps1 (blob at 341bc28; live CRLF SHA-256 a1a1427531be41317f232ccaf7d73481e4c96b57aca4d585ff451149e04c4006) on pwsh 7.6.6; -StartupOnly smoke first, then one focused -OnlyCase per new case (B55, B53, B54) and the marker-absence regression control B16; per-run digests of the evidence report.json files are in q2-focused-replays-c33f2a8.digest.json; the evidence directories stay under .lake/preprocessing-builder-replay on the host."
+}

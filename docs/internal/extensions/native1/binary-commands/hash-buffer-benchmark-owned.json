@@ -1,0 +1,23 @@
+{
+  "startedUTC": "2026-09-12T12:42:54.5956317Z",
+  "completedUTC": "2026-09-12T12:43:02.9442602Z",
+  "result": {
+    "Stage": "hash-buffer-benchmark",
+    "ExitCode": 0,
+    "Output": [
+      "{\"method\":\"buffered-1m-sequential\",\"file\":\"C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/lib/lean/libLean.a\",\"bytes\":149042606,\"expectedSHA256\":\"9A8BCDE682EAC2413F5BF2B211AA04631581A7404FD39857CF589BA0AA0C080F\",\"actualSHA256\":\"9A8BCDE682EAC2413F5BF2B211AA04631581A7404FD39857CF589BA0AA0C080F\",\"accepted\":true,\"startedUTC\":\"2026-09-12T12:42:59.0057824Z\",\"completedUTC\":\"2026-09-12T12:43:00.1780458Z\",\"seconds\":1.0113646,\"shell\":\"5.1.26100.9444\",\"pid\":2988}",
+      "{\"method\":\"stock-Get-FileHash\",\"file\":\"C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/lib/lean/libLean.a\",\"bytes\":149042606,\"expectedSHA256\":\"9A8BCDE682EAC2413F5BF2B211AA04631581A7404FD39857CF589BA0AA0C080F\",\"actualSHA256\":\"9A8BCDE682EAC2413F5BF2B211AA04631581A7404FD39857CF589BA0AA0C080F\",\"accepted\":true,\"startedUTC\":\"2026-09-12T12:43:00.4383064Z\",\"completedUTC\":\"2026-09-12T12:43:01.9503540Z\",\"seconds\":1.5097163,\"shell\":\"5.1.26100.9444\",\"pid\":2988}"
+    ],
+    "StandardOutput": [
+      "{\"method\":\"buffered-1m-sequential\",\"file\":\"C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/lib/lean/libLean.a\",\"bytes\":149042606,\"expectedSHA256\":\"9A8BCDE682EAC2413F5BF2B211AA04631581A7404FD39857CF589BA0AA0C080F\",\"actualSHA256\":\"9A8BCDE682EAC2413F5BF2B211AA04631581A7404FD39857CF589BA0AA0C080F\",\"accepted\":true,\"startedUTC\":\"2026-09-12T12:42:59.0057824Z\",\"completedUTC\":\"2026-09-12T12:43:00.1780458Z\",\"seconds\":1.0113646,\"shell\":\"5.1.26100.9444\",\"pid\":2988}",
+      "{\"method\":\"stock-Get-FileHash\",\"file\":\"C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/lib/lean/libLean.a\",\"bytes\":149042606,\"expectedSHA256\":\"9A8BCDE682EAC2413F5BF2B211AA04631581A7404FD39857CF589BA0AA0C080F\",\"actualSHA256\":\"9A8BCDE682EAC2413F5BF2B211AA04631581A7404FD39857CF589BA0AA0C080F\",\"accepted\":true,\"startedUTC\":\"2026-09-12T12:43:00.4383064Z\",\"completedUTC\":\"2026-09-12T12:43:01.9503540Z\",\"seconds\":1.5097163,\"shell\":\"5.1.26100.9444\",\"pid\":2988}"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 7.98,
+    "DeadlineSeconds": 240,
+    "Ownership": "kill-on-close-job"
+  }
+}

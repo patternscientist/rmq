@@ -1,0 +1,72 @@
+{
+    "stage":  "binary-image-02",
+    "platform":  "Microsoft Windows NT 10.0.26200.0",
+    "head":  "c8c266f987d46284382cc93c5fa8e01bd7a9ffb9",
+    "pins":  [
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Limbs.lean",
+                     "sha256":  "06D057D0DE50E263E701D2D5FEA1A4B0E1F6C3DD9A6BFDB6F2F9EDE71A7803F1"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Machine.lean",
+                     "sha256":  "F5286E6B52A5C5A73571BBF831E7CA9C5D731F7F5998F3ABA724E17F7AB94B3D"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Binary/Codec.lean",
+                     "sha256":  "758BFBE3F7873F5F2367302FB22889B86A815D301443C46A678F74392665147C"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Binary.lean",
+                     "sha256":  "776C477C629D685B9B181B77DE5BDAFFF2E6D6EC8229279119EFDFFFEA154226"
+                 }
+             ],
+    "result":  {
+                   "Stage":  "binary-image-02",
+                   "ExitCode":  0,
+                   "Output":  [
+                                  "RMQ/Core/WordRAM/Native/Binary.lean:151:47: warning: This simp argument is unused:",
+                                  "  and_assoc",
+                                  "Hint: Omit it from the simp argument list.",
+                                  "  simp [canonicalWord_iff, List.all_eq_true, a̵n̵d̵_̵a̵s̵s̵o̵c̵,̵ ̵-Array.all_toList]",
+                                  "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+                                  "RMQ/Core/WordRAM/Native/Binary.lean:474:72: warning: This simp argument is unused:",
+                                  "  Nat.add_comm",
+                                  "Hint: Omit it from the simp argument list.",
+                                  "  simp [ih, Nat.add_assoc, Nat.add_left_comm,̵ ̵N̵a̵t̵.̵a̵d̵d̵_̵c̵o̵m̵m̵]",
+                                  "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+                                  "RMQ/Core/WordRAM/Native/Binary.lean:537:50: warning: This simp argument is unused:",
+                                  "  Nat.mul_left_comm",
+                                  "Hint: Omit it from the simp argument list.",
+                                  "  simp [Nat.mul_add, Nat.mul_assoc, Nat.mul_comm, N̵a̵t̵.̵m̵u̵l̵_̵l̵e̵f̵t̵_̵c̵o̵m̵m̵,̵ ̵Nat.add_comm]",
+                                  "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`"
+                              ],
+                   "StandardOutput":  [
+                                          "RMQ/Core/WordRAM/Native/Binary.lean:151:47: warning: This simp argument is unused:",
+                                          "  and_assoc",
+                                          "Hint: Omit it from the simp argument list.",
+                                          "  simp [canonicalWord_iff, List.all_eq_true, a̵n̵d̵_̵a̵s̵s̵o̵c̵,̵ ̵-Array.all_toList]",
+                                          "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+                                          "RMQ/Core/WordRAM/Native/Binary.lean:474:72: warning: This simp argument is unused:",
+                                          "  Nat.add_comm",
+                                          "Hint: Omit it from the simp argument list.",
+                                          "  simp [ih, Nat.add_assoc, Nat.add_left_comm,̵ ̵N̵a̵t̵.̵a̵d̵d̵_̵c̵o̵m̵m̵]",
+                                          "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+                                          "RMQ/Core/WordRAM/Native/Binary.lean:537:50: warning: This simp argument is unused:",
+                                          "  Nat.mul_left_comm",
+                                          "Hint: Omit it from the simp argument list.",
+                                          "  simp [Nat.mul_add, Nat.mul_assoc, Nat.mul_comm, N̵a̵t̵.̵m̵u̵l̵_̵l̵e̵f̵t̵_̵c̵o̵m̵m̵,̵ ̵Nat.add_comm]",
+                                          "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`"
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  11.458,
+                   "DeadlineSeconds":  120,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

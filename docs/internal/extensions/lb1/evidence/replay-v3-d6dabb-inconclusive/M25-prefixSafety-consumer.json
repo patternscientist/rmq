@@ -1,0 +1,39 @@
+{
+  "Stage": "M25-prefixSafety-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:197:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.prefixSafety",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    left < 2 ^ wordWidth xs.length →",
+    "      right < 2 ^ wordWidth xs.length →",
+    "        ∀ (fuel : Nat),",
+    "          fuel ≤ queryBudget →",
+    "            State.Fits (wordWidth xs.length)",
+    "              (run (reconstructedMemory xs) queryProgram fuel (initialState xs.length left right)).final : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:197:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.prefixSafety",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    left < 2 ^ wordWidth xs.length →",
+    "      right < 2 ^ wordWidth xs.length →",
+    "        ∀ (fuel : Nat),",
+    "          fuel ≤ queryBudget →",
+    "            State.Fits (wordWidth xs.length)",
+    "              (run (reconstructedMemory xs) queryProgram fuel (initialState xs.length left right)).final : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 36.752,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

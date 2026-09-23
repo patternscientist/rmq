@@ -1,0 +1,17 @@
+{
+  "Stage": "checkout",
+  "ExitCode": 0,
+  "Output": [
+    "HEAD is now at aecf4a5 test(opt1): certify complete field replay and preserve evidence bytes"
+  ],
+  "StandardOutput": [],
+  "StandardError": [
+    "HEAD is now at aecf4a5 test(opt1): certify complete field replay and preserve evidence bytes"
+  ],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 5.793,
+  "DeadlineSeconds": 120,
+  "Ownership": "kill-on-close-job"
+}

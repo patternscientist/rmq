@@ -1,0 +1,84 @@
+{
+    "stage":  "witness-export-01",
+    "platform":  "Microsoft Windows NT 10.0.26200.0",
+    "head":  "fbd5a44f4f68c0ab1ad54fbff0cc9169000c8949",
+    "pins":  [
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/Witnesses.lean",
+                     "sha256":  "8E732E615A9E69646AD6B6D2FDA5F632DF9826D2A22CA1B2DD71C98FF016B642"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Native/WitnessExport.lean",
+                     "sha256":  "4CF5C928FCD784DF112115A8BDFF87A8CA3FFC85AF04B679E320402106466F70"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Packed/QueryObservations.lean",
+                     "sha256":  "A51A79C3D201495A4538C7D04A7A35D9B3BEAC350C1BA01FC0F4C540891B4C05"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Packed/ArrayRun.lean",
+                     "sha256":  "CD45C07C1F822C1BA57B65ACCA2F5CE916FA735B33269AFB7CEB17F4E3B9C82F"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Packed/QueryProof.lean",
+                     "sha256":  "868D310396B232719B24B706709C9FEECF7CF0672E1ADA87FA26578367BD9399"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Packed/LCAProof.lean",
+                     "sha256":  "281F6C63FDA95699292EB9EED87DCF362D3EC549D99CBCB5A0A0CFFE0CFFF058"
+                 },
+                 {
+                     "path":  "RMQ/Core/WordRAM/Packed/FringeProof.lean",
+                     "sha256":  "80E9DCC3C7410D60ED99EBEBD7F2A40D8FAF54F634BD5310F326319EBE589FBB"
+                 },
+                 {
+                     "path":  "native/packed-rmq/fixtures/program.txt.gz",
+                     "sha256":  "13EE9E81E17DD25D5F25546B72762A038886AE7545031FAF51DC2757E666C011"
+                 }
+             ],
+    "outputDirectory":  "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\.lake\\native1\\binary\\witness-export-01",
+    "deadlineBasis":  "PQ1 measured full fifteen-case runtime294s; buildMemory24 costs60-169s;1200s cold/runtime margin with one Lean slot.",
+    "result":  {
+                   "Stage":  "witness-export-01",
+                   "ExitCode":  0,
+                   "Output":  [
+                                  "NATIVE-WITNESS inspected cross-block logical=91",
+                                  "NATIVE-WITNESS inspected same-block logical=60",
+                                  "NATIVE-WITNESS inspected adjacent-blocks logical=74",
+                                  "NATIVE-WITNESS inspected monotone-24 logical=109",
+                                  "NATIVE-WITNESS exported canonical-select-left stage=select-left logical=0 physical=174",
+                                  "NATIVE-WITNESS exported canonical-select-right stage=select-right logical=18 physical=192",
+                                  "NATIVE-WITNESS exported canonical-left-fringe stage=left-fringe-window logical=39 physical=213",
+                                  "NATIVE-WITNESS exported canonical-right-fringe stage=right-fringe-window logical=74 physical=248",
+                                  "NATIVE-WITNESS exported canonical-interior stage=interior logical=52 physical=226",
+                                  "NATIVE-WITNESS exported canonical-rank-final stage=final-rank logical=86 physical=258",
+                                  "NATIVE-WITNESS exported canonical-cross-cell stage=interior logical=68 physical=242",
+                                  "NATIVE-WITNESS PASS fixtures=7"
+                              ],
+                   "StandardOutput":  [
+                                          "NATIVE-WITNESS inspected cross-block logical=91",
+                                          "NATIVE-WITNESS inspected same-block logical=60",
+                                          "NATIVE-WITNESS inspected adjacent-blocks logical=74",
+                                          "NATIVE-WITNESS inspected monotone-24 logical=109",
+                                          "NATIVE-WITNESS exported canonical-select-left stage=select-left logical=0 physical=174",
+                                          "NATIVE-WITNESS exported canonical-select-right stage=select-right logical=18 physical=192",
+                                          "NATIVE-WITNESS exported canonical-left-fringe stage=left-fringe-window logical=39 physical=213",
+                                          "NATIVE-WITNESS exported canonical-right-fringe stage=right-fringe-window logical=74 physical=248",
+                                          "NATIVE-WITNESS exported canonical-interior stage=interior logical=52 physical=226",
+                                          "NATIVE-WITNESS exported canonical-rank-final stage=final-rank logical=86 physical=258",
+                                          "NATIVE-WITNESS exported canonical-cross-cell stage=interior logical=68 physical=242",
+                                          "NATIVE-WITNESS PASS fixtures=7"
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  403.369,
+                   "DeadlineSeconds":  1200,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

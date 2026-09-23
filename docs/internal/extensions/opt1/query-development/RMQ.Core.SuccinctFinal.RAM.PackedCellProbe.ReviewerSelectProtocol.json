@@ -1,0 +1,36 @@
+﻿{
+    "Module":  "RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerSelectProtocol",
+    "Command":  [
+                    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+                    "-j1",
+                    "-o",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\SuccinctFinal\\RAM\\PackedCellProbe\\ReviewerSelectProtocol.olean",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\PackedCellProbe\\ReviewerSelectProtocol.lean"
+                ],
+    "SourceSHA256":  "6BF0867042F07B9A4B8A26EF8AC83E5144C0A533932F10EA9E747BBC010F0A3C",
+    "Base":  "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+    "Platform":  "Microsoft Windows NT 10.0.26200.0",
+    "Result":  {
+                   "Stage":  "RMQ.Core.SuccinctFinal.RAM.PackedCellProbe.ReviewerSelectProtocol",
+                   "ExitCode":  0,
+                   "Output":  [
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\PackedCellProbe\\ReviewerSelectProtocol.lean:161:53: warning: unused variable `localSlot`",
+                                  "Note: This linter can be disabled with `set_option linter.unusedVariables false`"
+                              ],
+                   "StandardOutput":  [
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\PackedCellProbe\\ReviewerSelectProtocol.lean:161:53: warning: unused variable `localSlot`",
+                                          "Note: This linter can be disabled with `set_option linter.unusedVariables false`"
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  7.215,
+                   "DeadlineSeconds":  600,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

@@ -1,0 +1,775 @@
+{
+  "version": "PRE1-R2-MARKER-CONTROLS-V1",
+  "lean": "leanprover/lean4:v4.22.0 through `lake env lean` on a disposable copy outside the repository, LEAN_NUM_THREADS=1",
+  "consumers": {
+    "builder": {
+      "path": "scripts/preprocessing_builder_check.lean",
+      "marker": "PRE1-BUILDER-TYPED-CONSUMERS PASS",
+      "deadlineSeconds": 900,
+      "declarationAnchor": "#print axioms efficientBuildWord_def\n",
+      "witnessAnchor": "def consumerWitness : Unit :=\n",
+      "endAnchor": "end PRE1BuilderConsumer"
+    },
+    "capstone": {
+      "path": "RMQ/Validation/PreprocessingContract.lean",
+      "marker": "PRE1-CAPSTONE-TYPED-CONSUMERS PASS",
+      "deadlineSeconds": 1800,
+      "declarationAnchor": "#print axioms RMQ.SuccinctFinal.PackedConstruction.Proof.builderProgramWord_static\n",
+      "witnessAnchor": "def consumerWitness : Unit :=\n",
+      "endAnchor": "end RMQ.SuccinctFinal.PackedConstruction.CapstoneChecks"
+    },
+    "contract": {
+      "path": "scripts/preprocessing_contract_check.lean",
+      "marker": "PRE1-CONTRACT-TYPED-CONSUMERS PASS",
+      "deadlineSeconds": 900,
+      "declarationAnchor": "#print axioms Conservative.execute_eq_of_fits\n",
+      "witnessAnchor": "def consumerWitness : Unit :=\n",
+      "endAnchor": "end PRE1ContractConsumer"
+    },
+    "spec": {
+      "path": "scripts/preprocessing_spec_check.lean",
+      "marker": "PRE1-SPEC-TYPED-CONSUMERS PASS",
+      "deadlineSeconds": 1800,
+      "declarationAnchor": "#print axioms positions_fixture\n",
+      "witnessAnchor": null,
+      "endAnchor": "end PRE1SpecConsumer"
+    },
+    "stage": {
+      "path": "scripts/preprocessing_stage_check.lean",
+      "marker": "PRE1-STAGE-TYPED-CONSUMERS PASS",
+      "deadlineSeconds": 3600,
+      "declarationAnchor": "#print axioms RMQ.SuccinctFinal.PackedConstruction.Proof.operand_val_342\n",
+      "witnessAnchor": "def consumerWitness : Unit :=\n",
+      "endAnchor": "end PRE1StageConsumer"
+    }
+  },
+  "cases": [
+    {
+      "id": "builder-unchanged",
+      "kind": "consumer",
+      "consumer": "builder",
+      "class": "unchanged",
+      "requirement": "marker present with exit 0 on the unchanged file",
+      "edits": [],
+      "expectedExit": "zero",
+      "expectedMarker": true,
+      "diagnostics": [],
+      "errorAtFirstEdit": false
+    },
+    {
+      "id": "builder-a-example",
+      "kind": "consumer",
+      "consumer": "builder",
+      "class": "a-example",
+      "requirement": "(a) a failing anonymous example",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms efficientBuildWord_def\n",
+          "text": "example : (2 : Nat) + 2 = 5 := rfl\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "builder-b-guard",
+      "kind": "consumer",
+      "consumer": "builder",
+      "class": "b-guard",
+      "requirement": "(b) a failing #guard-style check",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms efficientBuildWord_def\n",
+          "text": "#guard (2 : Nat) + 2 == 5\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "builder-b-run-cmd",
+      "kind": "consumer",
+      "consumer": "builder",
+      "class": "b-run-cmd",
+      "requirement": "(b) a failing run_cmd check (the V3-1 host-module check against a different module)",
+      "edits": [
+        {
+          "op": "replace",
+          "anchor": "  let host := `RMQ.Core.WordRAM.Construction.Builder.Program\n",
+          "text": "  let host := `RMQ.Core.WordRAM.Construction.Builder.Output\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [
+        "V3-1:"
+      ],
+      "errorAtFirstEdit": false
+    },
+    {
+      "id": "builder-c-max-recursion",
+      "kind": "consumer",
+      "consumer": "builder",
+      "class": "c-max-recursion",
+      "requirement": "(c) a declaration that fails with a maximum-recursion-depth error (the CAB2/CAB4 class), referenced by the witness where one exists",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms efficientBuildWord_def\n",
+          "text": "theorem r2MarkerControlDeep : (List.replicate 20000 0).length = 20000 := rfl\n"
+        },
+        {
+          "op": "insert-after",
+          "anchor": "def consumerWitness : Unit :=\n",
+          "text": "  let _ := @r2MarkerControlDeep\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [
+        "maximum recursion depth has been reached"
+      ],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "builder-d-unknown-identifier",
+      "kind": "consumer",
+      "consumer": "builder",
+      "class": "d-unknown-identifier",
+      "requirement": "(d) an unknown identifier inside a checked theorem, referenced by the witness where one exists",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms efficientBuildWord_def\n",
+          "text": "theorem r2MarkerControlUnknown : (2 : Nat) + 2 = 4 := r2MarkerControlNoSuchConstant\n"
+        },
+        {
+          "op": "insert-after",
+          "anchor": "def consumerWitness : Unit :=\n",
+          "text": "  let _ := @r2MarkerControlUnknown\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [
+        "unknown identifier"
+      ],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "builder-e-unreferenced",
+      "kind": "consumer",
+      "consumer": "builder",
+      "class": "e-unreferenced",
+      "requirement": "(e) a failure in a declaration the witness does not reference",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms efficientBuildWord_def\n",
+          "text": "theorem r2MarkerControlUnreferenced : (2 : Nat) + 2 = 5 := rfl\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "builder-f-after-marker",
+      "kind": "consumer",
+      "consumer": "builder",
+      "class": "f-after-marker",
+      "requirement": "additional: a failing check placed after the verdict-marker command",
+      "edits": [
+        {
+          "op": "replace",
+          "anchor": "end PRE1BuilderConsumer",
+          "text": "#guard (2 : Nat) + 2 == 5\nend PRE1BuilderConsumer"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "capstone-unchanged",
+      "kind": "consumer",
+      "consumer": "capstone",
+      "class": "unchanged",
+      "requirement": "marker present with exit 0 on the unchanged file",
+      "edits": [],
+      "expectedExit": "zero",
+      "expectedMarker": true,
+      "diagnostics": [],
+      "errorAtFirstEdit": false
+    },
+    {
+      "id": "capstone-a-example",
+      "kind": "consumer",
+      "consumer": "capstone",
+      "class": "a-example",
+      "requirement": "(a) a failing anonymous example",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms RMQ.SuccinctFinal.PackedConstruction.Proof.builderProgramWord_static\n",
+          "text": "example : (2 : Nat) + 2 = 5 := rfl\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "capstone-b-guard",
+      "kind": "consumer",
+      "consumer": "capstone",
+      "class": "b-guard",
+      "requirement": "(b) a failing #guard-style check",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms RMQ.SuccinctFinal.PackedConstruction.Proof.builderProgramWord_static\n",
+          "text": "#guard (2 : Nat) + 2 == 5\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "capstone-c-max-recursion",
+      "kind": "consumer",
+      "consumer": "capstone",
+      "class": "c-max-recursion",
+      "requirement": "(c) a declaration that fails with a maximum-recursion-depth error (the CAB2/CAB4 class), referenced by the witness where one exists",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms RMQ.SuccinctFinal.PackedConstruction.Proof.builderProgramWord_static\n",
+          "text": "theorem r2MarkerControlDeep : (List.replicate 20000 0).length = 20000 := rfl\n"
+        },
+        {
+          "op": "insert-after",
+          "anchor": "def consumerWitness : Unit :=\n",
+          "text": "  let _ := @r2MarkerControlDeep\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [
+        "maximum recursion depth has been reached"
+      ],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "capstone-d-unknown-identifier",
+      "kind": "consumer",
+      "consumer": "capstone",
+      "class": "d-unknown-identifier",
+      "requirement": "(d) an unknown identifier inside a checked theorem, referenced by the witness where one exists",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms RMQ.SuccinctFinal.PackedConstruction.Proof.builderProgramWord_static\n",
+          "text": "theorem r2MarkerControlUnknown : (2 : Nat) + 2 = 4 := r2MarkerControlNoSuchConstant\n"
+        },
+        {
+          "op": "insert-after",
+          "anchor": "def consumerWitness : Unit :=\n",
+          "text": "  let _ := @r2MarkerControlUnknown\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [
+        "unknown identifier"
+      ],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "capstone-e-unreferenced",
+      "kind": "consumer",
+      "consumer": "capstone",
+      "class": "e-unreferenced",
+      "requirement": "(e) a failure in a declaration the witness does not reference",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms RMQ.SuccinctFinal.PackedConstruction.Proof.builderProgramWord_static\n",
+          "text": "theorem r2MarkerControlUnreferenced : (2 : Nat) + 2 = 5 := rfl\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "capstone-f-after-marker",
+      "kind": "consumer",
+      "consumer": "capstone",
+      "class": "f-after-marker",
+      "requirement": "additional: a failing check placed after the verdict-marker command",
+      "edits": [
+        {
+          "op": "replace",
+          "anchor": "end RMQ.SuccinctFinal.PackedConstruction.CapstoneChecks",
+          "text": "#guard (2 : Nat) + 2 == 5\nend RMQ.SuccinctFinal.PackedConstruction.CapstoneChecks"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "contract-unchanged",
+      "kind": "consumer",
+      "consumer": "contract",
+      "class": "unchanged",
+      "requirement": "marker present with exit 0 on the unchanged file",
+      "edits": [],
+      "expectedExit": "zero",
+      "expectedMarker": true,
+      "diagnostics": [],
+      "errorAtFirstEdit": false
+    },
+    {
+      "id": "contract-a-example",
+      "kind": "consumer",
+      "consumer": "contract",
+      "class": "a-example",
+      "requirement": "(a) a failing anonymous example",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms Conservative.execute_eq_of_fits\n",
+          "text": "example : (2 : Nat) + 2 = 5 := rfl\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "contract-b-guard",
+      "kind": "consumer",
+      "consumer": "contract",
+      "class": "b-guard",
+      "requirement": "(b) a failing #guard-style check",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms Conservative.execute_eq_of_fits\n",
+          "text": "#guard (2 : Nat) + 2 == 5\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "contract-c-max-recursion",
+      "kind": "consumer",
+      "consumer": "contract",
+      "class": "c-max-recursion",
+      "requirement": "(c) a declaration that fails with a maximum-recursion-depth error (the CAB2/CAB4 class), referenced by the witness where one exists",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms Conservative.execute_eq_of_fits\n",
+          "text": "theorem r2MarkerControlDeep : (List.replicate 20000 0).length = 20000 := rfl\n"
+        },
+        {
+          "op": "insert-after",
+          "anchor": "def consumerWitness : Unit :=\n",
+          "text": "  let _ := @r2MarkerControlDeep\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [
+        "maximum recursion depth has been reached"
+      ],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "contract-d-unknown-identifier",
+      "kind": "consumer",
+      "consumer": "contract",
+      "class": "d-unknown-identifier",
+      "requirement": "(d) an unknown identifier inside a checked theorem, referenced by the witness where one exists",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms Conservative.execute_eq_of_fits\n",
+          "text": "theorem r2MarkerControlUnknown : (2 : Nat) + 2 = 4 := r2MarkerControlNoSuchConstant\n"
+        },
+        {
+          "op": "insert-after",
+          "anchor": "def consumerWitness : Unit :=\n",
+          "text": "  let _ := @r2MarkerControlUnknown\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [
+        "unknown identifier"
+      ],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "contract-e-unreferenced",
+      "kind": "consumer",
+      "consumer": "contract",
+      "class": "e-unreferenced",
+      "requirement": "(e) a failure in a declaration the witness does not reference",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms Conservative.execute_eq_of_fits\n",
+          "text": "theorem r2MarkerControlUnreferenced : (2 : Nat) + 2 = 5 := rfl\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "spec-unchanged",
+      "kind": "consumer",
+      "consumer": "spec",
+      "class": "unchanged",
+      "requirement": "marker present with exit 0 on the unchanged file",
+      "edits": [],
+      "expectedExit": "zero",
+      "expectedMarker": true,
+      "diagnostics": [],
+      "errorAtFirstEdit": false
+    },
+    {
+      "id": "spec-a-example",
+      "kind": "consumer",
+      "consumer": "spec",
+      "class": "a-example",
+      "requirement": "(a) a failing anonymous example",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms positions_fixture\n",
+          "text": "example : (2 : Nat) + 2 = 5 := rfl\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "spec-b-guard",
+      "kind": "consumer",
+      "consumer": "spec",
+      "class": "b-guard",
+      "requirement": "(b) a failing #guard-style check",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms positions_fixture\n",
+          "text": "#guard (2 : Nat) + 2 == 5\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "spec-c-max-recursion",
+      "kind": "consumer",
+      "consumer": "spec",
+      "class": "c-max-recursion",
+      "requirement": "(c) a declaration that fails with a maximum-recursion-depth error (the CAB2/CAB4 class), referenced by the witness where one exists",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms positions_fixture\n",
+          "text": "theorem r2MarkerControlDeep : (List.replicate 20000 0).length = 20000 := rfl\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [
+        "maximum recursion depth has been reached"
+      ],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "spec-d-unknown-identifier",
+      "kind": "consumer",
+      "consumer": "spec",
+      "class": "d-unknown-identifier",
+      "requirement": "(d) an unknown identifier inside a checked theorem, referenced by the witness where one exists",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms positions_fixture\n",
+          "text": "theorem r2MarkerControlUnknown : (2 : Nat) + 2 = 4 := r2MarkerControlNoSuchConstant\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [
+        "unknown identifier"
+      ],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "spec-e-unreferenced",
+      "kind": "consumer",
+      "consumer": "spec",
+      "class": "e-unreferenced",
+      "requirement": "(e) a failure in a declaration the witness does not reference",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms positions_fixture\n",
+          "text": "theorem r2MarkerControlUnreferenced : (2 : Nat) + 2 = 5 := rfl\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "stage-unchanged",
+      "kind": "consumer",
+      "consumer": "stage",
+      "class": "unchanged",
+      "requirement": "marker present with exit 0 on the unchanged file",
+      "edits": [],
+      "expectedExit": "zero",
+      "expectedMarker": true,
+      "diagnostics": [],
+      "errorAtFirstEdit": false
+    },
+    {
+      "id": "stage-a-example",
+      "kind": "consumer",
+      "consumer": "stage",
+      "class": "a-example",
+      "requirement": "(a) a failing anonymous example",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms RMQ.SuccinctFinal.PackedConstruction.Proof.operand_val_342\n",
+          "text": "example : (2 : Nat) + 2 = 5 := rfl\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "stage-b-guard",
+      "kind": "consumer",
+      "consumer": "stage",
+      "class": "b-guard",
+      "requirement": "(b) a failing #guard-style check",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms RMQ.SuccinctFinal.PackedConstruction.Proof.operand_val_342\n",
+          "text": "#guard (2 : Nat) + 2 == 5\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "stage-c-max-recursion",
+      "kind": "consumer",
+      "consumer": "stage",
+      "class": "c-max-recursion",
+      "requirement": "(c) a declaration that fails with a maximum-recursion-depth error (the CAB2/CAB4 class), referenced by the witness where one exists",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms RMQ.SuccinctFinal.PackedConstruction.Proof.operand_val_342\n",
+          "text": "theorem r2MarkerControlDeep : (List.replicate 20000 0).length = 20000 := rfl\n"
+        },
+        {
+          "op": "insert-after",
+          "anchor": "def consumerWitness : Unit :=\n",
+          "text": "  let _ := @r2MarkerControlDeep\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [
+        "maximum recursion depth has been reached"
+      ],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "stage-d-unknown-identifier",
+      "kind": "consumer",
+      "consumer": "stage",
+      "class": "d-unknown-identifier",
+      "requirement": "(d) an unknown identifier inside a checked theorem, referenced by the witness where one exists",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms RMQ.SuccinctFinal.PackedConstruction.Proof.operand_val_342\n",
+          "text": "theorem r2MarkerControlUnknown : (2 : Nat) + 2 = 4 := r2MarkerControlNoSuchConstant\n"
+        },
+        {
+          "op": "insert-after",
+          "anchor": "def consumerWitness : Unit :=\n",
+          "text": "  let _ := @r2MarkerControlUnknown\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [
+        "unknown identifier"
+      ],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "stage-e-unreferenced",
+      "kind": "consumer",
+      "consumer": "stage",
+      "class": "e-unreferenced",
+      "requirement": "(e) a failure in a declaration the witness does not reference",
+      "edits": [
+        {
+          "op": "insert-after",
+          "anchor": "#print axioms RMQ.SuccinctFinal.PackedConstruction.Proof.operand_val_342\n",
+          "text": "theorem r2MarkerControlUnreferenced : (2 : Nat) + 2 = 5 := rfl\n"
+        }
+      ],
+      "expectedExit": "nonzero",
+      "expectedMarker": false,
+      "diagnostics": [],
+      "errorAtFirstEdit": true
+    },
+    {
+      "id": "deadline-descendant-cleanup",
+      "kind": "deadline",
+      "deadlineSeconds": 45,
+      "requirement": "an owned child that starts a descendant is removed with its descendant at the deadline"
+    },
+    {
+      "id": "registry-remove-last",
+      "kind": "registry",
+      "mutation": "remove-last",
+      "expectedExit": 1,
+      "expectedMarker": "MARKER-CONTROLS: FAIL registry",
+      "requirement": "a registry that is not the pinned one is rejected before any case"
+    },
+    {
+      "id": "registry-swap-first-two",
+      "kind": "registry",
+      "mutation": "swap-first-two",
+      "expectedExit": 1,
+      "expectedMarker": "MARKER-CONTROLS: FAIL registry",
+      "requirement": "a registry that is not the pinned one is rejected before any case"
+    },
+    {
+      "id": "registry-version",
+      "kind": "registry",
+      "mutation": "version",
+      "expectedExit": 1,
+      "expectedMarker": "MARKER-CONTROLS: FAIL registry",
+      "requirement": "a registry that is not the pinned one is rejected before any case"
+    },
+    {
+      "id": "registry-content",
+      "kind": "registry",
+      "mutation": "content",
+      "expectedExit": 1,
+      "expectedMarker": "MARKER-CONTROLS: FAIL registry",
+      "requirement": "a registry that is not the pinned one is rejected before any case"
+    },
+    {
+      "id": "selector-omitted",
+      "kind": "selector",
+      "selector": null,
+      "probe": true,
+      "expectedExit": 0,
+      "expectedMarker": "MARKER-CONTROLS: SELECTOR-PROBE selected=",
+      "requirement": "selector boundary: omitted"
+    },
+    {
+      "id": "selector-valid",
+      "kind": "selector",
+      "selector": "contract-unchanged",
+      "probe": false,
+      "expectedExit": 0,
+      "expectedMarker": "MARKER-CONTROLS: RESULT: PASS executed 1 of 1",
+      "requirement": "selector boundary: valid"
+    },
+    {
+      "id": "selector-empty",
+      "kind": "selector",
+      "selector": "''",
+      "probe": false,
+      "expectedExit": 2,
+      "expectedMarker": "MARKER-CONTROLS: SELECTOR-ERROR [empty]",
+      "requirement": "selector boundary: empty"
+    },
+    {
+      "id": "selector-whitespace",
+      "kind": "selector",
+      "selector": "' '",
+      "probe": false,
+      "expectedExit": 2,
+      "expectedMarker": "MARKER-CONTROLS: SELECTOR-ERROR [whitespace]",
+      "requirement": "selector boundary: whitespace"
+    },
+    {
+      "id": "selector-malformed",
+      "kind": "selector",
+      "selector": "Contract_Unchanged",
+      "probe": false,
+      "expectedExit": 2,
+      "expectedMarker": "MARKER-CONTROLS: SELECTOR-ERROR [malformed]",
+      "requirement": "selector boundary: malformed"
+    },
+    {
+      "id": "selector-unknown",
+      "kind": "selector",
+      "selector": "contract-no-such-case",
+      "probe": false,
+      "expectedExit": 2,
+      "expectedMarker": "MARKER-CONTROLS: SELECTOR-ERROR [unknown]",
+      "requirement": "selector boundary: unknown"
+    },
+    {
+      "id": "selector-duplicate",
+      "kind": "selector",
+      "selector": "contract-unchanged,contract-unchanged",
+      "probe": false,
+      "expectedExit": 2,
+      "expectedMarker": "MARKER-CONTROLS: SELECTOR-ERROR [duplicate]",
+      "requirement": "selector boundary: duplicate"
+    }
+  ]
+}

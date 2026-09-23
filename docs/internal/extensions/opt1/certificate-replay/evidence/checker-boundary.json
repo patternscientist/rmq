@@ -1,0 +1,105 @@
+{
+  "Before": {
+    "Stage": "before-fix",
+    "Commit": "ac5af8e416f906391dc117f083a883acc053a268",
+    "RunnerSHA256": "b7c60b3cfd7f7776dcfef769a9f2f310dc2ca4c0cc565657d8d273009c1b12b3",
+    "Function": "Assert-CRejected",
+    "Fixture": {
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "StandardOutput": [
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean:33:2: error: type mismatch",
+        "  certificate.widthBounds"
+      ],
+      "StandardError": [
+        "error: cannot open file"
+      ],
+      "Output": [
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean:33:2: error: type mismatch",
+        "  certificate.widthBounds",
+        "error: cannot open file"
+      ]
+    },
+    "SelectedCase": {
+      "Id": "W03-widthBounds",
+      "Field": "widthBounds",
+      "Kind": "weaken"
+    },
+    "ConsumerLine": 33,
+    "ActualVerdict": "ACCEPTED_EXPECTED_REJECTION",
+    "Exception": "",
+    "ExpectedVerdict": "REJECTED_MIXED_DIAGNOSTIC",
+    "LeanLaunched": false
+  },
+  "After": {
+    "Stage": "after-fix",
+    "BaseCommit": "ac5af8e416f906391dc117f083a883acc053a268",
+    "RunnerSHA256": "d900f70f87fddd8a0291e89552d621be02e9a27ed49828a4397c5e00b35ed8ca",
+    "Function": "Assert-CRejected",
+    "Fixture": {
+      "ExitCode": 1,
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "StandardOutput": [
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean:33:2: error: type mismatch",
+        "  certificate.widthBounds"
+      ],
+      "StandardError": [
+        "error: cannot open file"
+      ],
+      "Output": [
+        "RMQ/Core/WordRAM/Optimization/Consumers.lean:33:2: error: type mismatch",
+        "  certificate.widthBounds",
+        "error: cannot open file"
+      ]
+    },
+    "SelectedCase": {
+      "Id": "W03-widthBounds",
+      "Field": "widthBounds",
+      "Kind": "weaken"
+    },
+    "ConsumerLine": 33,
+    "ActualVerdict": "REJECTED_MIXED_DIAGNOSTIC",
+    "Exception": "OPT1-CERT-VERDICT: unlocated error is not an exact field rejection",
+    "ExpectedVerdict": "REJECTED_MIXED_DIAGNOSTIC",
+    "Controls": [
+      {
+        "Fixture": {
+          "ExitCode": 1,
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "StandardError": [],
+          "Output": [
+            "RMQ/Core/WordRAM/Optimization/Consumers.lean:33:2: error: type mismatch",
+            "  certificate.widthBounds"
+          ]
+        },
+        "Verdict": "ACCEPTED_EXPECTED_REJECTION"
+      },
+      {
+        "Fixture": {
+          "ExitCode": 1,
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "StandardError": [],
+          "Output": [
+            "RMQ/Core/WordRAM/Optimization/Consumers.lean:33:2: error: type mismatch",
+            "  certificate.widthBounds",
+            "  \"error: quoted diagnostic text\""
+          ]
+        },
+        "Verdict": "ACCEPTED_EXPECTED_REJECTION"
+      }
+    ],
+    "RegistrySelfTest": {
+      "Command": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/packed_optimized_certificate_replay.ps1 -RegistrySelfTestOnly",
+      "StandardError": [],
+      "ExitCode": 0,
+      "StandardOutput": [
+        "OPT1-CERT-REGISTRY SELF-TEST PASS exact=80 missing/duplicate/reordered/all78mutations/fixed-consumer/exact-diagnostic/mixed-unlocated-error/indented-detail/resource/accept"
+      ]
+    },
+    "LeanLaunched": false
+  }
+}

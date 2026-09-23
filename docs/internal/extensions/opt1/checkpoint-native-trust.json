@@ -1,0 +1,14 @@
+{
+  "Label": "native-trust",
+  "Command": [
+    "rg",
+    "-n",
+    "native_decide|Lean\\.ofReduceBool",
+    "RMQ"
+  ],
+  "ExitCode": 1,
+  "ExpectedExit": 1,
+  "Passed": true,
+  "Output": [],
+  "PriorWrapper": "Python direct rg launch denied before execution; PowerShell command boundary used"
+}

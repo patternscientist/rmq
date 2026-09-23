@@ -1,0 +1,47 @@
+COMPILER EDGE CHECKS PASS
+compiled 4444 instructions 2939 registers
+result 1 expected 1 steps 64775 reads 122
+WHOLE-PATH PASS
+LEAN VM PASS tag=1 steps=64775 reads=122 width=18 peak=139396
+compiled 4444 instructions 2939 registers
+result 14 expected 14 steps 70373 reads 131
+WHOLE-PATH PASS
+LEAN VM PASS tag=14 steps=70373 reads=131 width=18 peak=197130
+compiled 4444 instructions 2939 registers
+result 8 expected 8 steps 59611 reads 136
+WHOLE-PATH PASS
+LEAN VM PASS tag=8 steps=59611 reads=136 width=18 peak=232224
+compiled 4444 instructions 2939 registers
+result 28 expected 28 steps 71600 reads 140
+WHOLE-PATH PASS
+LEAN VM PASS tag=28 steps=71600 reads=140 width=19 peak=353568
+compiled 4444 instructions 2939 registers
+result 1 expected 1 steps 54412 reads 104
+WHOLE-PATH PASS
+LEAN VM PASS tag=1 steps=54412 reads=104 width=17 peak=87381
+compiled 4444 instructions 2939 registers
+result 8 expected 8 steps 57223 reads 107
+WHOLE-PATH PASS
+LEAN VM PASS tag=8 steps=57223 reads=107 width=17 peak=84001
+compiled 4444 instructions 2939 registers
+result 9 expected 9 steps 42590 reads 90
+REFERENCE PATH PASS (partial coverage)
+LEAN VM PASS tag=9 steps=42590 reads=90 width=17 peak=84001
+compiled 4444 instructions 2939 registers
+result 0 expected None steps 19 reads 0
+REFERENCE PATH PASS (partial coverage)
+LEAN VM PASS tag=0 steps=19 reads=0 width=17 peak=4
+compiled 4444 instructions 2939 registers
+result 1 expected 1 steps 54412 reads 104
+WHOLE-PATH PASS
+LEAN VM PASS tag=1 steps=54412 reads=104 width=17 peak=87381
+{'fixture': 'fixture-n15-comb.json', 'n': 15, 'width': 18, 'valid': 120, 'invalid': 169, 'maxSteps': 64775, 'maxReads': 123, 'maxRegisterValue': 169125, 'programHash': 'a9b37523e9f9886b120ae9a0eeced7e134e10bd38468fe2021539e303529d851'}
+{'fixture': 'fixture-n15-zigzag.json', 'n': 15, 'width': 18, 'valid': 120, 'invalid': 169, 'maxSteps': 71492, 'maxReads': 132, 'maxRegisterValue': 198662, 'programHash': 'a9b37523e9f9886b120ae9a0eeced7e134e10bd38468fe2021539e303529d851'}
+{'fixture': 'fixture-n16-balanced.json', 'n': 16, 'width': 18, 'valid': 136, 'invalid': 188, 'maxSteps': 76346, 'maxReads': 182, 'maxRegisterValue': 232224, 'programHash': '6c1a960857837ce6588c3241083505f7176bcab709b8cde1986b2cf6353f4313'}
+{'fixture': 'fixture-n29-zigzag.json', 'n': 29, 'width': 19, 'valid': 120, 'invalid': 78, 'maxSteps': 77532, 'maxReads': 171, 'maxRegisterValue': 473299, 'programHash': 'c91a6d183c623616c66c20201655583573a70e1e48070bef04e498cea5b80037'}
+{'fixture': 'fixture-n9-ascending.json', 'n': 9, 'width': 17, 'valid': 45, 'invalid': 76, 'maxSteps': 57839, 'maxReads': 108, 'maxRegisterValue': 87381, 'programHash': 'e8ee618fbb04b18b1772cdbae2e3dd8a8e4508208bc50299fe912db47bd2ff73'}
+{'fixture': 'fixture-n9-balanced.json', 'n': 9, 'width': 17, 'valid': 45, 'invalid': 76, 'maxSteps': 57223, 'maxReads': 107, 'maxRegisterValue': 84001, 'programHash': 'e8ee618fbb04b18b1772cdbae2e3dd8a8e4508208bc50299fe912db47bd2ff73'}
+{'fixture': 'fixture-n9-descending.json', 'n': 9, 'width': 17, 'valid': 45, 'invalid': 76, 'maxSteps': 42590, 'maxReads': 90, 'maxRegisterValue': 84001, 'programHash': 'e8ee618fbb04b18b1772cdbae2e3dd8a8e4508208bc50299fe912db47bd2ff73'}
+{'fixture': 'fixture-n9-invalid.json', 'n': 9, 'width': 17, 'valid': 45, 'invalid': 76, 'maxSteps': 57223, 'maxReads': 107, 'maxRegisterValue': 84001, 'programHash': 'e8ee618fbb04b18b1772cdbae2e3dd8a8e4508208bc50299fe912db47bd2ff73'}
+{'fixture': 'fixture-n9-ties.json', 'n': 9, 'width': 17, 'valid': 45, 'invalid': 76, 'maxSteps': 57839, 'maxReads': 108, 'maxRegisterValue': 87381, 'programHash': 'e8ee618fbb04b18b1772cdbae2e3dd8a8e4508208bc50299fe912db47bd2ff73'}
+VALIDATION PASS 1705 queries 26 cell mutations

@@ -1,0 +1,20 @@
+{
+  "Label": "report-design",
+  "Command": [
+    "powershell",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "scripts/design_decision_check.ps1",
+    "-Strict",
+    "-Base",
+    "a44691d500f3a094b4c96480ed74172c944f69f3"
+  ],
+  "ExitCode": 0,
+  "Passed": true,
+  "DurationSeconds": 3.961,
+  "Stdout": "DESIGN-CHECK: checked 8 changed files (0 code, 7 workflow, 1 neutral)\n",
+  "Stderr": "",
+  "Tree": "report/evidence follow-up over a44691d500f3a094b4c96480ed74172c944f69f3; no source changes"
+}

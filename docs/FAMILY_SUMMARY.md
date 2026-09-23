@@ -48,9 +48,81 @@ Instruction dispatch, input/register access, option tests, arithmetic
 scanning, candidate merging, trace assembly, and the public validity guard are
 documentary uncharged omissions, not a checked controller-operation inventory.
 Therefore `210` is not a conventional word-RAM theorem, a
-`query(serializedPayload,left,right)` theorem, or a preprocessing theorem. E1
-must define and simulate a richer machine; M1 and construction obligations
-remain separate.
+`query(serializedPayload,left,right)` theorem, or a preprocessing theorem. The
+E1 plan to define and simulate a richer machine for this execution is
+superseded by the separate accepted theorem in the next section, which charges every
+primitive instruction of its own distinct execution; M1 and construction
+obligations remain separate.
+
+## Packed Primitive Query (Accepted)
+
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, exported through
+`RMQPaper`, abbreviates
+`RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds`
+(`RMQ/Core/WordRAM/Packed/Capstone.lean`). Its status is ACCEPTED: the
+theorem is kernel checked with axioms `propext`, `Classical.choice` and
+`Quot.sound`, and `RMQ/Validation/PackedQueryContract.lean` states each
+certificate field as an independent expected-type consumer, and the committed
+replay campaign `scripts/packed_query_replay.ps1`, the aggregate gate and a
+fresh blind source audit with its tooling correction review have passed.
+
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` is about a different
+execution from the charged-trace theorem above. The machine
+(`RMQ/Core/WordRAM/Packed/Primitive.lean`) is a register machine over numeric
+memory with nine instruction forms -- `load`,
+`constant`, `move`, `arithmetic`, `comparison`, `jump`, `jumpRegister`,
+`branchZero` and `halt` -- and each executed instruction is one step. The
+word model is an arithmetic word-RAM with unit-cost multiplication, division,
+remainder, variable shifts and bitwise operations. `buildMemory xs` is 174
+metadata words followed by the existing packed allocation of the payload,
+densely repacked into `wordWidth n = 32 + 8 * packedReviewerCellWidth n` bits
+per word, with `log2(n+2)+1 <= wordWidth n <= 192*(log2(n+2)+1)`.
+`queryProgram` is one closed loop-free program of 837,572 instructions,
+independent of `xs` and `n`; its register bank has 8,271 registers and its
+scratch count, with three control words, is 8,274.
+
+The certificate states, on that one memory, program and run: data capacity
+`2n + allocationRho n` and complete data/code/scratch capacity
+`2n + queryCompleteRho n`, both little-o residuals; the width bounds; every
+stored word, allocated address and encoded instruction field fits
+`wordWidth n`; the budget equals the program length; valid inputs are
+representable; the total wrapper `queryNat` equals the reference
+`scanWindow` answer on valid ranges and `none` otherwise, with leftmost ties;
+for representable endpoints the run halts with the reference packet within
+the budget, rejects invalid ranges with packet `0` and no reads, and keeps
+every transition, prefix state, receipt address and reply within the width;
+receipts are positionally backed, and on valid ranges they are exactly the 174
+metadata loads followed by the physical expansion of the logical trace of the
+same query; and agreement of any supplied memory at the read addresses
+determines the whole run. The steps partition into six instruction
+categories. Supporting theorems include
+`queryRun_result`, `queryRun_halts`, `queryNat_exact`, `queryNat_leftmost`,
+`queryRun_invalid`, `queryRun_steps_le`, `queryRun_categories_partition`,
+`queryRun_execution_safe`, `queryRun_read_at`, `queryRun_reference_reads`,
+`queryRun_agreement`, `buildMemory_capacity_le`, `query_complete_capacity`,
+`queryProgram_fits` and `queryBudget_eq`, all in
+`RMQ.SuccinctFinal.PackedWordRAM`.
+
+Scope: the 837,572-step budget of
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` is the loop-free
+program length, far above the 6,003 to 16,358 steps of the committed
+valid-query fixtures, and is not claimed tight. The code and scratch term
+exceeds `n` for every `n` below about `2^28`, so it is lower order only
+asymptotically. Endpoints outside the word domain are rejected by the
+uncharged value-level check `encodeInputs`. Preprocessing time and space are
+unbounded and unclaimed, Lean runtime is not measured, and the `210` trace and
+`427` probe bounds are distinct quantities that this budget does not
+reinterpret.
+
+Reusable proof ideas: loop-free compilation of statically expanded,
+proved-bounded repetition, so the budget is the program length; serializing
+size and shape geometry into a counted metadata prefix instead of code
+specialized to `n`; dense repacking at a wider word to keep the `2n`
+coefficient; generic evaluation boundaries and register write frames so the
+kernel never unfolds the whole program; constructor-complete static maxima
+over every encoded field, dormant arms included; and proving no overflow,
+underflow, zero division or oversized shift so natural-number arithmetic
+equals `w(n)`-bit arithmetic.
 
 ## Canonical Occurrence Provenance
 
@@ -119,7 +191,9 @@ guards both at the ordinary-list `ValidRange` boundary and records the
 four-link list query, canonical costed query, interpreted controller, and exact
 supplied physical execution chain. The paper theorem consumes the guarded
 packet and direct bound literally. This is the M1 word-addressed supplied-store
-rung; S1 serialized-payload querying and E1 controller charging remain separate.
+rung; S1 serialized-payload querying remains separate, and controller
+charging, once assigned to E1, is carried by the separate primitive-machine
+accepted construction described above.
 
 The public list boundary rejects invalid or empty ranges coherently through
 `queryCosted_invalid`, `queryTraceResult_invalid`,
@@ -171,6 +245,11 @@ separate appendix.
   Reviewers who only need the RMQ paper theorem surface can build
   `RMQPaper`; the broader `RMQ` and `RMQ.Headlines` roots remain checked
   repository/testbed imports.
+- Accepted primitive-machine query: `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`
+  (also in `RMQPaper`) answers the same contract on a numeric memory with one
+  fixed loop-free program, charging every executed primitive instruction;
+  it is accepted following the replay campaign, both-host aggregate gates and independent audit. See the
+  packed primitive query section near the top of this file.
 - Exact public RMQ backends: linear scan, plus-minus-one linear instance,
   sparse table, memoized sparse table, hybrid block, recursive hybrid, raw
   whole-list microtable, and value-level Fischer-Heun.
@@ -464,11 +543,12 @@ read-store matching, and no-synthetic theorem surfaces.
 | Core RMQ spec and backend contract | `LeftmostArgMin`, `CandidateExact`, `RMQBackend`, and contract-level backend equality are proved. | No cost model here. | All public RMQ backends target the same half-open leftmost-argmin contract. |
 | Traced RAM substrate | `Core.RAM` defines primitive operation traces, derived `steps`, and a `toCosted` bridge whose cost is definitionally the trace length. The raw primitive constructor is internal; clients build programs through typed primitives such as branches, reads, writes, comparisons, allocations, and array pushes. | Primitive branches, Array reads/writes, integer comparisons, Array allocations, and Array pushes each contribute one trace operation. | This is a hardened shallow trace substrate, not yet a full first-order interpreter. It is currently used by the sparse-table query and memoized-build bridge, and now by the dense LCA first-occurrence builder. |
 | Word-RAM interpreter | `Core.WordRAM` adds a first-order payload-memory query language whose evaluator computes value and trace together, then projects one-way into `Costed`. `Core.WordRAM.Register` adds the first register/control layer for dynamic addresses, including optional-close table reads and natural-valued sampled-rank programs. The core provenance theorems prove trace reads agree with the payload store, read addresses come from first-order syntax, dynamically read words respect the chosen machine-word bound, and register-program read addresses fit a declared bit width when the selected address expressions satisfy the explicit no-overflow side conditions. Segment-relabeling lemmas preserve `toCosted`, word-boundedness, and read-store matching when component-local payload segments are embedded into a global layout. | Payload word reads each contribute one trace event; word-local rank/select primitives are counted trace events when their input word is present. Register arithmetic and branching remain zero-cost model operations and never appear as trace events. | This is an anti-oracle refinement layer for query paths, not a compiled Lean execution claim, not a compiler, and not a complete bounded-integer CPU. Register arithmetic is mathematical `Nat` arithmetic with explicit `NoOverflow`/`FitsInBits` proofs rather than silent wraparound. `Core.SuccinctSpace.*RAM` and `Core.GenericSelect.RAM` currently consume it for fixed-width table reads, stored-word rank/select leaves, a payload-live BP close/LCA table-read skeleton, the final RMQ capstone's two-level answer-rank leg, relabeled close/LCA compatibility adapters, and the closed whole-query control program in `SuccinctFinalRAM`. |
+| Packed primitive machine (accepted) | `RMQ/Core/WordRAM/Packed/` defines a register machine over numeric memory with nine instruction forms, the allocation `buildMemory` (174 metadata words plus the densely repacked packed allocation), and one closed loop-free `queryProgram`. `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` proves exact leftmost answers on valid half-open ranges, rejection of representable invalid ranges with no reads, and read provenance on one memory, program and run. | Every executed instruction is one step, with unit-cost multiplication, division, remainder, shifts and bitwise operations; runs halt within at most 837,572 steps, the program length, and memory plus literal program encoding plus registers fit in `2n + o(n)` bits, absorbed only asymptotically. | ACCEPTED after the committed replay campaign, aggregate gate and blind audit. Preprocessing is unclaimed and endpoints outside the word domain are rejected by an uncharged value-level check. It does not reinterpret the charged-trace or packed-probe bounds. |
 | Reusable model hub | `RMQ.Core.ModelHub` imports exactly the RMQ-free model layer: `Cost`, `Amortized`, `AmortizedSequence`, `RAM`, `Refine`, `TableModel`, `LowerBound`, and `PayloadLowerBound`. The standalone `RMQHub` Lake target imports the same barrel. | No algorithmic cost claim by itself; the hub exposes the cost, potential-method, sequence-telescope, trace, refinement, table, payload, capacity, payload-accounted finite-encoding APIs, and uniform charged-budget lower-bound theorems used by the spokes. | This is the first extraction test: the hub builds and has a hub-only axiom gate without importing RMQ specs, Cartesian shapes, LCA, or implementations. |
 | Refinement and table/access model | `Core.Refine` now owns `StoredSeq` and `StoredMatrix`, reusable Array/List erasure certificates for one-dimensional direct-address tables and list-of-lists tables. `Core.TableModel` keeps generic indexed access, finite indexed sequences, list-backed reference adapters, compatibility aliases for both stored views, unit-cost modeled reads, and payload views with uncharged auxiliary-state extension. | Indexed reads cost `indexedReadCost = 1`; payload views track serialized payload bits and a charged bit budget. | This keeps List tables as reference semantics while letting executable Array-backed representations prove erasure/refinement once at the boundary. Sparse-table stored queries and Fischer-Heun summary tables use `Refine.StoredMatrix`; dense LCA first-occurrence reads now use `Refine.StoredSeq`. |
 | Linear scan | Exact query, soundness, completeness, invalid-range rejection, backend. | Costed scan kernel exists in `Core.CostKernels`; no separate backend-level cost wrapper. | Direct reference backend. |
 | Plus-minus-one RMQ | `Core.PlusMinusOne` packages `AdjacentDepthsDifferByOne` as a first-class RMQ input, adds delta-signature replay, and proves a certified normalized signature-table contract. Euler traces, generated rose-tree Euler depths, and generated Euler-tour parenthesis bits instantiate the invariant directly. | The old raw constant-cost packed PM1 wrapper has been retired; remaining packed PM1 facts are exact value/reference scaffolding, not the final broadword query-cost model. | `Impl.PlusMinusOne` provides both the conservative linear instance and a normalized delta-signature backend, with contract-level equivalence between them. The packed PM1 model uses the fixed exact signature table as a universal decoder; it is not yet a broadword/block-decomposition implementation. |
-| Succinct bit layer | `Core.Succinct` defines exact rank/select over `List Bool`, balanced-parentheses predicates, model-level `PackedBitVector`, `PackedBalancedParens`, `PackedPlusMinusOneRMQ`, and generated Euler-tour parentheses with proofs of balance and depth-trace agreement. `Core.SuccinctReduction` turns a plus-minus-one backend over generated Euler parentheses, including the concrete packed Euler-parentheses backend, into the ordinary RMQ/LCA reduction interface. `Core.SuccinctSpace` is the public barrel for the split broadword directory interface and family-level `2*n + o(n)` theorem shape over exact RMQ shape representatives, with role modules for asymptotics, word/table payloads, rank/select components, BP shape/access facts, broadword RMQ profiles, close-navigation wrappers, and the first `WordRAM` consumer modules. `Core.RankSelectSpec` wraps that directory boundary as a standalone plain-bitvector surface with stored-bit `access`, exact rank/select, payload length `n + overhead n`, and family theorem `RankSelectSpec.BitVectorRankSelectFamily.n_plus_o_constant_query_profile`. The BP bridge proves `bpCode_balanced`, exact `2*n` BP payload length, inorder close-position existence/bounds, full close-rank count, `bpCloseOfInorder?_rankFalse_succ`, and `select_false_bpCode_eq_bpCloseOfInorder?`. `Core.SuccinctRank` and the `Core.SuccinctSelect` helper modules isolate the sampled rank/select builder targets, while `Core.SuccinctSelect` keeps the remaining sparse/dense relative-split false-close construction. | The packed/reference rank/select and packed PM1 wrappers erase to exact List-level semantics and are useful correctness scaffolding, but their old raw constant-cost profiles are retired: they wrapped aggregate reference computations instead of reading from a real o(n)-bit directory. The faithful rebuild now has both word primitives: `RAM.rankBoolWordPrefix` and `RAM.selectBoolWord`. `Succinct.select_min_length_eq` adds the select-side clamping fact needed for finite locator tables. `SuccinctSpace.StoredWordRankData.rankCostedClamped_exact` gives total rank via a valid stored-read path plus clamping; `SuccinctSpace.FixedWidthNatTable.profile`, `SuccinctSpace.FixedWidthRankSampleTables.profile`, and `SuccinctSpace.PayloadLiveStoredWordRankData.profile` add a payload-live fixed-width sample layer for rank, with `ofEncodedWords_profile` and `ofEntries_profile` constructors tying bounded entries or explicit encoded word lists to the charged payload. `SuccinctSpace.PayloadLiveStoredWordRankData.rankProgram_profile` now routes the stored-word rank leaf through a first-order `WordRAM` program, and `PayloadLiveStoredWordRankData.rankRegProgram_refines_rankCostedClamped` gives the single-level dynamic-register version. `SuccinctSpace.StoredWordSelectData.selectCosted_profile` gives select via a locator read, payload-word read, and word-select primitive; `SuccinctSpace.FixedWidthSelectSampleTable.profile`, `SuccinctSpace.FixedWidthSelectSampleTables.profile`, and `SuccinctSpace.PayloadLiveStoredWordSelectData.profile` add the analogous payload-live fixed-width locator layer for select, again with encoded-word and bounded-entry constructors. `SuccinctSpace.FixedWidthSelectSampleTable.readInterpretedCosted_refines_readCosted`, `SuccinctSpace.FixedWidthSelectSampleTables.sampleInterpretedCosted_refines_sampleCosted`, and `SuccinctSpace.PayloadLiveStoredWordSelectData.selectInterpreted_profile` make the select locator and payload-word reads interpreter-backed while keeping the domain-specific locator decoder outside the generic interpreter. `SuccinctSpace.RankSelectDirectory.ofPayloadLiveRankSelectData_profile` combines the payload-live rank/select components; `RankSelectSpec.BitVectorRankSelectDirectory.ofPayloadLiveRankSelectData_profile` exposes the same combined component as a full bitvector access/rank/select API; `SuccinctSpace.BalancedParensAccess.ofPayloadLiveStoredWordRankSelectData_profile` and `SuccinctSpace.BalancedParensAccess.ofShapePayloadLiveStoredWordRankSelectData_close_profile` lift them to BP rank/select/excess access and the Cartesian close-select/rank-close legs with cost `<= 3`; `SuccinctSpace.FixedWidthOptionNatTable.profile`, `SuccinctSpace.PayloadLiveBPCloseLCADirectory.profile`, and `SuccinctSpace.PayloadLiveBPCloseLCADirectory.ofEntries_profile` add the payload-live fixed-width optional-close table for BP LCA-close navigation, with `SuccinctSpace.PayloadLiveBPCloseLCADirectory.lcaCloseProgram_profile` giving the corresponding interpreted optional-close table read. The older payload-backed stored-word layer remains as compatibility scaffolding for intermediate migration theorems, but the current BP-native path uses payload-live rank/select plus payload-live LCA-close. `SuccinctSpace.BPBroadwordRMQDirectory` is the BP-native `shape.bpCode ++ aux` payload counterpart to the older canonical full-code-tail directory. `BPCloseRMQNavigationDirectory.queryEncodedCosted_exact` proves the abstract select-close, LCA-close, rank-close composition exact; `PayloadLiveBPCloseRMQNavigationDirectory.profile` proves the stateful built-query version exact with cost `<= 10`, `WordBoundedSampledPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_bounded_built_query_profile` adds bounded stored-word discipline, and `WordBoundedSampledEncodedPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_word_bounded_encoded_query_profile` gives the sampled payload-only theorem target with bounded rank/select payload words. `PayloadLiveBPCloseRMQNavigationDirectory.queryBuiltInterpretedCosted_refines_queryBuiltCosted`, `PayloadLiveBPCloseRMQNavigationDirectory.interpreted_profile`, and `WordBoundedSampledEncodedPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_interpreted_word_bounded_query_profile` add the first whole-query interpreted close-navigation profile. `SuccinctSpace.logLogSampledDirectoryOverhead_littleO` now supplies the Mathlib-free `n/log n * log log n = o(n)` arithmetic needed for local two-level delta tables. `SuccinctSpace.chunkPayloadWords_get?_some_of_mul_lt` proves strict-position chunk presence. `SuccinctRank` now has canonical super/block rank sample entries, fixed-width sample-table constructors, presence/bound lemmas, chunk-local rank exactness for ordinary chunks, `ofChunks_word_present_of_lt`, `CanonicalRankWordBridge`, and `canonicalTwoLevelRankDataOfBridge`/`canonicalTwoLevelRankDataOfChunksPresent`, plus canonical two-level rank overhead lemmas. `GenericSelect.RAM` routes the generic sparse-exception select source through interpreted table/word reads and routes two-level rank through `SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterInterpretedCosted`. `Core.RankSelectCompressedSubLogRAM` and `Core.RankSelectPublicRAM` replay the concrete compressed/FID access, rank, and select paths through the same `WordRAM` bridge layer while preserving the public family theorem shape. `Core.SuccinctSelect.TwoLevel`, `Core.SuccinctSelect.Obstructions`, and `Core.SuccinctSelect.DenseLocalTables` factor the two-level select/rank-select/BP-navigation layer, finite-table obstruction facts, and dense-local table codecs out of the proposal root. `Core.SuccinctSelect.CloseSelect` now has the remaining sparse/dense false-close/select locator machinery, relative-split sparse-exception close access, and branch-obligation closure consumed by `SuccinctFinal`; `SuccinctSelectProposal` is now only a compatibility import root. | The current construction-facing capstone is `SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile`. It combines the canonical reviewer payload bound, exact physical erasure, doubled-Catalan envelopes, exact answers, the canonical global trace, its non-synthetic certificate equality, and the uniform `210` bound in one checked theorem. The public aliases and execution stories all consume that same payload and trace; older direct/interpreted/leaf/word profiles are available only through `RMQ.Headlines.RMQCompatibility`. The standalone compressed/FID rank/select spoke remains separate. Remaining work includes fuller BP-navigation/tree-navigation reuse and a fully charged small-step machine. |
+| Succinct bit layer | `Core.Succinct` defines exact rank/select over `List Bool`, balanced-parentheses predicates, model-level `PackedBitVector`, `PackedBalancedParens`, `PackedPlusMinusOneRMQ`, and generated Euler-tour parentheses with proofs of balance and depth-trace agreement. `Core.SuccinctReduction` turns a plus-minus-one backend over generated Euler parentheses, including the concrete packed Euler-parentheses backend, into the ordinary RMQ/LCA reduction interface. `Core.SuccinctSpace` is the public barrel for the split broadword directory interface and family-level `2*n + o(n)` theorem shape over exact RMQ shape representatives, with role modules for asymptotics, word/table payloads, rank/select components, BP shape/access facts, broadword RMQ profiles, close-navigation wrappers, and the first `WordRAM` consumer modules. `Core.RankSelectSpec` wraps that directory boundary as a standalone plain-bitvector surface with stored-bit `access`, exact rank/select, payload length `n + overhead n`, and family theorem `RankSelectSpec.BitVectorRankSelectFamily.n_plus_o_constant_query_profile`. The BP bridge proves `bpCode_balanced`, exact `2*n` BP payload length, inorder close-position existence/bounds, full close-rank count, `bpCloseOfInorder?_rankFalse_succ`, and `select_false_bpCode_eq_bpCloseOfInorder?`. `Core.SuccinctRank` and the `Core.SuccinctSelect` helper modules isolate the sampled rank/select builder targets, while `Core.SuccinctSelect` keeps the remaining sparse/dense relative-split false-close construction. | The packed/reference rank/select and packed PM1 wrappers erase to exact List-level semantics and are useful correctness scaffolding, but their old raw constant-cost profiles are retired: they wrapped aggregate reference computations instead of reading from a real o(n)-bit directory. The faithful rebuild now has both word primitives: `RAM.rankBoolWordPrefix` and `RAM.selectBoolWord`. `Succinct.select_min_length_eq` adds the select-side clamping fact needed for finite locator tables. `SuccinctSpace.StoredWordRankData.rankCostedClamped_exact` gives total rank via a valid stored-read path plus clamping; `SuccinctSpace.FixedWidthNatTable.profile`, `SuccinctSpace.FixedWidthRankSampleTables.profile`, and `SuccinctSpace.PayloadLiveStoredWordRankData.profile` add a payload-live fixed-width sample layer for rank, with `ofEncodedWords_profile` and `ofEntries_profile` constructors tying bounded entries or explicit encoded word lists to the charged payload. `SuccinctSpace.PayloadLiveStoredWordRankData.rankProgram_profile` now routes the stored-word rank leaf through a first-order `WordRAM` program, and `PayloadLiveStoredWordRankData.rankRegProgram_refines_rankCostedClamped` gives the single-level dynamic-register version. `SuccinctSpace.StoredWordSelectData.selectCosted_profile` gives select via a locator read, payload-word read, and word-select primitive; `SuccinctSpace.FixedWidthSelectSampleTable.profile`, `SuccinctSpace.FixedWidthSelectSampleTables.profile`, and `SuccinctSpace.PayloadLiveStoredWordSelectData.profile` add the analogous payload-live fixed-width locator layer for select, again with encoded-word and bounded-entry constructors. `SuccinctSpace.FixedWidthSelectSampleTable.readInterpretedCosted_refines_readCosted`, `SuccinctSpace.FixedWidthSelectSampleTables.sampleInterpretedCosted_refines_sampleCosted`, and `SuccinctSpace.PayloadLiveStoredWordSelectData.selectInterpreted_profile` make the select locator and payload-word reads interpreter-backed while keeping the domain-specific locator decoder outside the generic interpreter. `SuccinctSpace.RankSelectDirectory.ofPayloadLiveRankSelectData_profile` combines the payload-live rank/select components; `RankSelectSpec.BitVectorRankSelectDirectory.ofPayloadLiveRankSelectData_profile` exposes the same combined component as a full bitvector access/rank/select API; `SuccinctSpace.BalancedParensAccess.ofPayloadLiveStoredWordRankSelectData_profile` and `SuccinctSpace.BalancedParensAccess.ofShapePayloadLiveStoredWordRankSelectData_close_profile` lift them to BP rank/select/excess access and the Cartesian close-select/rank-close legs with cost `<= 3`; `SuccinctSpace.FixedWidthOptionNatTable.profile`, `SuccinctSpace.PayloadLiveBPCloseLCADirectory.profile`, and `SuccinctSpace.PayloadLiveBPCloseLCADirectory.ofEntries_profile` add the payload-live fixed-width optional-close table for BP LCA-close navigation, with `SuccinctSpace.PayloadLiveBPCloseLCADirectory.lcaCloseProgram_profile` giving the corresponding interpreted optional-close table read. The older payload-backed stored-word layer remains as compatibility scaffolding for intermediate migration theorems, but the current BP-native path uses payload-live rank/select plus payload-live LCA-close. `SuccinctSpace.BPBroadwordRMQDirectory` is the BP-native `shape.bpCode ++ aux` payload counterpart to the older canonical full-code-tail directory. `BPCloseRMQNavigationDirectory.queryEncodedCosted_exact` proves the abstract select-close, LCA-close, rank-close composition exact; `PayloadLiveBPCloseRMQNavigationDirectory.profile` proves the stateful built-query version exact with cost `<= 10`, `WordBoundedSampledPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_bounded_built_query_profile` adds bounded stored-word discipline, and `WordBoundedSampledEncodedPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_word_bounded_encoded_query_profile` gives the sampled payload-only theorem target with bounded rank/select payload words. `PayloadLiveBPCloseRMQNavigationDirectory.queryBuiltInterpretedCosted_refines_queryBuiltCosted`, `PayloadLiveBPCloseRMQNavigationDirectory.interpreted_profile`, and `WordBoundedSampledEncodedPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_interpreted_word_bounded_query_profile` add the first whole-query interpreted close-navigation profile. `SuccinctSpace.logLogSampledDirectoryOverhead_littleO` now supplies the Mathlib-free `n/log n * log log n = o(n)` arithmetic needed for local two-level delta tables. `SuccinctSpace.chunkPayloadWords_get?_some_of_mul_lt` proves strict-position chunk presence. `SuccinctRank` now has canonical super/block rank sample entries, fixed-width sample-table constructors, presence/bound lemmas, chunk-local rank exactness for ordinary chunks, `ofChunks_word_present_of_lt`, `CanonicalRankWordBridge`, and `canonicalTwoLevelRankDataOfBridge`/`canonicalTwoLevelRankDataOfChunksPresent`, plus canonical two-level rank overhead lemmas. `GenericSelect.RAM` routes the generic sparse-exception select source through interpreted table/word reads and routes two-level rank through `SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterInterpretedCosted`. `Core.RankSelectCompressedSubLogRAM` and `Core.RankSelectPublicRAM` replay the concrete compressed/FID access, rank, and select paths through the same `WordRAM` bridge layer while preserving the public family theorem shape. `Core.SuccinctSelect.TwoLevel`, `Core.SuccinctSelect.Obstructions`, and `Core.SuccinctSelect.DenseLocalTables` factor the two-level select/rank-select/BP-navigation layer, finite-table obstruction facts, and dense-local table codecs out of the proposal root. `Core.SuccinctSelect.CloseSelect` now has the remaining sparse/dense false-close/select locator machinery, relative-split sparse-exception close access, and branch-obligation closure consumed by `SuccinctFinal`; `SuccinctSelectProposal` is now only a compatibility import root. | The current construction-facing capstone is `SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile`. It combines the canonical reviewer payload bound, exact physical erasure, doubled-Catalan envelopes, exact answers, the canonical global trace, its non-synthetic certificate equality, and the uniform `210` bound in one checked theorem. The public aliases and execution stories all consume that same payload and trace; older direct/interpreted/leaf/word profiles are available only through `RMQ.Headlines.RMQCompatibility`. The standalone compressed/FID rank/select spoke remains separate. Remaining work includes fuller BP-navigation/tree-navigation reuse; instruction-level charging is carried by the separate packed accepted primitive machine (row above and the section near the top), not by this capstone. |
 | Sparse table | Exact materialized sparse table query and backend. `SparseTableInstrumented` replays cell construction, counted array row pushes, memoized log-row building, supplied-table querying, and build-then-query execution through Array-facing primitive traces and refines the verified List definitions. | The obsolete `SparseTableCost` build/fresh-query module has been retired. `SparseTableInstrumented` gives derived trace bounds for cells, rows, the memoized log-row build, stored supplied-table queries, and a build-then-query execution, with headline theorems `memoBuild_refine_with_steps`, `memoBuild_and_query_refine_with_steps`, and `memoQueryWithTracedBuild_refine_with_steps`. | The traced query guard uses `Array.size`, not `List.length`, so the constant-step query statement no longer hides list materialization in the validity check. Generic Array-table/List-table refinement is factored through `Refine.StoredMatrix` row/cell erasure, `queryFromArrayTable_value_of_refines`, and `queryFromStoredTable`. |
 | Memoized sparse table | Memoized build is extensionally equivalent to the verified sparse table, with backend and build-cost theorems for Fischer-Heun summaries. `SparseTableInstrumented.memoBuild_refine_with_steps` and `memoBuild_and_query_refine_with_steps` give the same log-row build a derived primitive-trace implementation over Arrays. | Exact log-row build cost formula, memo row count, a traced Array build bound, and a true build-then-query trace bound of `memoBuildSparseTableArraySteps xs.length + 7`. | This is the cost-faithful sparse-table builder used by Fischer-Heun summaries. The old fresh sparse-table query `Costed` wrapper was retired; Fischer-Heun's summary query now consumes a `Refine.StoredMatrix`/`StoredTable` Array representation. |
 | Hybrid block | Exact public hybrid backend with boundary scans and sparse middle summaries. | No first-class cost profile yet. | Useful proof predecessor for the recursive and Fischer-Heun schedules. |
@@ -1063,10 +1143,15 @@ and `docs/internal/LOCAL_BP_DECODER_PATH.md`.
   model-level succinct data-structure profile, not a claim about extracted
   wall-clock runtime.
 - The current concrete BP-native RMQ paper-facing all-size query-cost bound is
-  the uniform canonical charged-trace constant `210`; controller operations are
-  explicitly uncharged. Earlier accounting and dispatch facts remain only in
-  the explicit compatibility history and are not consumed by the reviewer
-  route.
+  the uniform canonical charged-trace constant `210`; that theorem leaves
+  controller operations explicitly uncharged. Earlier accounting and dispatch
+  facts remain only in the explicit compatibility history and are not consumed
+  by the reviewer route.
+- The separate accepted theorem `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`
+  charges every primitive instruction of a distinct numeric-memory execution,
+  within a fixed budget equal to its loop-free program length and under
+  unit-cost multiplication, division, remainder, shifts and bitwise
+  operations. It is accepted following the replay campaign, both-host aggregate gates and independent audit, and it does not bound preprocessing.
 - The project remains Mathlib-free: imports are Lean/Std plus existing Lean
   arithmetic automation such as `omega`.
 
@@ -1093,6 +1178,14 @@ and `docs/internal/LOCAL_BP_DECODER_PATH.md`.
   `WordRAM.Program`, `WordRAM.Program.eval`, `WordRAM.Result.toCosted`,
   payload word reads, fixed-width decoders, sampled rank, and word-local
   select instructions for first-order query refinement.
+- `RMQ/Core/WordRAM/Packed/`: the accepted primitive machine
+  (`Primitive.lean`: `Instruction`, `Category`, `execute`, `step`, `run`,
+  `Instruction.Safe`), the numeric allocation (`Allocation.lean`:
+  `wordWidth`, `metadata`, `buildMemory`, `allocationRho`), the closed program
+  and query (`QuerySource.lean`: `queryBudget`, `queryRun`, `queryNat`;
+  `Guard.lean`: `encodeInputs`), complete accounting (`Accounting.lean`:
+  `queryRegisterCount`, `queryScratchWords`, `queryCompleteRho`) and the
+  certificate `FullyChargedPackedQueryCapstone` (`Capstone.lean`).
 - `RMQ/Core/Refine.lean`: `Refine.StoredSeq`, `Refine.StoredSeq.ofList`,
   `Refine.StoredSeq.erases_eq`, `Refine.StoredSeq.get?`,
   `Refine.StoredSeq.absGet?`, `Refine.StoredSeq.get?_eq_absGet?`,
@@ -1435,6 +1528,20 @@ The names below are grouped by source module. Repeated base names in
   `WordRAM.Register.NatProgram.eval_event_address_fitsInBits`,
   `WordRAM.Register.NatProgram.eval_event_read_or_primitive`,
   `WordRAM.Register.NatProgram.eval_no_zero_cost_control`.
+- `RMQ/Core/WordRAM/Packed/` (accepted; selected public theorems in
+  `RMQ.SuccinctFinal.PackedWordRAM` that feed the certificate):
+  `fullyChargedPackedQueryCapstone_holds`,
+  `fullyChargedPackedQueryCapstone_of_runtime_safety`,
+  `queryRun_execution_safe`, `queryRun_result`, `queryRun_halts`,
+  `queryRun_invalid`, `queryRun_steps_le`, `queryRun_categories_partition`,
+  `queryRun_read_at`, `queryRun_reference_reads`, `queryRun_agreement`,
+  `queryRun_finite_registers`, `queryNat_exact`, `queryNat_leftmost`,
+  `queryTraceResult_readOnly`, `valid_inputs_encode`, `validEndpoints_fit`,
+  `buildMemory_capacity_le`, `buildMemory_words_fit`,
+  `buildMemory_address_fit`, `query_complete_capacity`, `queryProgram_fits`,
+  `queryProgram_length`, `queryProgramWords_le`, `queryBudget_eq`,
+  `queryRegisterCount_eq`, `queryScratchWords_eq`, `wordWidth_log_lower`,
+  `wordWidth_le_log`, `allocationRho_littleO`, `queryCompleteRho_littleO`.
 - `RMQ/Core/TableModel.lean` (23):
   `TableModel.IndexedAccess.getCosted_value`,
   `TableModel.IndexedAccess.getCosted_erase`,
@@ -3314,3 +3421,250 @@ completeness.
 5. Promote the `RMQHub` import/build boundary into a physical package split
    only after a second spoke consumes the same hub APIs. See
    `docs/REPOSITORY_STRATEGY.md`.
+6. Package the accepted primitive-machine query
+   `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` with its committed replay
+   and independent audit evidence. A path-sensitive step bound and a
+   preprocessing bound in the same machine are separate, unstarted targets.
+
+## BV-1 candidate: generic physical bitvector operations
+
+`RMQ.PackedBitvector.fullyChargedBitvectorCapstone_holds` in
+`RMQ/Core/WordRAM/Bitvector/Capstone.lean` now has a kernel-checked inhabitant.
+For every `List Bool`, one numerical allocation supports access and rank/select
+for either Boolean target through the shared Packed primitive ISA and
+Structured compiler. The APIs agree with the independent List specifications
+for all natural arguments; the actual programs return those packets and halt.
+For representable machine inputs, every instruction field, transition,
+execution prefix, attempted read address and returned word fits the declared
+width. Actual setup, decoding, arithmetic and branches contribute to the
+execution-derived costs, with uniform instruction bounds 132/1450/10030 for
+access/rank/select.
+
+The same certificate counts the full numerical allocation, both select
+directories, all three encoded programs and 8274 scratch words within
+`n + completeRho n` bits, proves `LittleOLinear completeRho`, and uses
+`W = 32 + 16*machineWordBits n = O(log(n+2))`. The raw input is retained once;
+true-select normalization applies to loaded raw words. The model uses unit-cost
+scalar arithmetic including division and shifts; preprocessing is unbounded,
+the outer unbounded-Nat encoding check is uncharged. Lean runtime is separate
+from the modeled instruction bound. Code/scratch absorption is
+asymptotic and supplies no useful finite-size threshold. This is an additive
+generic bitvector construction; the RMQ reference semantics and shared Packed
+modules are unchanged. The independent consumer and all runtime/mutation
+campaigns have passed. Committed-byte verification also passed on source
+candidate `763b00e68cabef2ea322a92fb7b3be354b367179`; aggregate certification
+and coordinator acceptance remain pending at this checkpoint. See
+`internal/extensions/bv1/REPORT.md` for the current task disposition.
+
+## LB-1 candidate: bounded payloads for the actual packed allocation
+
+`RMQ.ExactRMQBoundedEncoding n B` fixes one bitstring decoder across all size-n
+inputs and permits every payload length through B, with length observed.
+`RMQ.ExactRMQBoundedEncoding.shapeCount_le` proves
+`Cartesian.shapeCount n <= 2^(B+1)-1`; its
+`doubledLogSlackLower_le` proves
+`EncodingLowerBound.doubledLogSlackLower n <= 2*(B+1)`.
+Shape injectivity is derived from valid half-open leftmost answers.
+
+`RMQ.SuccinctFinal.PackedWordRAM.packedAllocationOptimality_holds` joins that
+generic model to the actual PQ1 allocation. `allocationBits xs` serializes every
+`buildMemory xs` word at `wordWidth xs.length`; positive width and observed bit
+length preserve zero-word multiplicity. Deserialization recovers that complete
+memory exactly. `allocationDecoder n bits left right` uses the recovered words,
+n and endpoints and has the total exact RMQ contract. Equal Cartesian shapes
+intentionally share memory and payload even when their input values differ.
+
+Every uniform budget B satisfying
+`forall xs, xs.length=n -> (buildMemory xs).length * wordWidth n <= B`
+therefore obeys the lower bound. The actual per-input allocation satisfies
+`(allocationBits xs).length <= 2*xs.length + allocationRho xs.length`, with
+`LittleOLinear allocationRho`. Thus the comparison concerns a worst-case payload
+budget and the very allocation used by the query.
+
+The recovered-memory certificate retains all 33 fields and original guards of
+the underlying PQ1 model named by
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`. Fixed code and finite scratch
+retain their separate complete-capacity accounting; n is external, and the
+canonical decoder captures no other advice. Mathematical bit conversion and
+the outer natural-number argument/result wrapper remain outside the primitive
+query charges. LB-1 is an additive candidate with independent typed-consumer,
+replay and coordinator verification tracked in `internal/extensions/lb1/REPORT.md`.
+
+
+### LB-1 repaired candidate evidence checkpoint (2026-09-12)
+
+The additive LB-1 candidate at 5033ce54 connects the observed-length count
+`shapeCount n <= 2^(B+1)-1` and doubled lower bound to the actual serialized
+PQ1 allocation through a uniform worst-case budget. The decoder reconstructs
+the identical complete memory, and its 16-field allocation capstone includes
+all 33 transported machine fields with their original guards. The S03 repair
+changes only one expected-type consumer's comparison transparency; the
+arbitrary-budget proposition and tested canonical-budget substitution remain
+unchanged. All 63 mutation/control cases, all 6 runtime fixtures, five focused modes, three extra selector branches and the 20-name trust inventory passed on the repaired candidate. Coordinator-owned full build, aggregate
+certification and acceptance remain pending. Payload, separately counted
+fixed code/scratch, primitive model steps and uncharged mathematical bit
+conversion remain distinct. See the LB-1 REPORT.md and FINAL_DISPOSITION.md
+for exact source and evidence identities.
+
+## NATIVE-1 extension: finite-container and native-route checkpoint
+
+The isolated NATIVE-1 extension adds operation and whole-run simulation from
+Array-backed code, memory and registers to the existing primitive interpreter,
+under a finite destination-bank bound. `PackedNative.runThin_reference` and
+`PackedNative.routeCore_reference` connect the actual tail-recursive executable
+core to the same original run and its accumulated observations. Optional read
+logging is erased by a checked projection. Natural-number cells are an
+intermediate representation; this is not the finite-limb/binary native capstone.
+
+The Lean-to-C DLL and Rust frontend are a route experiment. Compiler/runtime/FFI
+assumptions, exact checked types and remaining canonical/limb/serialization/API
+obligations are recorded in `internal/extensions/native1/ROUTE_EVIDENCE.md`.
+The accepted PQ1 family and its public aliases are unchanged. No native payload
+or hardware-time bound and no completed Rust refinement are claimed here.
+
+### NATIVE-1 continuation: checked loaded-image source contract
+
+The continuation now provides
+`PackedNative.nativeExecutionCapstone_holds : PackedNative.NativeExecutionCapstone`
+with 42 independently typed field consumers in `Native/Contract.lean`.
+Canonical code, memory, registers and status use finite arrays of little-endian
+byte limbs. All-fuel execution agrees with the accepted PQ1 primitive run for
+every input size and representable endpoint pair, including invalid queries.
+The versioned binary codec has roundtrip, injectivity and exact storage
+accounting proofs. An indexed parser is proved equal to its specification for
+every byte sequence and limit record, with digit/count limits checked before
+large accumulation or allocation.
+
+The source contract ties the actual exported loader and query declarations to
+those same arrays. Its fields transport leftmost results, invalid guards,
+operation counts, ordered attempted reads, positional backing, width bounds
+and supplied-store agreement. Numeric payload/code/scratch bits, byte rounding,
+file framing and host container bounds are separate claims. Finite native API
+support is explicit; compiler/runtime/FFI correctness and allocator success
+remain external assumptions. There is no physical constant-time multiprecision
+or Lean heap-succinctness claim. The generated native build and full operational replay pass: 109 cases
+expand
+to 214 checks in both clients and source controls, inside 128 replay controls.
+All 42 field weakenings and the public-proposition collapse are rejected by
+the independent consumers after successful fresh producer compilation; the
+44-case certificate replay and nine controls pass. Fresh independent acceptance
+and aggregate certification remain coordinator-scheduled on frozen content.
+
+
+## 2026-09-12 OPT-1 extension checkpoint
+
+OPT-1 is in progress on its isolated optimization branch. The additive
+`Optimization.compile_realizes_branchBound` and
+`Optimization.compiled_run_bound_and_fuel_eq` producers bound actual baseline
+compiler transitions and preserve the full run at any two adequate fuels.
+`Optimization.source_eval_congr`, `source_eval_frame` and
+`source_safe_transport` preserve the independent source evaluation under a
+complete source-register inventory, with explicit global fitting data for
+safety transport. These generic producers are kernel-checked; their full
+namespace is `RMQ.SuccinctFinal.PackedWordRAM.Optimization`.
+
+The concrete query-bound instantiation and compact emitted-query capstone
+remain under development and have not been submitted for acceptance. The
+accepted public baseline remains
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`; its allocation, aliases,
+word model and budget identity are unchanged. Detailed phase evidence and
+unmet requirements are in `internal/extensions/opt1/REPORT.md`. This dated
+entry updates the earlier next-milestone description of path-sensitive work
+as unstarted, without closing that milestone or changing preprocessing scope.
+
+
+### OPT-1 checked compact-query candidate proof (2026-09-12 continuation)
+
+The additive `Optimization.compactPackedQueryCapstone_holds` now has a checked
+39-field inhabitant on the same `buildMemory`, `initialState` and `wordWidth`.
+The actual compact program contains 212964 instructions and 722339 encoded
+numeric words; its finite bank 8273 and scratch 8276 include the two loop
+registers. The same counted code/store/scratch satisfies the complete 2n+o(n)
+capacity theorem. Exact-type consumers cover every mandatory field.
+
+`Optimization.branchSensitiveQueryBound` bounds the original complete queryRun
+by 150739 steps and its smaller-fuel theorem preserves the full Run. Compact
+counted loops have a certified upper bound 151978 while preserving arbitrary-
+memory answers and ordered attempted reads. Its certificate includes actual
+completion/adequate-fuel equality, canonical ordinary-list/leftmost correctness,
+all-prefix primitive/word/address safety and positional physical read backing.
+These are modeled word-operation bounds, not measured Lean-runtime speedups
+or attained worst cases. The historical 837572 budget of
+RMQ.Headlines.succinctRMQFullyChargedPackedQuery and accepted public root
+aliases remain unchanged. Semantic/dependency replay, fresh exact-commit audit
+and final certification are still pending at this proof checkpoint.
+
+The subsequent full semantic campaign on the same OPT-1 proof source passed
+23 positive cases, four expected corruption rejections and all script/direct
+selector controls with unchanged source and artifact hashes. Field-dependency
+replay and coordinator-scheduled final certification remain open; this runtime
+result does not change the accepted public aliases or record acceptance.
+
+The subsequent OPT-1 field-dependency campaign passed all 80 cases: unchanged
+and comment-only controls were accepted, and deletion or weakening of each of
+the 39 frozen certificate fields was rejected by its fixed expected-type
+consumer after both altered producers compiled. The complete private dependency
+library and source copies retained their checked hashes. This supplements the
+earlier semantic replay and checked inhabitant. Coordinator-scheduled final
+compatibility certification and exact-candidate acceptance remain external
+phases; RMQ.Headlines.succinctRMQFullyChargedPackedQuery remains the public baseline.
+
+### OPT-1 replay certification repair (2026-09-12, R1)
+
+The OPT-1 compact-query construction did not change: the checked
+`Optimization.compactPackedQueryCapstone_holds` inhabitant, its 39 fields, 78
+exact consumers, the 150739 original bound, the 151978 compact bound, 212964
+instructions, 722339 encoded words and the 8273-register finite bank are
+byte-identical Git blobs at the repair candidate. What changed is the evidence
+contract around the executable replays: the production runtime classifier now
+accepts a rejection only when the child produced exactly the intended
+diagnostic and nothing else, and the production certificate replay identifies
+its compiled inputs through a versioned canonical source profile (strict UTF-8,
+CRLF replaced by LF only, exact Git source frontier, complete pinned Lean 4.22.0
+Windows distribution inventory and an actual one-job compilation receipt) instead
+of undocumented historical checkout newline bytes. The repaired replays passed
+their full registries on a fresh raw-Git checkout: 27 runtime cases, 80
+certificate field cases, plus 53 runtime-classifier and 49 production
+provenance/boundary regressions. These are replay-certification results about
+host processes and compiled artifacts, not new theorems, tighter bounds or
+native-time claims. Coordinator aggregate certification, fresh exact-commit
+audit and acceptance remain external; RMQ.Headlines.succinctRMQFullyChargedPackedQuery
+remains the public baseline.
+
+### PRE-1 construction contract author phase (2026-09-12)
+
+The isolated Construction modules establish scalar/input prerequisites for a
+future efficient builder into the accepted PQ1 allocation. They include a
+conservative primitive bridge, pointwise signed input with an executed unsigned
+length header, reflected primitive cap and canonical-BP oracle rejection.
+`PackedConstruction.contractPrerequisites_holds` certifies those prerequisites
+only. The efficient builder, linear preprocessing/temporary-word bounds and
+construction/query capstone remain unproved; contract audit precedes their
+implementation. The exact contract, amendments and evidence live in
+`docs/internal/extensions/pre1/`. Existing paper/headline identities are unchanged.
+
+### PRE-1 efficient builder candidate (2026-09-14, pending gate and audit)
+
+On the PRE-1 lane branch, `PackedConstruction.constructionAndQueryCapstone_holds`
+(`RMQ/Core/WordRAM/Construction/Capstone.lean`, not imported by `RMQ.lean`)
+states a candidate construction-and-query result on the frozen construction
+machine. One closed program constant per input model, both compiled from one
+source template, emits exactly `PackedWordRAM.buildMemory xs`
+(`PackedConstruction.efficientBuild_eq_buildMemory` for every `xs : List Int`
+in the comparison-oracle model, and the word-model version under
+`InputFits (wordWidth xs.length) xs`). The actual run halts within
+`1000000000 * n + 1000000000` interpreter transitions, keeps at most
+`3200000 * n + 3200000` temporary cells below its output, is safe at
+`wordWidth n`, never writes an input cell, and records a store transition for
+every output cell. Every instruction of both constants, executed or not, has
+operands fitting `wordWidth n`, registers below 400 and branch targets inside
+the program. The existing query theorem
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` is transported to the
+emitted cells through that list equality, and the query program is also
+simulated step for step in the construction instruction set on the detached
+emitted list; no relocated in-place query execution is claimed. The executable
+`rmq_preprocessing_validate` runs both constants on eleven fixtures up to
+`n = 129` against the reference allocation. The constants are crude upper
+bounds. This is candidate status only: the aggregate gate, a fresh blind audit
+and coordinator acceptance are still required, and the paper and headline
+identities are unchanged.

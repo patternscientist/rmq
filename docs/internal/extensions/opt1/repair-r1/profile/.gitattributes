@@ -1,0 +1,6 @@
+SOURCE_PROFILE.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+BUILD_RECEIPT.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+BUILD_DRIVER.ps1 -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+SOURCE_IDENTITY_CHECK.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+TOOLCHAIN_VERSION.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+TOOLCHAIN_VERSION_CHECK.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

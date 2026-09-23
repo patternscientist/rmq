@@ -1,6 +1,6 @@
 {
-  "version": 23,
-  "updated": "2026-07-22",
+  "version": 28,
+  "updated": "2026-09-11",
   "currentFactSurfacePathRegex": "^(?:README\\.md|artifact/(?:CLAIMS|README)\\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\\.md|docs/digests/PROJECT_DIGESTION_CURRENT\\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\\.md|RMQ_FINAL_ROADMAP\\.md))$",
   "terms": [
     {
@@ -9,7 +9,9 @@
       "status": "qualified-only",
       "strict": true,
       "allowedPathRegex": "^docs/internal/|^docs/PAPER_RELATED_WORK\\.md$|^docs/RELATED_WORK_AND_LIMITATIONS\\.md$",
-      "allowedLineRegex": "qualified|pending|referee|novelty|search|not claim|not claimed|avoid|policy|scan"
+      "allowedLineRegex": "qualified|pending|referee|novelty|search|not claim|not claimed|avoid|policy|scan",
+      "allowedPathLinePathRegex": "^paper/(?:NOVELTY_LOG\\.md|check_paper\\.ps1)$",
+      "allowedPathLineRegex": "(?i)\\brestriction\\b|(?i)\\bretire(?:d|s)?\\b|(?i)\\bkilled by\\b|(?i)\\bno claim\\b|(?i)^\\s*'"
     },
     {
       "id": "forgeability",
@@ -267,6 +269,44 @@
       "status": "forbidden-unqualified-current-claim-bounded-event-silent-work-remains",
       "strict": true,
       "scope": "current-fact-surface",
+      "allowedPathRegex": "",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "current-charged-cap-exactness-or-tightness",
+      "pattern": "exactly\\s+`?(?:210|427)`?|(?:210|427)`?\\s+is\\s+(?:exact|tight|attained)|tight\\s+(?:component-wise|operation-wise|per-component|whole-query)[a-z -]*cap",
+      "status": "forbidden-exact-or-tight-formulation-for-a-cap-that-is-an-upper-bound",
+      "strict": true,
+      "allowedPathRegex": "^docs/internal/|^paper/NOVELTY_LOG\\.md$",
+      "allowedLineRegex": "not attained|no attainment|attainment witness|upper bound|until 2026|previously|corrected|retract|is not tight|never .*tight|policy|scan|historical|counterexample",
+      "allowedPathLinePathRegex": "^paper/THEOREM_LEDGER\\.md$",
+      "allowedPathLineRegex": "(?i)\\bamended\\b|(?i)this row said"
+    },
+    {
+      "id": "forbidden-wordram-instruction-count",
+      "pattern": "(?i)\\b(?:execute|run|complete|perform|finish)(?:e?s|ing)?\\s+in\\s+(?:a\\s+|about\\s+|exactly\\s+)?(?:\\d+|a\\s+fixed\\s+number\\s+of|a\\s+constant\\s+number\\s+of)\\s+word[-\\s]?RAM\\s+(?:instruction|step|operation)",
+      "status": "the-210-charged-trace-and-427-packed-probe-bounds-are-not-word-ram-instruction-counts-and-the-separate-pq1-instruction-bound-is-stated-as-at-most-837572",
+      "strict": true,
+      "allowedPathRegex": "^docs/internal/|^paper/check_paper\\.ps1$",
+      "allowedLineRegex": "\\b(?:does|do|did)\\s+not\\s+(?:execute|run|complete|perform|finish)|\\bnever\\s+(?:executes?|runs?|completes?|performs?|finishes?)|\\bis\\s+not\\s+(?:a\\s+)?word[-\\s]RAM\\s+instruction\\s+count|conflate|distinguish"
+    },
+    {
+      "id": "required-pq1-fully-charged-attribution",
+      "pattern": "(?m)^(?:[ \\t]*\\S[^\\r\\n]*\\r?\\n)*?[^\\r\\n]*(?i:837,?572|fully[- ]charged)[^\\r\\n]*(?:\\r?\\n[ \\t]*\\S[^\\r\\n]*)*",
+      "status": "an-837572-or-fully-charged-paragraph-must-name-the-pq1-alias-or-core-theorem",
+      "strict": true,
+      "scope": "current-fact-surface",
+      "multiline": true,
+      "allowedPathRegex": "",
+      "allowedLineRegex": "RMQ\\.Headlines\\.succinctRMQFullyChargedPackedQuery\\b|\\bfullyChargedPackedQueryCapstone_holds\\b"
+    },
+    {
+      "id": "forbidden-pq1-charge-on-trace-or-probe-theorem",
+      "pattern": "(?i)(?:succinctRMQWholeQueryGlobalWordTrace(?:CostedCostLe|ResultNonSyntheticWeightSumLe210|CostedWithStoreCostLeOfFootprintGlobal)|succinctRMQQueryCostEq|ChargedTraceCostAlgebra|PrincipledAllSizeChargedTrace|CanonicalReviewerPayload(?:GlobalWordTraceTwoSidedProfile|_globalWordTrace_two_sided_profile)|listIntSuccinctRMQPaperMainTheorem|ReviewerMachine(?:WellFormed|RequiredFacts)|ReviewerNativeMachineAdequacy|nonSyntheticWeight_sum_le_210|listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal|PackedCellProbeArchitecture|packedReviewerArchitectureCapstone|derived_cap_le_427)(?:[^\\r\\n]{0,160}|[^\\r\\n]{0,160}\\r?\\n[^\\r\\n]{0,160})(?:fully[- ]charged|837,?572)|(?:fully[- ]charged|837,?572)(?:[^\\r\\n]{0,160}|[^\\r\\n]{0,160}\\r?\\n[^\\r\\n]{0,160})(?:succinctRMQWholeQueryGlobalWordTrace(?:CostedCostLe|ResultNonSyntheticWeightSumLe210|CostedWithStoreCostLeOfFootprintGlobal)|succinctRMQQueryCostEq|ChargedTraceCostAlgebra|PrincipledAllSizeChargedTrace|CanonicalReviewerPayload(?:GlobalWordTraceTwoSidedProfile|_globalWordTrace_two_sided_profile)|listIntSuccinctRMQPaperMainTheorem|ReviewerMachine(?:WellFormed|RequiredFacts)|ReviewerNativeMachineAdequacy|nonSyntheticWeight_sum_le_210|listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal|PackedCellProbeArchitecture|packedReviewerArchitectureCapstone|derived_cap_le_427)",
+      "status": "forbidden-837572-or-fully-charged-attached-to-a-210-trace-or-427-probe-theorem-name",
+      "strict": true,
+      "scope": "current-fact-surface",
+      "multiline": true,
       "allowedPathRegex": "",
       "allowedLineRegex": ""
     }

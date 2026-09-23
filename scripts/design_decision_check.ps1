@@ -3,6 +3,17 @@
 [CmdletBinding()]
 param(
   [string]$Base = "",
+  # A committed commit-ish to diff TO, instead of the working tree.
+#
+# Without this the check can only ask "does the worktree, against some base,
+# carry its design-log update?" -- which is the AGGREGATE question. CI asked it
+# once per push and once per pull request, so a commit that changed a
+# code-sensitive file with no log entry passed whenever ANOTHER commit in the
+# range touched the log. WDD-20260816-043 records exactly that: twelve of
+# thirteen commits passed, one did not, and CI could not see it.
+#
+# With -Head the check becomes per-commit and CI can iterate the range.
+  [string]$Head = "",
   [switch]$Strict
 )
 
@@ -59,6 +70,10 @@ function ConvertTo-RepositoryPath {
 function Resolve-BaseRef {
   param(
     [string]$BaseRef,
+    # Labelled, because this function resolves the HEAD too and hard-coding
+    # "base" made the head-specific message at the call site unreachable under
+    # -Strict -- the mode CI uses.
+    [string]$RefKind = 'base',
     [bool]$FailClosed
   )
 
@@ -72,18 +87,28 @@ function Resolve-BaseRef {
   $resolved = @(& git rev-parse --verify "$BaseRef^{commit}" 2>$null)
   if ($LASTEXITCODE -ne 0 -or $resolved.Count -ne 1) {
     if ($FailClosed) {
-      Stop-DesignCheck "strict certification could not resolve base '$BaseRef'"
+      Stop-DesignCheck "strict certification could not resolve $RefKind '$BaseRef'"
     }
-    Write-Host "DESIGN-CHECK: could not resolve base '$BaseRef'; using non-strict local-worktree mode"
+    Write-Host "DESIGN-CHECK: could not resolve $RefKind '$BaseRef'; using non-strict local-worktree mode"
     return ""
   }
   return [string]$resolved[0]
 }
 
 function Get-ChangedFiles {
-  param([string]$ResolvedBase)
+  param([string]$ResolvedBase, [string]$ResolvedHead = "")
 
   $files = @()
+  if ($ResolvedHead) {
+    # Commit-to-commit. The worktree and index passes below are deliberately
+    # skipped: this mode asks what a COMMIT carried, and a dirty worktree is
+    # not part of that question.
+    $files += @(& git diff --name-only $ResolvedBase $ResolvedHead -- 2>$null)
+    if ($LASTEXITCODE -ne 0) {
+      Stop-DesignCheck "could not diff '$ResolvedBase'..'$ResolvedHead'"
+    }
+    return @($files | Where-Object { $_ } | Sort-Object -Unique)
+  }
   if ($ResolvedBase) {
     $files += @(& git diff --name-only $ResolvedBase -- 2>$null)
     if ($LASTEXITCODE -ne 0) {
@@ -127,33 +152,93 @@ function Test-AnyPattern {
   return $false
 }
 
-# These are semantic opt-outs, not a remembered list of sensitive paths.
-# Decision records do not recursively require themselves. Durable worklogs,
-# acceptance matrices, audit reports, and historical digests are evidence
-# about prior work rather than new proof/code or workflow design.
+# Classification is EXPLICIT. Every changed path must match a rule below; one
+# that matches none is an error naming the path, not a silent default.
+#
+# The previous version ended `$needsCode = -not $needsWorkflow`: anything the
+# checker did not recognise was declared proof/code architecture. That is a
+# default wearing a classification's clothes, and it is how `paper/` -- a whole
+# top-level directory of prose -- came to be ruled proof-model design, making
+# seven commits uncertifiable for a reason nobody chose. WDD-20260817-077.
+
+# Evidence about prior work: decision records do not recursively require
+# themselves, and worklogs, acceptance matrices, audit reports and handoff
+# trackers record what was done rather than decide anything new.
+#
+# These are ROOT-AGNOSTIC. The previous patterns were anchored `^docs/internal/`,
+# so `docs/internal/X_WORKLOG.md` was exempt evidence while `paper/WORKLOG.md`
+# was proof/code architecture -- the same document classified by which directory
+# it sits in, which is precisely what this comment claims these patterns do not
+# do. A worklog is a worklog wherever it lives.
 $neutralEvidencePatterns = @(
   "^docs/internal/(?:DESIGN_DECISIONS|WORKFLOW_DESIGN_DECISIONS)\.md$",
   "^docs/internal/audit_reports/[^/]+\.md$",
-  "^docs/internal/[^/]*(?:_WORKLOG|_ACCEPTANCE_MATRIX|_AUDIT_REPORT)\.md$",
+  # Dated internal audit evidence also lives beside its frozen task contract.
+  # Keep the terminal date/Markdown suffix: prompts, plans and code stay governed.
+  "^docs/internal/(?:[^/]+/)*[A-Z0-9][A-Z0-9_-]*_AUDIT_\d{8}\.md$",
+  "(?:^|/)[^/]*(?:_WORKLOG|_ACCEPTANCE_MATRIX|_AUDIT_REPORT|_HANDOFF)\.md$",
+  "(?:^|/)(?:WORKLOG|THEOREM_LEDGER|RELATED_WORK_LEDGER|EVIDENCE_MATRIX)\.md$",
   "^docs/digests/(?![A-Z0-9_-]*CURRENT)[A-Z0-9][A-Z0-9_-]*_\d{4}_\d{2}_\d{2}\.md$",
   "^docs/digests/[A-Z0-9][A-Z0-9_-]*(?:HISTORY|LOG)\.md$",
-  "^docs/DIGESTION_LOG\.md$"
+  "^docs/DIGESTION_LOG\.md$",
+  # Version-control plumbing carries no decision for either ledger.
+  "(?:^|/)\.gitignore$",
+  "(?:^|/)\.gitattributes$"
 )
 
 # Workflow roots define process, automation, review, or repository operation.
 # A Lean file remains code-sensitive as well, even if placed under one of these
-# roots.
+# roots. `.claude/` is here because runtime skills are process definition; it
+# was absent before, so skill edits were classified as proof/code.
 $workflowRootPatterns = @(
   "^\.agents/",
   "^\.codex/",
   "^\.github/",
+  "^\.claude/",
   "^scripts/",
   "^AGENTS\.md$",
   "^docs/internal/"
 )
 
+# Code roots bear proof, construction, build definition, or public claims.
+# `docs/` excludes `docs/internal/`, which is workflow and matched above; the
+# lookahead keeps a path from being both. `paper/` is here deliberately: the
+# manuscript and its bibliography are the public claim surface, so changing them
+# is a claim decision. Its worklog and ledgers fall to the neutral patterns.
+$codeRootPatterns = @(
+  "^RMQ/",
+  "^VerifiedDS/",
+  "^RMQExamples/",
+  "^paper/",
+  "^artifact/",
+  "^docs/(?!internal/)",
+  "^README\.md$",
+  "^CITATION\.cff$",
+  "^LICENSE$",
+  "^lakefile\.toml$",
+  "^lake-manifest\.json$",
+  "^lean-toolchain$"
+)
+
 $proofCodePattern = "(?i)\.lean$"
 $workflowCodePattern = "(?i)\.(?:ps1|psm1|psd1|py|sh|bash|js|mjs|cjs|ts|tsx|jsx)$"
+
+# The authorized native package has distinct implementation and replay-policy
+# roles. Keep its boundary exact: another package, new metadata schema, archive
+# suffix or unknown binary extension still needs an explicit policy decision.
+# Operational fixture bytes are inputs/results of the shipped evaluator, not
+# neutral historical reports. Source identity wins over evidence-like names.
+$nativeSourcePattern = "^native/packed-rmq/(?:[^/]+/)*[^/]+\.(?:rs|c|cc|cpp|cxx|h|hpp|hxx|def)$"
+$nativeCodePatterns = @(
+  "^native/packed-rmq/(?:Cargo\.(?:toml|lock)|README\.md)$",
+  "^native/packed-rmq/fixtures/[^/]+\.(?:fixture|expected|rmqbin)$",
+  "^native/packed-rmq/fixtures/program\.txt\.gz$"
+)
+$nativeWorkflowPatterns = @(
+  "^native/packed-rmq/(?:route-registry\.json|fixtures/manifest\.json)$",
+  # This exact Cargo hook is executable Rust AND build automation.
+  "^native/packed-rmq/build\.rs$"
+)
 
 function Get-PathDisposition {
   param([string]$Path)
@@ -164,13 +249,16 @@ function Get-PathDisposition {
   # require the workflow decision even outside the ordinary workflow roots.
   $isProofCode = $Path -match $proofCodePattern
   $isWorkflowCode = $Path -match $workflowCodePattern
-  if ($isProofCode -or $isWorkflowCode) {
+  $isNativeSource = $Path -match $nativeSourcePattern
+  $isNativeWorkflow = Test-AnyPattern -Path $Path -Patterns $nativeWorkflowPatterns
+  if ($isProofCode -or $isWorkflowCode -or $isNativeSource) {
     return [PSCustomObject]@{
       Path = $Path
       Neutral = $false
-      NeedsCode = $isProofCode
-      NeedsWorkflow = $isWorkflowCode -or
+      NeedsCode = $isProofCode -or $isNativeSource
+      NeedsWorkflow = $isWorkflowCode -or $isNativeWorkflow -or
         (Test-AnyPattern -Path $Path -Patterns $workflowRootPatterns)
+      Unclassified = $false
     }
   }
 
@@ -180,21 +268,77 @@ function Get-PathDisposition {
       Neutral = $true
       NeedsCode = $false
       NeedsWorkflow = $false
+      Unclassified = $false
     }
   }
 
-  $needsWorkflow = Test-AnyPattern -Path $Path -Patterns $workflowRootPatterns
-  $needsCode = -not $needsWorkflow
+  $needsWorkflow = $isNativeWorkflow -or
+    (Test-AnyPattern -Path $Path -Patterns $workflowRootPatterns)
+  $needsCode = (Test-AnyPattern -Path $Path -Patterns $codeRootPatterns) -or
+    (Test-AnyPattern -Path $Path -Patterns $nativeCodePatterns)
   return [PSCustomObject]@{
     Path = $Path
     Neutral = $false
     NeedsCode = $needsCode
     NeedsWorkflow = $needsWorkflow
+    Unclassified = (-not $needsCode -and -not $needsWorkflow)
   }
 }
 
+function Get-RetrospectiveCertification {
+  param([string]$Head)
+
+  # Only a named commit can be retrospectively certified. Worktree mode has no
+  # commit to match, so it can never take this path.
+  if (-not $Head) { return $null }
+  if ($Head -notmatch '^[0-9a-f]{40}$') { return $null }
+
+  $recordPath = Join-Path $repositoryRoot "docs/internal/RETROSPECTIVE_CERTIFICATIONS.md"
+  if (-not (Test-Path -LiteralPath $recordPath -PathType Leaf)) { return $null }
+
+  $inTable = $false
+  foreach ($line in (Get-Content -LiteralPath $recordPath)) {
+    if ($line -match '^```retrospective-certifications\s*$') { $inTable = $true; continue }
+    if ($inTable -and $line -match '^```') { break }
+    if (-not $inTable) { continue }
+    if (-not $line.Trim()) { continue }
+    $parts = $line -split '\s*\|\s*', 2
+    if ($parts.Count -ne 2) { continue }
+    if ($parts[0].Trim() -ceq $Head) {
+      return [PSCustomObject]@{ Sha = $parts[0].Trim(); Missing = $parts[1].Trim() }
+    }
+  }
+  return $null
+}
+
 $resolvedBase = Resolve-BaseRef -BaseRef $Base -FailClosed ([bool]$Strict)
-$files = Get-ChangedFiles -ResolvedBase $resolvedBase
+$resolvedHead = ""
+if ($Head) {
+  $resolvedHead = Resolve-BaseRef -BaseRef $Head -RefKind 'head' -FailClosed ([bool]$Strict)
+  if (-not $resolvedHead) { Stop-DesignCheck "could not resolve head '$Head'" }
+  if (-not $resolvedBase) { Stop-DesignCheck "-Head requires a resolvable -Base" }
+}
+
+# A MERGE commit cannot be certified this way, and saying so is the point.
+#
+# `$Head~1` is the FIRST parent, so a merge's diff carries everything the merged
+# branch changed -- including that branch's DESIGN_DECISIONS.md. That satisfies
+# the membership test for anything the merge itself introduces, which is exactly
+# the aggregate blind spot this mode was added to close, reappearing one level
+# up. Demonstrated: a --no-ff merge whose conflict resolution wrote content
+# present in NEITHER parent, with no new entry, certified clean.
+#
+# Refusing is the honest option. Diffing against the merge base of all parents
+# would judge the merge by the union of both branches, which is the same
+# aggregate question under a different name.
+if ($Head) {
+  $parents = @((& git rev-list --parents -n 1 $resolvedHead 2>$null) -split '\s+' | Where-Object { $_ })
+  if ($LASTEXITCODE -ne 0) { Stop-DesignCheck "could not read the parents of '$Head'" }
+  if ($parents.Count -gt 2) {
+    Stop-DesignCheck ("'$Head' is a merge commit ({0} parents); per-commit certification cannot judge it, because its first-parent diff carries the merged branch's design-log entries. Certify the merged commits individually instead." -f ($parents.Count - 1))
+  }
+}
+$files = Get-ChangedFiles -ResolvedBase $resolvedBase -ResolvedHead $resolvedHead
 
 if ($files.Count -eq 0) {
   $range = if ($resolvedBase) { " relative to $resolvedBase" } else { "" }
@@ -203,6 +347,18 @@ if ($files.Count -eq 0) {
 }
 
 $dispositions = @($files | ForEach-Object { Get-PathDisposition -Path $_ })
+# A path matching no rule means the checker cannot judge this commit at all.
+# Reporting PASS there would be a green result standing in for a property never
+# established, so this is a hard error in every mode, including non-strict. It
+# is also the point of the rewrite: `paper/` arrived as an entire top-level
+# directory and was absorbed silently by `-not $needsWorkflow`. WDD-20260817-077.
+$unclassified = @($dispositions | Where-Object Unclassified)
+if ($unclassified.Count -gt 0) {
+  Write-Host "DESIGN-CHECK: FAIL $($unclassified.Count) path(s) match no classification rule; classify them in Get-PathDisposition rather than letting a default decide"
+  $unclassified.Path | ForEach-Object { Write-Host "  unclassified: $_" }
+  exit 1
+}
+
 $codeSensitive = @($dispositions | Where-Object NeedsCode)
 $workflowSensitive = @($dispositions | Where-Object NeedsWorkflow)
 $neutralEvidence = @($dispositions | Where-Object Neutral)
@@ -233,6 +389,31 @@ if ($codeSensitive.Count -eq 0 -and $workflowSensitive.Count -eq 0) {
 }
 
 if ($failures -gt 0) {
+  # Eight commits predate the per-commit rule (DD-20260816-121) and cannot carry
+  # the entry they owe, because a commit's content is fixed and rewriting them
+  # would discard every descendant SHA. Their decisions are written in
+  # docs/internal/RETROSPECTIVE_CERTIFICATIONS.md and accepted HERE -- but only
+  # on an exact match of both the commit and the missing set, so the record
+  # cannot be widened into an exemption. WDD-20260817-079.
+  $retro = Get-RetrospectiveCertification -Head $resolvedHead
+  if ($retro) {
+    $actual = @(
+      @($codeSensitive | Where-Object { -not $hasCodeDecision } |
+        ForEach-Object { "code: $($_.Path)" }) +
+      @($workflowSensitive | Where-Object { -not $hasWorkflowDecision } |
+        ForEach-Object { "workflow: $($_.Path)" })
+    ) | Sort-Object
+    $actualKey = ($actual -join ";")
+    if ($actualKey -ceq $retro.Missing) {
+      Write-Host "DESIGN-CHECK: RETROSPECTIVE $($retro.Sha)"
+      Write-Host "  the decision this commit owed is recorded in docs/internal/RETROSPECTIVE_CERTIFICATIONS.md"
+      Write-Host "  missing set matches the record exactly: $actualKey"
+      exit 0
+    }
+    Write-Host "DESIGN-CHECK: retrospective record for $($retro.Sha) does not match this commit"
+    Write-Host "  recorded: $($retro.Missing)"
+    Write-Host "  actual:   $actualKey"
+  }
   Write-Host "DESIGN-CHECK: strict mode found $failures missing design-log updates"
   exit 1
 }

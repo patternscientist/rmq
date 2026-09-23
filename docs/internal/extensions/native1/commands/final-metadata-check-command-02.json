@@ -1,0 +1,34 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "52ba2a57784c1dcd234615821865b87fd31b2d31",
+  "command": {
+    "arguments": [
+      "-NoLogo",
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      ".lake/native1/final_metadata_checks.ps1"
+    ],
+    "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+  },
+  "result": {
+    "Stage": "final-metadata-check-command-02",
+    "ExitCode": 0,
+    "Output": [
+      "NATIVE1 final metadata claims/design/diffs PASS in 4.2660748 seconds"
+    ],
+    "StandardOutput": [
+      "NATIVE1 final metadata claims/design/diffs PASS in 4.2660748 seconds"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 7.815,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  }
+}

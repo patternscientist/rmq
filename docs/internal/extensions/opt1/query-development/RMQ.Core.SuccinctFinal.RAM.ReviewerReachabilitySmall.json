@@ -1,0 +1,78 @@
+﻿{
+    "Module":  "RMQ.Core.SuccinctFinal.RAM.ReviewerReachabilitySmall",
+    "Command":  [
+                    "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+                    "-j1",
+                    "-o",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\.lake\\build\\lib\\lean\\RMQ\\Core\\SuccinctFinal\\RAM\\ReviewerReachabilitySmall.olean",
+                    "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\ReviewerReachabilitySmall.lean"
+                ],
+    "SourceSHA256":  "0E0FE1E5F7E56104EB8007BFF55B844B1EC9627F88F5CB519B0A8DB625297A18",
+    "Base":  "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+    "Platform":  "Microsoft Windows NT 10.0.26200.0",
+    "Result":  {
+                   "Stage":  "RMQ.Core.SuccinctFinal.RAM.ReviewerReachabilitySmall",
+                   "ExitCode":  0,
+                   "Output":  [
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\ReviewerReachabilitySmall.lean:502:38: warning: This simp argument is unused:",
+                                  "  List.mem_append",
+                                  "Hint: Omit it from the simp argument list.",
+                                  "  simp [SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore,",
+                                  "        WordRAM.TraceResult.bind_trace, L̵i̵s̵t̵.̵m̵e̵m̵_̵a̵p̵p̵e̵n̵d̵,̵",
+                                  "  ̵ ̵ ̵ ̵ ̵ ̵ ̵SuccinctClose.bpChunkReadTraceResult,",
+                                  "        SuccinctClose.bpWordReadTraceResult, hsuper, hblock, hword]",
+                                  "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\ReviewerReachabilitySmall.lean:1482:27: warning: This simp argument is unused:",
+                                  "  Nat.add_zero",
+                                  "Hint: Omit it from the simp argument list.",
+                                  "  simp only [Nat.sub_zero, N̵a̵t̵.̵a̵d̵d̵_̵z̵e̵r̵o̵,̵ ̵Nat.zero_add]",
+                                  "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\ReviewerReachabilitySmall.lean:1482:41: warning: This simp argument is unused:",
+                                  "  Nat.zero_add",
+                                  "Hint: Omit it from the simp argument list.",
+                                  "  simp only [Nat.sub_zero, Nat.add_zero,̵ ̵N̵a̵t̵.̵z̵e̵r̵o̵_̵a̵d̵d̵]",
+                                  "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+                                  "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\ReviewerReachabilitySmall.lean:2977:15: warning: This simp argument is unused:",
+                                  "  hsame",
+                                  "Hint: Omit it from the simp argument list.",
+                                  "  simp only [h̵s̵a̵m̵e̵,̵ ̵if_pos]",
+                                  "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`"
+                              ],
+                   "StandardOutput":  [
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\ReviewerReachabilitySmall.lean:502:38: warning: This simp argument is unused:",
+                                          "  List.mem_append",
+                                          "Hint: Omit it from the simp argument list.",
+                                          "  simp [SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore,",
+                                          "        WordRAM.TraceResult.bind_trace, L̵i̵s̵t̵.̵m̵e̵m̵_̵a̵p̵p̵e̵n̵d̵,̵",
+                                          "  ̵ ̵ ̵ ̵ ̵ ̵ ̵SuccinctClose.bpChunkReadTraceResult,",
+                                          "        SuccinctClose.bpWordReadTraceResult, hsuper, hblock, hword]",
+                                          "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\ReviewerReachabilitySmall.lean:1482:27: warning: This simp argument is unused:",
+                                          "  Nat.add_zero",
+                                          "Hint: Omit it from the simp argument list.",
+                                          "  simp only [Nat.sub_zero, N̵a̵t̵.̵a̵d̵d̵_̵z̵e̵r̵o̵,̵ ̵Nat.zero_add]",
+                                          "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\ReviewerReachabilitySmall.lean:1482:41: warning: This simp argument is unused:",
+                                          "  Nat.zero_add",
+                                          "Hint: Omit it from the simp argument list.",
+                                          "  simp only [Nat.sub_zero, Nat.add_zero,̵ ̵N̵a̵t̵.̵z̵e̵r̵o̵_̵a̵d̵d̵]",
+                                          "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+                                          "C:\\Users\\poin\\.codex\\worktrees\\1580\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\ReviewerReachabilitySmall.lean:2977:15: warning: This simp argument is unused:",
+                                          "  hsame",
+                                          "Hint: Omit it from the simp argument list.",
+                                          "  simp only [h̵s̵a̵m̵e̵,̵ ̵if_pos]",
+                                          "Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`"
+                                      ],
+                   "StandardError":  [
+
+                                     ],
+                   "TimedOut":  false,
+                   "OutputLimitExceeded":  false,
+                   "TerminatedIds":  [
+
+                                     ],
+                   "DurationSeconds":  54.268,
+                   "DeadlineSeconds":  600,
+                   "Ownership":  "kill-on-close-job"
+               }
+}

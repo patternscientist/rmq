@@ -1,0 +1,36 @@
+{
+  "schema": "native1-command-v1",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "base": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "head": "fa79233f77acbfa0470ef6203131e66784c7b014",
+  "command": {
+    "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lean.exe",
+    "arguments": [
+      "-j",
+      "1",
+      "--run",
+      "RMQ/Validation/PackedNative.lean",
+      "--case",
+      "endpoint-order-176"
+    ]
+  },
+  "result": {
+    "Stage": "validator-selected-01",
+    "ExitCode": 0,
+    "Output": [
+      "NATIVE1-LEAN CASE endpoint-order-176 PASS",
+      "NATIVE1-LEAN PASS registry=native1-lean-validator-v1 executed=1 expected=1 mode=selected"
+    ],
+    "StandardOutput": [
+      "NATIVE1-LEAN CASE endpoint-order-176 PASS",
+      "NATIVE1-LEAN PASS registry=native1-lean-validator-v1 executed=1 expected=1 mode=selected"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 9.132,
+    "DeadlineSeconds": 45,
+    "Ownership": "kill-on-close-job"
+  }
+}

@@ -9,7 +9,16 @@ param(
   [ValidateSet('', 'A01', 'A02', 'R1LEGACY')]
   [string]$MutationCase = '',
   [ValidateRange(1, 3600)]
-  [int]$StageDeadlineSeconds = 300,
+  # 300 -> 900 on 2026-08-16, matching its regression twin. Same derivation:
+  # the measured slow path on the supported Windows runner is ~298.1 s and the
+  # coordinator's hardware runs the same work in 120-180 s, so the observed
+  # spread is ~2.5x and the budget is 3x the worst observation. See the
+  # derivation table in scripts/paper_topology_lint_regression.ps1.
+  #
+  # These two must move together: the regression bounds a case, this bounds the
+  # lint invocation inside it, and the lint is the bulk of the case's cost.
+  # Raising only the outer bound would leave the inner one marginal.
+  [int]$StageDeadlineSeconds = 900,
   [ValidateRange(4096, 16777216)]
   [int]$StageOutputLimitBytes = 4194304,
   [string]$LaunchReleasePath = ''
@@ -169,7 +178,7 @@ function Read-Text([string]$Path) {
       $text = Remove-ExactVirtualBlock `
         $text `
         '# M1R3-MUTATION-RUNNER-GATE-ANCHOR' `
-        'if ($LASTEXITCODE -ne 0) { Fail "m1_certificate_mutation_regression.ps1 found issues" }' `
+        'Invoke-Checker -Path "$PSScriptRoot\m1_certificate_mutation_regression.ps1"' `
         'A02'
     } elseif ($MutationCase -ceq 'R1LEGACY') {
       $modelLineBreak = if ($text.Contains("`r`n")) { "`r`n" } else { "`n" }
@@ -498,8 +507,15 @@ if ($headlineInventoryText -notmatch
 if (-not $gateScriptText.Contains($m1GateAnchor)) {
   Fail '[m1-mutation-gate] aggregate gate is missing the literal M1 R3 runner anchor'
 }
+# Wiring shape changed with WDD-20260816-046: the raw `& script` call became
+# Invoke-Checker, because the raw form scored a checker that never ran as a
+# PASS. What this pin defends is unchanged -- the M1 runner is invoked from the
+# aggregate gate, and HARD, so its failure stops the gate. Under Invoke-Checker
+# that is the absence of -Soft, which is what the lookahead asserts. The tail is
+# `\s*$` and not `$` because these files are CRLF and .NET's multiline `$`
+# will not match across the `\r`.
 if ($gateScriptText -notmatch
-    '(?m)^& "\$PSScriptRoot\\m1_certificate_mutation_regression\.ps1"\s*$') {
+    '(?m)^Invoke-Checker -Path "\$PSScriptRoot\\m1_certificate_mutation_regression\.ps1"(?![^\r\n]*-Soft)[^\r\n]*\s*$') {
   Fail '[m1-mutation-gate] aggregate gate does not invoke the committed M1 mutation runner'
 }
 foreach ($anchor in @(
@@ -637,8 +653,26 @@ foreach ($path in $trackedFiles) {
   if ($textExtensions -notcontains [IO.Path]::GetExtension($path)) { continue }
   if (-not (Test-Path -LiteralPath $path)) { continue }
 
+  # Prefilter (2026-09-19, FM-6). Every failure below needs the line to hold
+  # the snapshot marker or a removed spelling, and registered snapshot files
+  # are always walked, so a file whose whole text holds neither can produce
+  # no finding. The test is case-insensitive because `-match` below is. It
+  # turns a per-line regex walk of every tracked byte into one substring
+  # probe per name for almost every file; verdicts are unchanged.
+  $text = Read-Text $path
+  if (-not $frozenSnapshotLines.Contains($path)) {
+    $candidate = $text.IndexOf($frozenSnapshotMarker, [StringComparison]::OrdinalIgnoreCase) -ge 0
+    if (-not $candidate) {
+      foreach ($name in $retiredAliasReplacements.Keys) {
+        if ($text.IndexOf($name, [StringComparison]::OrdinalIgnoreCase) -ge 0) { $candidate = $true; break }
+      }
+    }
+    if (-not $candidate) { continue }
+  }
+
   $lineNumber = 0
-  foreach ($line in Read-Lines $path) {
+  foreach ($line in [regex]::Split($text, '?
+')) {
     $lineNumber += 1
     $isPreciselyFrozen = Is-PreciselyFrozenSnapshotLine $path $line
     if ($line.Contains($frozenSnapshotMarker) -and -not $isPreciselyFrozen) {

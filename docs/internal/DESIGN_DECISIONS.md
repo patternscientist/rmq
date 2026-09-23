@@ -10962,3 +10962,2254 @@ What is deliberately **not** decided here: whether to build anonymisation
 tooling now. With an ITP 2027 timescale there is no reason to freeze that
 decision today, and the constraint is now recorded where whoever prepares the
 submission will read it.
+
+## DD-20260809-095 -- `210` is an upper budget; correct every exact-cost claim
+
+Status: Accepted.
+
+Date: 2026-08-09
+
+The 2026-08-09 fresh-blind audit found the release wording stronger than the
+theorem, and it is right. Verified directly:
+
+- the execution theorem is `..._cost_le_principledAllSizeChargedTrace` --
+  `cost <= 210`, an upper budget (`RMQ/Core/SuccinctFinalRAM.lean:8776-8785`);
+- a guarded invalid query is `Costed.pure none`
+  (`RMQ/Core/SuccinctRMQClassic.lean:255-261`) and `pure` has cost `0`
+  (`RMQ/Core/Cost.lean:41-44`), so a concrete execution costs zero, refuting any
+  exact-cost reading.
+
+Two governed surfaces asserted exact cost and are corrected to "at most":
+
+- `docs/PAPER_CLAIM_CORRESPONDENCE.md:7`, which said the trace "has principled
+  charged-trace cost `210`" while citing an alias literally named
+  `...NonSyntheticWeightSumLe210`. The prose contradicted the theorem name in
+  its own row.
+- `artifact/CLAIMS.md:82`, which the audit did not cite and which carried the
+  same overstatement.
+
+**The origin of this defect is the commissioning prompt.** Its section 2 said
+"The canonical reviewer route has a uniform charged-trace cost of `210`" -- an
+exact-cost sentence written by this project and handed to the auditor as the
+claim to audit against. It is corrected in the same commit, and now names the
+`_cost_le_` theorem and the zero-cost invalid query explicitly, so a future
+auditor cannot be pointed at an overstated target.
+
+Consequence for governance: `RC-02` is not discharged in its commissioned literal
+form, so per its own terms `WDD-20260807-014` -- the U3 subsumption -- is void.
+It is restored by the corrected wording rather than by any proof change: the
+audit confirms the row discharges as "at most `210`". No Lean edit is required
+or made.
+
+## DD-20260809-096 -- reconcile the manuscript's Stage-A status and containment claims
+
+Status: Accepted.
+
+Date: 2026-08-09
+
+The 2026-08-09 audit's `P1-2`/`RC-10` finding, reproduced and confirmed here: the
+manuscript contradicted itself about Stage A and merged the two `210`s.
+
+- `rmq.tex` said in the abstract that Stage A "has been accepted", and a hundred
+  lines later that it "is under a separate feasibility gate and is neither
+  accepted nor rejected". A reader could conclude both.
+- Three separate passages asserted the result is stated "nowhere else" than the
+  Section 9 insertion point, while the allocated-bits entry of Section 3 states
+  the capacity bound outright.
+- `THEOREM_LEDGER.md` called the packed `210` "logical fuel (charged trace
+  events)", which is the charged-trace quantity's description, not the packed
+  controller's structural countdown.
+
+Decision: state one status, and make the containment claim *accurate* rather
+than aspirational. The result is now described consistently as accepted in the
+repository but not yet absorbed into a theorem environment, and stated in
+exactly two places -- the allocated-bits entry, which cites its ledger row, and
+Section 9 -- with all three "nowhere else" assertions corrected to match.
+
+The ledger now separates the two `210`s explicitly, names the packed one as a
+structural countdown proved by `packedReviewerControllerMeasure_valid_eq_427`,
+and records the limit the audit established: independence holds at
+**declaration and proof-term** level, not module-closure level, because the
+packed module transitively reaches the charged declaration through its imports.
+
+`EVIDENCE_MATRIX.md`'s frozen requirement asserts the containment invariant that
+Section 3 falsifies. The requirement text is frozen and so is not edited; an
+appended entry records that it does not hold as worded, and why -- **the
+violation was created by the same commit that retracted the earlier false denial
+that any theorem bounded allocated capacity.** Repairing one claim produced a
+contradiction with another, which is the failure mode worth remembering from
+this round.
+
+Verification: `check_paper.ps1 -SelfTest` PASS, `latexmk` exit 0 with zero
+undefined references, 15 pages, `git diff --check` clean, strict claim-drift
+unchanged at 0 failures.
+
+Method note, recorded because it cost this session five separate corruptions:
+these edits were made through exact-string replacement, **not** through Python
+`str.replace`. Writing `"\ref"` in a Python replacement string emits a carriage
+return, silently corrupting LaTeX cross-references; a byte-level repair attempt
+then mangled the file's line endings. Edits to this repository's CRLF files
+should be made on exact quoted strings.
+
+## DD-20260809-097 -- export the packed cell-probe result from `RMQPaper`
+
+Status: Accepted, with one consequence escalated to the owner (see below).
+
+Date: 2026-08-09
+
+The 2026-08-09 parallel review's sharpest finding, reproduced by measurement:
+`RMQPaper`'s import closure was **153 files containing zero `PackedCellProbe`
+modules**. The paper artifact root therefore exported the charged-trace `210`
+story, while `docs/PAPER_CLAIM_CORRESPONDENCE.md` named the packed cell-probe
+theorem as the accepted claim. A reviewer asking "which import gives me the
+paper's theorem?" got two different answers depending on which surface they
+trusted. That is a release-blocking artifact defect independent of whether any
+proof is correct.
+
+Decision: export the packed result from `RMQ/Headlines/RMQ.lean`, and hence from
+`RMQPaper`, as two aliases following the file's existing convention --
+`SuccinctRMQPackedCellProbeArchitecture` for the 39-field certificate and
+`succinctRMQPackedCellProbeArchitecture` for its producer. The claim map now
+cites the public alias rather than the internal name, so the documented identity
+and the importable identity are the same string.
+
+The alias is also added to `scripts/headline_axiom_check.lean`. It was already
+audited from `axiom_check.lean:1232`, but it is the paper's headline claim and is
+now paper-exported, so its trust story belongs in the inventory a reviewer
+actually runs. Verified: it depends on `[propext, Classical.choice, Quot.sound]`
+and nothing else.
+
+The alias docstring carries the three reading rules that this result is
+repeatedly over-read without: `427` bounds **attempted** probes and is an upper
+bound, not an attainment claim; the result is cell-probe, so not word-RAM time,
+preprocessing time, or measured runtime; and the `210` inside
+`427 = 1 + 2*3 + 2*210` is the packed controller's structural countdown, not the
+charged-trace `210` exported a few lines above in the same file.
+
+**Consequence escalated rather than absorbed.** Exporting the correct theorem
+grows the closure `153 -> 204` files and `139,054 -> 190,529` lines: **+51 files,
++51,475 lines, a 37% increase** in the reviewer surface the owner has separately
+asked to reduce drastically. Both goals are legitimate and they are in direct
+tension here. This commit takes correctness first, because a paper root that
+advertises the wrong theorem is a defect while a large closure is a cost. The
+likely resolution is a **separate minimal paper root** carrying the packed
+capstone and its genuine dependency spine, leaving `RMQPaper` as the broad
+compatibility root -- but which theorem the paper is *about* determines what that
+minimal root contains, so it is an owner decision and is not settled here.
+
+Verification: `lake build RMQPaper` exit 0; `headline_axiom_check.lean` exit 0
+with standard axioms only; `constant_sync_check`, strict `claim_drift_scan`, and
+`check_paper -SelfTest` all PASS; `git diff --check` clean.
+
+## DD-20260809-098 -- `scripts/independence_check.lean` as a new checked artifact
+
+Status: Accepted. Date: 2026-08-09. Companion to WDD-20260809-017, which records
+the gate policy and the injection results; this entry records the artifact.
+
+New script, and the repository's first constant-level dependency checker. It is
+also the first script here to `import Lean`: the RMQ development is Std-only, so
+the metaprogramming API is not otherwise in scope. Two consequences worth
+knowing before writing another one.
+
+- Several RMQ modules introduce their own `Name`, which shadows `Lean.Name`
+  under a bare `open Lean`. Every metaprogramming identifier in the script is
+  fully qualified for that reason. A future script that opens `Lean` and gets
+  baffling `Name : Type ?u` mismatches is hitting this.
+- `import Lean` in a *script* is safe -- `lake env lean` runs it standalone and
+  nothing in the library imports it. Do not add it to a library module; the
+  Mathlib-free/Std-only trust story is about the library, and the proof-hygiene
+  scan at gate step 2 covers library roots, not `scripts/`.
+
+The mechanism is a transitive walk of `ConstantInfo.type` and
+`ConstantInfo.value?` via `Expr.getUsedConstants`. It is reusable: any future
+"X does not depend on Y" claim in this repository should be stated by pointing
+a copy of this at the two names rather than by asserting it in prose. If that
+happens twice more, factor the walker out rather than copying it a third time.
+
+## DD-20260809-099 -- retire two overstatements the fresh-blind audit flagged (P3-1)
+
+Status: Accepted. Date: 2026-08-09. Non-blocking findings from the 2026-08-09
+audit, fixed before cutting `audit-v1-rc-2`.
+
+### Decorative premise, and the chain behind it
+
+`bpChunkedCrossBlockCloseCostedWithRankSeed_cost_le_principled` accepted
+`_hleftCloseBound : leftClose < shape.bpCode.length` and never used it. Removing
+it exposed that the premise was load-bearing for nothing at all: the identical
+premise on both `canonicalLcaCloseCostedWithRankSeed_cost_le` and
+`..._cost_le_principled` existed *only* to be passed down, and went dead the
+moment the leaf's did. Three theorems, one decorative hypothesis chain.
+
+All three are now stated without it. This is a **strengthening** -- conclusions
+and quantifiers are untouched and the theorems demand strictly less -- so every
+frozen row that cites them still discharges. It is nonetheless a statement
+change, disclosed in each docstring in the manner `B6` REQ-B6-09 disclosed its
+`hsameBlock` *addition*; the precedent permits statement changes with explicit
+disclosure, and removal is the safer direction. `B6_SAMEBLOCK_ACCEPTANCE_MATRIX.md`
+and `docs/PAPER_MODEL_ADEQUACY.md` cite the branch-cap conclusion, not the
+hypothesis list, so neither needed editing -- checked, not assumed.
+
+One doc defect fell out of this that the audit did not catch: the docstring on
+`canonicalLcaCloseCostedWithRankSeed_cost_le` said the cap "requires the genuine
+close-position bounds", plural. The proof requires exactly one. Corrected.
+
+### "Tight operation-wise caps"
+
+The comment on `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra`
+called the component caps *tight*. They are `<=` bounds. The aggregate `210` they
+compose into likewise has no attainment witness; only the interior directory
+component `33` has one. The comment now says so, and says not to reintroduce
+"tight" without a theorem exhibiting an execution that attains the number.
+
+This is the recurring defect class for this project -- a green artifact standing
+in for an unestablished property -- in its documentation form: the proof was
+always `<=`, and only the prose claimed more.
+
+Verified: `lake build RMQ` exit 0; the two `unused variable hleftCloseBound`
+warnings that the removal surfaced are gone and no new warning replaced them.
+
+## DD-20260809-100 -- export the fixture probe count; say what field 32 is not (P3-1)
+
+Status: Accepted. Date: 2026-08-09. Completes the P3-1 items from the 2026-08-09
+fresh-blind audit; see DD-20260809-099 for the first two.
+
+### `egcpFixtureTraceLength`
+
+`68` is cited across `EG_CP_STAGEA_ACCEPTANCE_MATRIX.md`, `EG_CP_STAGEA_RESULT.md`,
+`EG_CP_FINAL_FALSIFICATION_RESULT.md`, and the manuscript as "the fixture run
+issues 68 attempted probes". It was true and derivable, but lived **only** as a
+local `have` inside one proof, so no reviewer could cite a theorem for it and
+nothing outside that proof would have broken had it drifted. It is now a named
+theorem, derived from `egcpFixtureTraceAddresses` so the length cannot disagree
+with the literal address list, and the former local `have` is routed through it
+rather than reproving it. Added to `scripts/axiom_check.lean`; depends on
+`propext` and `Quot.sound` only.
+
+Stated in the docstring and the inventory comment because this number is easy to
+misread: it is `=` for **one pinned fixture**, and it is **not** an attainment
+witness for `427`. `427` remains an upper bound over all valid queries with no
+execution known to attain it (`B7-UPPER-BOUND-IS-NOT-ATTAINMENT`). `68 <= 427`
+is a fact about this run, not evidence the cap is tight.
+
+Proof note: the obvious `simpa using congrArg List.length ...` exhausts the
+`isDefEq` heartbeat budget here -- `simpa` tries to evaluate the run term in the
+goal. Raising `maxRecDepth` does not help and misdiagnoses it. `rw
+[List.length_map] at hmap; exact hmap` leaves the run term untouched on both
+sides and elaborates immediately.
+
+### Capstone field 32
+
+Field 32 (`controller_exact_input_boundary`) is an eta equation closed by `rfl`.
+All its content is in the **elaboration**: the statement typechecks only if
+`packedReviewerController` has exactly arity three at `Nat -> Nat -> Nat ->
+PackedReviewerControllerState`, which pins the controller's static interface --
+it cannot take `xs`, a shape, or an oracle, because such a controller would not
+elaborate there.
+
+The audit's observation was that it *reads* like the semantic no-hidden-input
+theorem. The field is sound; the way it invited being cited was not. Its
+docstring now says plainly what it does not establish -- it constrains the
+interface, not the behaviour -- and points at the fields carrying the semantic
+content: field 33 (`controller_uniform_entry`, no readiness or compatibility
+dispatch) and field 34 (`store_agreement_determinism`, which is what actually
+forces the dynamic inputs to be `n`, the endpoints, and prior probe replies).
+
+This is the documentation form of the recurring defect class: not a false
+theorem, but a true one positioned to be read as a stronger one.
+
+Verified: `lake build RMQ` exit 0; `scripts/axiom_check.lean` exit 0 with no
+`sorryAx` and no `ofReduceBool`; `independence_check` still PASS at 1855
+constants.
+
+## DD-20260809-101 -- ledger citation corrections (public-surface record)
+
+Status: Accepted. Date: 2026-08-09. Public-surface companion to
+WDD-20260809-020, which records the method failure; this records the content
+change to `paper/THEOREM_LEDGER.md` and `paper/EVIDENCE_MATRIX.md`.
+
+Three `:NNN` source citations in the theorem ledger were wrong and are corrected:
+
+| row | was | now | cause |
+| --- | --- | --- | --- |
+| `L-PACK-01` | producer `:702` | `:723` | displaced by this round's field-32 docstring |
+| `L-ARCH-01` | producer `:702` | `:723` | same; missed by two earlier audit sweeps |
+| `L-UB-06` | `:9349` | `:8269` | **already wrong at the pinned base commit**, by ~1,090 lines |
+
+24 of the 27 citations resolve correctly and are unchanged. No proposition, no
+declaration name, and no status changed -- these are reference corrections to
+prose, and the underlying rows are untouched.
+
+`L-UB-06` is the one worth remembering: it was wrong at `e3362d4`, the very
+commit the ledger pins itself to, so a reviewer following the reference at the
+named commit would have landed roughly 1,090 lines away in unrelated code. The
+fresh-blind audit did not catch it. A pinned base commit constrains the *tree*;
+it does not make a hand-written line number point anywhere in particular.
+
+Consequence for the pending base repin: `ACCEPTED_BASE` is defined in the ledger
+header as "kernel-checked declaration present on the base commit", so repinning
+the substrate does require moving the per-row `Commit:` fields -- but the honest
+basis for that is a green build plus the axiom inventories at the new commit,
+confirming each row's *named declaration* still exists. It is not a licence to
+also trust the line numbers, which no build checks.
+
+## DD-20260809-102 -- repin the paper substrate to `688c54a3`, with evidence
+
+Status: Accepted. Date: 2026-08-09. Closes handoff item 4.3.
+
+The substrate moves from `e3362d4f...` to `688c54a39d9a2410d281f1ded9b70937908beb4a`,
+the last commit of the RC-1 correction round with both CI workflows green.
+
+The pin has two roles and the round's earlier working note got the second one
+wrong. Reading the ledger header settled it: **`ACCEPTED_BASE` is defined as
+"kernel-checked declaration present on the base commit"**. It is a claim about
+the pinned tree, not a historical acceptance date. So the 29 per-row `Commit:`
+fields *do* move with the substrate pin -- and each move restates a claim.
+
+Because it restates a claim, it was not done on faith. At `688c54a3`:
+
+- `lake build RMQ` exit 0.
+- `scripts/axiom_check.lean` exit 0; no `sorryAx`, no `ofReduceBool`.
+- `scripts/ledger_decl_check.lean` (new, see WDD-20260809-021): all **53**
+  declaration names cited by `ACCEPTED_BASE` rows are present.
+- All **27** `:NNN` citations resolve, after three corrections (DD-20260809-101).
+- Both CI workflows green.
+
+What deliberately did **not** move: `paper/EVIDENCE_MATRIX.md` keeps three
+mentions of the old base and `paper/THEOREM_LEDGER.md` keeps one, because those
+are statements about what was true at the previous pin. A blanket
+search-and-replace would have rewritten history to say the old audit happened at
+a commit that did not exist yet. The repin was done by classifying each of the
+38 occurrences, not by `sed`.
+
+`L-ARCH-01` gains an `Amended` line rather than a silent restamp: this round
+retracted its "logical fuel (charged trace events)" gloss on the packed `210`.
+The row's *proposition* was not re-audited -- the fresh-blind audit of
+`audit-v1-rc-1` stands behind it -- so the amendment says it corrects a gloss and
+says explicitly that no re-audit occurred.
+
+The repin commit changes no Lean library code. The pinned tree and the substrate
+commit differ by documentation plus one checker, which `paper/README.md` states.
+
+## DD-20260812-103 -- RC-2 corrections: claim honesty and the manuscript repairs
+
+Status: Accepted. Date: 2026-08-12. Answers `P1-01`, `P1-02`, `P1-04`, `P2-02`,
+and `P3-01` of the 2026-08-12 fresh-blind audit of `audit-v1-rc-2`. Every
+finding was independently reproduced before being fixed; **none were wrong**.
+
+### `P1-01` -- exact/tight language on governed surfaces
+
+Three surfaces claimed more than the source: `docs/PAPER_THEOREM_MAP.md` said the
+charged-trace cost "is exactly `210`" (while the *same file* disclaimed
+attainment), and `docs/RELATED_WORK_AND_LIMITATIONS.md` plus
+`paper/THEOREM_LEDGER.md` claimed a "tight component-wise cap". Only the interior
+`33` has an attainment witness; select `35`, rank `11`, fringe `37`, and the
+aggregate `210` are upper bounds.
+
+**This was our own incomplete fix.** `DD-20260809-099` retracted exactly this
+overstatement in the *source comment* three days earlier and did not sync the
+surfaces repeating it -- including `paper/THEOREM_LEDGER.md`, edited in that same
+commit. The source now says "do not reintroduce 'tight' without an attainment
+theorem" while three surfaces asserted it. Fixing a claim at its origin is not
+fixing the claim.
+
+### `P1-02` -- the preprocessing implicature
+
+`README.md` and `docs/PUBLICATION_STRATEGY.md` said payload construction "is
+accounted separately", which asserts a separate accounting that does not exist;
+ledger row `L-OPEN-01` says preprocessing complexity is unproved and unclaimed.
+Both now say **unproved and excluded from the bound**.
+
+### `P1-04` -- the novelty log's repairs, applied at last
+
+`paper/NOVELTY_LOG.md` section 5 documents each defect with evidence and an exact
+replacement, opening "Every repair below quotes the current text". They had never
+been applied, and survived two release candidates and one fresh-blind audit.
+Applied here: the Tanaka conflation (two locations), the priority-attribution
+overreach, Fischer-Heun mislabelled "systematic", the cell-probe convention
+mis-sourced to a self-declared word-RAM paper, "implicit in the classical
+literature", and the invented `/HOL` fragment in the `ZhanHaslbeck18` title.
+Four load-bearing entries the repaired prose needs -- `Sadakane07`,
+`FischerHeun07`, `GalMiltersen07`, `TAG18` -- were added, and
+`paper/RELATED_WORK_LEDGER.md` rows carrying the same errors were corrected.
+
+**One deliberate deviation from the log's verbatim text.** Its section 5.2
+replacement paraphrases AGQT19's priority belief as "the first formalizations of
+those representations". `paper/check_paper.ps1` rejected it, correctly: that
+detector deliberately does not let a citation license a priority claim, so a
+paraphrase asserting "the first" on our own surface is caught regardless of
+attribution. The sentence now reports that they *record a priority belief*,
+scoped to their representations. The log's intent is preserved; its exact wording
+is not, and our own gate is why.
+
+The "should add" and "may add" entry lists in section 5.10 are **not** applied.
+They are enhancements, not error corrections, and several carry receipts the log
+itself marks unverified; adding ten such entries while repairing a bibliography
+error would trade one class of defect for another.
+
+### `P2-02` and `P3-01` -- two capstone docstrings
+
+Field 27's "never a stored numeral" reads as an intensional guarantee its four
+extensional equalities cannot carry; the audit exhibited a hard-coded
+counterfactual satisfying all four. Scoped to what the field proves, with the
+structurality located in the definition where it actually lives. Field 15 said
+"both decoded header fields" when the header stores exactly one --
+`ReviewerMemory.lean` says so in as many words. The inequalities were always
+correct.
+
+Field 27 is the neighbour of field 32, whose identical elaboration-versus-proof
+distinction was documented on 2026-08-09 without checking the adjacent field.
+
+## DD-20260816-104 -- public-surface corrections from the RC-3 audit
+
+Status: Accepted. Date: 2026-08-16. Public-surface companion to
+WDD-20260816-032, which carries the gate/checker rationale.
+
+**`docs/PAPER_CLAIM_CORRESPONDENCE.md`** pointed the `derived_cap_le_427` field
+at source line `:490`; the field is at `:498`. Corrected. This is the fourth
+distinct citation-rot finding across three audit rounds, after `L-UB-06`'s
+~1,090-line error, the `:702 -> :723` drift, and the evidence-matrix counts
+below. The `file:line -> declaration` checker has been scheduled since the RC-2
+round and remains the standing repair; until it lands, this class recurs.
+
+**`paper/EVIDENCE_MATRIX.md`** published the ledger breakdown as 34 rows
+27/1/6 (accepted/provisional/open) while the ledger holds 29/0/5 -- stale since
+the Stage-A acceptance moved the architecture row out of PROVISIONAL. Corrected,
+and the figure is no longer merely stated: `paper/check_paper.ps1` derives it
+from the ledger and fails on mismatch, injection-verified.
+
+**`scripts/independence_check.lean`** now guards all three theorems that supply
+the published `427` cap rather than the structural countdown alone. The claim
+this file exists to protect -- that the two `210`s are independent -- was
+checked against a theorem that does not populate the public field.
+
+None of these changes a proposition. All three are cases of a published
+statement drifting from the source it describes, which is the failure mode this
+project has now seen in three consecutive external audits.
+
+## DD-20260816-105 -- absorb the packed cell-probe theorem into the manuscript
+
+Status: Accepted. Date: 2026-08-16. Answers `P1-1` of the 2026-08-15
+fresh-blind audit, which failed `RC-10` and drove the `NOT_ACCEPTABLE` verdict.
+
+At the release tag, `import RMQPaper` supplied a kernel-exported 427-probe
+capstone while `paper/rmq.tex` pinned to an ancestor commit, titled its
+Section 9 "provisional", stated only an unspecified constant `C`, and carried
+an `ARCHITECTURE_RESULT_PENDING` marker. The paper and the artifact did not
+identify the same release claim.
+
+Absorbed. Section 9 is now "A packed cell-probe architecture"; a `theorem`
+environment states the result with the actual constant `427`, replacing the
+`targetstmt`. Four further places asserting the result was *unabsorbed* became
+false the moment the theorem landed and are corrected: the file header comment,
+the abstract, the contributions paragraph, and the conclusion.
+
+The theorem carries the three readings it does **not** license, inline, because
+this result has been over-read at every prior opportunity: `427` bounds
+**attempted** probes and is an upper bound with no attainment witness (the
+pinned fixture issues 68); the model is cell-probe, so not word-RAM time, not
+preprocessing time, not measured runtime; and the `210` inside
+`427 = 1 + 2*3 + 2*210` is the controller's structural countdown, independent
+of the charged-trace budget -- a property the repository checks rather than
+asserts.
+
+**The checker was part of the defect.** `paper/check_paper.ps1` *required*
+exactly one pending marker, so while the manuscript presented an accepted
+theorem as a future insertion, the checker reported success. It now permits
+zero and fails only on more than one (WDD-20260816-032). A gate that requires
+the presence of a defect cannot detect it.
+
+This item was on the coordinator's own known-open list for the RC-3 round,
+rated an editorial gap. That rating was wrong: at a release candidate, a
+manuscript that pins to an ancestor and calls the shipped theorem pending is a
+release-blocking mismatch, which is exactly what `RC-10` exists to catch.
+
+## DD-20260816-106 -- repin the manuscript substrate to the release tree
+
+Status: Accepted. Date: 2026-08-16. Second half of `P1-1` / `RC-10` of the
+2026-08-15 fresh-blind audit; DD-20260816-105 absorbed the theorem, this moves
+the pin.
+
+`paper/` was pinned to `688c54a3...`, an ancestor of the release tag. The 29
+`ACCEPTED_BASE` rows in `THEOREM_LEDGER.md` are not decoration: that status is
+DEFINED in the ledger header as *kernel-checked declaration present on the base
+commit*. Every one of them therefore asserted something about a tree that was
+not the release tree.
+
+All 38 full-SHA pins across the substrate move together to
+`0665b494707695a70675fef0e5c8682f4d80fe0c`. Mentions of `688c54a3` and
+`e3362d4` that survive are deliberate and record what was true at earlier pins;
+they are not stragglers.
+
+Verified at the new pin before the move: `lake build RMQ` and
+`lake build RMQPaper` exit 0; `scripts/independence_check.lean` passes on all
+three cap-supplying theorems; `check_paper.ps1 -SelfTest` passes.
+
+The standing caveat is unchanged and is stated in `paper/README.md`: the commit
+carrying a repin is the child of the tree it verifies, differing by the
+substrate edits themselves. That is unavoidable for a self-describing
+substrate; it is disclosed rather than hidden.
+
+## DD-20260816-107 -- ledger line citations are checked, and three more were wrong
+
+Status: Accepted. Date: 2026-08-16. Discharges the citation-checker item
+deferred in `docs/internal/RC1_CORRECTION_HANDOFF.md` through two correction
+rounds.
+
+`paper/THEOREM_LEDGER.md` cites source lines as `:NNN`. Line numbers rot
+silently, and nothing read them. On 2026-08-09 three of 27 were found wrong --
+only on the third sweep, after two earlier sweeps returned confidently wrong
+answers (one undercounting 9 of 27, one mis-attributing citations to the wrong
+file and inventing three defects). One of the three, `L-UB-06`, was already
+wrong AT THE PINNED BASE COMMIT and pointed about 1,090 lines from its theorem.
+
+`paper/check_citations.ps1` replaces greps with a parser: rows are parsed as
+units, each citation is bound to the most specific declaration its context
+names, and that declaration must appear at the cited line. `check_paper.ps1`
+runs it as section 5c.
+
+Its first run found **three more defective citations**, on a tree already
+corrected once and since passed by a fresh-blind audit:
+
+- `L-ARCH-01` / `L-PACK-01`, `producer at :723` -> `:752`. Wrong three times
+  now: `:702`, corrected to `:723`, drifted 29 lines since. Every correction
+  was accurate when made. Nothing kept it accurate, which is the argument for
+  a checker rather than another careful pass.
+- `L-UB-12`, `:1324` -> `:1298`. Line 1324 holds
+  `queryCostedWithStore_eq_of_orderedReadFootprint` while the row names
+  `queryTraceResultWithStore_eq_of_orderedReadFootprint`. A citation that lands
+  on a different theorem with a near-identical name is worse than one that
+  lands nowhere: a dangling pointer announces itself.
+
+Three of the six initial failures were defects in the CHECKER and were fixed
+before any ledger edit. Reporting them would have "corrected" three correct
+citations -- the same over-correction that produced the phantom defects in the
+2026-08-09 second sweep. Each failure was read against the source before it was
+believed.
+
+The checker reports binding strength per run (19 pinned to a named declaration,
+7 to a named file, 1 row-wide). A single aggregate would hide that one citation
+is barely constrained.
+
+Also corrected here: two `paper/README.md` passages still describing the
+pre-absorption manuscript ("exactly one `ARCHITECTURE_RESULT_PENDING` marker",
+"appears only as a quoted provisional target"). Same staleness class as
+`RC-10`, introduced by the fix for it.
+
+## DD-20260816-108 -- the packed architecture headline has an expected-type pin
+
+Status: Accepted. Date: 2026-08-16. Second half of RC-3 audit item 7; the axiom
+whitelist was the first half (DD-20260816-104).
+
+`RMQ.Headlines.succinctRMQPackedCellProbeArchitecture` is an `abbrev` onto
+`packedReviewerArchitectureCapstone_holds`. Its type is therefore whatever the
+39-field `PackedReviewerArchitectureCapstone` currently says. Weaken field 26
+from `427` to `999`, or drop field 39, and the public alias weakens with it --
+while `scripts/headline_axiom_check.lean` still prints the same three standard
+axioms for it, because **axiom checking reports the trust base, never the
+statement.** This is the release's headline claim and the paper's Section 9
+theorem, and nothing tied the two together.
+
+`PackedCellProbeExpectedPaperType` in `scripts/headline_axiom_check.lean`
+(anchor `EG-CP-PUBLIC-TYPE-PIN-ANCHOR`) states the three published readings
+independently -- naming `packedReviewerMemory`, `packedReviewerCellWidth`,
+`packedReviewerRho` and `packedReviewerRunAgainstMemory` directly, never
+mentioning the capstone structure -- and an `example` inhabits it from the
+headline alias alone, projecting fields and reconstructing nothing. It follows
+the `M1ReviewerNativeExpectedPaperType` precedent.
+
+Verified to fail closed rather than assumed to: with the cap in the expected
+type changed to `428`, `lake env lean` exits 1 with an application type
+mismatch on `derived_cap_le_427`; with the third conjunct's `LeftmostArgMin`
+weakened to `True`, it exits 1 likewise. Unmutated, it exits 0 and every one of
+the 104 axiom lines still reports only `propext`, `Classical.choice`,
+`Quot.sound`.
+
+Scope: the pin covers the three readings the manuscript publishes. It does not
+pin the other 36 fields, and does not claim to. A reviewer reading the pin
+learns exactly which three statements are mechanically tied to the headline.
+
+## DD-20260816-109 -- persistent counterfactuals for the lower bound's `query_exact`
+
+Status: Accepted. Date: 2026-08-16. Discharges RC-3 audit item 8.
+
+`exactRMQ_tight_fixed_length_payload_space_bound` reads "any encoding that
+answers RMQ exactly needs at least this many bits". All of its force is in
+`ExactRMQShapeEncoding.query_exact` describing a decoder that really answers
+RMQ. If that field were satisfiable by something trivial, the theorem would
+remain true and would be about nothing.
+
+**One direction was already covered.** The theorem's own third conjunct
+exhibits an encoding at `2 * n` bits, so the quantifier is not empty. Recording
+that plainly matters: the audit item is discharged by adding the *missing*
+direction, not by re-establishing one that was already there.
+
+**The missing direction** is that the hypothesis is not CHEAPLY inhabited.
+`scripts/headline_axiom_check.lean` (anchor
+`EG-LB-QUERY-EXACT-COUNTERFACTUAL-ANCHOR`) adds:
+
+- `query_ne_none` -- `query_exact` forces an answer on every valid window;
+- `null_decoder_impossible` -- a decoder answering nothing contradicts it;
+- `wrong_answer_impossible` -- a decoder answering something *wrong*
+  contradicts it too, so the field pins the value and not merely the presence
+  of one.
+
+With the existing witness these bracket the hypothesis from both sides:
+inhabited, and not cheaply inhabited.
+
+The trailing `example` is not decoration. It discharges every premise of
+`null_decoder_impossible` except `hnull` concretely at `n = 1` -- including
+shape membership, proved via `singleton_mem_shapesOfSize_one` rather than
+assumed -- so the null decoder is demonstrably the only unmet premise. Without
+it, a counterfactual with jointly unsatisfiable premises would prove nothing
+while reading exactly like a proof, which is this project's recurring defect in
+its purest form.
+
+Verified to fail closed rather than assumed to: weakening
+`wrong_answer_impossible`'s wrong answer from `+ 1` to `+ 0` makes `omega`
+fail and the file stops compiling. Unmutated, `lake env lean` exits 0 and all
+104 axiom lines still report only the three standard axioms.
+
+## DD-20260816-109b -- keep the unused Target Statement environment
+
+Status: Accepted. Date: 2026-08-16.
+
+`
+ewtheorem{targetstmt}` quoted the packed architecture result as a provisional
+target. Section 9 now states it as a theorem, so the environment has no uses.
+Kept defined rather than deleted, with a comment saying why, so a future
+provisional target gets the same presentation instead of a reinvented one.
+
+This is a manuscript-source change and therefore needs a design-log entry. The
+commit that first made it carried none and failed
+`design_decision_check.ps1 -Base HEAD~1 -Strict`, while the aggregate-diff mode
+CI actually runs reported clean -- the stated per-commit invariant and the
+enforced one differ. See WDD-20260816-042.
+
+## DD-20260816-110 -- substrate state-claims corrected after an agent audit
+
+Status: Accepted. Date: 2026-08-16. Companion to WDD-20260816-040, which records
+the checker defects from the same audit. This entry records the *claims* that
+were false.
+
+All three are the same class as the `RC-10` finding that caused the RC-4 round:
+a statement describing a state the tree no longer has. Two of the three were
+introduced or left standing by the round that exists to answer `RC-10`.
+
+### `paper/README.md` claimed 27 citations resolved at the old pin
+
+It said all 27 `:NNN` citations resolved at `688c54a3` "after three were
+corrected". **False when written.** `L-UB-12` cited `:1324`, which at
+`688c54a3` held `queryCostedWithStore_eq_of_orderedReadFootprint` while the row
+names `queryTraceResultWithStore_eq_of_orderedReadFootprint` at `:1298`.
+`SuccinctRMQClassic.lean` is byte-identical between `688c54a3` and the current
+pin, so the defect the RC-4 round found was present at both.
+
+The shape of the error is worth more than the correction: the round fixed the
+POINTER and left the SENTENCE asserting the pointers were sound. Fixing a claim
+at its origin is not fixing the claim. The paragraph now records what was
+verified at that pin and what was not.
+
+### `EVIDENCE_MATRIX.md` row EV-07 still described the pre-insertion manuscript
+
+Three statements were false: "Section 9.1 holds the single marker" (the marker
+count is zero), "`check_paper.ps1` fails unless the marker count is exactly one"
+(it now permits at most one), and "the marker count is still exactly one, which
+the checker enforces". The status remained `BLOCKED_ONLY_ON:
+EDITORIAL_INSERTION` -- describing as pending the exact edit commit `0665b49`
+performed.
+
+Amended by appending, per the matrix's own frozen-requirement rule, with a new
+status of `BLOCKED_ONLY_ON: FRESH_BLIND_ACCEPTANCE`. The substrate's acceptance
+record had gone stale about the substrate, which is the failure it exists to
+prevent.
+
+### A third pre-absorption passage survived in `paper/README.md`
+
+Editing rule 3 still said the result "may be inserted only by replacing the
+single marker in Section 9.1 … what remains is the editorial insertion". The
+commit that repaired the other two README passages stated it had fixed "two",
+and two is what it fixed. Corrected, along with the Contents bullet describing
+`EVIDENCE_MATRIX.md`.
+
+Also annotated: `paper/WORKLOG.md`'s `Base: 1490c97b…`, the one full-SHA base in
+`paper/` a repin does not move. It is genuinely historical -- a session log
+records its own session -- but it was not covered by the README's
+deliberate-historical carve-out, so it read as a straggler from the 38-SHA
+repin. Both the log and the carve-out now say so.
+
+## DD-20260816-111 -- round 2: three more stale substrate claims, and a rule nobody enforced
+
+Status: Accepted. Date: 2026-08-16. Companion to WDD-20260816-041.
+
+### `THEOREM_LEDGER.md` L-ARCH-01 still described the pre-absorption manuscript
+
+The row read: the statement is "**not yet absorbed** into a theorem
+environment", "the single marked insertion point still holds the
+`ARCHITECTURE_RESULT_PENDING` marker", and "that is an editorial gap". All three
+false at this commit; `grep -c ARCHITECTURE_RESULT_PENDING paper/rmq.tex` is 0.
+
+**Neither RC-4 correction commit touched this file.** The round repaired
+`README.md` and `EVIDENCE_MATRIX.md` and left the ledger -- the artifact whose
+entire job is binding manuscript claims to Lean declarations -- describing a
+manuscript that no longer exists.
+
+### A fourth stale statement the round-1 amendment's own enumeration missed
+
+`EVIDENCE_MATRIX.md:140` asserts "exactly one marker, and no section outside
+Section 9 ...". The RC-4 amendment enumerated three false statements and named
+lines 128, 129-130 and 149. It did not name this one. An enumeration of one's own
+errors is itself a claim, and it can be incomplete.
+
+### The permitted-status rule was violated twice while being stated
+
+The matrix header says "No other status is permitted for this substrate" and
+listed two statuses. The file used four: `EDITORIAL_INSERTION` since 2026-08-07,
+and `FRESH_BLIND_ACCEPTANCE` added by the RC-4 round itself. Nothing checked it,
+so the file asserted a vocabulary it violated one screen later, for nine days.
+
+`check_paper.ps1` now parses the permitted set **from the header** and fails on
+any status outside it. Parsing rather than restating means adding a status
+requires amending the header, which is the property the header claims. It caught
+`EDITORIAL_INSERTION` on its first run -- a violation older than this round.
+
+Also corrected: `paper/WORKLOG.md`'s undated scope preamble ("stays provisional
+... one marked insertion point"), annotated historical like its `Base:` line; and
+the ledger header's `PROVISIONAL_ARCHITECTURE` definition, which described a
+marked insertion point that no longer exists and which no row now holds.
+
+## DD-20260816-112 -- round 3: corrections to DD-109, DD-111 and the manuscript
+
+Status: Accepted. Date: 2026-08-16. A third agent audit, of the round-2
+corrections. Every finding reproduced.
+
+### DD-20260816-109 named the wrong structure
+
+That entry says the lower bound's force "is all in
+`ExactRMQShapeEncoding.query_exact`". It is not.
+`exactRMQ_tight_fixed_length_payload_space_bound`
+(`RMQ/Core/EncodingLowerBound.lean:1840`) quantifies over
+**`ExactRMQStateEncoding`** and never mentions `ExactRMQShapeEncoding`. They are
+two distinct structures with two distinct `query_exact` fields
+(`:104` and `:136`); the only bridge is
+`exactRMQShapeEncoding_of_stateEncoding` (`:164`), which neither the entry nor
+the `.lean` docstring cited.
+
+Consequences, stated plainly:
+
+- The three counterfactuals (`query_ne_none`, `null_decoder_impossible`,
+  `wrong_answer_impossible`) constrain `ExactRMQShapeEncoding.query_exact`, which
+  is **not** the field the cited theorem quantifies over.
+- The inhabitation witness in the theorem's third conjunct is a
+  `StateEncoding`, so it does not discharge the trailing `example`'s assumed
+  `encoding : ExactRMQShapeEncoding 1 bits`. DD-109's "the null decoder is
+  demonstrably the only unmet premise" is **false**: the encoding is assumed too.
+
+This is the shape of `WDD-20260816-032`'s own `P2-1` -- "the checker guarded a
+sibling theorem while the published cap's actual supplier was unguarded" --
+committed again, one round later, by the entry that cites that lesson.
+
+The counterfactuals are not worthless: `exactRMQShapeEncoding_of_stateEncoding`
+sets `query_exact := encoding.query_exact`, so the two fields are coupled by
+construction. But coupling by construction is an argument, and the entry
+presented it as a guard. **The honest scope is: the counterfactuals establish
+that `ExactRMQShapeEncoding.query_exact` is not trivially satisfiable, and reach
+`ExactRMQStateEncoding` only through a bridge the entry did not name.** Retargeting
+them at the structure the theorem actually quantifies over is open work.
+
+### DD-20260816-111's own line citations are wrong
+
+It cites `EVIDENCE_MATRIX.md:140` for the "exactly one marker" sentence. That
+text is at `:133` in the commits it describes and `:147` at HEAD; `:140` is
+right at no commit. It also says the RC-4 amendment "named lines 128, 129-130
+and 149" -- the amendment names no line numbers at all and enumerates by
+quotation.
+
+Citation rot inside the entry announcing the citation-rot fix. Corrected here by
+quotation rather than by line number, which is the practice the same entry
+recommends.
+
+### `paper/rmq.tex:693` -- the fifth stale statement
+
+The reproduction-commands list described `check_paper.ps1` as verifying "the
+single pending-architecture insertion point". There are none, and the checker
+permits at most one. This line survived DD-105's sweep of four unabsorbed
+assertions, DD-110's round-1 sweep and DD-111's round-2 sweep -- in the primary
+release artifact. Now corrected, and the list also names the two checks added
+since (status vocabulary, source citations).
+
+### `paper/WORKLOG.md`'s verification inventory
+
+It asserts 18 line references were "verified by direct grep/read this session".
+`SuccinctRMQClassic.lean:1324` was wrong at `1490c97b`, the base that sentence
+names. The RC-4 round corrected the pointer in the ledger and left this sentence
+standing -- the same defect as DD-110's README finding, in a second file.
+
+## DD-20260816-113 -- round 4: a sixth and seventh stale marker statement
+
+Status: Accepted. Date: 2026-08-16. Companion to WDD-20260816-043.
+
+Two more live statements asserting the `ARCHITECTURE_RESULT_PENDING` marker
+exists, after three rounds of sweeps:
+
+- `paper/check_paper.ps1`'s own header: "Exactly one literal
+  ARCHITECTURE_RESULT_PENDING marker in rmq.tex" -- **a file documenting the
+  behaviour it was edited to stop having**, for the whole round.
+- `paper/EVIDENCE_MATRIX.md`: "the marker count is still exactly one, which the
+  checker enforces". The identical sentence seventeen lines above was annotated
+  by the round-1 amendment; the round-2 enumeration that claimed to list every
+  stale statement missed this one. Its own annotation reads "An enumeration of
+  one's own errors is itself a claim and can be incomplete." It has now
+  demonstrated that twice.
+
+The header comment is also brought up to date with the two checks added since
+(status vocabulary, source citations).
+
+### `headline_axiom_check.lean` still asserted what DD-112 declared false
+
+DD-20260816-112 records that DD-109's "the null decoder is demonstrably the only
+unmet premise" is false -- the encoding is assumed too. That sentence was live in
+the `.lean` file and was corrected in neither place. It is corrected now, with
+the scope stated precisely: the counterfactuals quantify over
+`ExactRMQShapeEncoding`, the cited lower bound quantifies over
+`ExactRMQStateEncoding`, and they connect only through
+`exactRMQShapeEncoding_of_stateEncoding`. Retargeting is open work, not something
+this file has done.
+
+Also corrected: `paper/THEOREM_LEDGER.md` cited label `tgt:packed`, which exists
+nowhere; the real label is `thm:packed` at `rmq.tex:717`, which the same row's
+corrected block already stated.
+
+## DD-20260816-114 -- round 5: a recorded correction that was never made
+
+Status: Accepted. Date: 2026-08-16. Corrects DD-20260816-113.
+
+DD-113 closes with: "Also corrected: `paper/THEOREM_LEDGER.md` cited label
+`tgt:packed`, which exists nowhere; the real label is `thm:packed`."
+
+**It was not corrected.** `tgt:packed` was still at `THEOREM_LEDGER.md:559` at
+`d31064c`, and `git log --all -S'tgt:packed'` shows the string was never removed
+on any ref. The other two corrections that entry claims were real; this one was
+fiction.
+
+The cause is mechanical and is the same one that produced DD-113's sibling
+defect: the edit batch containing it aborted on an unrelated assertion, rolled
+back, and the write-up was published anyway. **A design-log entry is a claim,
+and a claim is worth what was measured.** The entry recording that lesson
+violated it in its own closing sentence, in the row that says "neither
+correction commit touched this file. That is the same defect the round exists to
+answer."
+
+Fixed now, and verified at byte level: `tgt:packed` is gone; the row states the
+real label `thm:packed`; and the `Theorem~\ref{thm:packed}` reference two lines
+above -- which DD-113 pointed at as the correct statement -- contained a **bare
+carriage return where its backslash belonged**, an artifact of an earlier Python
+`\r` escape. It read `Theorem~<CR>ef{...}`. Three successive repairs missed it
+because each searched for a backslash that was not in the file.
+
+Also corrected in this round, each measured rather than assumed:
+
+- `paper/check_citations.ps1` and `WDD-20260816-041` published "worst case 2 of
+  **861** lines". No tracked file has 861 lines; the packed capstone has 860 and
+  the actual worst case is realised in a **209**-line file.
+- The same two surfaces published "**24** of the 26 cited names have exactly one
+  satisfying line". That was true when written; the round-3 tightening of
+  `$fieldSite` to `\s*:(?!=)` removed both exceptions, and the figure is now
+  **26 of 26**. A second auditor had confirmed "24 of 26" against the
+  pre-round-3 rule -- a measurement correct against a predicate the code no
+  longer had.
+- `paper/EVIDENCE_MATRIX.md` (EV-03, `CLOSED`) and `paper/NOVELTY_LOG.md`
+  published "all **23** bib entries". `references.bib` holds **27**. The
+  evidence is sound -- all 27 carry receipts -- only the published count was
+  stale, the same class as the 27/1/6-vs-29/0/5 defect repaired for EV-02 four
+  rows above.
+
+Manuscript line numbers are deliberately not cited in the ledger row: every
+`:NNN` in that file is parsed as a Lean source pointer by
+`check_citations.ps1`, so an `rmq.tex:717` would be checked as one and fail.
+Adding two such references is what turned the checker red mid-repair.
+
+## DD-20260816-115 -- round 5 addendum: the correct "23" was changed and the wrong one left
+
+Status: Accepted. Date: 2026-08-16. Corrects DD-20260816-114.
+
+DD-114 recorded changing "all 23 bib entries" to 27 in `paper/NOVELTY_LOG.md`.
+**That edit was wrong and is reverted.**
+
+`paper/NOVELTY_LOG.md` §1.6 is a search record and the file dates it:
+`**Search date:** 2026-08-07`. `references.bib` held **23** entries then
+(`bb15006`, 2026-08-05) and did not reach 27 until `de510d0` on 2026-08-12 --
+five days later. The edit therefore asserted that a 2026-08-07 search had
+verified 27 entries that did not yet exist. It also widened the gap with the
+next line, "20 dblp API queries (one per entry...)", from 3 to 7.
+
+Meanwhile the occurrence that IS wrong was left untouched: the tally at `:671`
+says "Measured across all 23 entries **at the base commit**", and the base
+commit `0665b494` holds 27.
+
+**Two "23"s, one right and one wrong, and the round changed the right one.** The
+finding named both; the repair re-measured neither before applying. That is the
+failure the standing rule exists to prevent -- *an auditor's conclusion is an
+input to be checked* -- reproduced one entry after the entry recording it.
+
+Repaired now, and deliberately **not** by adjusting numerals:
+
+- §1.6's scope is restored to 23 and remains a search-date record.
+- The `:671` tally states its true anchor: 23 entries as of 2026-08-07, **not**
+  the base commit, with the four later additions explicitly not folded in. Every
+  `n/23` stands as a record. Re-deriving over 27 means re-auditing four receipt
+  sets, which is open work, not a number to edit.
+- §5's "Line numbers are at the base commit" is marked **HISTORICAL**, matching
+  `WORKLOG.md`'s treatment of its superseded entries. At `0665b494` the repairs
+  are already applied, §5.1's quoted "before" text is absent, and §5.7/§5.11's
+  cited `references.bib` lines hold different content.
+
+`paper/EVIDENCE_MATRIX.md` EV-03's "all 27 bib entries" is correct and stands:
+that row describes the substrate at the current pin, where the count is 27.
+
+## DD-20260816-116 -- The ledger declaration check now has a source of truth
+
+`scripts/ledger_decl_check.lean` holds `ledgerNames`, a list transcribed by hand
+from `paper/THEOREM_LEDGER.md`'s `ACCEPTED_BASE` rows, plus `expectedCount` as a
+floor so the list cannot be silently emptied.
+
+That floor is one-directional. It catches the list SHRINKING and cannot catch a
+list that never grew -- which is what happened: the `Declaration:` fields name
+**54** fully-qualified declarations and the list held **53**, omitting
+`RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace_getElem?_producer`. A
+row cited it and nothing checked it, through every green run of this script.
+
+Two changes. The name is added and `expectedCount` moves to 54. And
+`paper/check_paper.ps1` step 5c now **derives** the expected set by parsing the
+ledger, and fails if the derived set and `ledgerNames` differ in either
+direction. The Lean script keeps the count pin -- it guards a different failure
+-- but the transcription is no longer trusted.
+
+The `Declaration:` fields also name 27 declarations in forms this script cannot
+resolve as written: 15 elided (`...ReviewerSuccessfulReadWordFits`), 9 short-form
+without the `RMQ.` prefix, 3 carrying an inline type annotation. Step 5c prints
+that number. It is not a defect in the ledger; it is the size of what a green
+decl-check does not establish, and it was previously invisible to a reader of
+`paper/README.md`, which said the script confirmed **all** the names those rows
+cite.
+
+## DD-20260816-117 -- The three expected-type pins RC-3 `P2-3` required and did not have
+
+`P2-3`'s disposition names four aliases needing independent expected-type
+consumers: the standalone lower bound, the List-Int store, the reviewer readWord
+bound, and the packed architecture. Only the packed one landed
+(DD-20260816-108). The item was recorded as addressed with three quarters of it
+unwritten.
+
+The three are now in `scripts/headline_axiom_check.lean`. Each `Prop` is written
+from the paper's wording without naming the alias or the theorem it abbreviates,
+and inhabited from the alias alone, so weakening the underlying statement stops
+the file elaborating rather than silently retargeting the alias.
+
+**Verified to fail closed, not assumed to.** Four mutants, each built from the
+landed file by changing one thing in the pinned `Prop`, each run through
+`lake env lean`:
+
+| mutant | change | result |
+|---|---|---|
+| LB-slack | `doubledLogSlackLower n <= 2 * bits` -> `3 * bits` | REJECT, exit 1 |
+| LB-witness | the `2 * n` witness -> `3 * n` | REJECT, exit 1 |
+| LI-space | `2 * xs.length + overhead` -> `3 * xs.length + overhead` | REJECT, exit 1 |
+| RW-strict | `word.length <= wordBits` -> `word.length < wordBits` | REJECT, exit 1 |
+
+Each pin also records what it does NOT pin, and why. The lower bound's
+uniform-budget conjunct is excluded because it generalises the first rather than
+adding a public claim; the List-Int store's invalid-range, scan-window,
+leftmost-argmin and no-synthetic conjuncts are excluded because the exactness
+conjuncts are already pinned at the same `queryCosted` level by
+`M1ReviewerNativeExpectedPaperType`, in this file.
+
+**That reason is a correction.** This entry first said each excluded conjunct
+"has its own alias and its own ledger row". Measured against the ledger's
+`- Declaration:` fields, only invalid-range does (`queryCosted_invalid`); the
+scan-window and leftmost-argmin names there are a representative-equality lemma
+and a spec-uniqueness lemma, which are different statements; and the
+no-synthetic name there is the very alias this pin guards. The exclusions are
+still right -- the reason given for them was not.
+
+A pin over a conjunction that quietly drops
+conjuncts is the same defect as a green check standing in for an unestablished
+property, one level down.
+
+`P2-3` is now complete for all four aliases.
+
+## DD-20260816-118 -- `paper/README.md` described a claim-drift scope that had changed underneath it
+
+`paper/README.md` told a reader that the substrate "is not one of the
+repository's registered public claim surfaces (the claim-drift policy scans
+`README.md`, `artifact/`, and `docs/`; `paper/` is deliberately outside that
+registry until a release-synchronization task admits it)."
+
+`e2a3647` admitted it, on the same day, and did not update this sentence. The
+most public file in `paper/` then described a policy the code contradicted -- and
+the scan reads this very file.
+
+Corrected to state that the scan does read `paper/` as of 2026-08-16, and that
+what still excludes the substrate is the narrower `currentFactSurfacePathRegex`
+governing required attribution. Both halves are true at this commit and the
+distinction is the one that matters to a reader deciding whether a claim here is
+governed.
+
+The policy scoping that accompanies this correction is WDD-20260816-058.
+
+## DD-20260816-119 -- CI now enforces the invariant the repository states
+
+`design_decision_check.ps1` could only ask "does the worktree, against some base,
+carry its design-log update?" -- the AGGREGATE question. CI asked it once per push
+and once per pull request. The repository states a stronger invariant: **every
+commit carries its own entry.**
+
+Those are not the same, because one commit's `DESIGN_DECISIONS.md` satisfies the
+membership test for every code-sensitive file in the range.
+WDD-20260816-043 records the consequence: `c9ca9ff` changed `paper/rmq.tex` with
+no entry, twelve of thirteen commits passed and that one did not, **and CI could
+not see it.** The gap was filed as a residual -- "making CI enforce per-commit
+would require iterating the range".
+
+`-Head` makes the diff commit-to-commit, so the range can be iterated. `ci.yml`
+now walks `git rev-list --reverse` and certifies each commit, failing with a
+count rather than on the first breach.
+
+**The blind spot is demonstrated, not asserted.** The regression builds the
+smallest tree that exhibits it -- `c0` baseline, `c1` changes `paper/rmq.tex` with
+no entry, `c2` adds an unrelated entry -- and asserts three legs:
+
+| run | result |
+|---|---|
+| aggregate over `c0..c2` | exit 0 -- the breach is invisible |
+| per-commit on `c1` | exit 1 -- caught |
+| per-commit on `c2` | exit 0 -- a compliant commit still passes |
+
+Leg 1 is the load-bearing one. If the aggregate ever starts REJECTING that
+fixture, the blind spot is gone and legs 2 and 3 no longer demonstrate anything,
+so the case fails rather than passing for the wrong reason.
+
+A fourth case pins the wiring, because a checker that supports `-Head` while CI
+still runs one aggregate invocation closes nothing.
+
+`-Head` deliberately skips the worktree and index passes: this mode asks what a
+COMMIT carried, and a dirty worktree is not part of that question.
+
+## DD-20260816-120 -- Three claims that were true when written and are not true now
+
+From the same fresh audit, all `P3`, all the same species: a record that reads as
+a present-tense statement and stopped being one.
+
+**`paper/NOVELTY_LOG.md` §1.5** — "Four classical papers are missing from
+`references.bib`". Measured at this pin: `references.bib` holds 27 entries and
+`Sadakane07`, `FischerHeun07` and `GalMiltersen07` are all present. Only
+`Patrascu08` is absent. True when written, false from the commit that added the
+three.
+
+This is the species DD-20260816-115 handled ten entries ago -- it marked §5
+HISTORICAL and re-anchored §1.6 for exactly this 23-to-27 growth, and did not
+reach §1.5. Annotated rather than rewritten: the sentence is a search record and
+its value is what the search found, so the correction states the status at the
+pin beside it.
+
+**DD-20260816-117** said the four excluded List-Int conjuncts each have "its own
+alias and its own ledger row". Measured against the ledger's `- Declaration:`
+fields: only invalid-range does (`queryCosted_invalid`). The scan-window and
+leftmost-argmin names there are a representative-equality lemma and a
+spec-uniqueness lemma -- different statements. The no-synthetic name there is the
+very alias the pin guards. The exclusions remain correct, because those conjuncts
+are pinned at the same `queryCosted` level by `M1ReviewerNativeExpectedPaperType`
+in the same file; the reason given was wrong, and the entry now gives the right
+one.
+
+**`paper/check_citations.ps1`** said "All three admit ONLY names on the row's
+`- Declaration:` line". The file contradicts that two hundred lines later --
+*"`$RowNames` is still right for the `nearest name` binding"* -- and the `exact`
+binding does resolve `L-REF-01` through a name that is not on its Declaration
+line. The two fallback bindings are as described; the third is not, and the
+sentence now says so. The declaration-site requirement, which is the load-bearing
+half, is unchanged and still rejects a moved citation.
+
+None of the three changes what any checker does. They are here because a design
+log that says a false thing is a defect in the log.
+
+## DD-20260816-121 -- The per-commit CI fix certified one commit, and its pull-request path was invalid git
+
+`DD-20260816-119` said "CI now enforces the invariant the repository states ...
+certifies each commit". A fresh audit measured both branches of the step it added.
+
+**The push path certified only the tip.** `$range = "HEAD~1..HEAD"` is a fixed
+one-commit window. On a push of three commits -- the fixture that entry
+describes, with the breach at `c1` -- the step reported
+`all 1 commit(s) certified individually`, exit 0. The breach was inside the
+pushed range and CI still could not see it: the identical outcome
+`WDD-20260816-043` records for `c9ca9ff`, which is the defect the fix exists to
+close. `fetch-depth: 2` made anything past `HEAD~1` unresolvable regardless.
+
+**The pull-request path never ran.** `git fetch --depth=0` is rejected outright:
+`fatal: depth 0 is not a positive number`. That leg fails closed, so it was not a
+false pass -- but the shipped fix had never executed on the path it was written
+for.
+
+Repaired: `fetch-depth: 0` on the checkout, the push range taken from
+`github.event.before` (guarding the all-zeros SHA git uses for a new branch, with
+`HEAD~1..HEAD` as the fallback), and `--depth=0` dropped.
+
+**The regression gains the leg that would have caught this.** It now walks the
+pushed range with the breach behind the tip, and asserts both that two commits
+are walked and that exactly one is rejected. The previous four legs all tested a
+single commit at a time, which is why none of them saw a one-commit window.
+
+The wiring case was also two substring greps, and the audit showed it PASSING on
+a `ci.yml` whose push branch had been reverted to one aggregate call -- the loop
+text still sat above it. It now requires `github.event.before` and
+`fetch-depth: 0` as well, and rejects a `git fetch ... --depth=0` command.
+Mutation-verified against three reverts: removing the event-based branch,
+restoring `--depth=0`, and dropping `--reverse` are each rejected.
+
+One pin had to be scoped rather than added: matching the bare string `--depth=0`
+fired on the workflow's own comment explaining why it was removed. A pin over a
+file that documents itself has to say which occurrence it means.
+
+`.github/workflows/release-artifact.yml` also runs the gate, through
+`scripts/reproduce_artifact.sh`, and did not get `fetch-tags` when the other two
+did -- `WDD-20260816-057` said "every workflow" and fixed two. Corrected.
+
+## DD-20260816-122 -- A merge commit certified vacuously, and the wiring pin passed on a workflow that certified one commit
+
+### Merge commits cannot be certified per-commit, and are now refused
+
+`$Head~1` is the FIRST parent, so a merge's diff carries everything the merged
+branch changed -- including that branch's `DESIGN_DECISIONS.md`. That satisfies
+the membership test for anything the merge itself introduces.
+
+Demonstrated: a no-fast-forward merge whose conflict resolution wrote
+`paper/rmq.tex` content present in **neither** parent, with no new entry,
+certified **clean**. That is verbatim the blind spot WDD-20260816-043 records,
+reappearing one level up, and neither DD-119 nor DD-121 recorded it.
+
+`design_decision_check.ps1` now refuses a commit with more than one parent and
+says why. Refusing is the honest option: diffing against the merge base of all
+parents would judge the merge by the union of both branches, which is the same
+aggregate question under another name. Verified -- the fixture merge is refused,
+and all 33 linear commits in this round still certify.
+
+### The wiring pin passed on three workflows that certify one commit
+
+DD-20260816-121 claimed the pin now catches a reverted `ci.yml`. It caught the
+three mutations it was tested against, and passed on three it was not:
+
+| mutation | old pin | now |
+|---|---|---|
+| a second `$range = "HEAD~1..HEAD"` after the chain | PASS | rejected |
+| the loop wrapped in `if ($false)`, one aggregate call doing the work | PASS | rejected |
+| the enumeration piped through `Select-Object -Last 1` | PASS | rejected |
+
+The second is **verbatim the scenario DD-121 says the pin now catches**. Token
+presence is not wiring, so the range DERIVATION is pinned instead: exactly three
+`$range` assignments (pull request, event-based push, new-branch fallback), no
+disabled branch, and the enumeration assignment matched whole so a pipe cannot
+reduce it.
+
+Two claims in DD-121 were also wrong and are corrected here. The
+`[per-commit-push-range]` leg computes its range from the local fixture and never
+reads `ci.yml`, so it is arithmetically determined by the two legs beside it and
+cannot fail alone -- what would have caught the original defect is the
+`github.event.before` presence test, not that leg. And "the previous four legs all
+tested a single commit at a time" is false: leg 1 is an aggregate over two
+commits, and leg 4 reads no commits at all.
+
+**Still open, measured:** on a branch-creation push `github.event.before` is all
+zeros and the range falls back to `HEAD~1..HEAD` -- a one-commit window over an
+N-commit push, which is the defect DD-121 exists to close. DD-121 named the
+fallback without naming this consequence.
+
+## DD-20260816-123 -- The program plan and the artifacts it rests on are on a ref
+
+H item 5 asked for `wf3_attack.json` and both dispositions to be committed under
+`docs/internal/`. Six artifacts are committed here: those three, plus the plan
+itself, `PLAN_LINEAGE.md`, and the audited predecessor
+`RMQ_PROGRAM_PLAN_2026-08-13.md`.
+
+Measured before: `git log --all` returned **zero** occurrences for every one of
+them. An outside auditor could not check the plan out, could not verify a SHA,
+and could not tell whether what they were handed was what was held. That is the
+defect K records for RC-1, RC-2 and RC-3 -- all three rested on uncommitted
+artifacts -- reproduced in the document that records it.
+
+**Committing them falsified eight statements in the plan and one in the lineage,**
+because those statements asserted the files were on no ref. Each was corrected
+rather than deleted, and two distinctions had to be kept:
+
+- Committing the current revision does **not** make v2-v13 checkable. They stay
+  uncommitted, so the lineage's central argument survives -- but its phrasing,
+  "no plan file exists on any ref", became false and is now scoped to v2-v13,
+  with the change stated as forward-only: a future claim about this revision is
+  checkable; every claim about the earlier ones is not.
+- The dispositions are committed; the audit REPORTS are not.
+  `2026-08-15_V1_RC_fresh_blind.md` and the RC-1/RC-2 material remain on no ref,
+  so K's sentence bundling "audit reports and dispositions" was split. What v7
+  claimed -- that the summary was verifiable for RC-3 -- is true now, by the
+  commit rather than by the argument v7 made for it.
+
+The header pin moves from `7352d71` to `17360d1`. Every repository claim was
+re-derived at the new pin first, not only the header: all `file:line` citations
+resolve, all four `gate.ps1` **content anchors** hold (they are content anchors
+precisely because line pointers into that file went stale twice in two commits),
+and the three non-ancestor SHAs are the ones the header already declares.
+
+## DD-20260816-124 -- "At this pin" collapsed two different commits
+
+DD-20260816-123 wrote that the six artifacts are committed "at this pin". The
+pin is `17360d1`; at that commit none of them exist. They exist in the commit
+that introduces the revision saying so, which is necessarily later -- a file
+cannot name the commit containing it, because writing the SHA in changes it.
+
+That is the two-commits defect a previous plan round caught, reappearing through
+a phrase rather than a stale figure. The header now states what "at this pin"
+means, and the two claims about artifacts committed WITH this revision say that
+instead. The three remaining "at this pin" uses are about repository state
+verified at `17360d1` and are correct as written.
+
+## DD-20260816-125 -- --no-merges, and the range derivation pinned by value
+
+Companion to WDD-20260816-068, recorded here because `.github/workflows/ci.yml`
+and `scripts/design_decision_check.ps1` are code-classified.
+
+`ci.yml` enumerates with `--no-merges`. Without it the certification step could
+never pass on a pull request, because `actions/checkout` builds
+`refs/pull/N/merge` and the checker refuses merge commits. Measured: 3
+enumerated / 1 failed without the flag, 2 / 0 with it, on a fixture whose PR
+commits are both compliant.
+
+The residual is stated in the workflow rather than left implicit: content a merge
+introduces alone -- a conflict resolution present in neither parent -- is then
+certified by nothing. DD-20260816-122 already accepted that trade when it chose
+refusal over judging a merge by the union of its parents.
+
+`design_decision_check.ps1`'s `Resolve-BaseRef` takes a `-RefKind` label. It
+resolves the head as well as the base and hard-coded "base", so the
+head-specific failure message was unreachable under `-Strict` -- the mode CI
+uses. Fails closed either way; the message was the defect.
+
+## DD-20260816-126 -- The raw-call check parses instead of matching
+
+Companion to WDD-20260816-069. It is recorded here as well as in the workflow
+log because both were touched, **not** because `scripts/gate.ps1` is
+code-classified -- it is not. The repository's classifier reports `0 code` for
+the commit that introduced this entry: `$proofCodePattern` is `(?i)\.lean$`, so
+a `.ps1` file is workflow-classified. The entry first gave that false premise
+for its own placement.
+
+`scripts/gate.ps1`'s raw-call-site check is now an AST walk over `CommandAst`
+nodes with a non-`Unknown` invocation operator, replacing five generations of
+regex. Measured on a fixture holding every shape from rounds 7 through 11: **21
+real invocations found, 0 false positives**, where the regex missed four and
+fired on prose.
+
+The count was first published as **14**, which came from an earlier 14-shape
+probe rather than from the shipped fixtures; the false-positive half was exact.
+See WDD-20260816-070.
+
+The sentinel exclusion region is deleted. It existed because a regex cannot
+distinguish a call from a quotation of one; a string literal is not a
+`CommandAst`, so the fixtures are invisible to the walk without any exclusion.
+With it go the region-length bound, its `fixtureChars * 3` headroom -- measured
+at 691 characters, about twenty raw calls -- and a liveness assertion an
+explanatory comment could satisfy.
+
+`scripts/design_decision_check_regression.ps1`'s wiring case additionally pins
+the loop body whole, `Set-Variable` rebinding of `$commits`, and the statement
+before the loop. The mutations that previously certified a single commit while
+printing the green sentence are each rejected.
+
+## DD-20260908-127 -- The counting bound divides the logarithm
+
+Date: 2026-09-08
+
+Context:
+
+An external RC-4 audit found that `paper/rmq.tex:808` typeset the classical
+counting bound as
+
+    $\log\binom{2n-1}{n-1}/(2n-1) = 2n - \Theta(\log n)$
+
+Under the paper's base-two convention `\binom{2n-1}{n-1}` is at most `2^(2n-1)`,
+so its logarithm is at most `2n-1` and the whole typeset left-hand side is at
+most 1, while the right-hand side grows linearly. As printed the identity is
+false for every large `n`. `paper/NOVELTY_LOG.md:622` quotes the same expression;
+this audit found that second occurrence, the report named only the first.
+
+Decision:
+
+The quotient goes inside the logarithm --
+`$\log\left(\binom{2n-1}{n-1}/(2n-1)\right)$` -- at both sites. This is a
+typesetting correction to a related-work paragraph, not a change to any claim
+this development makes: the machine-checked lower bound is
+`EncodingLowerBound.lean:1878` with the `4n - (3 log2(2n+1) + 3) <= 2 * bits`
+derivation at `LowerBound.lean:303-361`, and the external auditor independently
+reconstructed that chain and found it correct. Nothing downstream cites the
+malformed form.
+
+The paper is a public claim surface, so the correction is recorded here rather
+than only in the workflow ledger -- `paper/rmq.tex` is code-classified by
+`design_decision_check.ps1`, which refused the first attempt at this commit for
+exactly that reason.
+
+## DD-20260909-128 -- Field 32 claimed an arity its equation did not pin
+
+Date: 2026-09-09
+
+Context:
+
+Capstone field 32 read
+
+    controller_exact_input_boundary :
+      @packedReviewerController =
+        (fun (n left right : Nat) => packedReviewerController n left right)
+
+and its doc comment said the equation "elaborates only at
+`Nat -> Nat -> Nat -> PackedReviewerControllerState`" and that the controller
+"cannot take `xs`, a shape, an oracle, or any further argument". An external
+audit observed that this is false: the statement is a bare eta equation, and eta
+holds for a controller of any larger arity by partial application.
+
+Measured on a four-input controller whose fourth argument genuinely changes the
+result: the unascribed form accepts it, `lake env lean` exit 0 with no errors.
+The field pinned nothing it claimed to pin.
+
+Decision:
+
+Ascribe the type in the statement itself, in both places it appears -- the
+capstone field and its mirror in `RMQ/Validation/EGCPStageA.lean`:
+
+    (packedReviewerController :
+        Nat -> Nat -> Nat -> PackedReviewerControllerState) = ...
+
+The claim is made true rather than the prose weakened, because the property is
+the one the field exists to carry. `rfl` still closes it: `lake build
+RMQ.Validation.EGCPStageA` exits 0 over 198 modules. Anti-vacuity measured: the
+same four-input controller is now REJECTED, `lake env lean` exit 1. The doc
+comment records that the ascription is what does the pinning, with both
+measurements.
+
+This changes no semantic content. Field 32 was and remains a static interface
+statement, not the no-hidden-input theorem -- fields 33 and 34 carry that, as the
+comment already said.
+
+## DD-20260909-129 -- A line-pinned citation drifts for the fourth time
+
+Date: 2026-09-09
+
+Context:
+
+`DD-20260909-128` ascribed a type in capstone field 32 and rewrote its doc
+comment. The comment grew by six lines, which moved
+`packedReviewerArchitectureCapstone_holds` from `:752` to `:760` and broke the
+line-pinned citation in `paper/THEOREM_LEDGER.md`. The aggregate also failed the
+proof-hygiene scan, because the new comment explained eta "by partial
+application" and that scan forbids the bare word `partial` anywhere under `RMQ/`.
+
+Decision:
+
+The prose changes, not the scan. A blunt scan that fails on any occurrence is
+worth more than one carrying exceptions for comments, and rewording costs
+nothing. The citation is repointed to `:760`, and `paper/EVIDENCE_MATRIX.md`'s
+record of this pointer is extended rather than merely renumbered: it had already
+been wrong three times (`:702` -> `:723` -> `:752`), and this is the fourth --
+caused by the round that was repairing an audit.
+
+The general fact, now written where the next person will meet it: an edit
+anywhere ABOVE a line-pinned citation moves it, so any change to a file with
+pinned lines must re-derive them. `check_paper.ps1`'s citation check caught this
+drift and the previous one; nothing else did, and nothing prevents the next one.
+
+Verified: hygiene scan no hits, `check_paper.ps1` exit 0, `lake build
+RMQ.Validation.EGCPStageA` exit 0.
+
+## DD-20260910-PQ1-001: separate physical instruction execution and dense repacking
+
+Context: PQ1 extends RC6 at 4639223bc8130b0ef752270b5cbdd74325abcd60 to a fully charged packed query. Existing E1 loads read a segmented semantic store, while the experiment reads raw numeric cells. Its sparse-count prelude grows with word width, setup specializes code by n, and larger machine operands cannot be accommodated by simply widening the old cell list without damaging the leading space coefficient.
+
+Decision: introduce a separate physical register vocabulary in RMQ/Core/WordRAM/Packed/Primitive.lean. It has raw numeric loads, scalar arithmetic/comparisons and explicit transfers/halt. Preserve the producing instruction and pre-state in each observed transition. Raw physical load success is represented by execution status and a receipt; it never adds an option tag to a full-width cell. Natural-number representatives require separate all-reachable-state width, non-underflow and nonzero-divisor proofs. They are not themselves a bounded-word theorem.
+
+The allocation route prepends a fixed counted metadata bank and densely repacks the complete old allocation at a larger size-only logarithmic width. Metadata includes direct sparse count and size/layout descriptors. Retained old header and padding are deliberately redundant but already counted. DensePacking.lean exposes arbitrary-width chunking, round trip, span and capacity lemmas needed to recover the old logical semantics. Capacity grows by at most (H+1)*W beyond the old allocated bits; constant code/scratch storage has an additional explicit O(W) absorption obligation.
+
+Alternatives rejected: changing E1's historical segmented-load semantics; treating physical read/decoder/controller work as one new macro instruction; retaining the growing sparse prelude; using n-specialized code constants as free metadata; multiplying the old cell count by a larger width. Directly repacking only the payload saves a redundant logarithmic header/padding but entails more old geometry proofs, so complete-old-allocation repacking is preferred initially.
+
+Model basis: arithmetic word-RAM with multiplication, integer division/remainder, Boolean operations and variable shifts. Morin's Open Data Structures section 1.4 explicitly lists the arithmetic/Boolean convention; Aspnes's RAM notes specify register-addressed memory, transfers and logarithmic registers. Exact links, assumptions, proposed width and proof DAG are in docs/internal/packed_query/PQ1_MODEL_AND_PROOF_DAG.md. No native runtime bound is asserted.
+
+Consequences: the complete public theorem is still open. The same new allocation must occur in space, execution, width and provenance conclusions. The fixed program, every metadata word, operand and rare route must be proved before a public alias is added. The RC6 charged-trace/probe claims remain separate. Evidence: frozen PQ1 matrix, manifest-verified experiment copy, independent source inventories, and the primitive module's initial narrow Lean elaboration.
+
+## DD-20260910-PQ1-002: concrete metadata bank and execution calculus
+
+PQ1 now defines 174 numeric metadata words: 42 scalars, 23 regular descriptors of four fields and eight interior descriptors of five fields. Presence counts remain separate from bit lengths so empty logical sentinels survive. The word width is 32+8*packedReviewerCellWidth n, replacing the initial exploratory 64*(log2(n+2)+1) formula after source inventory exposed directly reusable old-width bounds. Both choices are logarithmic; the selected family directly provides strict old/new width separation and little-o closure. Its adequate bound for every metadata/arithmetic/register value remains a proof obligation, not a consequence of the space theorem.
+
+Allocation.lean defines shapeMemory/buildMemory and proves metadata length, all-size logarithmic width/endpoint capacity, exact same-object allocation capacity with LittleOLinear residual, and absorption of arbitrary fixed program/scratch word counts. No metadata value-fit premise is used by the allocated-bit-length proof. The later width theorem must separately establish that all numeric headers fit; this keeps an absent width proof visible instead of building it into a certificate hypothesis.
+
+The physical calculus uses actual Transition lists in RunsTo. run_add composes those lists on one program and memory; run_read_at retains transition index, prefix state, instruction, operands and physical reply. run_eq_of_agree inducts over the first actual run, including attempted absent reads; it does not invoke a legacy static-footprint equality. Independent source audit of Calculus.lean SHA256 61c1bb9f5c14f4f40fb3f1f13d2d3a35967b8a90a3fa97639cd8d54ba0ac9f53 found no actionable discrepancy; final narrow compile passed without warnings. Full query adequacy and width are not established by this generic calculus.
+
+Alternatives rejected: erased occurrence witnesses, membership-only provenance, synthetic schedules, and conjoining capacity on a different memory. Consequence: the uniform program's block proofs can preserve actual value and receipt dependencies while reusing the canonical old-memory semantics. Evidence and live downstream obligations are in the PQ1 acceptance matrix and focused worker reports. This is a construction checkpoint, not public theorem acceptance.
+
+## DD-20260910-PQ1-003: numeric span recovery and finite structured assembly
+
+Span.lean proves that the numeric decoder on the new repacked allocation returns exactly the old cell's numeric option for every old-cell index. The executable loader accepts only scalar geometry, numeric memory and index. A zero-length span returns zero without a read; a missing required cell returns none; a crossing masks the second fragment before shifting, so no double-width concatenation is an executable input. Its positional plan/backing theorem is expressly functional, not yet a primitive execution receipt theorem. Lead inspection reconstructed its same-allocation chain through denseCells, densePad, uniform_flatten_slice and numeric bit-slice identities. The final narrow compilation was clean.
+
+Structured.lean introduces a finite assembly source with scalar actions, scalar branches, sequence, exit and compile-time finite repetition. It has a separate compositional source evaluator and compiles to the existing raw physical instruction vocabulary. Repetition is statically expanded; there is no primitive loop evaluator charged as one instruction. Source-level calls may be inlined during construction. This deliberately accepts larger fixed code and a generous fixed instruction budget to simplify whole-program proof; code and scratch counts still require explicit accounting and width bounds.
+
+Alternatives considered: retaining the prototype's acyclic subroutine ABI, or using a charged structured interpreter as the final machine. A primitive compilation theorem permits ordinary first-order execution without proving a separate stack ABI initially. Static expansion is only permitted for proved fixed bounds (rank/select8, windows4, fringes33 and interior chunks8), never for an input-dependent bound. The compiler correctness theorem and complete source-to-logical RMQ refinement remain open; the existence of syntax or a source evaluator proves neither.
+
+Evidence: Span.lean SHA256 70b0999b80f2a7a97933e8c4663b552da845b3b1467aba3c731fe23f05df04b2, its frozen leaf report/matrix and direct value/absence/crossing consumers; Structured.lean's initial narrow compile passed. Public query claims remain unchanged.
+
+## DD-20260910-PQ1-004: complete metadata width and guarded scalar source
+
+Width.lean proves a common bound 64*Q^2 for every serialized metadata field, where Q=2^packedReviewerCellWidth n. This fits strictly below 2^(32+8*oldWidth). The coverage follows the actual 42 scalar entries, 23 four-field descriptors and eight five-field interior descriptors. Empty logical sentinels require count<=2*bits+2; count<=bits would be false. Sharper per-field widths would add proof work without improving the selected physical format, so the conservative envelope is used. The same construction then provides all-word fit, allocation-length fit including its first missing address, and valid-endpoint representation. The independent allocation_width_requiredFacts consumer retains the exact allocation, width, residual and endpoint domain. This proves storage representation, not all arithmetic intermediates.
+
+Guard.lean initializes only left,right,n and zeros, and checks left<right and right<=n before the valid body. Both source evaluation and the actual compiled primitive run reject invalid intervals with no reads, on arbitrary memory. The outer mathematical encoding check separates arbitrary Nat inputs from representable machine inputs; every valid query fits. Source program size is body.size+9 and the appended halt gives a body.size+10 fixed budget. The final whole-query program must provide the concrete body and its adequacy.
+
+Scalar.lean lowers truncated subtraction to comparison/branch/ordinary subtraction, with subtraction taken only in the non-underflow branch; min uses scalar comparison and moves. RegularLocate.lean consumes five descriptor scalars and returns presence, bit position and exact length in19 source instructions. It retains empty sentinel presence and computes truncated remaining bit length using the checked subtraction block. Alternatives rejected: uncharged Nat subtraction semantics, inferring presence from nonzero span width, and preinitializing source geometry in the input registers. Metadata setup is separately charged and will install a fixed bank at registers16..189.
+
+Evidence: Width.lean SHA25603785ecfed5e168e2e5ad6bb511de2d8132bc8d72770d6a91835ebf1270e83d5, PQ1_WIDTH_REPORT/MATRIX, narrow Guard/Scalar/RegularLocate checks, and Compiler.compile_with_halt consumed by guardedProgram_invalid. Neither these construction leaves nor their green checks close the whole-query capstone. Remaining joins include metadata location, logical read decoding, both selects, all LCA paths, final rank and all reached arithmetic/state widths. No public claim is changed at this checkpoint.
+
+## DD-20260910-PQ1-005: compiled setup and direct logical spans
+
+Compiler.lean closes the independent-source-to-primitive join by syntax induction. Exact HostedAt segments retain RunsTo transition lists, data equality, ordered receipt equality and a running continuation PC. Sequential composition stops on halt/fault; a nonzero branch's forwarding jump runs only when the arm remains running. The standalone end-of-code argument derives fixed-size adequacy; an appended exit derives actual output-halt behavior. FieldsFit includes action encodings, branch/jump tags and both dormant arms, while base+size bounds resolved PCs. Alternatives rejected were source evaluation defined by compilation, assumed adequate fuel, or requiring early faults to reach the end PC. Lead inspection reconstructed the core induction and exact public consumers at SHA2560c527f0cd9db8be2860bcf1815826bbeed05e22d3660e450285f70dddfaeff60. Runtime arithmetic safety is a separate canonical obligation.
+
+SpanAssembly.lean implements span decoding in22 fixed source instructions using14 registers, with a23-instruction halted wrapper. Its proof preserves actual short-circuit receipts, including missing-first and missing-second cases, and every-prefix register frame outside the bank. Zero spans issue no read. Full-width mathematical source masks are not asserted to fit machine words; the canonical logical spans use length<wordWidth. Six direct primitive fixtures check exact results/steps, including all-ones raw cells. Setup.lean installs the174 metadata fields with174 constant/load pairs into registers16..189, using register6 for addresses. Its standalone and hosted primitive theorems retain exact fields, receipts, frame and post-setup register fit. A changed metadata word changes the actual loaded destination. No runtime metadata is injected by a callback or free initialization.
+
+The logical-read implementation now selects direct repacked bit spans: use the old absolute bit location plus metadataWordCount*wordWidth and decode directly in the new allocation. The initial alternative recovered up to two old cells before decoding; that remains a proved helper but adds redundant decoding and physical attempts. The direct span routine is now independently proved and compiled, making the simpler path available. The allocation and old logical geometry stay identical. Physical receipts name new cells and are not claimed equal to old cell receipts; the forthcoming universal theorem must preserve each logical request's numeric value and actual bit length, and ordered physical receipts must come from the executed direct reads. In particular, empty sentinels remain present even when their length is zero, and repeated logical reads remain repeated executions.
+
+InteriorLocate.lean supplies27 fixed source instructions for a component descriptor: it checks the component range, derives entry/chunk coordinates and computes the ragged final chunk length. It does not assume one-word entries or concatenate independently chunked component stores. Its generic source proof, the metadata-source selection, and the direct canonical logical-span theorem feed the next join; none by itself proves whole RMQ correctness.
+
+Evidence: PQ1_COMPILER_REPORT, PQ1_SPAN_ASSEMBLY_REPORT and PQ1_SETUP_REPORT include exact propositions, frozen local rows and checked identities. The lead-owned invalid primitive consumer and regular/interior scalar location proofs compile cleanly. Program/source widths, the full query controller, same-allocation public capstone, final replay and blind audit remain open. These decisions change no ADD/process rule, so the existing workflow-ledger entry remains sufficient.
+
+## DD-20260910-PQ1-006: canonical raw reader, source safety and ragged windows
+
+The fixed reader now consumes the charged register bank through a1035-instruction descriptor dispatcher. It returns presence, old absolute bit position and actual logical length for every segment/index. The proof covers all23 segments and the eight interior components in their actual first-match order. Its frame theorem keeps the bank and caller inputs unchanged. A generic stored-field theorem precedes the canonical metadata specialization; no shape or descriptor function is called by the source interpreter. The charged setup-plus-locator consumer uses1383 instructions and the literal buildMemory allocation.
+
+LogicalSpan proves arbitrary repacked bit-span recovery and universal numeric-value/actual-length parity with the canonical global ReadStore on shapeMemory. The source reader adds174*wordWidth to the old logical position and runs the22-instruction span block. Present empty spans return packet1 and length0 with no raw load; absent logical words return packet0/length0. Every present canonical span decodes successfully, derived from counted old-plan address bounds and dense repacking, rather than assumed as a readiness premise. The1068-instruction reader plus halt has a1069-instruction actual-run consumer, including exact result packet, length, ordered raw receipts and caller frame. Root independently reconstructed this join and checked PhysicalRead with the worker's final locator artifact.
+
+ReadInterface makes expected raw receipts part of reader correctness. Logical trace expansion preserves order and multiplicity, but deliberately projects only read events; every caller using that expansion must also prove ReadOnlyTrace. This prevents an erased rank/select/synthetic logical event from supplying free execution evidence. Receipt order alone does not prove the domain algorithm: callers separately prove returned values and source control state. The direct physical-read result remains computed by loads from shapeMemory, the same object counted by Allocation.
+
+Safety adds an explicit source predicate carrying result bounds, positive division/modulo divisors, non-underflow subtraction and bounded shifts at each actually executed scalar action. Its structural compiler theorem preserves actual value, reads and budget while proving Instruction.Safe on every indexed executed transition and State.Fits at every fuel prefix. Dormant encodings remain a separate FieldsFit obligation, so selected-branch safety cannot hide an oversized dormant operand. The canonical loader and whole-query numeric proofs must derive these source obligations; the public capstone may not assume them. Lead inspection checked the predicate expansion and same-run compiler composition; PQ1_SAFETY_REPORT/MATRIX quote the exact propositions and edge controls.
+
+The larger physical width permits a simpler four-logical-word window: concatenate numeric words using their actual returned lengths, then take chunks with scalar shifts/remainders. RaggedWindow proves the value equation for arbitrary four bit lists, a strict capacity bound when each length is at most oldWidth, and the six-action source/seven-instruction halted realization. This replaces the experiment's four-part fragment assembly and avoids its first-three-full-word concern. It does not concatenate two full physical cells. ChunkArithmetic proves scalar table-slot/rank arithmetic with guarded natural subtraction; rank/select/fringe/interior source then inlines these blocks. Interior entry width is at most seven BP widths, so the source uses seven guarded copies, sharpening the earlier exploratory eight-copy bound in DD-PQ1-003. The canonical entry-fold proof must consume that bound.
+
+Alternatives rejected: treating old/new physical receipt lists as identical, inferring logical presence from bit length or value, installing geometry through free register initialization, using a semantic reader callback, dropping non-read events without a trace-class proof, or replacing canonical numeric safety by an interface hypothesis. Consequences: the concrete reader and generic safety leaves now feed the fixed full controller. Rank/select/interior/fringe correctness, canonical arithmetic safety, the public capstone, final replay/gates and fresh blind audit remain open. The source modules state this boundary explicitly. No workflow rule or public headline changes here.
+
+## DD-20260910-PQ1-007: fixed whole source and actual finite scratch accounting
+
+QuerySource now assembles one closed program: the existing charged endpoint guard,174 metadata loads, two close selects, close LCA and final close rank. Shape and list values occur only in preprocessing. Direct serialized sparse count replaces the experiment's growing sparse-count scan. SelectSource covers long, sparse and both dense-word routes; InteriorSource covers all component reads and local/global macro paths; FringeSource uses the proved ragged window,33 guarded table iterations and explicit left-biased candidate merging. The seven-copy interior fold concatenates fragments by shifting and adding at their actual lengths. This algebraically convenient choice replaces the experiment's disjoint-bit OR; the semantic entry-fold proof must establish exact concatenation. CandidateProof already proves the scalar merge agrees with bpCandidateMerge?, including equal-score left retention independent of positions.
+
+The actual queryRun executes queryProgram at queryBudget=queryBody.size+10. A generic-body compiler consumer proves source/result/ordered-read equality at that budget; the concrete consumer instantiates it without reducing a huge closed program in the kernel. Invalid mathematical intervals are rejected by the same primitive guard, and the total Nat wrapper has a separate representability check. Closed source-size evaluation currently reports837572 instructions. This readout is not a canonical valid-query correctness or word-safety proof, and the symbolic budget theorem remains the trusted accounting interface until its numerical equality is checked separately.
+
+Scratch.lean inventories actual instruction destinations, proves source inventory preservation by compilation, and proves register frames for every run prefix. Accounting.lean uses max(3,querySource.maxDestination+1) registers plus one PC and two status words. Its theorem establishes that every register outside this finite bank stays zero on every prefix of the actual query program, even for arbitrary memory and faults. Thus an infinite mathematical function used to represent registers does not silently introduce uncounted mutable storage. The evaluated register bank has8271 words and the full scratch count8274. Program words are the literal flattened primitive encodings. The capacity theorem charges this fixed code and finite scratch together with buildMemory, using allocationWithMachineRho and its checked LittleOLinear proof.
+
+Alternatives rejected: arbitrary code/scratch constants without a connection to the final program, counting only the final register state, assuming unused registers remain zero, and deriving a source trace from the compiled run by definition. Program identity is fixed by closed definitions; source evaluation is independent and the generic compiler supplies its actual execution refinement. Generic symbolic lemmas avoid unfolding hundreds of thousands of compiled instructions merely to prove program length; a failed initial closed simplification exposed that proof-engineering issue and was replaced, not retried unchanged. Narrow QuerySource, CandidateProof, Scratch and Accounting checks pass. The width fit of every reachable value and dormant code operand, valid-query semantics, final public composition and blind audit remain open; complete capacity alone closes none of those rows.
+
+## DD-20260910-PQ1-008: actual-length window and failure-preserving interior folds
+
+WindowProof now connects all four source reader invocations to the exact reference window and ordered physical receipts. The induction records each reply's numeric value and actual length, substituting an empty bit list only for an absent reply. The final six scalar operations consume those values and lengths through raggedWindowValue_eq_bits. Its canonical appended-halt consumer instantiates logicalReadBlock on shapeMemory and proves the same actual run's value, halt status, ordered expanded reference trace, caller frame and4319-instruction budget. It does not require full first/second/third words. This closes the window-value concern recorded in DD-PQ1-006 without changing the source algorithm.
+
+InteriorReadProof uses an optional accumulated bit list as a proof invariant for the seven guarded copies. A missing reply makes the invariant absent, but does not terminate the source loop or omit subsequent scheduled reads. When the accumulator is present, its numeric value and exact length agree with registers711/712; register713 records presence. The source shifts and adds each successful fragment at that length. The completed fold is proved equal to collectPayloadWords over the consecutive requested words. The invalid-index arm retains the one dead-address logical request. The generic reader theorem is then identified with packedInteriorReadNatOf's actual flat-store execution and its trace, and the canonical8698-instruction consumer discharges every component's seven-chunk bound from its proved width. The full navigator still needs to compose this reader with its table parameters and all candidate branches.
+
+Alternatives rejected: stopping the loop on a missing component (which would change ordered receipts), assuming every component read succeeds, treating absent and present-empty replies as identical, using fixed-width concatenation for ragged words, and proving only an aggregate receipt bound. Reference bit lists and FlatStoreComputation occur only in proofs; source code still consumes scalar registers and raw physical reads. Source factoring names existing instruction sequences and preserves order, branches, registers and size. Compositional proofs quantify a repetition count and specialize it only after the generic join, avoiding proof terms that force the kernel to unfold every copy. This is a proof-engineering boundary, not a new runtime instruction or a reduced acceptance endpoint. Broad final gates remain reserved for the actual public capstone candidate.
+
+## DD-20260910-PQ1-009: source composition and exhaustive static instruction fields
+
+The complete fringe proof now composes the actual charged rank seed, four-word window and 33 guarded table-fold copies. Its value is the existing reference candidate, and its receipts are the ordered physical expansion of that reference trace. ReadOnlyTrace separately proves that the expansion has discarded no non-read primitive. The full LCA proof composes same-block and cross-block branches, including candidate saves, the conditional interior range and left-biased merges. It currently consumes an exact interior-navigator interface; that interface must be discharged by the complete canonical navigator, not exposed as a premise of the final capstone.
+
+QueryProof then composes both selects, absence guards, LCA, final rank, the174 charged metadata loads and validity guard. The actual queryRun result/receipt/budget theorem follows through the existing primitive compiler, retaining the same shapeMemory argument. This is a checked conditional join while the canonical interior producer and whole-controller safety are completed. It does not change the public status of PQ1. Source factoring introduces named compile-time subblocks and changes only association of existing sequences; no new primitive or semantic callback is added.
+
+QueryStatic introduces a proof-side maximum over every encoded scalar field in the structured syntax. Action fields use the literal Instruction.encoding, so operation tags and all operand constructors are included. Both conditional arms are inventoried even when dormant. Resolved branch targets are handled by Block.compile_fits with a separate end-PC bound. The source maximum is checked as8270, queryBudget as837572, the destination-based register bank as8271 and scratch as8274. The floor32 in wordWidth suffices even for empty input. These are kernel-checked equalities, superseding the diagnostic readouts recorded in DD-PQ1-007. The literal program encoding length is bounded by five times the actual program length, while Accounting still charges its exact length in the residual.
+
+Alternatives rejected: enumerating only dynamically executed operands, omitting operation tags, materializing the837572-instruction list to prove its length, or assuming a large code-address constant without linking it to the compiler. The structural maximum and compiler theorem separate scalar-field inventory from resolved-PC geometry while certifying the same fixed program. This proof technique changes neither the ISA nor the payload representation. Actual reachable arithmetic and register safety remain separate obligations; static fit and a fixed budget do not establish them. No ADD/process decision changed.
+
+## DD-20260910-PQ1-010: canonical semantic discharge and compositional controller safety
+
+The full interior navigator now proves the option-valued minimum on the canonical global store through every local/global span and macro route. Four ordered summary reads include maxRel presence even though its numeric value does not decide the minimum. The same seven-chunk entry reader remains failure preserving: an absent reply does not suppress later specified reads. The canonical479411-budget compiled run pins all three candidate registers, candidate decoding, ordered physical receipts, frame and positional read provenance. Root QueryCorrect consumes its exact source/frame interface through all LCA branches and both selects/final rank to close ordinary-list primitive query semantics without a canonical correctness premise.
+
+QueryReference and QueryObservations separate this mathematical semantics from word safety. They prove total Nat wrapper equality, leftmost answers, actual halt/result, public-trace physical expansion and read-only status, supplied-memory whole-Run agreement, exact category partition and the fixed837572 step bound on the same allocation counted with literal program/scratch storage. Unbounded invalid mathematical endpoints may be used in the natural-number semantic theorem; the final word-machine safety theorem will quantify representable endpoints. The outer encoding check retains value-level status and does not acquire a primitive parsing-cost claim.
+
+For safety, RankSafety uses masked chunk values and the invariant accumulator≤index*c, obtaining contribution≤c even for arbitrary numeric table replies. Its whole-rank clamp plus logical-reader packet bounds yield output≤E and discharge all canonical wrappers from Fits and MetadataMatches. This avoids duplicating semantic table validity inside numeric safety. SelectSafety separately derives packet≤2*n from the canonical selected close, giving the query controller a bound stronger than mere representability.
+
+LCASafety preserves a small caller invariant (canonical metadata, close bounds, block quotients and constant one) across checked write frames. Source safety composes at the actual states produced by preceding blocks, and running status comes from already checked source semantics. Left/right fringe parameters and interior range inputs are derived from close≤2*n. Intermediate block-end sums use the polynomial envelope, while rounded-down products satisfy `(close/B)*B≤close`. Final packet formation `(position-1)+1` is at most max(position,1), so it needs no stronger candidate-margin premise. The complete LCA source is now safe conditional only on the two precise canonical fringe/interior safety interfaces; their producers must discharge these before any full-capstone claim.
+
+Alternatives rejected: treating static field fit as runtime arithmetic safety; assuming that any fitting selected close leaves enough headroom for additions; weakening an absent-read path; adding semantic values to machine inputs; or expanding nested concrete evaluators during composition. Generic source/evaluation boundaries and explicit register frames preserve the unchanged primitive program while keeping proof checking small. Evidence is the clean QueryCorrect/QueryObservations and complete LCASafety checks, IC/RS/SS source and independent-consumer checks, and the exact propositions in the PQ1 ledger. The remaining work is canonical fringe/interior/query safety and public verification. No ADD/process policy changed.
+
+## DD-20260910-PQ1-011: explicit final certificate and independent public consumers
+
+Capstone packages 30 propositions about the same buildMemory, wordWidth, queryProgram, initialState and primitive run. Complete capacity charges the literal flattened instruction encoding and the actual finite register bank plus three control words; it does not substitute the upper bound five times the program length. The word-width statement includes a logarithmic lower bound as well as the existing upper bound. Separate fields expose invalid-input rejection, every prefix, every indexed transition, failed and successful receipt backing, ordered physical expansion of the public logical trace and agreement on the complete actual run. The composition helper currently takes canonical runtime safety as its only remaining premise. Until that premise is discharged, it is not the unconditional theorem or a public milestone.
+
+PackedQueryContract writes the expected propositions as explicit client theorems using the actual planned public proof alias. Each field has a separate stable check name. This keeps exact construction arguments and endpoint domains reviewable and gives the committed replay runner a precise failure surface. A generic consumer with an arbitrary certificate parameter, inferred projection types, a disconnected sibling theorem or theorem-name-only trust inventory would not establish the advertised public dependency and were rejected. Proof observations such as transition lists remain outside the counted mutable bank; all register coordinates outside that bank are proved zero at every fuel prefix.
+
+The final fringe safety proof also benefits from factoring the existing fold initializer into its range and state phases. This preserves every instruction, register and branch in order. The direct FringeProof consumer and QueryStatic both pass after the factor, retaining budget837572, maximum field8270, register bank8271 and scratch8274. These names expose local proof boundaries without introducing a runtime macro. Runtime fixture evidence and the associated validation-process decision are recorded in WDD-PQ1-002. Unconditional safety, public export, full replay and final audit remain open at this entry.
+
+## DD-20260911-PQ1-012: canonical runtime safety discharged and the unconditional capstone exported
+
+Context: DD-20260910-PQ1-011 recorded that the composition helper still took canonical runtime safety as its only premise, so the unconditional theorem was not yet a public milestone. The worker's final state, committed unchanged as 8910d53 after it stopped on a usage limit, discharges that premise. FringeSafety and InteriorSafety prove the CanonicalFringeSafety and CanonicalInteriorSafety interfaces that LCASafety consumed, WindowSafety supplies the window block, and QuerySafety.queryRun_execution_safe proves the whole-query safety bundle for the actual queryProgram run on buildMemory at every representable endpoint pair. fullyChargedPackedQueryCapstone_holds applies the composition boundary to it and has no premise. RMQ.Headlines.succinctRMQFullyChargedPackedQuery exports it through RMQPaper with the same identity.
+
+Evidence: the coordinator copied the exact worker state to a separate snapshot and rebuilt it from source over a clean copy of the RC6 audit cache, so every new packed module compiled fresh; RMQPaper and the default target built. #print axioms for the capstone, alias and key initializers reports only propext, Classical.choice and Quot.sound. A ten-lens independent audit with three-way verification of every major finding found no false, conditional or sibling-object field. Its eighteen major findings concerned commits, verification, public prose and governance; DD-20260911-PQ1-013 through -019 and WDD-20260911-PQ1-003 through -010 record their repairs.
+
+The bundle consumed by the capstone keeps its historical name RankExecutionSafety even though it is the whole-query safety statement: program-field fit, final-state fit, safety of every indexed transition, fit of every fuel prefix, and address and reply width of every receipt. Renaming a consumed declaration this late was rejected as churn with no semantic content. Editing DD-011 in place was rejected because ledger entries record decisions as they were made. Several earlier PQ1 entries (DD-20260910-PQ1-004 through -011 and WDD-20260910-PQ1-002) have numerals joined to the preceding word, such as budget837572 or with7641 instructions; they should be read with a space, and they are left unrewritten for the same reason.
+
+## DD-20260911-PQ1-013: direct scanWindow result, reply and guard-cost certificate fields
+
+The coordinator audit (P1-F1/F2, L6a-F4, L9-04) found three gaps. The only certificate path from the actual run to the independent scanWindow specification went through the body of queryNat. No field stated the endpoint guard's rejection cost. Successful physical replies were implied only by halting. Three fields are appended inside the PQ1-REPLAY markers, and no existing field statement changes. specResult states that for every valid range the actual run on buildMemory returns some (scanWindow xs left (right - left) + 1). noFailedLoads states that for every valid range every receipt of that run has a reply. invalidGuardSteps states that every invalid range is rejected within six executed instructions.
+
+The proofs are in the new module QueryCertificate.lean, imported only by Capstone. queryRun_scanWindow is derived from queryNat_exact, queryRun_result, valid_inputs_encode and the definition of queryNat; it assumes no reference value. run_reads_reply_of_not_fault is generic: a load with no reply sets the fault status and a stopped state takes no step, so a run whose final status is not fault logged no failed load. queryRun_reads_reply then follows from queryRun_halts for every list and endpoint pair, so the new field's validity premise is not used. guardedProgram_invalid_steps proves, for every body and memory, exactly four steps when left is at least right and exactly six when left < right but right > n. queryRun_invalid_steps instantiates it, and the field states the uniform bound six.
+
+Alternatives rejected: a result field stated through queryNat or the RC6 reference, which keeps the unpinned indirection; the whole budget as the rejection bound, which is vacuous for a guard; failed-load evidence from fixtures only; and adding the generic lemmas to Primitive.lean or Calculus.lean, which would rebuild the whole packed closure. Consequences: consumer checks checkC31-C33 and replay cases C31-C33. The certificate stays a candidate, and no prose states its field count.
+
+Evidence: the modules, RMQPaper and the default target build. #print axioms for the new theorems and checks reports only propext, Classical.choice and Quot.sound. Changing the specResult statement from + 1 to + 2 (R01) makes the producer fail with one type mismatch on the specResult initializer line.
+
+## DD-20260911-PQ1-014: definitional pins for the certificate vocabulary
+
+PackedQueryContract restated every field in the producer's own vocabulary. A changed definition of, for example, Instruction.category, Instruction.Safe or queryNat would change the producer and every check together (audit P1-F1/F2). The consumer now carries 38 pins, each spelling out the complete body of one small semantic definition reachable from the field types: Memory, Registers and Program; the shapes of State, Receipt, Transition and Run; Registers.write; the arithmetic and comparison evaluators and codes; Instruction.category, operands, encoding, Fits and Safe; State.writeNext, execute and step; both equations of run; Run.reads, categories, steps, result and categoryCount; State.Fits; inputRegisters and initialState; encodeInputs and queryNat; ValidRange, LeftmostArgMin, optionNatPacket and LittleOLinear; ReadOnlyTrace and TraceEvent.isReadWord. All are rfl except the two evaluators and the operand list, which need case analysis followed by rfl in each case. A pin whose right side matches on a constructor also fixes the constructor set.
+
+Unpinned definitions are fixed by fields. queryBudget, queryRegisterCount and queryScratchWords are fixed by numerals. wordWidth, allocationRho and queryCompleteRho are bounded by the width, capacity and little-o fields that constitute the claim. buildMemory, metadata, queryProgram, cartesianShape, queryTraceResult and logicalTraceReads each sit opposite the pinned machine's own observation in result, halt or orderedLogicalRefinement. scanWindow is fixed on valid ranges by natContract and specResult together with leftmost and the uniqueness of the leftmost minimum. Core List, Option and Nat functions are trusted. Rejected alternatives: pinning construction data such as queryProgram, which would duplicate the construction in the client; pinning by printing definitions; relying on field mutations alone.
+
+Negative controls show that Instruction.Fits at wordWidth 0 rejects an operand equal to the word capacity as a register, a jump target and an immediate; a positive control accepts the largest representable immediate.
+
+Evidence: with Instruction.category's non-load arms collapsed to control, the producer and RMQPaper built in 268 s and the consumer failed only at pinInstructionCategory. After byte-exact restoration and a 254 s rebuild, the consumer passed. Collapsing every arm, or mapping Run.categories to control, fails the producer at Calculus.lean:288 (CalculusExamples.successfulLoad). Dropping the shift condition of Instruction.Safe fails it at Safety.lean:203. None of these three is a collapse case, and no other pin was collapse-tested by a build.
+
+## DD-20260911-PQ1-015: array-indexed evaluator for executable validation
+
+The runtime fixtures executed run on the 837,572-instruction list program, fetching by list index at every step. ArrayRun.lean defines stepArray and runArray with the same bodies over an Array. It proves stepArray_toArray and runArray_toArray: runArray memory program.toArray fuel s = run memory program fuel s as whole Run values, including the final state and every transition and receipt. PackedQueryRuntime builds queryProgram.toArray once and executes every fixture with runArray. S02 and S05 are also executed by run itself and compared on result, final status, steps, categories and receipts. RMQ.lean imports the module, so the default build checks the equality; no proof of the contract uses it. In isolation on this host, one 16,358-step run took 42 s through run and 5 s through runArray.
+
+Alternatives rejected. An array register file: every transition retains its states, so each step would copy the register array. A compiled executable: it would compile the whole import closure to C. An unproved fast evaluator: it would not certify the run the fixtures claim to observe. Registers remain closures. Consequence: the full runtime registry is now dominated by buildMemory in the Lean interpreter, not by execution.
+
+## DD-20260911-PQ1-016: route-asserting runtime fixtures and a runtime negative control
+
+S01-S11 keep their IDs and semantics. Every machine fixture now also checks that its literal answer equals the scanWindow specification and that no receipt lacks a reply; rejected inputs are checked for the exact guard step count (four or six).
+
+Four positive fixtures are new. S12 is the empty interval [2,2) on a four-element list. S13-S15 use [9, 7, 8, 6, 5, 2, 8, 7, 6, 2, 4, 9], whose element closes span three summary blocks; expected answers were derived by hand:
+- S13 = [1,11) with index 5, where the interior-block candidate beats the equal value in the right-fringe block;
+- S14 = [6,10) with index 9;
+- S15 = [4,8) with index 5.
+Routes are asserted from two independent sources, never from the machine: the shape, using the RC6 controller's block comparison as in the classic validation, and the RC6 reference trace's segment-20 interior read count. That count is 18 for S13 and 0 for S14 and S15, and S12's reference trace is empty. N01 ([0,4) on [4, -3, -3, 8], expected index 2 where the leftmost minimum is 1) runs only by explicit selector and fails with its result mismatch. Each distinct list is preprocessed once.
+
+Infeasible families, with the exact obstruction:
+- Cross-macro interior: first occurs at n = 1000 (blocksPerSuper squared blocks per macro).
+- Whole middle macro, the only route that reads the global interior tables: first fits at n = 3456, while buildMemory already takes 60-169 s at n = 24 in the interpreter.
+- Nonzero sparse exception count: impossible for n < 2^96, because the local stride max 1 (w / (ell * ell)) is 1 whenever the select word parameter w = log2(2n) + 1 is below 98.
+- Nonzero long count: needs more than 13,000 elements.
+These routes rest on the universal theorems.
+
+Alternatives rejected: a route read from machine registers (circular); an increasing list for cross-block cases, where the answer is always the left endpoint; a first 24-element cross-block list, replaced after measurement by the 12-element list, which needs fewer blocks and less preprocessing.
+
+## DD-20260911-PQ1-017: absent-read reader model and failed-load logging
+
+The readerReceipts docstring now records the model. A request with no numeric span (an absent logical word, or a segment or index outside the layout) or with a zero-length span makes no physical load; this is a modelling choice, not a suppressed failure. Otherwise every primitive load the reader issues is listed. A load outside the allocation faults the machine and is still logged with no reply. queryRun_reads_reply shows that the canonical query performs no such load for any endpoints. This addresses audit P3-5, L3-F1, L6a-F2 and L9-02. The documentation lane corrected the review packet's wording about receipts preserving missing replies (DD-20260911-PQ1-019). DensePacking.lean line 83 replaces an unnecessary simpa by simp (linter), which clears the only new-code warning.
+
+## DD-20260911-PQ1-018: primary authority for the unit-cost instruction set, with division as an explicit assumption
+
+Context: DD-20260910-PQ1-001 froze the nine-constructor instruction set before any execution proof. It justified unit-cost multiplication, division, remainder, variable shifts and bitwise operations only by secondary sources, Morin's Open Data Structures (Section 1.4) and Aspnes's lecture notes, and cited nothing for variable shifts. The commission asks for justification against primary literature. The model is unchanged. This entry adds verified primary authority and records exactly where it runs out. The justification is added after the freeze, and this entry says so rather than presenting it as freeze-time reasoning.
+
+Sources, read in full text unless noted:
+- Cook and Reckhow, JCSS 7 (1973): a RAM with load-constant, add, subtract, indirect load and store and a conditional transfer, under a cost function that may be identically one. It deliberately omits multiplication, and its registers are unbounded.
+- Fredman and Willard, JCSS 47 (1993): b-bit words, unit-cost addition, subtraction, multiplication, comparison and AND, with the item count at most 2^b. Division appears only in a flagged extension. The paper warns that unit cost on operands far longer than the inputs is an abuse.
+- Brodnik, Miltersen and Munro, WADS 1997 (BRICS RS-97-12): the trans-dichotomous basic set is indirect addressing, conditional jumps, addition, subtraction, Boolean operations and shifts; multiplication is left out of it.
+- Andersson, Hagerup, Nilsson and Raman, JCSS 57 (1998), author preprint: w >= log n; a shift by a distance held in a second word; the conservative requirement that intermediate results fit in w bits.
+- Hagerup, Miltersen and Pagh, J. Algorithms 41 (2001), accepted version: the multiplication model (addition, Boolean operations, shifts, multiplication), deferring to Hagerup's STACS 1998 survey for the detailed word-RAM definition. Only the survey's abstract was read.
+- Patrascu and Thorup, FOCS 2014 (arXiv version): the word RAM models what can be implemented in C, word operations are unit cost, and w >= log n.
+- Mehlhorn and Sanders, 2008 textbook, Section 2.2: lists integer division and remainder, with multiplication, shifts, Boolean operations and comparisons, as one-step instructions on logarithmic-size words.
+- Andersson, Miltersen and Thorup, TCS 1999 (BRICS RS-96-30), with Thorup, SODA 2003, and Miltersen, ICALP 1996 (abstracts only): the AC0 and Practical-RAM restrictions, which exclude multiplication.
+
+Decision: the model is a conservative unit-cost word RAM with w = Theta(log n). Instruction.Safe proves every executed result below 2^w, as in the conservative rule of Andersson et al. and the caution of Fredman and Willard. Addition, subtraction, multiplication, Boolean operations, variable shifts, indirect load, jumps and comparisons have primary backing. Integer division and remainder are an additional assumption. No verified research paper includes them in its standard word-RAM instruction set; the C-oriented word RAM of Patrascu and Thorup supports them by implication, and Mehlhorn and Sanders list them explicitly. The program needs division, because the span decoder divides a bit position by a cell width held in a register (SpanAssembly.lean). Multiplication returns no high product word. No claim is made for AC0-only instruction sets or the Practical RAM.
+
+Alternatives rejected: presenting division as uncontroversially standard, which the verified sources do not support; attributing an instruction list to Hagerup's 1998 survey, whose text was not read; and removing division now, which would change the frozen program and would need either multiplication by a reciprocal with a high product word the ISA lacks or size-specialized shifts. A division-free variant remains a possible later strengthening. Consequences: public surfaces and the paper state division and remainder as an explicit model assumption.
+
+## DD-20260911-PQ1-019: present the packed primitive query as a separate candidate theorem
+
+Context: the PQ1 export put the alias on six surfaces with wording that overstated or blurred it: 'charges the complete query', 'preserving repetitions and missing replies', glued numerals and a certificate field count. Twelve other current-fact surfaces still said that instruction-level charging was future E1 work, contradicting the export. What matters to a reader is that PQ1 is a distinct execution (numeric memory, straight-line program, primitive run) with its own model assumptions, that it does not reinterpret the 210 or 427 theorems, and that it is not yet accepted.
+
+Decision:
+- Every registered current-fact surface names RMQ.Headlines.succinctRMQFullyChargedPackedQuery as a CANDIDATE: kernel checked with propext, Classical.choice and Quot.sound, with the committed replay campaign, the aggregate gate and a fresh blind exact-commit audit pending.
+- Each surface says it charges every primitive instruction of its own distinct execution and carries its caveats: unit-cost multiplication, division, remainder, shifts and bitwise operations; every executed operation proved free of overflow, underflow, zero division and oversized shifts; an uncharged outer word-domain check with no parsing-cost claim; code and scratch storage absorbed into o(n) only asymptotically (it exceeds n below about 2^28); a budget equal to the straight-line program length, far above the 6,003 to 16,358 observed steps and not claimed tight; preprocessing unbounded and unclaimed; Lean runtime separate.
+- Each 'controller uncharged', 'not proved' or 'E1 remains' statement is rescoped to the 210 and 427 theorems, where it remains true.
+- Reads are described exactly: on valid ranges, 174 metadata loads followed by the physical expansion of the logical trace, two loads for a crossing cell and none for an absent or dead logical read. A failed load faults, and the canonical run halts, so it performs none.
+- The roadmaps mark E1 superseded by the candidate, not closed.
+- No surface states the certificate's field count.
+
+Alternatives rejected:
+- Presenting PQ1 as a strengthening of the 210 theorem ('the complete query is charged'): it is a different memory, program and run, and the 210 charge policy is unchanged.
+- Deleting the old uncharged-controller statements: they remain true of, and part of the honest scope of, the 210 and 427 theorems.
+- Marking E1 closed: that needs acceptance after the replay, the gate and the blind audit.
+- Stating the field count: it is changing under the Lean lane (specResult, noFailedLoads, invalidGuardSteps).
+
+Consequences:
+- Public prose repeats the caveats per surface, and claim-drift v28 (WDD-20260911-PQ1-010) enforces attribution and separation.
+- If the candidate is accepted, the CANDIDATE wording and the E1 status must change in one edit.
+- The observed step range must be rechecked against the final runtime fixtures.
+- Once the Lean lane's rejected-input step bound lands, surfaces can replace 'a few guard steps' with the proved bound.
+
+Evidence: diffs on the 18 current-fact surfaces plus DIGESTION_LOG and ARTIFACT_REPRODUCIBILITY; strict claim scan exit 0; constant_sync_check -SelfTest PASS; the static topology-lint replica found 0 problems (the Lean-resolution half was not run in this lane).
+
+## DD-20260911-PQ1-020: the fully charged packed query enters the manuscript as a candidate; paper/ repinned to 3849ecbb
+
+Context: At 3849ecbb (branch codex/fully-charged-packed-query-v1), `import RMQPaper` supplies RMQ.Headlines.succinctRMQFullyChargedPackedQuery, the public alias of RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds. Meanwhile paper/rmq.tex, pinned to 0665b494, called instruction-level charging future work in Section 3, Section 11 item 1 and the conclusion, and ledger row L-OPEN-06 said that no instruction-level machine charges controller steps. This is the RC-10 defect class a second time: the paper and the artifact do not identify the same claim. The owner decided that the manuscript covers the PQ1 candidate in this task. The theorem is kernel-checked. It remains a candidate because the replay, the aggregate gate and a fresh blind exact-commit audit have not accepted it (DD-20260911-PQ1-019).
+
+Decision: The result is stated as candidate Theorem 9.2 (thm:fullycharged) in a new subsection 9.2, "A fully charged query on a repacked allocation" (sec:fullycharged). The subsection sits inside Section 9 for two reasons. Sections 10 to 12 keep the numbers the ledger and evidence matrix cite. Its dependence on Theorem 9.1 (the packed array it repacks, and the cell width w(n) that defines W(n) = 32 + 8w(n)) stays inside the region EV-07 permits.
+
+Each theorem clause maps to capstone fields as follows.
+- Width (item 1): widthBounds, memoryWordsFit, allocationAddressesFit, programFieldsFit.
+- Space (item 2): dataCapacity, completeCapacity, allocationResidualLittleO, completeResidualLittleO, encodedProgramBound, registerCount, scratchCount, unusedRegisters. The program length 837,572 comes from budgetExact and programLength.
+- Exact answers (item 3): validInputs; halt and result (halting with the packet of the canonical value, for endpoints below 2^W(n)); specResult (i + 1 on valid ranges, stated on the run); invalidGuard (0 and no load on representable invalid ranges); invalidGuardSteps (at most 6 steps on every invalid range, with no representability premise); natContract and leftmost (the total wrapper).
+- Charging (item 4): stepBound and categoryPartition, which hold for every fuel-bounded run, together with halt.
+- Safety (item 5): prefixSafety, transitionSafety, finalStateFit, readWidth.
+- Reads (item 6): positionalReadBacking, orderedLogicalRefinement, logicalReadOnly, noFailedLoads, suppliedMemoryAgreement. The zero, one or two loads per logical read follow from the definitions of logicalTraceReads, readerReceipts and spanAttemptReceipts, not from a separate field.
+
+The 2^28 threshold in the fourth reading is arithmetic from the definitions, using W(n) >= 48 + 8 floor(log2(n+1)); it is not a kernel-checked statement. Integer division and remainder are stated as an explicit assumption beyond the multiplication model, with primary sources for every other operation.
+
+In the ledger, L-PQ-01 has Status ACCEPTED_BASE (the kernel status) and a separate "Process status: CANDIDATE" line. Both that line and the ledger header say that for this row the label asserts only the first clause of the ACCEPTED_BASE definition. At this writing, 3849ecbb is contained in no branch other than codex/fully-charged-packed-query-v1 and in neither main nor any release tag. The public alias occurs on no other branch. The theorem is exported by RMQPaper at the base, and it has been neither accepted nor integrated, so the label records no acceptance.
+
+L-OPEN-06 is amended, not retired. L-PQ-01 falsifies its first clause ("no instruction-level machine charges those steps and simulates the same execution"). It now states only that neither the charged-trace bound of L-UB-05 nor the cell-probe bound of L-ARCH-01 counts controller steps or is claimed as conventional word-RAM running time. Its OPEN status and two anchors are unchanged.
+
+New OPEN row L-OPEN-07 records that optimality and attainment of the 837,572 budget are unproved, and that the capstone proves halting within that fuel only for endpoints below 2^W(n). The ledger moves from 34 rows (29/0/5) to 36 rows (30/0/6).
+
+Eight primary-source bibliography entries are added. They are cited only in Section 9.2, as authority for the machine model, and each has a receipt in RELATED_WORK_LEDGER.md. Tiers as recorded there:
+- CookReckhow73: source (publisher scan); issue and DOI from the web.
+- FredmanWillard93: source (publisher scan); issue and DOI from the web.
+- BMM97: web. BRICS RS-97-12 was read; the LNCS text was not. Volume, pages and DOI come from Springer's chapter page and Crossref. The booktitle is Crossref's container title.
+- AHNR98: web (author preprint read).
+- HMP01: web (authors' accepted manuscript read).
+- PatrascuThorup14: web (arXiv v2 read).
+- MehlhornSanders08: source (authors' copy of Chapter 2); publisher, year and DOI from the web.
+- AMT99: web (BRICS RS-96-30 read).
+
+Fields not named in a receipt come from Crossref (web). No field rests on a T3 or T4 source. BMM97's workshop ordinal came from HMP01's reference list (T3). It was removed before commit, together with the workshop name and acronym, which Crossref's record does not carry. The bibliography grows from 27 to 35 entries, and Patrascu08 is still absent. These entries are not novelty-search results and license no absence or priority statement (NOVELTY_LOG section 7; RELATED_WORK_LEDGER limitation 5).
+
+EV-07 containment: Theorem 9.1 remains stated only in Section 9 and, as a capacity bound, in the allocated-bits entry of Section 3. Every passage added outside those places names Theorem 9.1 by label only, without its constant, model or content: Section 1.3, the Section 3 executed-instructions item, Section 11 item 1 and the conclusion. Three draft phrasings described it by its model and were replaced before commit: "charged-trace and cell-probe theorems", "charged-trace and cell-probe bounds" and "its own cell-probe disclaimer". The appended EV-07 entry lists every added reference and covers only added text. The row's status is unchanged.
+
+Repin: all 38 full-SHA pins in paper/ move from 0665b494 to 3849ecbb, and L-PQ-01's Commit line adds a 39th. The move also makes the `producer at :760` pointer of L-ARCH-01 and L-PACK-01 correct at the base, which it was not at 0665b494.
+
+CORRECTION of DD-20260911-PQ1-018. That entry says the program needs division "because the span decoder divides a bit position by a cell width held in a register (SpanAssembly.lean)". The divisor is the machine word width W(n) = wordWidth n = 32 + 8w(n), not a cell width. Metadata word 6 holds wordWidth n. The setup loads it into register 22 (16 + 6), and it is moved to the span block's base register 8256. spanBlock (SpanAssembly.lean lines 36-37) takes div and mod of the bit position by that register, giving the word index and the bit offset. The conclusion of DD-018 stands: the program needs division and remainder. Because W(n) = 32 + 8w(n) is a power of two only for particular values of w(n), no fixed shift replaces them. DD-018's text is left as written and superseded by this correction. The manuscript (Section 9.2) and the WORKLOG now state the word width.
+
+Alternatives rejected:
+- Placing the theorem in a new top-level section. That renumbers the Sections 10 to 12 cited by the ledger and evidence matrix, and moves its reliance on Theorem 9.1 outside the region EV-07 permits.
+- Giving L-PQ-01 a new status such as CANDIDATE. The status vocabulary is fixed and enforced case-sensitively by check_paper.ps1.
+- Marking L-PQ-01 OPEN. That would present a kernel-checked theorem as unproved.
+- Leaving L-PQ-01 as ACCEPTED_BASE without the first-clause note. The definition's second clause (part of the integrated mainline surface) is false for this row.
+- Retiring L-OPEN-06. Its remaining clause is still an unclaimed statement about the 210 and 427 bounds.
+- Deferring the paper until acceptance, or keeping the 0665b494 pin with a note. Either leaves the RC-10 mismatch in place.
+- Describing Theorem 9.1 by its model in passages outside Section 9. That paraphrases it, against EV-07.
+- Keeping the BMM97 ordinal on the strength of a citing paper's reference list. That is tier T3, which may not enter references.bib.
+- Stating the 2^28 threshold as a theorem. No Lean statement of it exists.
+- Citing DD-012 and DD-013 for the Lean evidence. The checks were rerun at P and are recorded directly.
+
+Consequences: README editing rule 5 lists every place the candidate status is stated. `grep -n -i candidate rmq.tex` finds them all, plus two unrelated uses. On acceptance or rejection they change together, as do L-PQ-01's Process status line and first-clause note. EV-07 gets a new appended entry rather than an edit. No novelty wording about PQ1 is licensed until NOVELTY_LOG is extended with receipts. The manuscript describes each read's expansion by its stored bit span; the public surfaces from DD-019 were not changed. Text carried over from 0665b494 was not re-examined under EV-07.
+
+Evidence: On a tree whose Lean library files are identical to 3849ecbb, the lead ran the following, all exit 0:
+- `lake build` and `lake build RMQPaper` (up to date);
+- `lake env lean scripts/axiom_check.lean` (1,163 records, 30 axiom-free);
+- `scripts/headline_axiom_check.lean` (114 records; the alias depends on propext, Classical.choice and Quot.sound);
+- `scripts/wordram_axiom_check.lean` (348 records).
+
+No record in these inventories names any axiom other than those three. `scripts/independence_check.lean` passed (3 cap-supplying theorems checked against 8 charged declarations). `scripts/ledger_decl_check.lean` passed (57 names present, negative control absent).
+
+On the substrate, all exit 0:
+- `paper/check_paper.ps1 -SelfTest` (35/35 cites; 41 labels, 87 cross-references; 36 anchors and 36 rows; 30/0/6; 57 declaration names; 27 source citations resolve);
+- `check_citations.ps1` and its `-SelfTest`;
+- `claim_drift_scan.ps1 -Strict` (0 strict failures);
+- `git diff --check`.
+
+`git grep` finds 0 occurrences of the old SHA and 39 of the new one in paper/. latexmk in a scratch copy produced 20 pages with no undefined references or citations.
+
+## DD-20260911-PQ1-021: describe each logical read's physical expansion by its stored bit span
+
+Context: the manuscript (DD-20260911-PQ1-020) describes the expansion of a logical read into physical loads by the read's stored bit span, because `readerReceipts` expands `reviewerLogicalSpan`, a bit span that for strided sources can be a field narrower than a packed cell, and `spanAttemptReceipts` makes no load for a zero-length span. The review packet and the model-adequacy note, synchronized earlier under DD-20260911-PQ1-019, still said two loads when the read's cell crosses a word boundary.
+
+Decision: both surfaces now say one load for each present logical read, two when its stored bit span crosses a word boundary, and none for a logically absent or dead read or a zero-length span, matching the manuscript and the ReadInterface docstring. No theorem, count or pin changes; the claim-drift and constant-sync pins are unaffected. Alternative rejected: leaving the cell wording, which is exact for the packed cell reads but not for sub-cell strided spans. Evidence: strict claim drift, constant sync and git diff --check pass on the edited tree.
+
+## DD-20260911-PQ1-022: elaborated inventory validation without changing the query theorem
+
+The continuation audit adds scripts/packed_query_inventory_check.lean as a validation script, outside the Lean library roots. It imports the existing capstone and Lean's elaborator API, compares its actual ordered structure fields with a literal inventory, and checks compiled positive/negative controls. This is an executable elaborator check, not a theorem assumption or a new trust axiom. All existing library definitions, theorem bodies/types, unit-cost operations, payload bounds, consumers and public aliases remain unchanged.
+
+A text-only parser was rejected after an extra underscore name escaped the original regex and Lean's legal deeper default-field syntax escaped an attempted layout rule. The metadata check consumes the producer built immediately before it and rejects absent metadata or unexpected parents/fields. The same predicate checks the controls. WDD-20260911-PQ1-012 records the replay/process consequences; the continuation report records verification. Because the public theorem is unchanged, the manuscript's existing Lean-base correspondence remains valid. The review-packet guard-cost correction follows the existing four-or-six-step theorem and changes no model.
+
+## DD-20260912-PQ1-023: accept the audited primitive query and name its control flow precisely
+
+Decision (date in UTC): accept the revised E1/PQ1 construction on repaired source 6562ff62d14b17e918e7149f896bd0657ffd5aa0, using the independent 34-row reconstruction and the both-host aggregate/replay evidence archived by d21b190139fa810291ae271974ec00cde58af965. The detailed coordinator disposition is in packed_query/PQ1_COORDINATOR_ACCEPTANCE.md. Replace the current description “straight-line” with “loop-free”: the fixed program has forward conditional branches, while its bounded repetitions are statically expanded. This is a wording correction, not a new control-flow proof or a change to the program-length budget.
+
+The follow-up updates the 18 registered current-fact surfaces, the declaration-adjacent public docstring and the manuscript status companions. Theorem definitions, statements, proof bodies, numeric constants, counted allocation, operation set, consumers and replay cases remain unchanged. The original source pin in paper/ remains the mathematical reference; later audit and coordinator acceptance are separate identities. No priority claim or release-wide acceptance follows.
+
+Alternatives rejected: leaving “straight-line” unexplained despite conditional branches; relabeling an older trace/probe theorem as instruction-costed; treating a green audit as automatic coordinator acceptance; rerunning hours of unchanged mutation campaigns for one docstring and process wording; and rewriting frozen evidence/history instead of appending a disposition. The public import and exact-type consumer are rebuilt, and affected claim, design, paper, topology, source-identity and hygiene checks cover the follow-up. The prior both-host gates remain the source certification. S1, preprocessing, tighter path-sensitive costs, extraction and release-wide V1 work remain distinct targets.
+
+## DD-20260912-BV1-001: generic both-bit select through a normalized physical reader
+
+Context: the user authorized BV-1 as a new post-PQ1 extension at governance/source 0e6a00f654abc64f8b68988fa9675b9a839dca2f. This task-specific authorization supersedes the old roadmap's broad-expansion deferral for this lane without rewriting historical wording. The assigned endpoint remains one all-size fully charged access/rank/select capstone over arbitrary List Bool, both targets, and one n+o(n) complete allocation. The present commit is contract/feasibility evidence, not that endpoint.
+
+Decision: test the actual existing selectCloseBlock with an additive physical reader that retains the raw bitvector once and normalizes only a loaded raw data word when selecting true. Both target-specific select directories are stored; their long/sparse true-flag words remain unmodified. Charged metadata selects the occurrence count independently of length-based geometry. The reader uses the actual regularLocateBlock and spanBlock, and source code is compiled by the existing Structured compiler into the accepted primitive ISA. No shared Packed module is edited.
+
+The experiment has 23 scalar words and two banks of 23 four-word segment descriptors; its body starts at 207 times the physical width. Those are current select-experiment constants, not final access/rank/select capacity constants. The width candidate is 32+16*machineWordBits(n), and chunk width is bpFringeChunkBits(2*n), allowing the existing sublinear chunk-table envelopes to be consumed later. A first-word-length descriptor still requires canonical chunk/sentinel/fixed-width regularity proofs; a generic maximum-length store invariant does not entail that property.
+
+Alternatives rejected: retaining a complemented second n-bit input; treating arbitrary bits as a Cartesian BP shape; copying the select controller or ISA; specializing program constants to the chosen bitvector; normalizing exception flag words; and claiming an abstract selected-read profile as a physical execution theorem. The generic semantic normalization theorem proves the rank/select and optional packet identities for all inputs. AllocationFacts separately reconciles the sixteen retained directory components with the original generic payload, adding exactly the four omitted false sample tables; both targets receive independent bounds. These leaves do not yet prove the final allocation or controller.
+
+Evidence and consequences: the normalization and directory-count leaves have explicit typed consumers and axiom inventories. The generic select experiment and reader proposition elaborate; all 18 first-registry physical select cases pass against independent List semantics. The independent reader review found no canonical counterexample, while requiring regularity, exact descriptor recovery, charged reply dependence, whole-controller refinement and strict width/safety proofs. The expected receipt specification is canonical; arbitrary-memory fault statements must describe actual execution and stop on the first failed descriptor load. The exact contract, open matrix and command records are in docs/internal/extensions/bv1. Full access/rank programs, capstone, anti-bypass replay and coordinator acceptance remain assigned work.
+
+## DD-20260912-BV1-002: instantiate the reviewed generic physical route
+
+The coordinator recorded APPROVE_ROUTE_AND_CONTINUE for evidence commit 645a0502b9da9ad6444edbe44759e1c2c5661f25 and source 581deebcacfded874d17da7db1e9132a1eefa184. Its exact disposition is preserved in extensions/bv1/COORDINATOR_ROUTE_DISPOSITION.md. The route now uses one raw input, both select directories and normalization of charged segment-zero replies, as tested in DD-20260912-BV1-001. No full capstone field is accepted by this disposition.
+
+Expose proof-side names for the existing allocation's component list, descriptor banks, header and body through definitional equality. Prove canonical regularity separately, then use the shared generic decodeSpanNat_repacked_span theorem to recover exact component words from the same numerical memory. This theorem's explicit zero-length branch preserves empty sentinels without requiring their nominal bit position to be in the allocation. Source evaluation consumes the actual shared regularLocateBlock/spanBlock; independent controller proofs use a frozen low-register metadata snapshot and arbitrary supplied logical store. No executable callback or proof field supplies a query answer.
+
+Alternatives rejected: deriving regularity from a maximum word-size bound; making every sentinel position an executed address; treating canonical expected receipts as arbitrary-memory fault behavior; or using CartesianShape metadata as an assumption for arbitrary bitvectors. The generic controller reference remains the existing packedSelectCloseRead with scalars loaded from memory. Safety, normalized-store semantics, access/rank data and complete accounting still require their own joins. Exact component and source checks are recorded in extensions/bv1 as each proof is consumed.
+
+## DD-20260912-BV1-003: compose all three operations on one counted numeric allocation
+
+The completed mathematical construction retains the original35 select/raw/table components and appends four Jacobson rank sample arrays, for39 actual body components. Both descriptor banks keep the207-word header boundary. Segment19 aliases the original raw payload for access/rank and supplies the required logical empty sentinels; it does not retain another input. Segment-zero normalization applies only to loaded raw true-select words. The two Boolean select directories and all flag/sample/table payloads remain counted. The complete capacity expression contains the literal encoding length of each of the three fixed programs and8274 scratch words in addition to the entire numerical memory; its remainder is proved LittleOLinear.
+
+Use one query-independent width W=32+16*machineWordBits(n). Canonical memory, scalar headers, descriptor fields, nominal positions and reader strides are bounded directly, including zero-length sentinels. A controller envelope E=2^(9+2*M), directory bound2^(2*M+3) and table bound2^(M+8) discharge the generic square/cube arithmetic obligations without adding a readiness premise. The same width bounds every dormant instruction field, actual transition, fuel prefix and indexed receipt. Full source evaluation is unconditional in the Nat model; numerical safety has the sole machine-input premise argument<2^W. The outer all-Nat API rejects larger arguments, which are proved invalid in the List specification.
+
+Keep generic controller evaluation and compiler conversion abstract until the final operation/output register is specialized. This is a proof-engineering boundary, not a new executable abstraction: the source still contains the shared Packed blocks and the actual Structured compiler. Eager comparison of concrete run projections caused deterministic elaborator timeouts; an explicit output-register equality and generic query-packet bridge avoid unfolding thousands of steps. Rank composition similarly abstracts the already-proved core evaluation before simplifying loaded metadata and finite source syntax. No raised heartbeat limit or new trust primitive is part of these proofs.
+
+Rejected alternatives were a second complemented raw payload; a separate rank payload containing another n bits; uncharged metadata or input-dependent code; a shape-specific hypothesis; proving only reached instruction operands; ignoring nominal sentinel positions; and counting a code-length alias whose unfolding obscured the literal public capacity statement. The concrete effects are all-natural access/rank/select correctness, representable whole-program safety, exact same-memory ordered receipts, actual category counts and an all-fuel finite-register theorem, joined in the23-field fullyChargedBitvectorCapstone_holds. Its first module check and expanded public consumer pass; final replay, exact-commit audit and coordinator acceptance remain distinct workflow obligations. Evidence and exact propositions are in extensions/bv1/CAPSTONE_COMPOSITION.md and the linked leaf reports.
+
+The model assumptions remain unit-cost scalar division, remainder, shifts and other explicit ISA operations; unbounded preprocessing; an uncharged outer Nat-domain check; and asymptotic-only absorption of fixed code/scratch. No claim about measured Lean interpreter performance or useful finite-size thresholds is added. FAMILY_SUMMARY and DIGESTION_LOG receive additive task-specific entries. README and the shared public aliases remain outside this lane's write scope, so no broader RMQ headline or paper theorem is rewritten.
+
+
+## DD-20260912-BV1-004: identify checked source separately from later evidence
+
+The complete generic bitvector construction and its tested replay inputs are
+frozen at source candidate 763b00e68cabef2ea322a92fb7b3be354b367179. A subsequent
+fresh checkout established exact raw-byte equality for 717 protected artifacts,
+including 33 binary archives, and all 552 dependency occurrences across 284
+paths. The measurement receipt necessarily exists after the commit it measures.
+Public family status should reflect that observed result while continuing to
+state that aggregate certification and coordinator acceptance are pending.
+
+Keep the source candidate fixed and retain the new receipts and current report
+updates in a distinct evidence commit. Name both roles explicitly: source and
+replay-input bytes remain those measured at the source candidate; the later
+receipt and updated prose are not silently added to the original 717 count.
+The exact commit and receipt identities provide a reader with an auditable path
+from the mathematical certificate through the tested physical object to the
+Git checkout measurement. This publication/provenance decision does not change
+any proposition, memory component, instruction, width, capacity or cost bound.
+
+Rejected alternatives are presenting the byte-preservation attributes alone as
+reproducibility evidence, folding the receipt into a self-referential claim about
+its own commit identity, leaving the public family status stale after the
+measurement passed, or treating the local checks as coordinator acceptance.
+The evidence delta contains maintained reports and retained verification results;
+tested Lean/replay/attribute/manifest bytes are preserved. Its public status
+update carries this design rationale in the same commit, as required by the
+repository's per-commit policy. The existing model and preprocessing/runtime
+caveats remain live, and the coordinator's aggregate hold remains authoritative.
+## DD-20260912-LB1-001: bounded variable payloads on the actual PQ1 allocation
+
+LB-1 is authorized at base 0e6a00f654abc64f8b68988fa9675b9a839dca2f as an additive extension. The frozen contract is docs/internal/extensions/lb1/CONTRACT.md and its acceptance matrix. The generic encoder accepts ordinary List Int inputs, has one decoder for every size-n input, and bounds bitstring length by B while allowing observed length. Canonical representative shapes derive injectivity from valid half-open leftmost answers. This avoids a supplied injectivity premise and distinguishes the uniform worst-case budget from an individual payload size.
+
+The planned canonical serializer flattens fixed-width binary representations of the actual buildMemory words. A positive n-only width and observed list length preserve zero-word multiplicity without an extra delimiter. Its proved inverse will recover the same PQ1 memory before queryNat is invoked. Padding every allocation to B, using the separate fixed-2n representative code, and retaining a shape in the decoder were rejected because they would lose the assigned allocation/model identity. The counting decoder is mathematical and has no serialization-time bound; the unchanged primitive program's execution theorem applies to the identical recovered allocation. Code, scratch and external n remain separately described.
+
+Source feasibility is supplied by the existing cubic-square Catalan inequality, representative-shape recovery, fixed-width bit round trip, allocation capacity/word fit, queryNat_exact and the PQ1 capstone. These source facts justify the route but do not close the new theorems. Independent contract review, implementation, exact-type controls and exact-commit audit remain required.
+
+## DD-20260912-LB1-002: derive the lower bound and transport the entire recovered memory
+
+The generic proof now enumerates all Boolean lists of length at most B, proves that the enumeration is duplicate-free with exactly 2^(B+1)-1 entries, and injects canonical size-n Cartesian representatives using exact leftmost RMQ answers. The existing cubic-square Catalan estimate then applies at B+1 and gives doubledLogSlackLower n <= 2*(B+1). This coefficient includes the information conveyed by the observed payload length. A fixed-length coercion and a supplied shape-injectivity field were rejected: the former changes the available-code model and the latter would assume the distinguishing property the interface must derive. Empty and singleton zero-bit instances and a size-two zero-budget impossibility provide nonvacuous boundary checks. The generic source has compiled under pinned Lean 4.22.0; the evidence is in the LB-1 count notes.
+
+The adapter's selected composition reconstructs the complete actual buildMemory list from fixed-width serialized words, then transports all 33 fields of the PQ1 capstone to that identical reconstructed memory. It does not conjoin an unrelated old-memory machine certificate with new-memory exactness. Every field with a memory argument is restated on reconstructedMemory; memory-independent width, code and arithmetic facts retain their literal existing types. Representable-endpoint guards remain on raw machine safety, while the natural-number decoder retains total invalid-query behavior. Bit conversion and the outer argument/result wrapper have no charged instruction-time claim.
+
+Independent review clarified the advice convention. A function type cannot syntactically inspect captured constants. The generic semantic restriction is one decoder exact uniformly over all size-n inputs; the canonical decoder visibly captures only n. The negative advice controls refute the same uniform exactness predicate for an empty payload and a fixed input/shape answer source, rather than asserting a stronger syntactic property. No input-specific lower bound, value-list injection, preprocessing bound, public alias migration or coordinator acceptance follows. The adapter and its independent literal consumers remain drafts until their build and replay evidence is recorded.
+
+## DD-20260912-NATIVE1-001: finite containers and a proved Lean core for the native route experiment
+
+Context: NATIVE-1 is a newly authorized extension of exact PQ1 base 0e6a00f654abc64f8b68988fa9675b9a839dca2f. The assignment explicitly permits a proved Lean executable compiled through C behind a narrow Rust/C ABI frontend. Historical extraction deferrals remain historical; this task-specific authorization does not edit their frozen wording.
+
+Decision: first refine program, memory and register storage to Arrays while retaining natural-cell semantics, and prove operation/run equality. A separate tail-recursive runner accumulates all six category counts and optional ordered reads without retaining transition states. Test the actual exported Lean declaration through the installed C compiler and Rust frontend. This is a route experiment feeding review, not the native capstone or a fixed-limb claim.
+
+Rationale: the exact PQ1 operation semantics and fixed program are already proved; an independent handwritten Rust VM would add an unproved algorithm. Reusing the proved computational declaration gives an explicit source identity, while compiler/runtime translation and FFI marshaling remain separate obligations. Natural arrays are an intermediate leaf only. Fixed limbs, binary image proofs, canonical all-size instantiation and usable API are still required by the frozen matrix.
+
+Corrupt-state distinction: raw PQ1 arithmetic is total Nat arithmetic and missing instruction fetch stops without changing running status. The container leaf preserves those behaviors exactly under its destination bound. A future checked limb executor must state separate checked-fault semantics and prove compatibility on canonical safe executions; it cannot claim unconditional equality after introducing overflow/divisor/shift faults.
+
+Alternatives rejected: substituting u64/u128 despite 168-176-bit fixtures; treating ArrayRun's fetch-only equality as a storage theorem; logging full states in default execution; claiming fixture comparison proves Rust refinement; silently adding Aeneas/Mathlib or upgrading Lean. The actual route experiment, exact proposed source theorem and trust assumptions are recorded in docs/internal/extensions/native1/ROUTE_EVIDENCE.md. No public alias or baseline Packed definition changes.
+
+### NATIVE-1 route-review refinements to DD-20260912-NATIVE1-001
+
+Independent review caught and repaired the experiment's endpoint register order;
+`routeInitialState_decode` now checks the exact left/right/n initial-state body.
+The parser's destination predicate is proved equivalent to the raw simulation's
+bank guard. These are operational repairs, not changes to the reference theory.
+The C bridge uses explicit byte lengths and an owned Lean-string handle with a
+borrowed-text accessor, avoiding a second allocator/copy ABI and the bundled C
+compiler's absent general-purpose C headers. Rust's process-wide atomic claim
+and non-Send/non-Sync owner constrain the tested single-thread initialization
+contract. Universal frontend marshaling and the final binary API remain open.
+
+The experimental C++ consumer uses the same exported C functions and DLL as
+Rust. The committed .def file describes the four C exports for an MSVC import
+library; it is interface metadata, not another query implementation. The
+complete n9-full output comparison covers the actual C++ consumption path.
+
+## DD-20260912-NATIVE1-002: byte-limb state and exact loaded storage
+
+Context: the coordinator approved the Lean-to-C route and directed continuation
+to the full original native contract. The natural-cell experiment established
+that route, but did not supply the finite word representation or binary loader.
+The new word representation is `Array UInt8`, ordered least-significant byte
+first, with exactly `(width + 7) / 8` bytes and zero unused high bits. Registers,
+PC, halted packets, memory cells and every numeric instruction field use that
+same representation. There is no cached natural value in a stored word.
+
+Decision: decode only the fetched instruction and scalar operands needed by its
+operation, use the existing natural operation as a temporary computation, and
+check its safety conditions before encoding the result. The complete run
+simulation consumes the original `Instruction.Safe` and final-state width
+conditions. Missing memory retains its failed receipt and faults; missing code
+fetch stops unchanged and uncharged. Malformed code and unsafe arithmetic have
+explicit checked rejection outside the canonical safe domain. The tail runner
+calls the same step and erases transition states; optional ordered reads and all
+six category counts remain projections of that execution.
+
+Rationale: byte arrays give an exact finite stored representation for the actual
+168-176-bit examples and arbitrary abstract widths. Unchecked total natural
+arithmetic would misrepresent word faults; u64/u128 would truncate current
+examples. Reimplementing arithmetic in Rust would create a separate unproved
+core. Temporary BigNat decoding, byte-array slots, headers, reference counts and
+observation lists are runtime overhead. Neither this simulation nor the existing
+word-RAM bound asserts constant physical time for multiprecision operations.
+
+The version-1 image stores width, public input length, register count, code and
+memory. Public input length remains independent of memory cell zero so corrupt
+metadata cannot silently rewrite the initial input contract. Scalar lengths use
+minimal little-endian base-256 digits, framed by a unary digit-byte count and
+delimiter. This permits all abstract natural lengths without a hidden 64-bit
+header restriction. Framing and byte rounding are separate from numeric payload
+bits. Native host limits remain a checked additional domain. A list codec
+supplies roundtrip and consumption proofs; the actual native loader must avoid
+repeated whole-tail length scans and non-tail recursive array parsing. Its
+efficient bounded refinement is part of this target, not a deferred claim.
+
+Evidence: Native/Limbs.lean proves both limb roundtrips, padding/size, arithmetic,
+comparison and address conversions; Native/Machine.lean proves all nine
+operation cases and complete all-fuel run equality. Detailed propositions and
+narrow receipts are in LIMB_WORDS.md and MACHINE_LEAF.md. Binary, canonical-query
+and final public composition remain in progress at this entry. No existing
+Packed semantics, aliases or accepted theorem is changed. This record grants no
+native capstone acceptance.
+
+## DD-20260912-NATIVE1-003: propagate C++ rejection through the shared ABI
+
+The reviewed C++ experiment returned success after printing an ERROR-prefixed
+Lean parser result. Its consumer now owns the returned handle with RAII,
+validates the borrowed view, copies the result before release, and sends parser
+errors to stderr with a failing process exit. The success path remains the
+same DLL call. The final production ABI will expose an explicit status channel;
+the textual experiment's convention is retained only for that version. The
+rebuilt C++ executable is pinned alongside the Rust executable and DLL in the
+version-2 manifest. The registry includes both complete n9 success and malformed
+instruction rejection. A separate C++ algorithm or success exit on parser
+rejection was rejected because either would invalidate the consumer evidence.
+Runtime results and source identities are recorded by the route repair campaign;
+no unexecuted host branch is claimed.
+
+## DD-20260912-NATIVE1-004: compose the loaded image with the exported executor
+
+The native contract uses one canonical image built from the accepted
+`buildMemory`, fixed `queryProgram`, `queryRegisterCount` and query-independent
+`wordWidth`. Its encoded memory and program are the arrays consumed by the
+byte-limb machine. The complete logged run refines the accepted primitive run
+for every fuel and representable endpoint pair, including invalid ranges;
+canonical safety is discharged from the existing positional safety theorem.
+After-budget fuel is handled by canonical halting, without a new correctness
+or readiness premise. A separate predicate exposes finite native file, width,
+register, code, memory and fuel limits. It does not narrow the abstract all-size
+representation theorem.
+
+The exported loader uses an indexed, tail-recursive ByteArray parser. Its
+all-byte equality to the specification codec is proved. Scalar digit limits
+precede accumulation; input-length digits are bounded by the checked width.
+Repeated list suffix conversion and whole-list parsing were rejected as an
+operational implementation because the fixed program has 837,572 instructions.
+Only bounded word slices and the fixed magic prefix convert to ordinary byte
+arrays. The reference codec remains the proof specification.
+
+The runtime retains byte arrays for code fields, memory, registers, PC and
+halted values. Queries use the proved accumulator projection and omit receipts
+by default; they never allocate the full proof transition list. The same loaded
+handle supports repeated queries. Endpoints are full-width little-endian bytes.
+The C ABI has distinct owned load/query results and explicit status, error and
+borrowed-image access; Rust lifetimes and the C++ example release handles through
+the matching DLL. Compiler/runtime/FFI behavior and available allocation remain
+external assumptions. Multiprecision arithmetic does not acquire physical
+unit-cost time from the abstract operation count.
+
+The certificate separates numeric allocation/code/scratch capacity, byte
+rounding, file framing and host container bounds. It transports results,
+leftmost ties, invalid guards, costs, ordered reads, positional read backing,
+read-width safety and supplied-store agreement through the same decoded limb
+execution. Independent literal consumer types cover every public field. Checks
+of Canonical, CanonicalImage, Entry, Execution and the initial 34-field
+certificate/consumer set passed; further host/program additions and the final
+compiled/replay/audit campaign remain separately required.
+
+## DD-20260912-NATIVE1-005: derive replay witnesses from actual occurrences
+
+The seven native coverage fixtures use the accepted canonical query's actual
+semantic stages: left select, right select, the two fringe folds, interior
+minimum, final rank, and a logical read whose bit span crosses two physical
+cells. The stage decomposition is derived from the same select/LCA/rank calls
+that construct the reference trace. Its concatenation is proved equal to that
+trace for every valid range. Each logical occurrence expands through the actual
+reader receipts, preserving repetitions and order after the 174 metadata reads.
+A physical occurrence records the raw read ordinal and actual transition index,
+prestate, source load instruction, address register and memory reply.
+
+Labels or membership in a seven-name roster were rejected as evidence of
+execution. The exporter searches actual stage occurrences and fails unless all
+seven kinds exist. The cross-cell witness additionally satisfies the explicit
+bit-position/length crossing inequality and selects two consecutive physical
+cells at the corresponding execution occurrences. The successful baseline
+inspected four candidates and emitted six n12 witnesses and one n24 crossing
+witness. It checks the independent List Int/leftmost-scan oracle and exports
+status, step count, all six categories and every ordered read/reply from the
+already connected reference execution, never from the limb or native result.
+
+Durable inputs comprise the seven small operational fixtures and the existing
+committed gzip of the fixed program. The baseline exporter produced 10,848,489
+program bytes, checked equal to the gzip's exact decompression. Keeping another
+large plaintext copy or recomputing the expensive exporter for each focused
+selector was unnecessary: the same exact bytes and hash are already durable.
+The replay separately checks those bytes, memory, instruction/address/reply
+positions, span arithmetic and the literal input oracle. Full prestate and
+stage composition still rely on the checked reference/source chain; the Python
+checker does not claim to independently derive the entire execution semantics.
+
+The executable Lean validator imports the independent public-contract consumers
+and runs the delivered loader and source entry on independently expected cases.
+A separately pinned nonempty roster and strict selector/compare modes prevent
+zero-case success. Its 16 default cases passed; selector and comparison controls,
+actual native 109-case replay and final independent acceptance remain distinct
+obligations. No preprocessing speed or physical constant-time limb cost is
+claimed by these witnesses.
+The final evidence now includes all seven witnesses in both unchanged clients,
+all 109 native cases expanded to 214 observations/source checks, 128 production
+replay controls, all 44 public-contract cases inside nine controls and 24 source
+validator controls. The isolated shim argument-order mutation is executed and
+produces the independently expected fault in both clients. Fresh producer hashes
+are bound to literal consumers for all field/public-proposition weakenings.
+Source, generated C and native artifact identities are restored and rechecked.
+These results support the existing design choice and its stated trust boundary;
+no new primitive, representation or compiler assumption was introduced by the
+final campaigns. Fresh blind audit and aggregate certification remain separate.
+
+## DD-20260912-OPT1-001: additive branch-sensitive proof and reviewed counted-loop proposal
+
+Context: OPT-1 is explicitly authorized after merged PQ1 at 0e6a00f654abc64f8b68988fa9675b9a839dca2f. The accepted 837572 identity counts emitted loop-free instructions. The task requires a smaller execution bound and a smaller actual emitted program, preserving PQ1 allocation and ordered attempted reads.
+
+Decision: first prove an additive structural branchBound execution witness over the existing compileAt and derive full original/reduced-fuel Run equality. Static layout continues to use Block.size. The named consumer is Optimization.branchSensitiveQueryBound and ultimately the compact capstone; the old budget identity remains available. Compiler-private composition helpers may be reproved in the owned optimization module instead of changing shared source. The independent compact feasibility review proposes ordinary five-instruction counted loops and two fresh registers per nesting level; dependent compact implementation awaits route review. CONTRACT_ROUTE.md specifies the proposed relation, recurrences and safety/accounting obligations.
+
+Alternatives rejected for the first bound: replacing queryBudget would disrupt peer lanes and historical identities; citing the static 150739 estimate or run_steps_le_fuel at a smaller fuel would not prove adequacy of the original complete execution. Full-state equality is appropriate for unchanged code but cannot be reused unchanged for compact scratch after early halt/fault. The proposed compact relation preserves status, all protected registers and exact ordered receipts with explicit scratch accounting.
+
+Consequences: no public-root identity, allocation, primitive evaluator, source semantics or word model changes. Neither the estimate nor this design entry claims the required theorem is proved. Each completed execution proof must be consumed downstream, and the complete emitted list, every prefix/operand and total space remain mandatory. Evidence: exact-governance source inspection and two independent read-only inventories, summarized with object chains in docs/internal/extensions/opt1/CONTRACT_ROUTE.md; kernel and candidate audit evidence remain pending.
+
+## DD-20260912-OPT1-002: checked generic execution bound and complete source-register relation
+
+Decision: BranchBound.lean keeps original compiled layout addresses while proving a smaller executed-branch recurrence through an exact RunsTo witness. compiled_run_bound_and_fuel_eq quantifies over arbitrary memory and two independently adequate fuels and returns a bound on the first actual run plus full Run equality. SourceRelations.lean inventories every register-valued source operand, transports exact ordered source evaluation below that bound, frames all outside registers, and transports Block.Safe only when the alternative data state fits globally. Independently typed consumers and collision/stopping controls are included in both modules.
+
+Rationale: a final-output equality or a fuel-truncation inequality would not justify the original complete-run bound, multiplicity-preserving receipts or counter freshness. maxDestination omits source reads and is therefore insufficient. Whole-register fit is supplied separately because finite-prefix register equality cannot constrain untouched high registers. The source relation enables loop-body rebasing, addressing independent route-audit P2-1/P2-2; it does not assume compact simulation already exists.
+
+Alternatives rejected: altering private shared compiler helpers or shared source semantics, accepting equality of traces without positional transitions, demanding full scratch equality after early faults, and treating finite agreement as global word fit. Consequences: both leaves remain additive generic producers; their assigned downstream compact/query capstone still has to consume them. A checked helper is not OPT-1 closure. Evidence: bound-development/REPORT.md and relations-development/REPORT.md quote exact types, independent consumers, source hashes, timings and standard axiom inventories; CONTRACT_AUDIT.md records the fresh route review and adopted obligations.
+
+## DD-20260912-OPT1-003: five-instruction compact emission and proof drafts at a resource checkpoint
+
+Decision: implement the independently reviewed counted-loop route in the owned Compact module: zero repetition emits nothing; positive repetition emits two fresh-register constants, a zero test, one shared body at the next scratch depth, a decrement and a backward jump. The body adds five control instructions and the bound accounts for every loop test/decrement/jump. CompactProof and CompactSafety draft actual RunsTo realization with rebased source comparison, explicit parent-counter preservation and separate actual entry/final fit and TraceSafe. CompactStatic drafts exact encoded-word accounting and constructor-complete field fit, including the previously erased repeat counts and every dormant control operand.
+
+Root Query/QueryProof/QuerySafety drafts fix the same source, initialState, buildMemory and wordWidth; program and scratch constants remain query-independent. Actual emitted encoding plus the finite-bank obligation feeds the existing same-allocation residual. The required inhabited compact capstone and its full exact field-consumer campaign are still absent. No draft theorem is reported as checked evidence. Two generic producers were checked in the earlier checkpoint; the current cold query import build has not yet reached the concrete bound declaration.
+
+Alternatives rejected: a sixth reset instruction does not repair early-stop scratch semantics; macros or a semantic answer oracle would change the primitive model; ignoring repeat counts would miss encoded machine data; and a cost inequality at truncated fuel alone would not discharge adequate execution. Complete arbitrary-memory ordered observations, canonical all-prefix safety and the final same-object join remain mandatory. Validation drafts include literal branch/loop/read controls and comparison to the independent source and ordinary scanWindow reference. In-memory jump/counter/fuel mutations exercise the same runtime observation predicate; they do not substitute for the still-required public-field source-mutation campaign.
+
+Consequences and evidence: this commit is an INCOMPLETE resource checkpoint, not a candidate submission. CONTRACT_AUDIT.md and the compact proof/static reports pin the route and live proof obligations; the original query budget identity and public root aliases remain unchanged. The narrow family/digestion append names only the checked generic producers and explicitly leaves the compact and concrete-query targets open. Future closure requires kernel repair/check, actual emitted measurement, full validation, exact-type public consumers and independent candidate audit.
+
+## DD-20260912-OPT1-004: checked compact query and one same-object certificate
+
+Context: the branch-sensitive original compiler theorem and five-instruction counted-loop route now have checked whole-query consumers. The former six-wrapper estimate was never emitted; literal measurement and independent encoding recurrence now agree on 212964 compact instructions and 722339 encoded numeric words. Kernel equalities pin those values, the structural budget 151978, source depth 1, maximum repeat count 33, bank 8273 and scratch 8276. The original 837572 identity and accepted public aliases remain unchanged.
+
+Decision: preserve the same querySource, initialState, buildMemory and wordWidth while exposing a separate actual compact Program/Run. Universal generic simulation rebases each nested-body source comparison at its real entry state, preserves parent counters by register frames, and retains the exact ordered attempted receipt list, including early faults. Global actual-state fit is carried separately from finite source-register agreement. Whole-query theorems preserve arbitrary-memory result/receipts and full Run equality at every adequate larger compact fuel; canonical safety proves all transition/prefix/word/address obligations at the same width.
+
+The new CompactPackedQueryCapstone has 39 mandatory fields with a premise-free inhabitant in Optimization/Capstone. Explicit completedExecution and adequateFuel fields consume termination directly, preventing the cost story from resting on the tautological generic fuel inequality. Exact numeric code/encoding/budget fields consume the independently checked concrete equalities. Every field has a fixed generic expected-type consumer and a canonical consumer; no type is inferred from the field during dependency replay. All capstone/consumer modules have passed their focused kernel checks.
+
+Rationale and alternatives: sharing loop bodies reduces code while adding modeled control work. The compact upper bound 151978 is 1239 above the sharper150739 bound of the unrolled original; neither bound is claimed attained or a native performance measurement. The compact complete-space theorem counts its literal emitted encoding and both new loop registers, retaining the original one-width allocation and LittleOLinear residual. Input-dependent metadata remains in the counted store. A source-cost estimate without emitted code, a fuel-only step bound without completion, a sibling allocation, a trace-value membership claim losing repeated occurrences, and finite agreement standing in for global fit were rejected. Runtime proof data/receipts are not machine scratch.
+
+Consequences: the additive proof now joins exact ordinary List Int/half-open/leftmost behavior, code shrink, actual charged execution, positional backing, global safety and complete 2n+o(n) capacity on one construction. Independent exact-commit audit and full semantic/dependency replay remain required before candidate acceptance. Generic and numeric evidence is in the compact proof/static reports; composition-checked-manifest.json records each checked root source. The frozen 35 acceptance rows are unchanged; newer evidence is appended separately. No PRE builder implementation or gate waiver follows from this query compiler.
+
+DD-OPT1-004 validation follow-up at source ac5af8e416f906391dc117f083a883acc053a268: the full actual semantic registry passed all 23 positives and four corruption controls, with independent same/adjacent/interior route expectations and changed-answer malformed metadata. This supports the dated family/digestion validation statement about the same compact code and allocation. It does not change the theorem, data layout, observation relation, word model or asymptotic claim, and it does not promote a validation timing to a performance theorem. The source audit is source-only and the repaired certificate checker still needs its actual field campaign. The accepted public aliases remain the baseline. Recording this evidence separately preserves the distinction between an implemented compact construction, a completed executable check, and externally scheduled acceptance; treating any one of those as the other was rejected. No new mathematical design choice is needed for the diagnostic-only checker repair; WDD-OPT1-006 explains its verification boundary.
+
+DD-OPT1-004 field-validation follow-up at source bbbe652fa41fa40bf2530b5e2f09c4c225c0e896: the full 39-field deletion/weakening campaign supplies executable anti-bypass evidence on the same checked certificate, with 80 exact cases and fixed producer-before-consumer order. This changes no theorem, allocation, observation or cost model; it supports the subsequent dated family/digestion validation prose. The initially missing import root and mixed diagnostic witnesses remain recorded failures with distinct setup/checker repairs under WDD-OPT1-007. Counting those failures as field rejections, inferring a mathematical proof from a parser test, or replacing external acceptance with a worker verdict were rejected. Aggregate certification and coordinator acceptance are still separate. No further mathematical design decision was necessary.
+
+## DD-20260912-OPT1-R1-001: distinguish canonical source identity from compilation artifacts
+
+Context: the compiler's mathematical source and its39-field/78-consumer contract are unchanged, but the historical replay manifest identifies source serializations that Git does not reproduce. The repair therefore changes artifact architecture, not the compact emitter, observation relation, allocation, width or theorem surface.
+
+Decision: represent canonical source identity using exact immutable source bytes with only the explicitly declared CRLF-to-LF serialization equivalence. Bind that source profile, complete dependency closure and toolchain distribution to actual one-job compiler invocations and private output artifacts. Preserve the raw source and artifact hash snapshots independently for exact restoration. A new versioned build receipt is evidence of those new invocations; historical raw receipts remain separately identified. Later private installation may copy only artifact bytes verified against that receipt and must retain the compilation/source linkage.
+
+Rationale and alternatives: source identity and artifact identity are different objects. Historical newline reconstruction, semantic token normalization, a sibling proof allocation, changed Lean fixtures in shared source, self-defined expected hashes and provenance inferred from timestamps were rejected. The acyclic order is immutable source manifest, build recipe, successful bounded build receipts, production pin, producer-before-consumer replay. No script can pin a receipt that cyclically defines its own hash. Compiler artifact reproducibility across supported checkout serializations must be measured through this declared canonical build profile, and any remaining distribution/host limits must be stated.
+
+Consequences: all original theorem definitions/types, constants, guarded domains and ordered attempted reads remain unchanged. The artifact checks support reproducible executable dependency experiments, not a new machine-cost or native-performance theorem. Local controls and the complete replay still have to run before submission to the coordinator. Evidence and exact source/profile hashes are recorded under docs/internal/extensions/opt1/repair-r1; this decision does not claim those pending commands have passed.
+
+DD-OPT1-R1-001 artifact detail: runtime/REGISTRY.json (53 cases) and the 49-case production REGISTRY.json (version opt1-r1-production-v4) and their runners are replayable contract artifacts with fixed ordered IDs/counts and raw-byte pins. PROOF_IDENTITY.md preserves all39 independent ExpectedType payloads and the same-object/guard chains; the preservation checker compares all35 complete historical rows and510 protected path/mode/blob entries, with separate missing/duplicate/change and mojibake controls. The profile manifests cover263 Lean sources (261 runtime imports plus validator and Consumers), configuration and4823 executable/library distribution files. BUILD_DRIVER.ps1 preserves the exact code loaded for canonical compilation when the later verifier changes; installation times remain explicitly separate. Exact enumerated local attributes retain these artifacts without relaxing shared source/history handling. Copied detectors, live-derived expected registries, normalized row comparison, timestamp provenance and source-only linkage were rejected. This evidence architecture changes no Lean definition or model.
+
+DD-OPT1-R1-001 evidence follow-up at implementation freeze f7cf20da8ae52c1f8295e5cedd4326bb8d44cbb3: the canonical build receipt (263 modules, 3060.405 s, every exit 0) was verified against its private build cache with the production profile API before its literal SHA-256 eed1ecee4a031a9c3cfcadea445307d8e15e70e732e6ffdd5b166d135292b64e was pinned in the certificate runner; the profile then accepted both a raw Git/LF and a default Windows/CRLF fresh checkout of that commit and rejected seventeen categories of source, artifact, dependency, toolchain, manifest and cache tampering through the actual production entry point. The full 27-case runtime and 80-case certificate campaigns were re-executed on the LF fixture with the same pinned identity, and the byte-preservation receipt found all 510 protected Git objects, 35 frozen rows, 39 field types and 78 consumers unchanged. This confirms that the artifact-architecture decision preserved the mathematical model exactly; it adds no theorem, constant, allocation or observation change and records no acceptance. The appended family and digestion entries describe only this replay-certification change.
+
+## DD-20260912-PRE1-001: freeze construction primitives before the efficient builder
+
+Context: the user explicitly authorized PRE-1 after accepted PQ1, on exact base 0e6a00f654abc64f8b68988fa9675b9a839dca2f. The named target is efficient construction of that same numeric buildMemory allocation followed by its existing query. RMQ_PROGRAM_PLAN C.2/C.3 requires C1-C4, including the pointwise header clause, to be gated and independently audited before construction. The historical old-machine freeze and provenance-only fallback do not override this new scoped authorization.
+
+Decision: add an isolated Std-only numeric primitive model, with constructor-bounded 32-bit code fields, one-cell reservation, separate word stores, and explicitly named key-read/comparison-oracle primitives. Preserve the old scalar model through an external conservative bridge. Fixed code is counted at the declared word width; replace the obsolete all-size strict code/payload gap with closed-program uniformity, literal program/encoding pins and explicit code accounting. Keep signed biased key encoding separate from the unsigned length header, whose actual load is checked. All amended old wording and rationale are appended in extensions/pre1/AMENDMENTS.md; the historical plan and attack catalogue are untouched.
+
+Alternatives rejected: importing semantic RMQ into the interpreter; merely assigning a tick to old shape/rank/select builders; initializing a variable-size array in one allocation instruction; an unbounded immediate field; a header preloaded in a register; all-size code smaller than a zero-bit core; treating an arbitrary finite fixed table as logically impossible; and accepting a provenance-only builder as the commissioned efficient endpoint. CleanTail makes newly reserved storage absent, excluding a preseeded-memory bypass. The oracle control uses actual existing two-key Cartesian BP serialization and numerical-result independence, while the baked-code control differs on same-length inputs despite fixed instruction count.
+
+Consequences: the contract theorem certifies primitive/input prerequisites only. The real fixed builder, literal program counts, same-allocation equality, linear interpreter work, global word/temporary-space bounds and construction/query capstone remain mandatory after contract acceptance. Comparison-oracle and finite-key word corollaries remain distinct. Functional indexed-state semantics carries no Lean-runtime complexity claim. Shared Packed modules and public root aliases are unchanged.
+
+Evidence: extensions/pre1/CONTRACT.md, SOURCE_FACTS.md and ATTACK_TABLE.md; Construction Primitive/Input/Model/Controls/Contract/Conservative modules; independent expanded typed consumers. The author completeness check assigns explicit current-contract dispositions to all 15 distinct historical attacks, including FK-11/FK-12/FK-13, without claiming that the unimplemented builder proofs are complete. Owner of this author check: PRE-1; coordinator acceptance and the plan-required dated coordinator disposition remain separate.
+
+## DD-20260912-PRE1-002: build the operational closure before any builder program text
+
+Context: the fresh blind contract audit PRE-1-A1 passed c1c970b8bfbae03163633365e512d487ae1c98f2 with four required amendments (AMEND-1 run-level HeaderUse, AMEND-2 two literal-pinned constants from one template, AMEND-3 positional emitted-cell extraction inside the closure, AMEND-4 layered firewall and gate reach) and four recommendations (R1 single safety judgment, R2 set-equality matcher, R3 accepted-program predicates stay in Controls, R4 attack-table corrections). The coordinator synthesized a staged plan (extensions/pre1/BUILDER_PLAN.md) whose Stage 0 lands the operational layer inside a layered firewall with no builder program text.
+
+Decision: add seven primitive-only modules under RMQ/Core/WordRAM/Construction/, importing only Std, the frozen Primitive/Input/Model roots and each other in the plan's order. Program: fetch-and-`checkedStep` interpreter over `List BInstr` with positional `Transition`s, projections `steps/categories/categoryCount/writes/reserves/loads/keyReads/result`, the positional extraction `emitted`, and the register-frame vocabulary `WritesOnly` with a decidable instance. Calculus: `run_add`, `RunsTo` with `trans`/`instruction`/`fuel_extension`, the exact ten-category partition, positional store and load provenance `run_write_at`/`run_load_at`, extent monotonicity, clean-tail preservation, `run_frame`, `writes_replay`, fine and coarse supplied-store agreement (`run_agree_of_reads`, `run_agree_of_supplied` over an own `TransitionsAgree` relation), and the generic header lemmas `run_missing_header`/`run_header_first`. Safety: `State.Fits`, the single per-transition judgment `Prim.Safe W len s p := OperandsFit ∧ SafeAt` carrying exactly the R1 obligations, `Run.Safe`, and the facts that a safe transition never faults and preserves `Fits`. Structured: nine-action IR with skip/exit/seq/ifZero/top-tested loop, `compileAt` with resolved `fin` targets, the parametrized relational cost-exact big-step `EvalG` with `Eval` and `SafeEval` instances, and the executable `evalF` sound for `Eval`. Compiler: `HostedAt`, `EvalG.compile_realizes` (exact transition count, result state equal up to the program counter via `PcAgree`, every transition classified as an action satisfying the side condition at its own pre-state or an in-range control instruction), `SafeEval.compile_safe` producing `Run.Safe`, and the run-level consequences of `Prim.Safe`. Loop: `loop_iterate`, `loop_iterate_potential`, `loop_measure`. ArrayRun: array-backed registers, memory, keys and key registers with `runArray_abstract` to the mathematical run and initial-state constructors for both input models. HeaderUse.lean (outside the closure) packages AMEND-1's certificate with default proofs for the five run-level fields derived from the two syntactic fields.
+
+Design choices inside those modules: a write event is recorded only for a successful store, so `writes_replay` is exact; `EvalG` costs are exact transition counts, with explicit rules for arms that stop inside a branch or a loop body, so fuel-insensitive step counts follow without an upper-bound budget; the program counter of an `EvalG` result state is meaningless and the compiler theorem fixes it, avoiding a separate pc-erased data semantics; `Prim.SafeAt` is `True` for arms whose bound already follows from `Fits` or operand fit (constant, move, halt, comparison, compareKey); run-level safety consequences live in Compiler.lean because Safety imports only Program.
+
+Alternatives rejected: a counter attached to the semantics instead of the interpreter's transition count (REQ-PRE-MACHINE forbids it); `List.Forall₂` for run agreement (absent from this toolchain's Std); recording faulting stores as write events (breaks exact replay); PQ1's pc-erased `Data` source semantics (mutable memory makes the whole state necessary); an upper-bound-only realization theorem as in PQ1 (exactness is needed for the stage cost sums); a `HeaderUse` constructor with strict initializers only (a weakening of the tail field would then stop at the producer instead of the consumer; the fallback never fires on the real field types and the pins live in the consumer).
+
+Consequences: `Program`, `Uniform`, `programWords` and `CodeAccounting` remain in Controls.lean and are consumed only from outside the closure (R3); no builder program text, no `efficientBuild`, no cost constant and no capstone exist yet; every later stage states its theorems as `SafeEval`/`EvalG` facts composed by the compiler theorem and the loop rules, with `Prim.Safe` as the only safety vocabulary. Nothing about `buildMemory`, linear work or the query join is claimed at this stage.
+
+Evidence: focused builds of the eight modules with `LEAN_NUM_THREADS=1`; `scripts/preprocessing_builder_check.lean` restates every exit theorem at an independent full type, pins two toy programs on the mathematical run and the array evaluator, proves the countdown loop's exact `4k+1` cost, and prints standard-only axiom inventories; `docs/internal/extensions/pre1/BUILDER_STAGE_LOG.md` records commands and durations.
+
+## DD-20260913-PRE1-003: state the PRE-1 builder target as a machine-free emission plan before any builder text
+
+Context: the coordinator's synthesized plan (extensions/pre1/BUILDER_PLAN.md, S1) and its continuation message allow only the machine-free specification checkpoint S1 while the PRE-1-A1 continuation audit of Stage 0 (5f325dd) runs. `PackedWordRAM.buildMemory xs` reaches its bits through `shapeMemory`, `repackWords`, the old-cell chunking `packedReviewerMemory` and proof-carrying table structures (`FixedWidthNatTable`, rank-sample tables, the dense-entry table, the interior directory wrappers), so no later emission theorem can be stated against it directly. The monotone-stack BP pass, the running excess counter, the sparse doubling memo and the one-pass select/rank directories each need a reference-side law that does not exist in the checkout.
+
+Decision: add five modules under RMQ/Core/WordRAM/Construction/Spec/, outside the builder firewall (they import reference modules; no firewalled module imports them; they contain no builder program text). Plan.lean: `tableBits entries width := flattenPayloadWords (entries.map (natToBitsLE width))` and `FixedWidthNatTable.payload_eq_tableBits`, proved from the table invariants (`erases`, `read_exact`, `word_length_of_get?`) for every table however built; named segments `accessSegments` (18, payload order, with the effective sparse-exception flag vector `sparseExceptionEffectiveFlagBits` as the raw flag leaf and the base of the sparse flag-rank tables), `interiorSegments` (8), `fringeSegment`, `selectChunkSegment`; `canonicalReviewerPayload_eq_plan`; `metadataOf n lc sc` with `metadata_eq_metadataOf := rfl` and `metadataOf_length = 174`; `buildMemory_eq_plan : ∀ xs, buildMemory xs = metadataOf n lc sc ++ (List.range count).map (bitsToNatLE ∘ cellAt (header ++ BP ++ access ++ interior ++ fringe ++ selectChunk ++ pad₁ ++ pad₂) W)` with `n = xs.length`, both zero paddings explicit; `buildMemory_plan_body_length` and `planPayload_length` as the length laws a measured-cursor builder needs. OpenCounts.lean: `openCounts`, `bpCode_eq_openCounts_flatMap`, `openCounts_length`, `insertPoint` and `openCounts_insertRight` over the reference `StackCartesianTree.insertRight` (strict pop, equal keys descend right), `buildTree_append_singleton`. Dyck.lean: `bpCode_closes_le_opens` for every prefix length (including past the end) and the running-excess step laws. ArgMinSplit.lean: associativity of `bpBetterArgMinBlock`, `bpRangeArgMinBlock_split` for every left length and nonempty right length, the doubling and macro-doubling instances. Positions.lean: one-pass `occurrencePositionsFrom`/`selectFrom_scan`, `positionFill_spec`, `position_eq_fill_or_length`, `runningRanksFrom`/`rankPrefix_running`, `rankSampleFill_spec` and the three canonical rank-entry lists as fills.
+
+Alternatives rejected: stating the plan by `rfl` against the current constructors (every leaf happens to be `FixedWidthNatTable.ofEntries`, but a definitional proof would silently depend on that construction and unfold the tactic-built interior tables in the kernel); a flatMap over the source enumeration instead of named segments (it would not expose entry lists and widths to the emission specs); stating `openCounts` through `Cartesian.shape` recursion (well-founded, not usable by the stack invariant); a split law with both parts nonempty only (the left-empty case holds and the right-empty case is false, so the premise is exactly `0 < b`); kernel `decide` on `buildMemory` fixtures (`Cartesian.shape` is well-founded recursion; the fixtures are evaluated by `#guard` in the consumer as smoke checks, the equality is the universal theorem).
+
+Consequences: later stages target `buildMemory_eq_plan` segment by segment: BP through `openCounts`, access through the fills and `tableBits`, interior through the Dyck and split laws, both paddings through the length laws, metadata through `metadataOf`. Every statement is universal over `xs : List Int`; degenerate layouts are instances. Nothing about any machine run, cost or workspace is claimed. Plan S1 item 6 (literal envelopes, Spec/Envelope.lean) is not part of this entry.
+
+Evidence: focused `lake build` of each module with `LEAN_NUM_THREADS=1` (2.6-10.0 s); `scripts/preprocessing_spec_check.lean` restates every exit theorem at an independent full type, pins the segment lists by `rfl`, checks tie and scan fixtures on tiny pure lists by `decide`, evaluates `buildMemory` against the plan on `[]`, `[7]`, `[4, -3, -3, 8]` and `crossBlockInput` by `#guard`, and prints 82 axiom inventories with union {propext, Classical.choice, Quot.sound}; two producer mutations (the non-effective `sparseFlagBits` leaf, swapped microtables) were rejected at the producer and restored byte-exact; BUILDER_STAGE_LOG.md S1 records every command.
+
+## DD-20260913-PRE1-004: literal all-size envelopes for the PRE-1 emission plan
+
+Context: plan stage S1 item 6 requires literal all-size linear envelopes for every size-only loop count and width of the emission plan, because REQ-PRE-COST needs explicit constants and `LittleOLinear` is not literal. The checkout already contains literal linear bounds for each overhead summand (`genericSparseExceptionBPCloseAccessOverhead_le_linear`, `canonicalRelativeRmmInteriorRawPayloadOverhead_le_linear`, `packedReviewerFringeTableOverhead_le_linear`, `packedReviewerSelectChunkTableOverhead_le_linear`) combined in `packedReviewerCellBound_add_two_le_linearCapacity : packedReviewerCellBound n + 2 ≤ 400000 * (n + 1)`.
+
+Decision: add RMQ/Core/WordRAM/Construction/Spec/Envelope.lean (outside the builder firewall) stating envelopes about the reference quantities of `buildMemory_eq_plan`: `planPayload_length_add_two_le` (the whole payload plan has at most `400000 * (n + 1) - 2` bits); every access, interior and microtable segment below the same bound; entry counts of all 26 table segments and both raw flag vectors via `tableBits_length : (tableBits e w).length = e.length * w` and positive widths (`accessEntryCounts_le`, `selectSlotCounts_le`, `interiorEntryCounts_le`, `microtableRowCounts_le`); `oldBits_le`, `denseBits_le`, `wordWidth_le_linear : wordWidth n ≤ 192 * n + 576`, `planBuffer_le` (old bit string at most `400384 * n + 401150` bits, dense buffer at most `400576 * n + 401726` bits for every `xs`), `buildMemory_length_le : (buildMemory xs).length ≤ 400576 * xs.length + 401900`; interior layout counts `blockCount ≤ n`, `superSampleCount ≤ n + 1`, `macroSampleCount ≤ n + 1`, `globalLevelCount ≤ n + 2`, local memo grid `levelCount * blockCount ≤ 3 * n`; microtable row scans `bpFringeChunkRowCount c * (c + 1) ≤ 256 * (n + 1)` and `bpChunkSelectRowCount c * (c + 1) ≤ 64 * (n + 1)` at `c = bpFringeChunkBits (2 * n)`; `log2_rounds_le`. Also add the plan's name `metadataOf_eq` as a restatement of `metadata_eq_metadataOf`, and kernel `decide` open-count fixtures on the remaining plan lists `[]`, `[7]` and `crossBlockInput` with hand-derived expected values.
+
+Alternatives rejected: per-table bespoke asymptotic proofs (the shared payload envelope plus positive widths bounds every entry count at once); sharper constants (ruling Q7 accepts crude literals and nothing depends on tightness); deferring envelopes to the cost stage (the plan places them in S1, and they are facts about reference definitions, independent of the machine design).
+
+Consequences: the cost and workspace stages can bound every table emission loop, the bit buffer and the output by literals in `n`. The bounds are upper bounds only; no tightness or optimality is claimed. Envelopes for loops that the later machine design introduces beyond these reference counts (for example inner relative-offset loops) remain obligations of those stages.
+
+Evidence: focused `lake build RMQ.Core.WordRAM.Construction.Spec.Envelope` (6.1 s, then 22.2 s after the Plan alias); `scripts/preprocessing_spec_check.lean` projects every envelope at full type and prints 112 axiom inventories with union {propext, Classical.choice, Quot.sound}.
+
+## DD-20260913-PRE1-005: freeze the PRE-1 builder theorem surfaces before stage S2 (contract version 3)
+
+Context: the continuation audit PRE-1-A1C of Stage 0 (`5f325dd`) returned CONTINUATION_PASS_WITH_CONDITIONS. Its condition C1 (finding P2-1) requires that the future builder surfaces named in contract clauses V2-2/V2-3 be pinned precisely enough for a later audit to reject a deviation mechanically, before any builder source exists: host module and namespace, parameterlessness, definitional shape of the constants and leaves, leaf-difference contents, literal `ProgramContract` numerals, extraction bodies, replay-case shapes, the word-model limit of `HeaderUse`, and a Q9-consistent discharge of `tailNeverWritesR1`. The coordinator accepted C1-C3 and resolved the plan/contract naming drift (P3-3) in favour of the contract names.
+
+Decision: append CONTRACT.md "Version 3 amendments" V3-1..V3-10 and matching AMENDMENTS.md version-3 entries (text only), and rename the plan's `buildProgramKey`/`buildProgram`/`buildBudget` to `builderProgram`/`builderProgramWord`/`builderBudget` in BUILDER_PLAN.md. The frozen choices: all nine template-level declarations live in `Builder/Program.lean` under `RMQ.SuccinctFinal.PackedConstruction`, checked by a consumer `run_cmd` over `Environment.getModuleIdxFor?`; `builderProgram = (builderSource keyLeaf).compileAt 0 ++ [⟨.halt 3⟩]` and the word analogue by `rfl`; `builderSource leaf = .seq (.action (.load 1 0)) (builderBody leaf)`; the leaf register interface (index `i` in register 4, index `j` in register 5, result `[xs[i] < xs[j]]` in register 6, the constant 1 in register 2, word-leaf scratch 7 and 8, key-leaf key registers 0 and 1, halt value in register 3); `keyLeaf` = loadKey 0 4, loadKey 1 5, compareKey 6 0 1, move 6 6, move 6 6 and `wordLeaf` = add 7 4 2, load 7 7, add 8 5 2, load 8 8, comparison lt 6 7 8; the extraction bodies match on the final status with `[]` for a non-halting run; `efficientBuildWord` takes the input model's encoding width as an explicit first argument, and its pin and equality theorem are stated at `wordWidth xs.length`; `tailNeverWritesR1` is discharged through `Block.compile_writesOnly` from a compositional `WritesOnly` proof of `builderBody`.
+
+Alternatives rejected: writing `wordWidth xs.length` inside `efficientBuildWord` (the builder firewall does not admit `RMQ.Core.WordRAM.Packed.Allocation`, and a closure-local copy of the reviewer width arithmetic would duplicate a reference definition inside the closure); defining `efficientBuildWord` outside the closure (V2-3 requires the closure); the plan's `r.result.getD 0` projection (a non-halting run would read cells from address 0); pinning leaf positions only (P2-2 leaves the leaf instructions free); a list-wide kernel `decide` for the tail frame (not covered by ruling Q9a); leaving register literals to S3 (C1(c) requires literal leaves before S2).
+
+Consequences: S2-S8 must realize these surfaces exactly or append a further amendment; the leaf registers 2 and 4-8 and key registers 0-1 are reserved for the leaf interface in the S3 register map; the word-model use of the header value is a recorded limit (V3-8), not a theorem. The audit's C1(f) wording is refined, not weakened: the width is still pinned to `wordWidth xs.length` at the consumer and in the theorem.
+
+Evidence: CONTRACT.md V3-1..V3-10; AMENDMENTS.md version-3 entries; BUILDER_PLAN.md rename (26 occurrences, none left); audit report sections 2-4 read in full and hash-verified.
+
+## DD-20260913-PRE1-006: builder source blocks inside the firewall, their specifications outside it (stage S2 checkpoint)
+
+Context: after condition C1 (commit `361fe82`) the coordinator authorized stages S2-S6. Stage S2 of the builder plan requires generic emission specifications, the size-only geometry prelude and a first end-to-end table equality. The Stage 0 calculus provides `EvalG`/`SafeEval` with exact costs, the loop rules and the compiler theorem, but no register-frame lemma, no emission vocabulary and no per-action safety helpers.
+
+Decision: (1) program text only inside the builder firewall: `Builder/Registers.lean` (the literal register map: 0 zero, 1 length, 2 one, 3 halt value, 4-8 the C1-frozen leaf interface, 9 two, 10-16 emission helpers, 20-25 arithmetic helpers, 30-37 the interior geometry subset), `Builder/Emit.lean` (`acts`, `emitBit`, `emitBits`, `emitTable`, `log2Block`), `Builder/Geometry.lean` (`constantsBlock`, `levelWidthBlock`, `interiorGeometryBlock`), `Builder/Interior.lean` (`levelEntryBlock`, `levelTableBlock`); each registered in the builder firewall's allowed-imports table and manifest. (2) all proofs outside it under `Proof/`: `Proof/Base.lean` (register literal simp lemmas, single-step state equations `exec_*`, `acts_evalG` for straight-line action lists, `EvalG.regs_frame` from `Block.WritesOnly`, `EvalG.keys_eq`, the emission predicate `Emits s₀ s vals` with `Emits.trans`, per-action `Action.Safe` lemmas); `Proof/Emit.lean` (`emitBit_spec`, `emitBits_spec` with cost `≤ 7 * width + 3`, `emitTable_spec` with cost `≤ count * (J + 7 * width + 7) + 3` for any entry block meeting a frame/safety contract, `log2Block_spec` with cost `≤ 5 * log2 x + 4`); `Proof/Interior.lean` (`levelEntry_spec`, `levelTable_spec`); `Proof/Geometry.lean` (`constantsBlock_spec`, `levelWidthBlock_spec`, `interiorGeometry_spec`); `Proof/Stage2.lean` (`localLevelTable_emits_payload`, `globalLevelTable_emits_payload`: for every shape the charged fragment emits exactly `(canonicalRelativeRmmInteriorLocalLevelTable shape).table.payload` resp. the global table as 0/1 cells). Every specification is a `SafeEval W` fact (every executed action `Prim.Safe` at its pre-state), with word-capacity premises of the form `_ < 2 ^ W` that stage S8 discharges at `wordWidth n`.
+
+Alternatives rejected: proving emission specs inside the closure (they need `natToBitsLE` and the reference tables, which the firewall excludes, and keeping proofs out keeps the hashed surface to program text); `Eval`-only specs with safety proved separately at S8 (duplicate work; `SafeEval` implies `Eval`); unfolding `put` by `simp` for symbolic registers (undecidable register comparisons; explicit `put_ne`/`put_same` rewrites are used); exact loop costs (the loop rules give upper bounds, which the linear-work target needs).
+
+Consequences: later stages compose these blocks; the geometry prelude will be extended in place (new registers in the geometry band) as S3-S7 need further size-only quantities; `emitFlatMap_spec`, `reserveArray_spec` and the remaining geometry bank are open S2 items. No builder program constant, run, cost literal or capstone exists.
+
+Evidence: focused builds of the four Builder and five Proof modules (`LEAN_NUM_THREADS=1`, at most 34.65 s); `scripts/preprocessing_builder_firewall.ps1` PASS with 11 modules; `scripts/preprocessing_stage_check.lean` restates the exit specifications at full type, pins two source blocks by `rfl`, runs `evalF` on the actual source fragment for `n ∈ {0, 5, 24}` against the reference table payloads, and prints 152 standard-only axiom inventories.
+
+## DD-20260913-PRE1-007: exact register-function specifications and a step-contract geometry bank (stage S2 completion)
+
+Context: the S2 checkpoint (`160593f`) proved the emission blocks and the interior geometry subset by tracking every register through hand-written frame facts; `interiorGeometry_spec` needed about 370 lines for eight registers and carried no cost. Plan stage S2 still required `emitFlatMap_spec`, `reserveArray_spec`, `geometryPrelude_spec` over the full size-only bank and first literal per-block costs. A first attempt that composed the whole access-half geometry into one register function and evaluated it with `simp` exceeded the simplifier's step limit (measured: 76.96 s, exit 1), because register values were substituted into each other without named atoms.
+
+Decision: (1) `Proof/RegSpec.lean`: `RegSpec W b pre F cost` (from every running state with `pre regs`, `b` safely evaluates in at most `cost regs` steps to registers exactly `F regs`, memory, extent, keys and key registers unchanged), with `RegSpec.seq`, `RegSpec.weaken`, `RegSpec.pure` (straight-line register actions: `pureRegs`/`pureOKs` computed at literal registers) and `RegSpec.log2` (exact final registers of the halving loop). (2) `Builder/Geometry.lean`: the bank is 39 single-output steps `geoStepBlock i` (register `38 + i`, scratch registers 20-28 only) chained by `geoChain`, after the unchanged `interiorGeometryBlock`; `geometryPrelude := .seq interiorGeometryBlock (geoChain 39)`. (3) `Proof/GeometryBank.lean`: each step meets `GeoStepOK W n i` (from `GeoBase n` and the first `i` bank registers at `geoVal n i`, register `38 + i` gets `geoVal n i`, cost at most `5 * W + 20`), proved with the step's inputs named by their reference definitions (`packedRankWordSize n`, `GenericSelect.superStride (2 * n)`, ..., `packedReviewerCellWidth n`, `PackedWordRAM.wordWidth n`) and `omega` over explicit product bounds by powers of `2 * n + 4`; `geoChain_spec` by induction; `geometryPrelude_spec` with cost at most `25 * W + 40 + 39 * (5 * W + 20)` (costs were added to `levelWidthBlock_spec` and `interiorGeometry_spec`). (4) One capacity premise for the whole bank, `2 ^ 32 * (2 * n + 4) ^ 8 < 2 ^ W`. It was chosen because it should be dischargeable at `W = wordWidth n = 32 + 8 * oldW`: `2 ^ oldW` exceeds `packedReviewerCellBound n + 2 ≥ 2 * n + 563`. That argument is not yet machine-checked; discharging it is an S8 obligation. (5) `Proof/Loops.lean` with `Builder/Emit.lean` additions: `forSlots i go cnt body` (counted loop, caller invariant insensitive to the two loop registers, cost at most `regs cnt * (J + 4) + 3`), `emitFlatMap_spec` (a body that appends `g k` at slot `k` makes the loop append `(List.range (regs cnt)).flatMap g`), `reserveArray base cnt` (`regs cnt + 1` zero cells, `regs base` = old extent), `ArrayAt`.
+
+Alternatives rejected: one monolithic register function for the bank (simplifier blow-up, measured above); per-register frame tracking by hand for 39 more registers (volume); computing the lc/sc-dependent metadata quantities now (they belong to S7 and are measured from emission cursors per plan section S2); a separate `monusBlock`/`copyBitsBlock` (truncated subtraction is written branch-free as in `minActs`, and bit copies are `emitTable`/`emitFlatMap` instances).
+
+Consequences: registers 38-76 and scratch 26-28 are fixed; later stages take `GeoBase n ∧ GeoUpTo n 39` as their size-only hypothesis and preserve it by frames (no later block writes 30-76). The bank's reference identities are pinned in the stage consumer (`spec_geoVal_pins`). Open: the capacity premise at `wordWidth n` (S8); metadata offsets and word counts (S7).
+
+Evidence: focused builds (Proof.GeometryBank 65.90-89.41 s, under the 600 s module budget); `scripts/preprocessing_stage_check.lean` 498 axiom inventories, union {propext, Classical.choice, Quot.sound}, `#guard geoSmoke` for `n ∈ {0, 1, 7, 24, 1000}`; producer mutation (budget constant 561 to 562 in step 36) rejected in `geoStep36`; builder firewall PASS with the re-hashed manifest.
+
+## DD-20260913-PRE1-008: monotone stack over a spine invariant, leaves in the program host module (stage S3)
+
+Context: plan stage S3 requires the Cartesian stack pass and BP emission for both leaves, with `KeySpec` as the only key hypothesis, amortized linear cost, and fixtures (including ties) run before the proofs. Contract clauses V3-1 and V3-3 place `keyLeaf` and `wordLeaf`, as literal five-action sequences, in `Builder/Program.lean`.
+
+Decision: (1) `Builder/Cartesian.lean` (program text): `stackArraysBlock` reserves three arrays of `n + 1` zero cells (stack, leftmost descendant, open count). `stackPassBlock leaf` pops while the leaf reports `xs[i] < xs[top]`, a strict test, so ties stay leftmost; the leaf receives `i` in register 4 and the top index in register 5. It then adds one to the open count of the last popped node's leftmost descendant and makes that descendant the new node's, or gives the new node count 1 and itself as leftmost descendant, and pushes `i`. `bpEmitBlock` emits `count[j]` 1-cells and one 0-cell for every `j`. Registers 100-114. (2) `Builder/Program.lean` is created now with only the two V3-3 leaves, so the leaf specifications are about the frozen constants; the remaining V3-1 declarations arrive at S7. (3) `Spec/Spine.lean` (reference side): `spineFrom t o`, the right spine as (inorder index, leftmost inorder index, value); `spineFrom_insertRight` (an insertion keeps the prefix that does not pop and appends the new node with the first popped node's leftmost index); `insertPoint_eq_find`; `spineFrom_sorted` (spine values never decrease in a valid tree); `takeWhile_find_of_split`, which turns the machine's pop-from-the-top loop into the reference's descend-from-the-root recursion; `openCounts_sum`. (4) Proofs: `KeySpec` (exactly five safe steps, result in register 6, frame outside 6-8, memory, extent and keys unchanged); `keyLeaf_spec` on `OracleInput xs` with no premise; `wordLeaf_spec` on `WordInput W xs`, which includes `InputFits W xs`, through `encodeInt_lt_iff`; `InpBelow`, an input predicate that reads only memory below the pass start, keys and a growing extent; the memory predicate `Region`; `popGuard_spec`; `popLoop_spec` through the new `EvalG.loop_measure_pot`, which charges 18 per actual pop; `linkPush_spec`; `stackStep_spec` over `StackInv xs e0 sA i` (stack = `spineFrom (buildTree (xs.take i)) 0`, leftmost indices at spine nodes, counts = `openCounts (buildTree (xs.take i)).shape`); `stackPass_spec` through the new `forSlots_spec_pot` with potential "stack height" (cost `50 * n + 4`); `bpUnit_spec` and `bpEmit_spec`, whose potential is "cells still to emit" (cost `14 * n + 3`); `cartesianBP_spec`, which appends exactly `(Cartesian.shape xs).bpCode.map bitToNat` after the arrays (cost `79 * n + 19`); `cartesianBP_key` and `cartesianBP_word`.
+
+Alternatives rejected: materializing the tree or a separate BP array; bounding the pops by `loop_measure` (charges the whole stack height, not amortizable); declaring the leaves in a phase module (V3-1's module-location check); kernel evaluation of runs (ruling Q9); a separate sweep to recover counts from the spine.
+
+Consequences: the BP code is appended at the current extent, so stage S6 inserts the header reservation before `bpEmitBlock`; later stages read the BP cells through `Region`. `stackStep_spec` is one large theorem elaborated under `set_option maxHeartbeats 1600000`; `Proof.StackPass` builds in about 87 s (split candidates: the invariant update per case). Open for later stages: word-model capacity premises at `wordWidth n` (S8).
+
+Evidence: before the proofs, a scratch `runArray` check of the compiled source matched the reference BP code for ten inputs in both models (row S3-2); the stage consumer keeps seven inputs in both models as `#guard` lines, among them `[1, 1, 1, 1]`, `[4, -3, -3, 8]` and `crossBlockInput`. A producer mutation that swaps the leaf operands was rejected at `Proof/Cartesian.lean:244:89`. Builder firewall PASS with 13 modules; stage consumer 607 standard-only axiom inventories.
+
+## DD-20260913-PRE1-009: block statistics as left folds and the four summary tables from stored arrays (stage S4 checkpoint)
+
+Context: plan stage S4 starts with the excess sweep, the per-block statistics (`bpBlockMinExcess`, `bpBlockMaxExcess`, `bpBlockArgMinPrefixPos`, with the reference clamps and strict improvement) and the four summary tables, and names `blockStats_spec` and `summary_spec` as its checkpoint. The reference statistics are list functions over the `blockSize + 1` samples of a block and a tail-recursive argmin; the tables are `bpSuperblockBaselineEntries`, `bpBlockRelativeMinExcessEntries`, `bpBlockRelativeMaxExcessEntries` and `bpBlockArgMinLocalOffsetEntries`, whose relative entries subtract a superblock baseline in `Nat`.
+
+Decision: (1) program text in `Builder/Interior.lean`: `sampleBodyBlock` folds one sample into a branch-free minimum and maximum (`minActs`, new `maxActs`) and a leftmost argmin (strict `<` against the stored best excess), then, except after the last sample, reads the BP cell and advances the excess by `cell + cell - 1` and the position by one; `blockBodyBlock` stores the block's start excess, runs `forSlots` over the `blockSize + 1` samples, and stores the three statistics; `blockStatsBlock` sweeps all blocks and stores the start excess after the last block. The four statistics arrays (start excess with `blockCount + 1` cells; minimum, maximum and argmin position) are addressed through registers 115-118; the BP base is register 119. The tables are emitted by `emitTable` with entry blocks `baselineEntryBlock` (`ESB[slot * blocksPerSuper]`), `relativeEntryBlock` (`stat[slot] + span - ESB[slot / bps * bps]`) and `argOffsetEntryBlock` (`ARG[slot] - slot * blockSize`); registers 120-134. (2) `Spec/BlockStats.lean`: the minimum and maximum as left folds (`natListMinFrom_append_singleton`, `natListMax_append_singleton`), `argStep`/`argAcc` with `bpBlockArgMinPrefixPosFrom_eq_argAcc`, `excess_step` (one BP cell), `argAcc_ge`. (3) `Proof/BlockStats.lean`: `sampleBody_spec`, `sampleLoop_spec` (invariant: the folds over the first `k` samples, position `start + min k bs`), `blockBody_spec` (memory after the block is four `put`s over the input memory), `blockStats_spec` (cost `bc * ((bs + 1) * 28 + 20) + 7`), with the helper macro `pre1_reg_simp` (all literal registers 0-199). (4) `Proof/SummaryTables.lean`: `step_pure`, `step_load`, the three entry specifications and `summaryTables_spec`, which emits the four `tableBits` segments in order (cost `ssc * (7 sw + 10) + bc * (21 rw + 41) + 13`). Non-underflow comes from `bpBlockMinExcess_baseline_le_add_span`, `bpBlockMaxExcess_baseline_le_add_span` (RelativeSummary.lean) and `argAcc_ge`. (5) `emitTable_spec` (S2) is strengthened: its entry premise now also receives `s.extent ≤ u.extent`, which the loop invariant already supplies. Entry blocks that load cells stored below the table start need it for load safety. `levelTable_spec` ignores the new argument.
+
+Alternatives rejected: recomputing block statistics per table entry from the BP cells (quadratic in the block size per slot and four sweeps); keeping the statistics in registers and emitting the tables during the sweep (the tables are interleaved in payload order with different counts); a separate `emitTable` variant carrying the extent fact (duplicates a 160-line proof).
+
+Consequences: `blockStats_spec` and `summaryTables_spec` take the layout as parameters (`bs`, `bps`, `bc`, `ssc`, widths) with size-only premises (`bc * bs ≤ 2n`, `0 < bps`, `ssc = bc / bps + 1`, array ordering below the BP base, capacity); the canonical instantiation (`blockSize = 2 base`, `blocksPerSuper = base`, `blockCount = n / base`, where `bc * bs ≤ 2n` holds for every `n`) and the array reservation belong to the close-segment composition. The clamp branches of the reference are unreachable under `bc * bs ≤ 2n` and are matched through `Nat.min_eq_left`. Open in S4: memoized local and global sparse tables, the level tables in store order, `closeSegment_eq`, `close_cost`.
+
+Evidence: before the proofs, a scratch `runArray` harness (arrays reserved with `reserveArray`) matched the first four interior segments of `Spec.interiorSegments` for eleven inputs (S4-2); after them, for `n` in {0, 1, 2, 3, 12, 24, 7, 9, 15, 17, 31, 33, 63, 65}, `[1, 1, 1, 1]`, `[4, -3, -3, 8]` and `crossBlockInput` (S4-11; kept as consumer `#guard` lines). A scratch copy of `sampleBody_spec` over a mutated sample comparison (`rT4 := [bestExcess < excess]`) was rejected at the composition step (S4-14). Stage consumer: 695 axiom inventories, union {propext, Classical.choice, Quot.sound}; builder firewall PASS with 13 modules.
+
+## DD-20260913-PRE1-010: doubling memos over stored block minima, decoded sparse entries, one close-segment theorem (stage S4 completion)
+
+Context: after the S4 checkpoint the plan requires the memoized local and global sparse tables, the two level tables in store order, `closeSegment_eq` (the buffer close segment equals the stored interior directory payload as 0/1 cells) and `close_cost`. The reference entries are `bpLocalSparseCellOffset` and `bpGlobalSparseCellBlock`, both guarded, over `bpRangeArgMinBlock`, a left fold of `bpBetterArgMinBlock`. That selection compares the excess at the two blocks' leftmost argmin positions.
+
+Decision: (1) program text in `Builder/Interior.lean`, registers 135-158. `betterActs` selects between two blocks branch-free by their stored block minima. `memoCellBlock` and `memoLevelsBlock` fill memo rows `l + 1` from rows `l` by the doubling law, only on indices whose doubled range lies inside the covered blocks. `localMemoBlock` fills `A[l][b] = bpRangeArgMinBlock b (2 ^ l)`: row 0 is `A[0][b] = b`, and the rows are indexed by blocks. `globalMemoBlock` fills `G[l][m] = bpRangeArgMinBlock (m * M) (2 ^ l * M)`: row 0 comes from a scan of each complete macro, and the rows are indexed by macros. `localEntryBlock` and `globalEntryBlock` decode a slot by division and remainder, evaluate both reference guards, and read the memo only when both hold. `interiorCloseBlock` runs the statistics, both memos, the four summary tables, the two sparse tables and the two S2 level tables in payload order. (2) `Spec/SparseMemo.lean`: `argPos_excess_eq_min`, the stored key, says that for every covered block the excess at its argmin position is its block minimum. `better_eq_min` restates the reference selection with stored keys. `rangeArgMin_snoc` and `globalMemo_double` give the scan and doubling laws in memo index form; they rest on the S1 split lemma. (3) `Proof/SparseMemo.lean`: `ActsPrefix`, a composable prefix evaluation of right-nested action lists with loads and stores, with `prefix_pure`, `prefix_load` and `prefix_store`. Built on it: `betterActs_prefix`, `memoCell_spec`, `memoLevels_spec` (generic over base, count, scale and level registers and a value function `V` satisfying the doubling law), `localMemo_spec`, `macroScan_spec` and `globalMemo_spec`. (4) `Proof/SparseTables.lean`: `localEntry_spec`, `globalEntry_spec`, `localSparseTable_spec` and `globalSparseTable_spec`, each entry equal to the reference cell on every slot. (5) `Proof/InteriorClose.lean`: `interiorCloseLayout_spec` for any layout meeting size-only premises, and `closeSegment_spec` at the canonical layout, from `GeoBase n ∧ GeoUpTo n 39`. It states that the work touches only the arrays below the extent and that the emission is `(canonicalRelativeRmmInteriorDirectory shape).payload.map bitToNat` (through `interiorPayload_eq_segments`), in at most `1600 * (400000 * (n + 1))` transitions. Every capacity premise is discharged from `s.extent + 16 * (400000 * (n + 1)) < 2 ^ W` using the S1 envelopes. The plan names `closeSegment_eq` and `close_cost` are the Emits and cost conjuncts of this one theorem; `localSparse_spec`, `globalSparse_spec` and `level_spec` are `localSparseTable_spec`, `globalSparseTable_spec` and the S2 `levelTable_spec`.
+
+Alternatives rejected: storing the argmin excess as a fifth statistics array instead of proving `argPos_excess_eq_min` (one more array and one more store per block for a fact the reference already implies); computing the global level 0 from the local memo by the binary decomposition of `M` (the plan allowed the second memo; the scan is linear); nested per-level loops in the table entries (the reference slot order is a single index, so division and remainder reproduce it directly); separate `closeSegment_eq` and `close_cost` theorems (they would repeat the same composition).
+
+Consequences: the memo arrays sit above the statistics arrays and below the BP cells, in the order the canonical theorem assumes (`A0 + bc + 1 ≤ A1 ≤ … ≤ A3 + bc ≤ Bm`, `Bm + LC * bc ≤ Gb`, `Gb + GLC * mc ≤ B`); S6 must reserve them in that order before the stack pass. The cost constant is crude (ruling Q7). `emitTable_spec` is unchanged since the checkpoint.
+
+Evidence: before the proofs of this part, a scratch harness on the compiled source matched all eight interior segments for `n` in {0, 1, 2, 3, 4, 5, 6, 8, 12, 16, 24}, the threshold sizes 7, 9, 15, 17, 31, 33, 63, 65, 127, 129, `crossBlockInput`, `[1, 1, 1, 1]` and `[4, -3, -3, 8]` (rows S4-17, S4-18); the stage consumer keeps these as `#guard` lines. A scratch copy of `betterActs_prefix` over a mutated comparison was rejected (S4-32). Stage consumer: 790 axiom inventories, union {propext, Classical.choice, Quot.sound}; builder firewall PASS with 13 modules.
+
+## DD-20260913-PRE1-011: one occurrence pass, flag arrays with prefix counts, eighteen access sources from one access state (stage S5)
+
+Context: stage S5 of BUILDER_PLAN.md asks for the access half of the payload: one pass over the BP cells for close positions and word-boundary counts, the long and effective sparse-exception flags, the counts `lc` and `sc`, the eighteen sources in payload order at their recorded widths, `accessSegment_eq` against `concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload shape` and `access_cost`. The reference entries read positions through `select` (clamped by `position`), spans through truncating subtraction, flags as Booleans, local entries with liveness zeros, flag-rank tables over the effective sparse flag prefix, and relative rows through `relativeOffsetsOrZero`.
+
+Decision: (1) Program text in the new `Builder/Access.lean` (inside the firewall, importing `Builder.Interior`), registers 159-189 declared there. `posPassBlock` scans positions `0 .. 2n`; at a word boundary it stores the running close count, and at a close it stores the position at the current count; it finishes with `POS[n] := 2n`. `longFlagsBlock` and `sparseFlagsBlock` compute each flag from stored positions with clamped position reads (`posActs`) and branch-free truncating subtraction (`monusActs`), and store the flag and its prefix count. The sixteen fixed-width sources are `emitTable` runs over small entry blocks that read the arrays; the two relative sources are counted loops that read the stored flag and either emit nothing or run `emitTable` over `relativeOffsetEntryBlock`. `accessHalfBlock` sequences the three passes and the eighteen emissions in payload order. (2) `Spec/Access.lean`: the close at scan position `p` is occurrence `rankPrefix false b p` (`select_at_close`, `position_at_close`), with the BP count, length and clamp facts. (3) Proofs outside the firewall: `Proof/PosPass.lean` (`posStep_spec`, `posPass_spec`); `Proof/AccessFlags.lean` (`posActs_prefix`, `monusActs_prefix`, `longFlag_spec`, `longFlags_spec`, `sparseFlag_spec`, `sparseFlags_spec`, the last two also giving the final counts in registers 177 and 178); `Proof/AccessEntries.lean` (`EntryOK`, the obligation `emitTable_spec` asks of an entry, and one lemma per entry block, local fields through `localDecode_prefix` and the four `localEntry_*_eq` normal forms); `Proof/AccessRelative.lean` (`relativeOffsetsOrZero_eq_positions`, the two per-slot bodies, `relLoop_spec` with a potential `CAP - extent` so the cost is a constant per slot plus 34 per emitted cell, `longRelative_spec`, `sparseRelative_spec`); `Proof/AccessTables.lean` (`AccessReady`, the state the emissions share, closed under emissions that keep `AccessFrame`; `accessTable_generic`; `accessTable1_spec` .. `accessTable17_spec` without 14); `Proof/AccessHalf.lean` (`accessRegs_of_bank`, `access_caps`, `accessPasses_spec`, `accessTable14_spec`, `accessTable18_spec`, `accessSegments_eq`, `accessHalf_spec`, `lc_eq_longCount`, `sc_eq_sparseCount`). `accessHalf_spec` assumes `GeoBase n ∧ GeoUpTo n 39`, the bank capacity `2 ^ 32 * (2n + 4) ^ 8 < 2 ^ W` (the premise `geometryPrelude_spec` already carries), array bases ordered `P0 + n + 1 ≤ R0`, `R0 + 2n / ws + 1 ≤ L0`, `L0 + sup ≤ C0`, `C0 + sup + 1 ≤ F0`, `F0 + loc ≤ G0`, `G0 + loc + 1 ≤ B`, the BP cells at `B` and `s.extent + 16 * (400000 * (n + 1)) < 2 ^ W`. It concludes: a work state `t` with `t.extent = s.extent` and memory outside `[P0, G0 + loc]` unchanged; `Emits t s' ((concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload shape).map bitToNat)`; the counts in registers 177 and 178; the frame `AccessHalfFrame` and the keys; cost `≤ 200 * (400000 * (n + 1))`. Plan names: `flags_spec` is `longFlags_spec` with `sparseFlags_spec`; `rankTables_spec` is `accessTable1_spec`, `accessTable2_spec`, `accessTable11_spec`, `accessTable12_spec`, `accessTable15_spec` and `accessTable16_spec`; `accessSegment_eq` and `access_cost` are the Emits and cost conjuncts of `accessHalf_spec`.
+
+Alternatives rejected: sorting closes or a rank structure to find positions (the plan forbids free rank and sort; one scan suffices, by `select_at_close`); recomputing positions per table (quadratic); storing only the effective sparse flag prefix (the sparse relative loop runs over all local slots, and its word count `packedReviewerSparseCount` is stated over the full flag vector in the reference, `sparseExceptionRelativeEntries_length`); a per-table state predicate instead of `AccessReady` (eighteen copies of the same frame and memory facts); a fixed per-slot cost for the relative loops (a long super pays `S * ws` cells, so a fixed bound would not be linear).
+
+Consequences: S6 must reserve the six access arrays in the stated order between the stack arrays and the BP cells, and place the access segments right after the BP code. `accessHalf_spec` carries the bank capacity premise, which `closeSegment_spec` does not. `sc` is `localStride * regs 178`, to be formed in S7. The frame excludes registers 26-28, 108, 130 and 165-189 and the table scratch.
+
+Evidence: before the proofs, a scratch harness on the compiled source matched all eighteen access segments for small sizes and three literal inputs, and scratch runs on crafted BP codes with a first-super span of exactly `superLongSpan` and one more (long count 0 and 1) matched the BP cells, the long flag-rank tables, the long flags and the long relative table (rows S5-1..S5-5). The stage consumer keeps the full-segment checks as `#guard` lines for 20 inputs. A scratch copy of `longFlag_spec` over a block with the flag comparison reversed was rejected (S5-17). For every `n < 2 ^ 96` the local stride is 1 (`localStride (2 ^ 97 - 1) = 1`, `localStride (2 ^ 97) = 2`, S5-18), so no executable fixture has a set sparse-exception flag; the sparse theorems are general. Stage consumer: 1032 axiom inventories, union {propext, Classical.choice, Quot.sound}; builder firewall PASS with 14 modules.
+
+## DD-20260913-PRE1-012: in-register microtable scans, header cells before the BP code, measured paddings, and the buffer theorem over the stack pass (stage S6)
+
+Context: stage S6 of BUILDER_PLAN.md asks for the fringe and select-chunk microtables as counted data, the header cells patched with `natToBitsLE oldW lc`, the old zero padding to `cellCount * oldW`, the new zero padding to `denseCount * W`, and the theorems `fringe_spec`, `selectChunk_spec`, `header_spec`, `padding_spec`, `bufferStage_spec : buffer = (densePad W (packedReviewerPaddedBits shape)).map bitToNat` with `outBase - bufBase = denseCount * W`, and `buffer_cost`. S3 proved the stack arrays, the stack pass and the BP emission as one block, with the BP cells right after the stack arrays; S4 and S5 assume the BP base in register 119 and their arrays laid out below it.
+
+Decision: (1) Program text inside the firewall. `Builder/Micro.lean` (imports `Builder.Access`, registers 200-217): a fringe row decodes its slot into the pattern `v = slot / (c + 1) ^ 2`, the range start `a` and end `b`, scans the `c + 1` prefix offsets once, keeping `v / 2 ^ t`, the offset-encoded excess and the leftmost minimum over `[a, b)` in branch-free keep-left form, and packs `bpFringeChunkPacked`; a select row decodes `v` and `k` and scans the `c` pattern bits for the close of rank `k`, default `c`; `microtablesBlock` emits both tables with `emitTable`. `Builder/Finish.lean` (imports `Builder.Micro` and `Builder.Cartesian`, registers 220-228): `headerReserveBlock` reserves `oldW` zero cells, records their base in register 220 and sets register 119 to `base + oldW`; `headerPatchBlock` stores the `oldW` little-endian bits of register 177 into those cells; `padBlock` reserves and zeroes one probe cell, computes `L = probe - base`, `H = ((L - 1) / oldW + 1) * oldW` and `D = ((H + W - 1) / W) * W` (`denseBitsOf oldW W L`), and appends `D - L - [L < D]` zeros with `zerosBlock`; `bufferBlock` is `headerReserveBlock; bpEmitBlock; accessHalfBlock; interiorCloseBlock; microtablesBlock; headerPatchBlock; padBlock`. (2) `Spec/Micro.lean`: pattern bit `v / 2 ^ t % 2`, the rank steps of the pattern, the excess offset step without underflow, the one-step argmin scan, and the select position invariant (`selectPos_step`, `selectPos_final`, `fringeBest_step`). (3) Proofs outside the firewall: `Proof/Micro.lean` (`selectStep_spec`, `selectEntry_spec`, `selectTable_spec`, `fringeStep_spec`, `fringeEntry_spec`, `fringeTable_spec`, `microtables_spec`); `Proof/Finish.lean` (`zeroLoop_spec`, `zeros_spec`, `headerReserve_spec`, `headerPatch_spec`, `prefix_reserve`, `denseBitsOf`, `pad_spec`); `Proof/Buffer.lean` (`EmitsFrom`, emission restricted to addresses at or above a base, with `Emits.shiftFrom` and `EmitsFrom.trans`; `bufferCells_getD` and `bufferCells_length`, the reference buffer cell by cell and its length in the pad block's form; `bufferHead_spec`, `bufferAccessClose_spec`, `bufferTail_spec`; `bufferStage_spec`). `bufferStage_spec` is stated over `.seq stackArraysBlock (.seq (stackPassBlock leaf) bufferBlock)` for any `KeySpec` leaf and input predicate that reads memory below the extent, from the bank (`GeoBase n ∧ GeoUpTo n 39`), `2 ^ 32 * (2n + 4) ^ 8 < 2 ^ W`, the six access array bases ordered as in `accessHalf_spec` and the six interior bases ordered as in `closeSegment_spec`, both layouts ending at or below `s.extent`, and `s.extent + 32 * (400000 * (n + 1)) < 2 ^ W`. It concludes, with `base = s.extent + 3 * (n + 1)` in register 220 and `T = (densePad (wordWidth n) (packedReviewerPaddedBits (shape xs))).map bitToNat`: `ArrayAt s' base T.length (T.getD · 0)`, `s'.extent ≤ base + T.length + 1`, cost `≤ 2000 * (400000 * (n + 1))`, memory below `s.extent` unchanged outside the two array layouts, `longCount (shape xs)` in register 177, the sparse-exception flag count in register 178, registers outside 4-28 and 100-228 unchanged, keys unchanged. Plan names: `fringe_spec` is `fringeTable_spec`; `selectChunk_spec` is `selectTable_spec`; `header_spec` is `headerReserve_spec` with `headerPatch_spec`; `padding_spec` is `pad_spec`; `buffer_cost` is the cost conjunct of `bufferStage_spec`.
+
+Deviation from the plan statement: `outBase - bufBase = denseCount * W` is false for this program text. When the serialized length `L` equals `D`, the probe cell stays after the buffer. Counterexample: the input `(i * 37 + 11) % 13 - 6` for `i < 1116` has long count 0 and `L = D = 73920`, and the run ends with `extent - base = 73921` while the first 73920 cells are the buffer (row S6-14). For `n < 20000`, long count at most 3 and sparse count 0, sixteen pairs hit `L = D`, the first being `(n, lc) = (83, 2)` (row S6-11). The theorem therefore states exactness on the first `D` cells and `base + D ≤ extent ≤ base + D + 1`; S7 takes the output base from its own reserve and reads the buffer through register 220 and `D`.
+
+Alternatives rejected: computing `L` from size-only length formulas (the access length depends on `lc` and `sc`, and the plan asks for a measured cursor); reusing the address of the last emitted cell instead of a probe (`emitTable_spec` does not expose register 10, and the header patch runs after the tables); reserving the header before the stack arrays (the buffer would not be contiguous); stating the stage over `bufferBlock` alone (its premises would expose the stack pass's count region and register 102, which S7 would have to re-derive from `stackPass_spec`); keeping `cartesianBP_spec` as a program segment (the header reservation sits between the stack pass and the BP emission, so its three-block sequence is not a segment of the final program; its component theorems are reused); one monolithic buffer proof (it exceeded the default heartbeat budget; it is split into head, access-close and tail lemmas rather than raising `maxHeartbeats`); literal microtable rows (baked constants, replay case B18).
+
+Consequences: S7 must reserve the access and interior arrays below the stack arrays in the stated orders, then run the stack arrays, the stack pass and `bufferBlock`. The extent may exceed the buffer by one probe cell; S8 accounts for it in the workspace bound. `cartesianBP_spec` stays a theorem about a block that is not part of the final program. The capacity premises are discharged at `wordWidth n` in S8.
+
+Evidence: before the proofs, scratch harnesses on the compiled source matched both microtables for `n ∈ {0, 1, 5, 127, 128, 32767, 32768}` (`c = 1, 2, 3`) and, after the BP base fix, the whole buffer for eleven sizes and three literal inputs (rows S6-1, S6-5, S6-17). A crafted BP code with long count 1 (`n = 13395`) matched the header bits, the BP cells, the trailing zeros, register 177 and `D ≤ extent - base ≤ D + 1` (row S6-12). The stage consumer keeps 25 microtable and buffer `#guard` fixtures. A scratch copy of `headerPatch_spec` over a block storing `x / 2` instead of `x % 2` was rejected, and the unmutated copy passed (row S6-15). Stage consumer: 1202 axiom inventories, union {propext, Classical.choice, Quot.sound}; builder firewall PASS with 16 modules.
+
+## DD-20260913-PRE1-013: typed consumers print their verdict marker only after sorry-free elaboration (condition C3, audit P3-1)
+
+Context: `scripts/preprocessing_builder_check.lean` and `scripts/preprocessing_contract_check.lean` are the exact-type consumers of the builder foundations and of the contract certificate. Both ended with an unconditional `#eval IO.println "...-TYPED-CONSUMERS PASS"`, which still ran after earlier elaboration errors (audit PRE-1-A1C P3-1). Commit `75a6301f5db7d3d6e893cbb2a1a73e1ed5522a13` changed both files under condition C3 and recorded the change only in WDD-20260913-PRE1-015; the design checker classifies Lean files under `scripts/` as code, so that commit fails `scripts/design_decision_check.ps1 -Strict` per commit. This entry is the missing proof/code design record.
+
+Decision: each consumer keeps every existing line in place (`import Lean` is appended to its last import line) and ends with `consumerWitness : Unit`, whose value binds each theorem and definition of the file with `let _ := @name` (the contract consumer also restates its seven anonymous examples with their proofs), and, in the builder consumer, `consumerGuards : Bool`, the conjunction of its five `#guard` checks as `decide` terms. The final command, run in `CommandElabM`, looks the witness up by an unchecked name, computes `collectAxioms` of it and prints the marker only if the witness exists, no `sorryAx` occurs and the guards hold. It prints nothing and logs nothing otherwise. The exit code of `lake env lean` stays the verdict; the marker is now also a faithful signal.
+
+Alternatives rejected: checking the command state's message log (it is per command in this Lean version, probe C3-1); `#eval` of a term that refers to the witness (a sorry-dependent term aborts with an error on the marker line and adds that line to every rejected case's failing line set, breaking the exact sets pinned by both registries, one of them frozen); converting the examples and `#guard` lines into named declarations (moves or changes lines pinned by registered cases).
+
+Consequences: a failed restatement leaves the failing line set unchanged and suppresses the marker (B13, B15 and C01 observed; accept controls B12 and C14 still print it). A future mutation that breaks `runArray` itself would make `consumerGuards` fail to elaborate and add the marker line to the failing set; such a case must pin that line. The stage consumer is unchanged.
+
+
+## DD-20260913-PRE1-014: metadata as a register bank, words emitted from registers, Horner repacking, and a tail-stage theorem (stage S7 checkpoint)
+
+Context: stage S7 must append the 174 metadata words and the dense words after the bit buffer and connect the whole run to `buildMemory xs` (BUILDER_PLAN.md S7, CONTRACT.md V3-1..V3-7, coordinator rulings R-S7-1..R-S7-4). The metadata words are functions of `n`, the long count `lc` and the sparse count `sc = c * localStride (2n)` (`metadataOf`, Spec/Plan.lean).
+
+Decision: (1) `Spec/Metadata.lean` names 108 values `mv_*` (each one arithmetic chain over the geometry bank, `lc`, `c` and earlier values) and lists the 174 words `metaWords n lc c`, each a bank value, a count or an `mv_*` value; `metaWords_eq` identifies the list with `metadataOf n lc (c * localStride (2n))`, and `pay_eq`/`cellCount_eq` give the payload length and the old cell count. (2) `Builder/Output.lean` (builder firewall, 17 modules) computes the bank as `metaChain 108`, step `i` writing only register `229 + i`; `metaEmitBlock` reserves the first output cell into register 3 (the halt value `outBase`) and stores the other 173 words from the named register list `metaWordRegs`; `repackBlock` reads each word's `W` buffer cells from the top down into a Horner accumulator and emits it; `arraysBlock` reserves the access and interior arrays in the buffer stage's layout. (3) Bounds: `metaVal_le` bounds every bank value by `3 * (400000 * (n + 1))` under the payload envelope premise, which the tail stage discharges from `planPayload_length_add_two_le`; `SafeEval.regs_fit` keeps every register below `2 ^ W` along a safe evaluation, so emitted register values need no separate bound. (4) `outputStage_spec` composes the bank, the words and the dense words; `outputWords_eq_buildMemory` identifies `metaWords ++ hornerWords` of the reference buffer with `buildMemory xs`; `tailStage_spec` composes arrays, buffer phase and output for any `KeySpec` leaf. (5) `Proof/Buffer.lean` proves the buffer theorem with the full kept frame (`bufferStage_kept`, which keeps register 9 that the bank invariant needs) and derives `bufferStage_spec` from it with its type unchanged. (6) The probe cell of the pad block (R-S7-2) lies below `outBase`, since `outBase` is the extent after the buffer phase; the tail theorem bounds `outBase ≤ extent + 8 * (400000 * (n + 1))`, which includes it.
+
+Alternatives rejected: emitting metadata through a loop over a descriptor oracle (a literal descriptor table in builder text would be an uncharged table); multi-destination metadata steps with shared scratch (the one-register-per-step frame makes the 108-step chain a uniform induction); polynomial bounds in `2n + 4` for metadata values (products of bank values exceed the bank capacity, while the payload envelope bounds every value linearly).
+
+Consequences: the output phase costs at most `1000 + N * (7W + 12)` for `N` dense words; the tail stage costs at most `2100 * (400000 * (n + 1))`. The program constants of `Builder/Program.lean` and the exactness theorems are not landed: with the V3-6 fuel body `C * n + D` and any `D` covering the proven bound at `n = 0` (about `8.4 * 10^8`), the Lean 4.22.0 kernel reports deep recursion when checking any unfolding of `efficientBuild`, including the V3-6 `rfl` pin; with `D + C * n` both exactness theorems close in scratch (BUILDER_STAGE_LOG.md S7-13..S7-16). This needs a coordinator ruling on V3-6 before the constants land.
+
+## DD-20260913-PRE1-015: the stage consumer's verdict marker is gated, with its fixture checks evaluated once
+
+Context: coordinator item for the S8 freeze: the stage consumer `scripts/preprocessing_stage_check.lean` printed `PRE1-STAGE-TYPED-CONSUMERS PASS` unconditionally, after earlier errors too. The builder and contract consumers were gated under condition C3 (DD-20260913-PRE1-013) by a name-based `collectAxioms` check of a witness plus a repeated conjunction of their `#guard` checks. The stage consumer's 35 fixture checks run the array-backed interpreter over whole stage harnesses; repeating them would roughly double its 138-154 s run.
+
+Decision: each `#guard e` line becomes `def stageGuardK : Bool := e` at the same place; `consumerWitness : Unit` binds every theorem and definition of the consumer (291 names, fully qualified); `stageGuards` is the conjunction of the 35 checks; the final command prints the marker only if the witness exists without `sorryAx` and `stageGuards` evaluates to `true`, and otherwise logs one error on its own line, so the exit code stays the verdict. No registry case pins stage-consumer lines, so the new error line changes no pinned failing set.
+
+Alternatives rejected: keeping the `#guard` lines and repeating them in `stageGuards` (doubles the fixture time); gating only on the witness (a false fixture would still print the marker).
+
+Consequences: a false fixture no longer fails at its own line but at the verdict line; a sorry-dependent restatement fails at the verdict line after its `declaration uses 'sorry'` warning (BUILDER_STAGE_LOG.md R7-3, R7-4).
+
+## DD-20260913-PRE1-016: the leaf proofs and their S3 instances move to a late module, before the program constants land
+
+Context: coordinator ruling R-S7-7. Contract clause V3-1 places `keyLeaf` and `wordLeaf` in `Builder/Program.lean`, and the constants commit makes that module import `Builder.Output`, the whole builder text. `Proof/Leaf.lean` imported `Builder.Program` for the two leaf definitions and sits at the bottom of the proof tower (`Proof/BPEmit.lean` imports it, and the buffer, output and tail proofs import `BPEmit`). Once the constants land, every change to the program host module would rebuild the whole proof tower, and the tower would depend on text it does not use.
+
+Decision: a pure module move. `Proof/Leaf.lean` now imports `Builder.Cartesian` instead of `Builder.Program` and keeps `KeySpec`, `OracleInput`, `WordInput` and the helper lemmas `exec_loadKey`, `exec_compareKey`, `getD_eq_of_getElem?`. The new module `Proof/Leaves.lean` (imports `Proof.BPEmit` and `Builder.Program`) receives `keyLeaf_spec` and `wordLeaf_spec` from `Proof/Leaf.lean` and `cartesianBP_key` and `cartesianBP_word` from `Proof/BPEmit.lean`, with unchanged names, namespace (`RMQ.SuccinctFinal.PackedConstruction.Proof`), types, proof text and axiom sets. The stage consumer imports `Proof.Leaves`. No firewall table, manifest or registry entry names these proof modules (they are outside the builder closure), so the firewall script, `builder_manifest.json` and both registries are unchanged; the builder firewall still passes over 17 modules.
+
+Evidence: the before inventory (`#check @` with full names and `#print axioms` of the four declarations, taken on the parent commit) and the after inventory are byte-identical up to line terminators (5,015 bytes); the four declarations now report module `RMQ.Core.WordRAM.Construction.Proof.Leaves`; a text comparison of each moved declaration with its parent-commit text is exact. The tower rebuild under `Global\RMQHeavyVerification` and the stage consumer both exit 0 (BUILDER_STAGE_LOG.md rows L-1..L-6).
+
+Alternatives rejected: keeping the leaves' proofs in `Proof/Leaf.lean` and importing the constants there (the tower would depend on the whole builder text); moving the leaf definitions out of `Builder/Program.lean` (contract clause V3-1 fixes their host module).
+
+Consequences: `Proof/Exact.lean` (constants commit) imports `Proof.Leaves`; later modules that need the leaf contracts import `Proof.Leaves` rather than `Proof.Leaf`.
+
+## DD-20260913-PRE1-017: the program constants land in Builder/Program.lean; their literal pins live in a module independent of the proof tower
+
+Context: rulings R-S7-1 and R-S7-5..R-S7-9. The fuel body is `builderBudget n = D + C * n` (amendment V3-6a). CONTRACT.md V3-1..V3-6 fix the host module, the parameterless constants, their definitional shape, the leaf difference with contents, the two contract instances with literal numerals and the two extraction bodies, all pinned in the builder typed consumer `scripts/preprocessing_builder_check.lean`, which is also the consumer stage of the builder replay. V3-7 (i) and (ii) and the V3-1 relocation case mutate `Builder/Program.lean` or the consumer's numerals, and condition C3 still requires consumer-reaching cases for foundation declarations in `Calculus.lean`, `Compiler.lean` and `Safety.lean`. If the builder consumer imported the stage proof tower, every such mutation would rebuild the whole tower twice per case (the rebuild above `Proof/Leaf.lean` alone took 571.67 s, BUILDER_STAGE_LOG.md L-2).
+
+Decision: (1) `Builder/Program.lean` (imports `Builder.Output`) declares `builderBody leaf` (constants, geometry prelude, arrays, stack arrays with the stack pass and the bit buffer, output), `builderSource leaf = .seq (.action (.load 1 0)) (builderBody leaf)`, `builderProgram` and `builderProgramWord` as the compiled sources followed by `halt 3`, `builderBudget n = 1000000000 + 1000000000 * n`, and `efficientBuild`, `efficientBuildWord` with exactly the V3-6 bodies. (2) `Proof/Constants.lean` (imports `Builder.Program` and `Contract`, not the proof tower) proves `builderBudget_eq_mul_add : ∀ n, builderBudget n = 1000000000 * n + 1000000000` by `unfold` and `omega`; the source sizes `2106` and program lengths `2107` by `rfl`; `filter_range_ne_eq_diffPositions` (the V3-4 filter equals one simultaneous traversal `diffPositionsFrom` of both lists, for any equal-length lists) and `builder_leaf_difference` at its V3-4 type by that lemma and `rfl` on the traversal (ruling R-S7-6; no `decide`); `programWords` `8079` and `8089` by `rfl`; both `ProgramContract` instances. (3) `Proof/Exact.lean` (imports `Proof.Tail`, `Proof.Leaves`, `Proof.Constants`) proves the capacity lemmas at `wordWidth n` for every `n` (`bankcap_wordWidth`, `cap_wordWidth`, from `packedReviewerCellBound_lt_two_pow_width` and a fringe overhead of at least 2), `builderSource_spec`, `builderRun_spec` (compile the source with `EvalG.compile_realizes'`, then one `halt 3` transition), fuel sufficiency `budget_ge` for every `n`, `run_of_halting`, and both equality theorems at their V3-6 left-hand sides. (4) The builder consumer gains the V3-1 `run_cmd` over the nine names, the two V3-2 `@` lines, the V3-3 `rfl` definitions, the V3-4 statement with literal `P`, `K`, `Wd`, the V3-5 instances with literal `2107`, `8079`, `8089`, the `rfl` pin of the fuel body, and both V3-6 body pins (the word pin at `width := wordWidth xs.length`); the new imports are appended to its last import line, so no registered line number moves. (5) The stage consumer restates the `Proof/Constants.lean` fuel lemma at full type and every `Proof/Exact.lean` theorem, including both equality theorems, and runs `builderProgram` and `builderProgramWord` themselves on the array-backed interpreter at fuel `builderBudget n` for `[]` and `[4, -3, -3, 8]` (`stageGuard36`). Importing `Contract` brings `PackedWordRAM.State` into scope, so the stage consumer's two `open RMQ.SuccinctFinal.PackedWordRAM` lines now hide `State`, `Registers`, `Transition`, `Memory`, `Status`, `Run`, `run`, `Instruction` and `execute`.
+
+Alternatives rejected: pinning the constants in a consumer that imports `Proof/Exact.lean` (a C3 foundation case would rebuild the tower); proving the V3-4 and V3-5 pins inside the consumer (every numeral case would repeat about 100 s of `rfl`); moving the equality theorems' restatements into the builder consumer (same rebuild cost); `decide` on the leaf difference or on `WritesOnly` over the compiled list (V3-4 route ruling R-S7-6, V3-9).
+
+Consequences: the builder consumer elaborates in about 3 s and the producer stage of a `Builder/Program.lean` mutation rebuilds `Builder.Program` and `Proof.Constants` (106.41 s together); both equality theorems are restated in the stage consumer, and the S8 capstone consumer will restate them again. Axioms: `efficientBuild_eq_buildMemory`, `efficientBuildWord_eq_buildMemory`, `builder_leaf_difference` depend on `[propext, Classical.choice, Quot.sound]`; `builderBudget_eq_mul_add` on `[propext, Quot.sound]`; `builderProgram_contract` on `[propext]`.
+
+## DD-20260913-PRE1-018: the S8 capstone - pointer-flow ownership, compositional frames, run facts of both constants, query transport and lifted simulation
+
+Context: stage S8 of BUILDER_PLAN.md after V3-7 case (i) passed on `48702c2` (ruling R-S7-1). The capstone must quantify the same `xs`, program, input store, emitted cells, common word width, builder execution and following PQ1 query; prove literal linear work and temporary-workspace constants for all sizes, word/address safety, positional write provenance, actual traces, supplied-store agreement, zero input writes and separation; transport the PQ1 facts through the exact emitted allocation (ruling Q3 (a)-(c)); and keep the arbitrary-Int and finite-key corollaries separate.
+
+Decision: (1) Ownership (`Proof/Flow.lean`): a static pointer-flow function `ptrFlow` over `Structured.Block` with `EvalG.ptrFlow_sound`: along any evaluation whose flow is defined, every executed store addresses at least a base `e0`. With `e0` the initial extent this gives zero input writes without re-proving any stage theorem. `Proof/FlowFacts.lean` computes the flow of every phase by structural simplification of the phase definitions (composites by rewriting with the phase lemmas; the 108 one- to six-action metadata steps decided individually); a `simp`-lemma `operand_val_lit` evaluates `Operand` numerals. (2) Frames (`Proof/Frames.lean`): `Block.RegsBelow R` and its compile lemma; per phase, `(builderBody leaf).WritesOnly (fun r => r ≠ 1)` by structural simplification as CONTRACT.md V3-9 requires (no decision over the compiled list or template), and every register operand below 400. (3) `Proof/Ownership.lean`: `builderRun_full` (the stage evaluation re-checked with the flow at the initial extent, compiled with `EvalG.compile_realizes`, plus `halt 3`; `Run.Safe` at width `W`; writes above the initial extent) and `run_last_write` (positional last-write provenance from `writes_replay`). (4) `Proof/RunFacts.lean`: `BuilderRunFacts program s0 xs`, 20 fields over the actual run at `builderBudget xs.length` (halting, work `≤ 1000000000 * n + 1000000000`, fuel insensitivity, category partition, output cells and their provenance, workspace `outBase - s0.extent ≤ 3200000 * n + 3200000`, peak extent, every prefix extent `≤ s0.extent + (3200000 * n + 3200000) + (buildMemory xs).length`, a 400-register bank, initial/transition/final safety at `wordWidth n`, zero input writes, input retention, replay, clean tails, read and supplied-store agreement, array-evaluator reflection); `comparisonRunFacts` for `builderProgram` on `comparisonInputState xs` for every `xs`, `wordRunFacts` for `builderProgramWord` on `wordInputState (wordWidth n) xs` under `InputFits`; `HeaderUse` at both constants from V3-9. (5) `Proof/Query.lean`: `PackedQueryOn memory xs` restates the 22 per-input fields of `FullyChargedPackedQueryCapstone` over an arbitrary memory, transported by `packedQueryOn_of_eq` to `efficientBuild xs` and `efficientBuildWord (wordWidth n) xs`; `constructionCompleteRho` joins the query's code and scratch with both builder constants' 8079 + 8089 code words and the 400-register bank, little-o by `allocationWithMachineRho_littleO`. (6) `Proof/Lift.lean`: `translatedQueryProgram` (total translation, fallback never used since every query operand fits 32 bits) and `translated_run` (final state and step count agree with the old run from every embedded state). (7) `Capstone.lean`: `ConstructionAndQueryCapstone` (21 fields) and `constructionAndQueryCapstone_holds`, axioms `[propext, Classical.choice, Quot.sound]`. (8) `RMQ/Validation/PreprocessingContract.lean` (not imported by `RMQ.lean`): 120 exact-type projections generated from the field texts, every run-fact and query-fact field of both models, every header and contract field of both constants, and the marker only after a `sorry`-free witness.
+
+Alternatives rejected: re-proving every stage theorem with a store predicate (the flow analysis is one generic soundness theorem plus per-phase facts); a kernel decision over the whole template or compiled list for the flow or frame facts (V3-9, ruling Q9); projecting the capstone in `scripts/preprocessing_builder_check.lean` (DD-20260913-PRE1-017: it would make every closure-module registry case rebuild the proof tower); an offset-relocated in-place query (ruling Q3 limit).
+
+Consequences: the literals are crude (`C = D = 1000000000`, `Cw = Dw = 3200000`, 400 registers); no tightness is claimed. The workspace field bounds the temporary region below the output base, which includes the pad block's probe cell (R-S7-2); the historical peak is the final extent (`peakExtent`). The replay extension (capstone consumer cases, the `Cw`/`Dw` numerals, the remaining C3 foundation cases), the validator executable and the gate reach follow in the next commit.
+
+## DD-20260913-PRE1-019: validator executable, safety definition pins, static program facts and the replay-reachable capstone surfaces
+
+Context: CHK-PRE-CONTROLS and INV-VALIDATION-REACH require executable validation that reaches the production builder; BUILDER_PLAN.md S8 items 10-12 name `RMQ/Validation/Preprocessing.lean` with `lean_exe rmq_preprocessing_validate`. Condition C3 (CONTRACT.md V3-10) requires consumer-reaching cases for the foundation declarations the capstone consumes, including `Prim.Safe`/`Run.Safe`, whose definitions the builder consumer did not pin arm by arm. INV-ADDRESS-WIDTH asks for evidence on dormant code and branch targets, not only on executed transitions. The S8 capstone cases need producer fields that a registered weakening can change while the producer still builds.
+
+Decision: (1) `RMQ/Validation/Preprocessing.lean`: eleven positive fixtures (`[]`, `[7]`, two and three elements, `[4, -3, -3, 8]`, increasing, decreasing and equal lists of length 24, `crossBlockInput`, the dense-length edge `n = 83`, a size-129 input) run the actual `builderProgram` and `builderProgramWord` on the array-backed interpreter at fuel `builderBudget n` and check halting, the emitted cells against `buildMemory xs`, the work and workspace literals, that every write addresses at least the initial extent, and the accepted query program on the emitted list against `scanWindow`; four negative controls (missing header, the allocation of the negated input as expected list, two swapped cells, dense words replaced by bit cells) run only when selected and must fail with pinned messages. The `n = 1116` edge is not a fixture: the reference `buildMemory` alone did not finish within ten minutes there (compiled). `lakefile.toml` gains the `rmq_preprocessing_validate` stanza only. (2) `scripts/preprocessing_builder_check.lean`: `safety_safeAt_arms` pins all thirteen `Prim.SafeAt` arms, and `safety_run_safe_definition` and `safety_fits_definition` pin `Run.Safe` and `State.Fits`, all by `Iff.rfl`, appended after the V3 section. (3) `Proof/RunFacts.lean`: the zero-input-write field is closed by `omega` from the ownership fact, so a weakened field statement still builds and the weakening reaches the capstone consumer. (4) `Proof/Static.lean` (`Block.compile_targets`, `program_static`, `builderProgram_static`, `builderProgramWord_static`): for every instruction of either constant, executed or not, operands fit every `wordWidth n`, register operands are below 400, branch and jump targets are below the program length, and no `jumpRegister` occurs; the capstone gains `programStatic` and `programStaticWord` at the end of the structure, so no existing consumer line moves. (5) The capstone consumer prints `#print axioms` for the 259 producer declarations of stages S7 and S8, and the validator module for its 24 declarations; every set is within {propext, Classical.choice, Quot.sound}.
+
+Alternatives rejected: validating through `lean --run` (the interpreted reference `buildMemory` at `n = 83` did not finish within 290 s); a validator comparing against a copied builder model (INV-ORACLE-INDEPENDENCE); leaving `Prim.SafeAt` pinned only through `Prim.Safe`'s `Iff.rfl` (an arm change would not reach a consumer line); a `reserve`-arm drift as the C3 safety case (`Prim.safe_fits` consumes that arm, so the producer rejects it at `Safety.lean:162` and the consumer is never reached); the shift obligation of the arithmetic arm is consumed by no builder-closure proof, so its removal reaches the arm pin.
+
+Consequences: the replay builds the executable and runs it once in full mode and once per negative control; the executable's full run took 267.5 s on this host. Every register identifier and target of the dormant code is covered by the static fields, beside the per-transition `Run.Safe` of the executed run.
+
+## DD-20260913-PRE1-020: the family summary records the PRE-1 builder as a candidate, not an accepted result
+
+Context: the lane brief requires one appended `docs/FAMILY_SUMMARY.md` entry for the candidate; the design check classifies that file as a public surface, so its wording is a design decision (commit `fa8e34e` added the entry with WDD-20260913-PRE1-024 only, and its per-commit design check failed for the missing entry here).
+
+Decision: the entry names `PackedConstruction.constructionAndQueryCapstone_holds` and its module, states that `RMQ.lean` does not import it, gives the exactness theorems' quantifiers (every `xs` in the comparison-oracle model; `InputFits (wordWidth xs.length) xs` in the word model), the work, workspace, safety, input-write and provenance facts with their literals, the static program facts, the transport of `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` to the emitted cells with the Q3 limit (no relocated in-place query), and the validator's fixture range; it calls the literals crude upper bounds and says that the aggregate gate, a fresh blind audit and coordinator acceptance are still required and that paper and headline identities are unchanged.
+
+Alternatives rejected: a headline-style statement (acceptance and the headline alias are coordinator steps); omitting the static facts or the validator (both are evidence a reader of the summary would otherwise not find).
+
+Consequences: the coordinator rewrites or promotes the entry on acceptance; until then `claim_drift_scan.ps1 -Strict` must stay green with it (0 strict failures on the working tree before `fa8e34e`).
+
+## DD-20260914-PRE1-R2-001: typed-consumer verdict markers read the whole file's message logs by in-process re-elaboration; the capstone docstring no longer trips the gate hygiene scan
+
+Context: fresh blind audit PRE-1-A2 of the PRE-1 builder candidate (report 53,979 bytes, SHA-256 `bda5f41450dddaf4cec8fc898e63d99881a12fece96f4ccc476b3fa2f82ed180`). P1-1: line 12 of `RMQ/Validation/PreprocessingContract.lean` is docstring prose containing a word of the gate's step-2 hygiene pattern, so `scripts/gate.ps1` would end in GATE FAIL. P2-1: the typed consumers printed their PASS markers while failing, because each marker read only whether a witness definition collects `sorryAx`. The repair's base reproduction on `a0c93e9cf4d3c93856f5756ff6a7271da2b821ff` (repair-r2 ACCEPTANCE_MATRIX.md) showed all five PRE-1 consumers (builder, capstone, contract, spec, stage) printing the marker on failing runs in at least four of the classes failing anonymous example, failing `#guard` or `run_cmd`, witnessed declaration failing with a maximum-recursion-depth error (the declaration is then absent, the witness's own kernel check reports an unknown constant, and the elaborated witness still collects no `sorryAx`), failing unreferenced declaration, and failing command after the marker; the spec consumer's marker was unconditional. REQ-PRE-R2-MARKER requires the marker if and only if the whole file elaborated with no error-severity message and the existing witness and guard conditions hold.
+
+Decision: (1) The verdict-marker command of each of the five consumers (and its explanatory comment, at the end of the file, after every registered surface) computes `fileClean` as follows: take the source text of its own input context (`Command.Context.fileMap.source`), find its own command extent by re-parsing the command at `Command.Context.cmdPos` with `Lean.Parser.parseCommand` under the current environment and scope, blank that extent with spaces while keeping line breaks, parse the header with `Lean.Parser.parseHeader`, import it with `Lean.Elab.processHeader` (same trust level and main module as the outer run, `leakEnv := true`), elaborate the commands with `Lean.Elab.IO.processCommands` under the frontend's command-line options (`Elab.async` and `internal.cmdlineSnapshots` true), and require `MessageLog.hasErrors` to be false for the header messages and for the returned command state's messages, which `IO.processCommandsIncrementally` collects from every snapshot of the snapshot tree (the same predicate `Lean.Elab.runFrontend` uses for the exit code). The marker prints only if `fileClean` and the existing witness condition (and, for the builder consumer, `consumerGuards`; for the stage consumer, `stageGuards`, whose two existing failure diagnostics are kept) hold; no other diagnostic is added, so registered failing line sets do not change. (2) The spec consumer gains ` import Lean` on its last import line, so no line moves. (3) Lines 11-12 of the capstone consumer's docstring are reworded to describe the new condition in two lines without a hygiene word; the verdict comment and command at the end grow, after every registered capstone surface. (4) The committed control matrix `docs/internal/extensions/pre1/repair-r2/marker_controls.json` with `run_marker_controls.ps1` injects each failure class into disposable copies outside the repository and requires, for every consumer, exit nonzero, no marker and the class's diagnostic at the injected line, and exit 0 with exactly one marker line on the unchanged copy.
+
+Why a later command sees earlier errors this way: in Lean 4.22.0 `Lean.Language.Lean.process.doElab` resets `messages := .empty` in the command state before elaborating each command and reports the messages through that command's snapshot, so the marker command's own `(← get).messages` never contains an earlier command's error (verified: such a check was blind to every class on a toy file). The in-process re-elaboration produces a fresh snapshot tree for the same text, and its collected message logs contain the errors of every command, including errors from asynchronously elaborated proofs and from commands after the blanked marker.
+
+Alternatives rejected: reading `(← get).messages` in the marker command (blind, above); extending the witness to every example and `run_cmd` (still blind to maximum-recursion-depth failures of absent declarations, to unreferenced declarations and to commands after the marker, and not "whole file"); a linter or command hook installed before the checked commands (it would move registered lines, linters run per command and do not see asynchronously reported proof errors, and it is outside the verdict-marker command); a subprocess `lean` run of a modified copy (a temporary file, the Lake environment and a second process for the same result); marker suppression by the replay runner alone (the consumers' own markers would stay false signals for gate checkers and readers). Cost accepted: each consumer run elaborates its file twice (builder about 3 s to 9 s, capstone about 38 s to 75 s on this host), which lengthens the builder replay; the gate deadline follows the measured run.
+
+Consequences: an explicit placeholder proof in a declaration the witness does not reference is a warning, not an error, and does not suppress the marker (the witness condition still covers witnessed declarations; the gate hygiene scan covers `RMQ/`). The marker remains a report of the exit-code verdict, never a substitute for it. No theorem statement, proof, program constant, closure module or manifest changes; `RMQ.lean` does not import any consumer. Evidence: repair-r2 matrix, control receipts and REPORT.md.
+
+## DD-20260919-INT-001: the integrated build manifest uses LF line endings; the BV-1 byte-preservation rule for it is retired
+
+Context: the BV-1 lane committed `lakefile.toml` with CRLF on most lines and added the attribute `lakefile.toml -text` so that its replay evidence could pin the whole file by hash. Main and the other four extension lanes keep the file in LF. The integration candidate must carry every lane's `[[lean_exe]]` stanza, so the BV-1 whole-file identity cannot survive any integration; it remains a historical identity of the BV-1 lane tip only, recorded in the BV-1 evidence. The composition step kept the BV-1 bytes as a prefix and appended the other stanzas in LF, leaving one file with two line-ending conventions guarded by a rule whose stated purpose no longer holds. Owner decision INT-D1 of 2026-09-19: normalize.
+
+Decision: `lakefile.toml` is stored with LF line endings throughout, like main. The BV-1 attribute line for `lakefile.toml` and its comment are removed from `.gitattributes`; every other BV-1 byte-preservation rule (its Lean sources, scripts and evidence directory) stays. The parsed TOML content is unchanged: the same package, libraries and the same ordered list of executable targets (checked with Python `tomllib` before and after in the commit that lands this entry).
+
+Alternatives rejected: keeping the mixed bytes and re-pinning a new whole-file hash (a permanently mixed manifest, carriage-return noise in every later diff, and a pin that the next added target breaks again); converting the whole file to CRLF (differs from main and from four of the five lanes for no benefit).
+
+Consequences: the BV-1 semantic manifest check (exactly one added target with the expected name and root) still describes the BV-1 contribution; the BV-1 raw-byte manifest receipts describe the lane tip and are not re-run on the integrated tree. No gate checker reads the manifest's bytes: the baseline gate on the candidate passed every stage that reads `lakefile.toml` (executable discovery and builds) with the mixed file, and the content those stages parse is unchanged.
+
+## DD-20260923-CI-001: explicit Lean worker stack for the integrated build
+
+Context: the accepted integration at bf31f983 fails Linux CI while building Construction.Proof.Constants. An independent clean Ubuntu 24.04 reproduction with pinned Lean 4.22.0, one Lean worker and a 1 GiB OS stack limit reports `Stack overflow detected. Aborting.` and Lean exit 134; Lake returns 1 after 146.57 seconds, without timeout or output overflow. The original CI wrapper omitted this diagnostic from its last forty output lines.
+
+Decision: set package `moreLeanArgs = ["-s", "65536"]` in lakefile.toml. The pinned compiler documents this as a 64 MiB worker-thread stack. Lake passes it to module compilation and includes it in build traces, so cached outputs are rebuilt under the declared configuration. No theorem, proof term, reduction limit, trust option, public root or model changes. Direct `lake env lean` commands do not inherit package arguments; their actual checks remain required.
+
+Alternatives: increasing the OS stack again does not set Lean's explicit worker stack; rewriting the literal program proofs would change proof source before testing the compiler's resource setting. The worker-stack setting is a candidate repair until the required Linux checks pass; this entry does not claim those pending results.
+
+Consequences: reproducible resource configuration applies to local and hosted Lake builds. The existing OS stack setup remains needed for interpreter execution. Both required protected-main checks must pass on the final candidate before promotion; lifecycle work is excluded.

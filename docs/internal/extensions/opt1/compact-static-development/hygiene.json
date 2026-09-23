@@ -1,0 +1,27 @@
+{
+  "SourceHashes": [
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/CompactStatic.lean",
+      "SHA256": "9459F014702789C6403404BD89B267E85A363F930F2B6B560D1D8D156E473074"
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Optimization/Query.lean",
+      "SHA256": "6CFA64CBFAB2B18FA2D35F84BDA610901B8DF1DE296F6202B0A164BEE18B6368"
+    }
+  ],
+  "TrustExit": 1,
+  "TrustOutput": [],
+  "NativeExit": 1,
+  "NativeOutput": [],
+  "DiffExit": 0,
+  "DiffOutput": [
+    "warning: in the working copy of 'RMQ/Core/WordRAM/Optimization/CompactStatic.lean', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'RMQ/Core/WordRAM/Optimization/Query.lean', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'docs/internal/extensions/opt1/compact-static-development/CONTRACT.md', LF will be replaced by CRLF the next time Git touches it",
+    "warning: in the working copy of 'docs/internal/extensions/opt1/compact-static-development/check.ps1', LF will be replaced by CRLF the next time Git touches it"
+  ],
+  "CommittedRange": "0e6a00f654abc64f8b68988fa9675b9a839dca2f..8e355fda7788077f548865c1d6acf2ae5e88da55",
+  "CommittedDiffExit": 0,
+  "CommittedDiffOutput": [],
+  "Note": "rg exit1 with empty output is no matches; Git LF/CRLF conversion messages are warnings, not whitespace errors. Current source changes remain uncommitted and require the lead final committed-range check."
+}

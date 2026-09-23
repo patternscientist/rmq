@@ -1,0 +1,31 @@
+{
+  "schema": "native1-command-v1",
+  "command": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/packed_native_hydrate.ps1 -DefaultRMQ",
+  "result": {
+    "Stage": "hydrate-default-02",
+    "ExitCode": 1,
+    "Output": [
+      "Measure-Object : The property \"bytes\" cannot be found in the input for any objects.",
+      "At C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_hydrate.ps1:161 char:21",
+      "+       ($cachePlan | Measure-Object -Property bytes -Sum).Sum)",
+      "+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "    + CategoryInfo          : InvalidArgument: (:) [Measure-Object], PSArgumentException",
+      "    + FullyQualifiedErrorId : GenericMeasurePropertyNotFound,Microsoft.PowerShell.Commands.MeasureObjectCommand"
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "Measure-Object : The property \"bytes\" cannot be found in the input for any objects.",
+      "At C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_hydrate.ps1:161 char:21",
+      "+       ($cachePlan | Measure-Object -Property bytes -Sum).Sum)",
+      "+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "    + CategoryInfo          : InvalidArgument: (:) [Measure-Object], PSArgumentException",
+      "    + FullyQualifiedErrorId : GenericMeasurePropertyNotFound,Microsoft.PowerShell.Commands.MeasureObjectCommand"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 153.875,
+    "DeadlineSeconds": 1800,
+    "Ownership": "kill-on-close-job"
+  }
+}

@@ -97,13 +97,23 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_refines
 Transitional close/LCA cost cap for the chunked route.  Unlike the retired
 event-silent route, the chunked cross-block branch charges up to `2 * 37`
 fringe reads, so the transitional cap is recovered through the principled
-interior bound and therefore requires the genuine close-position bounds.
+interior bound and therefore requires the genuine right close-position bound.
+
+Statement change, disclosed 2026-08-09 in the manner `lcaCloseTraceResultWith
+RankSeedAllSizeStructural_trace_forall` disclosed its `hsameBlock` addition at
+B6: an `hleftCloseBound : leftClose < shape.bpCode.length` premise was removed.
+It was never used.  It existed only to feed the identically decorative premise
+of `bpChunkedCrossBlockCloseCostedWithRankSeed_cost_le_principled`, and once
+that one went the chain was dead to its root.  This docstring previously said
+"the genuine close-position bounds", plural, which the proof did not support.
+The change is a strengthening -- the conclusion and quantifiers are untouched
+and the theorem now demands strictly less -- so every frozen row citing this
+theorem's branch cap still discharges.
 -/
 theorem canonicalLcaCloseCostedWithRankSeed_cost_le
     (shape : Cartesian.CartesianShape)
     (rankCloseCosted : Nat -> Costed Nat)
     (leftClose rightClose rankCost : Nat)
-    (hleftCloseBound : leftClose < shape.bpCode.length)
     (hrightCloseBound : rightClose < shape.bpCode.length)
     (hrankCost : forall pos, (rankCloseCosted pos).cost <= rankCost) :
     (canonicalLcaCloseCostedWithRankSeed
@@ -133,7 +143,7 @@ theorem canonicalLcaCloseCostedWithRankSeed_cost_le
     have hchunked :=
       bpChunkedCrossBlockCloseCostedWithRankSeed_cost_le_principled
         shape rankCloseCosted leftClose rightClose rankCost
-        hleftCloseBound hrightCloseBound hrankCost
+        hrightCloseBound hrankCost
     have hcap :
         bpChunkedPrincipledBPCloseChargedTraceCostWithRankSeed rankCost <=
           canonicalCompactBPCloseQueryCostWithRankSeed rankCost := by
@@ -149,12 +159,19 @@ theorem canonicalLcaCloseCostedWithRankSeed_cost_le
           hchunked)
       hcap
 
-/-- The chunked all-size close/LCA execution obeys the chunked U3 cap. -/
+/-- The chunked all-size close/LCA execution obeys the chunked U3 cap.
+
+Statement change, disclosed 2026-08-09: an unused
+`hleftCloseBound : leftClose < shape.bpCode.length` premise was removed, for the
+reason given on `canonicalLcaCloseCostedWithRankSeed_cost_le` above.  The branch
+cap this theorem discharges -- a MAX over the two arms, not a sum -- is
+unchanged, so `B6_SAMEBLOCK_ACCEPTANCE_MATRIX.md` REQ-B6-05 and
+`docs/PAPER_MODEL_ADEQUACY.md` continue to cite it correctly; both cite the
+conclusion, neither pins the hypothesis list. -/
 theorem canonicalLcaCloseCostedWithRankSeed_cost_le_principled
     (shape : Cartesian.CartesianShape)
     (rankCloseCosted : Nat -> Costed Nat)
     (leftClose rightClose rankCost : Nat)
-    (hleftCloseBound : leftClose < shape.bpCode.length)
     (hrightCloseBound : rightClose < shape.bpCode.length)
     (hrankCost : forall pos, (rankCloseCosted pos).cost <= rankCost) :
     (canonicalLcaCloseCostedWithRankSeed
@@ -184,7 +201,7 @@ theorem canonicalLcaCloseCostedWithRankSeed_cost_le_principled
     simpa [canonicalLcaCloseCostedWithRankSeed, blockSize, hsame] using
       bpChunkedCrossBlockCloseCostedWithRankSeed_cost_le_principled
         shape rankCloseCosted leftClose rightClose rankCost
-        hleftCloseBound hrightCloseBound hrankCost
+        hrightCloseBound hrankCost
 
 /-- Chunked all-size close/LCA execution is exact for every valid RMQ query. -/
 theorem canonicalLcaCloseCostedWithRankSeed_exact_of_query

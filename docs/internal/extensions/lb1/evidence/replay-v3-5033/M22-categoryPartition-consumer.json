@@ -1,0 +1,41 @@
+{
+  "Stage": "M22-categoryPartition-consumer",
+  "ExitCode": 1,
+  "Output": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:179:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.categoryPartition",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    let actual := run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right);",
+    "    actual.steps =",
+    "      actual.categoryCount Category.memoryRead + actual.categoryCount Category.registerWrite +",
+    "              actual.categoryCount Category.arithmetic +",
+    "            actual.categoryCount Category.comparison +",
+    "          actual.categoryCount Category.branch +",
+    "        actual.categoryCount Category.control : Prop"
+  ],
+  "StandardOutput": [
+    "C:\\Users\\poin\\.codex\\worktrees\\2270\\RMQ\\RMQ\\Validation\\VariablePayloadLowerBound.lean:179:2: error: type mismatch",
+    "  packedAllocationOptimality_holds.machine.categoryPartition",
+    "has type",
+    "  True : Prop",
+    "but is expected to have type",
+    "  ∀ (xs : List Int) (left right : Nat),",
+    "    let actual := run (reconstructedMemory xs) queryProgram queryBudget (initialState xs.length left right);",
+    "    actual.steps =",
+    "      actual.categoryCount Category.memoryRead + actual.categoryCount Category.registerWrite +",
+    "              actual.categoryCount Category.arithmetic +",
+    "            actual.categoryCount Category.comparison +",
+    "          actual.categoryCount Category.branch +",
+    "        actual.categoryCount Category.control : Prop"
+  ],
+  "StandardError": [],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 27.648,
+  "DeadlineSeconds": 600,
+  "Ownership": "kill-on-close-job"
+}

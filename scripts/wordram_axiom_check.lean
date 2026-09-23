@@ -5,6 +5,20 @@ import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctFinalStoreParam
 import RMQ.Core.SuccinctFinal.RAM.AnswerValueDependency
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
+import RMQ.Core.WordRAM.Packed.Capstone
+import RMQ.Core.WordRAM.Packed.ArrayRun
+
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.queryRun_execution_safe
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.queryRun_result
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.queryRun_read_at
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.queryRun_agreement
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.queryRun_scanWindow
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.queryRun_reads_reply
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.run_reads_reply_of_not_fault
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.guardedProgram_invalid_steps
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.queryRun_invalid_steps
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.runArray_toArray
 
 /-!
 Focused trust-base check for the Word-RAM refinement boundary.

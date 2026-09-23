@@ -1,0 +1,15 @@
+diff --git a/.gitattributes b/.gitattributes
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -11,4 +11,11 @@
+ # artifact-reproducibility whitespace stage fails on any commit that introduces
+ # or re-touches those lines. Reformatting the dossier is not the fix; it is
+ # evidence, not maintained prose.
+ docs/internal/E1_ARCHITECTURE_COORDINATOR_HANDOFF.md -whitespace
++
++# BV-1 source and replay evidence retain their exact recorded bytes on checkout.
++# The patterns are confined to this extension; no other family is affected.
++RMQ/Core/WordRAM/Bitvector/** -text
++RMQ/Validation/PackedBitvector.lean -text
++scripts/packed_bitvector_* -text
++docs/internal/extensions/bv1/** -text

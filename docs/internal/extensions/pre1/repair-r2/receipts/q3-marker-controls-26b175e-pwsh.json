@@ -1,0 +1,359 @@
+{
+  "version": "PRE1-R2-MARKER-CONTROLS-RECEIPT-V1",
+  "registryVersion": "PRE1-R2-MARKER-CONTROLS-V1",
+  "registrySha256": "554072ec7ffd20de73a74ef78528a6b7902b100a4b13b0bce6b7c86fb4678310",
+  "registryContentSha256": "11abd16938cbd0537a35460bdc203b50052bc5523b31847dc315aeec31aad81a",
+  "runnerSha256": "763af78ea72149ff92d080ea04b39bcbbb8371f35120db7ced39f62eba4504ab",
+  "liveBytesNote": "SHA-256 values are of the live checkout bytes that ran",
+  "repo": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\pre1-r2-consumer-markers",
+  "revision": "26b175e068780633118839e6383e2e38e576e637",
+  "host": "POINPAD",
+  "os": "Microsoft Windows NT 10.0.26200.0",
+  "powershell": "7.6.6",
+  "hostPath": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+  "packagedHost": true,
+  "lake": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lake.exe",
+  "observe": false,
+  "workRoot": "C:\\Users\\poin\\AppData\\Local\\Temp\\pre1-r2-marker-controls-978483a9a31c4312a9ad72129f57a315",
+  "workRootRemoved": true,
+  "selectorBound": true,
+  "selected": [
+    "deadline-descendant-cleanup",
+    "registry-remove-last",
+    "registry-swap-first-two",
+    "registry-version",
+    "registry-content",
+    "selector-omitted",
+    "selector-valid",
+    "selector-empty",
+    "selector-whitespace",
+    "selector-malformed",
+    "selector-unknown",
+    "selector-duplicate"
+  ],
+  "expected": [
+    "deadline-descendant-cleanup",
+    "registry-remove-last",
+    "registry-swap-first-two",
+    "registry-version",
+    "registry-content",
+    "selector-omitted",
+    "selector-valid",
+    "selector-empty",
+    "selector-whitespace",
+    "selector-malformed",
+    "selector-unknown",
+    "selector-duplicate"
+  ],
+  "executed": [
+    "deadline-descendant-cleanup",
+    "registry-remove-last",
+    "registry-swap-first-two",
+    "registry-version",
+    "registry-content",
+    "selector-omitted",
+    "selector-valid",
+    "selector-empty",
+    "selector-whitespace",
+    "selector-malformed",
+    "selector-unknown",
+    "selector-duplicate"
+  ],
+  "registryCaseCount": 45,
+  "result": "INCONCLUSIVE",
+  "cases": [
+    {
+      "id": "deadline-descendant-cleanup",
+      "kind": "deadline",
+      "requirement": "an owned child that starts a descendant is removed with its descendant at the deadline",
+      "verdict": "INCONCLUSIVE",
+      "detail": "packaged PowerShell host: descendant cleanup cannot be established here; sleeper not started",
+      "sleeper": {
+        "started": false,
+        "host": "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.exe",
+        "packagedHost": true
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+      "seconds": 5.248
+    },
+    {
+      "id": "registry-remove-last",
+      "kind": "registry",
+      "requirement": "a registry that is not the pinned one is rejected before any case",
+      "verdict": "PASS",
+      "detail": "exit 1 marker 1 probe 0",
+      "registry": {
+        "mutation": "remove-last",
+        "exit": 1,
+        "seconds": 1.181,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 1,
+        "stdout": [
+          "MARKER-CONTROLS: FAIL registry version, ordered case ids or content differ from the pinned PRE1-R2-MARKER-CONTROLS-V1 registry (44 ids read, 45 pinned, content 71c49543b68f9a489537c3adb865d7a2f89cf9cd9bf9972023d88800d91818d8)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+      "seconds": 6.45
+    },
+    {
+      "id": "registry-swap-first-two",
+      "kind": "registry",
+      "requirement": "a registry that is not the pinned one is rejected before any case",
+      "verdict": "PASS",
+      "detail": "exit 1 marker 1 probe 0",
+      "registry": {
+        "mutation": "swap-first-two",
+        "exit": 1,
+        "seconds": 1.181,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 1,
+        "stdout": [
+          "MARKER-CONTROLS: FAIL registry version, ordered case ids or content differ from the pinned PRE1-R2-MARKER-CONTROLS-V1 registry (45 ids read, 45 pinned, content 09b9d196fd62b65550346059a9bd7ce451b6b07eca9661b786ffe8ee4bf83a61)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+      "seconds": 6.402
+    },
+    {
+      "id": "registry-version",
+      "kind": "registry",
+      "requirement": "a registry that is not the pinned one is rejected before any case",
+      "verdict": "PASS",
+      "detail": "exit 1 marker 1 probe 0",
+      "registry": {
+        "mutation": "version",
+        "exit": 1,
+        "seconds": 1.163,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 1,
+        "stdout": [
+          "MARKER-CONTROLS: FAIL registry version, ordered case ids or content differ from the pinned PRE1-R2-MARKER-CONTROLS-V1 registry (45 ids read, 45 pinned, content a776d74fb56d29e562a8b2c91cd6efccafab83ec67a7b6958c2b2fd5eb777cf4)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+      "seconds": 6.166
+    },
+    {
+      "id": "registry-content",
+      "kind": "registry",
+      "requirement": "a registry that is not the pinned one is rejected before any case",
+      "verdict": "PASS",
+      "detail": "exit 1 marker 1 probe 0",
+      "registry": {
+        "mutation": "content",
+        "exit": 1,
+        "seconds": 1.17,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 1,
+        "stdout": [
+          "MARKER-CONTROLS: FAIL registry version, ordered case ids or content differ from the pinned PRE1-R2-MARKER-CONTROLS-V1 registry (45 ids read, 45 pinned, content 3ee838099153c01f64af18f544d9a350f0279507f1c450cd72e3881a1b187f44)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+      "seconds": 6.152
+    },
+    {
+      "id": "selector-omitted",
+      "kind": "selector",
+      "requirement": "selector boundary: omitted",
+      "verdict": "PASS",
+      "detail": "exit 0 marker 1 executed []",
+      "selector": {
+        "argument": "(omitted)",
+        "probe": true,
+        "exit": 0,
+        "seconds": 1.169,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 0,
+        "expectedMarker": "MARKER-CONTROLS: SELECTOR-PROBE selected=",
+        "childExecuted": [],
+        "stdout": [
+          "MARKER-CONTROLS: SELECTOR-PROBE selected=45 ids=builder-unchanged,builder-a-example,builder-b-guard,builder-b-run-cmd,builder-c-max-recursion,builder-d-unknown-identifier,builder-e-unreferenced,builder-f-after-marker,capstone-unchanged,capstone-a-example,capstone-b-guard,capstone-c-max-recursion,capstone-d-unknown-identifier,capstone-e-unreferenced,capstone-f-after-marker,contract-unchanged,contract-a-example,contract-b-guard,contract-c-max-recursion,contract-d-unknown-identifier,contract-e-unreferenced,spec-unchanged,spec-a-example,spec-b-guard,spec-c-max-recursion,spec-d-unknown-identifier,spec-e-unreferenced,stage-unchanged,stage-a-example,stage-b-guard,stage-c-max-recursion,stage-d-unknown-identifier,stage-e-unreferenced,deadline-descendant-cleanup,registry-remove-last,registry-swap-first-two,registry-version,registry-content,selector-omitted,selector-valid,selector-empty,selector-whitespace,selector-malformed,selector-unknown,selector-duplicate"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+      "seconds": 6.209
+    },
+    {
+      "id": "selector-valid",
+      "kind": "selector",
+      "requirement": "selector boundary: valid",
+      "verdict": "PASS",
+      "detail": "exit 0 marker 1 executed [contract-unchanged]",
+      "selector": {
+        "argument": "contract-unchanged",
+        "probe": false,
+        "exit": 0,
+        "seconds": 15.454,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 0,
+        "expectedMarker": "MARKER-CONTROLS: RESULT: PASS executed 1 of 1",
+        "childExecuted": [
+          "contract-unchanged"
+        ],
+        "stdout": [
+          "MARKER-CONTROLS: PASS [contract-unchanged] exit 0 marker-lines 1 errors [] first-edit-line 0 exercised True (12.873 s)",
+          "MARKER-CONTROLS: RESULT: PASS executed 1 of 1 selected cases (registry PRE1-R2-MARKER-CONTROLS-V1, 45 cases)"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+      "seconds": 20.176
+    },
+    {
+      "id": "selector-empty",
+      "kind": "selector",
+      "requirement": "selector boundary: empty",
+      "verdict": "PASS",
+      "detail": "exit 2 marker 1 executed []",
+      "selector": {
+        "argument": "''",
+        "probe": false,
+        "exit": 2,
+        "seconds": 1.09,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 2,
+        "expectedMarker": "MARKER-CONTROLS: SELECTOR-ERROR [empty]",
+        "childExecuted": [],
+        "stdout": [
+          "MARKER-CONTROLS: SELECTOR-ERROR [empty] bound -Case holds an empty string"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+      "seconds": 6.103
+    },
+    {
+      "id": "selector-whitespace",
+      "kind": "selector",
+      "requirement": "selector boundary: whitespace",
+      "verdict": "PASS",
+      "detail": "exit 2 marker 1 executed []",
+      "selector": {
+        "argument": "' '",
+        "probe": false,
+        "exit": 2,
+        "seconds": 1.159,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 2,
+        "expectedMarker": "MARKER-CONTROLS: SELECTOR-ERROR [whitespace]",
+        "childExecuted": [],
+        "stdout": [
+          "MARKER-CONTROLS: SELECTOR-ERROR [whitespace] bound -Case holds only whitespace"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+      "seconds": 6.188
+    },
+    {
+      "id": "selector-malformed",
+      "kind": "selector",
+      "requirement": "selector boundary: malformed",
+      "verdict": "PASS",
+      "detail": "exit 2 marker 1 executed []",
+      "selector": {
+        "argument": "Contract_Unchanged",
+        "probe": false,
+        "exit": 2,
+        "seconds": 1.104,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 2,
+        "expectedMarker": "MARKER-CONTROLS: SELECTOR-ERROR [malformed]",
+        "childExecuted": [],
+        "stdout": [
+          "MARKER-CONTROLS: SELECTOR-ERROR [malformed] 'Contract_Unchanged' is not a lowercase hyphenated case id"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+      "seconds": 6.054
+    },
+    {
+      "id": "selector-unknown",
+      "kind": "selector",
+      "requirement": "selector boundary: unknown",
+      "verdict": "PASS",
+      "detail": "exit 2 marker 1 executed []",
+      "selector": {
+        "argument": "contract-no-such-case",
+        "probe": false,
+        "exit": 2,
+        "seconds": 1.129,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 2,
+        "expectedMarker": "MARKER-CONTROLS: SELECTOR-ERROR [unknown]",
+        "childExecuted": [],
+        "stdout": [
+          "MARKER-CONTROLS: SELECTOR-ERROR [unknown] 'contract-no-such-case' is not a registered case id"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+      "seconds": 6.049
+    },
+    {
+      "id": "selector-duplicate",
+      "kind": "selector",
+      "requirement": "selector boundary: duplicate",
+      "verdict": "PASS",
+      "detail": "exit 2 marker 1 executed []",
+      "selector": {
+        "argument": "contract-unchanged,contract-unchanged",
+        "probe": false,
+        "exit": 2,
+        "seconds": 1.067,
+        "deadline": 1800,
+        "timedOut": false,
+        "expectedExit": 2,
+        "expectedMarker": "MARKER-CONTROLS: SELECTOR-ERROR [duplicate]",
+        "childExecuted": [],
+        "stdout": [
+          "MARKER-CONTROLS: SELECTOR-ERROR [duplicate] bound -Case repeats a case id"
+        ],
+        "stderr": []
+      },
+      "copyRemoved": true,
+      "repositoryStateUnchanged": true,
+      "repositoryStateSha256": "4de4394569af7c5e00b8b013aa5bb6c0a4fce728dd82c4cae0a0715536890cd2",
+      "seconds": 6.223
+    }
+  ]
+}

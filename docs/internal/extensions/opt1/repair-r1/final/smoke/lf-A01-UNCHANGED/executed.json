@@ -1,0 +1,19 @@
+{
+  "PrepareOnly": false,
+  "ReplayIdentity": {
+    "SourceCommit": "aecf4a580c591e8f694a3699e19e843198089194",
+    "SourceProfileSHA256": "b83ada3baa438d812da076b48422c0a92f88ce686cd48ef982f39de7701699c9",
+    "BuildReceiptSHA256": "eed1ecee4a031a9c3cfcadea445307d8e15e70e732e6ffdd5b166d135292b64e",
+    "HistoricalReceiptSHA256": "a7eb5831a88a7431607d5fe1d7189318d41978391e0a10be3ed336c014563661",
+    "RunnerSHA256": "c64ad401a1236dea7c9638fcf59709728a397b489b5f08ca00942b4d6f7a15e3",
+    "SourceSerialization": "strict UTF-8, only CRLF-to-LF; every other byte significant",
+    "Execution": "Lean compiler producer/expected-type consumer checks; not a native machine performance measurement"
+  },
+  "Version": "opt1-certificate-replay-v3",
+  "Executed": [
+    "A01-UNCHANGED"
+  ],
+  "Expected": [
+    "A01-UNCHANGED"
+  ]
+}

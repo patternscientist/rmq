@@ -1,0 +1,24 @@
+{
+  "RecordedUTC": "2026-09-12T09:09:06.489899+00:00",
+  "Incident": "Root launched the ArrayRun prerequisite before observing final completion of axiom inventory session36508. This violated the prescribed one-heavy-process scheduling rule.",
+  "ConcurrentSessions": [
+    36508,
+    78029
+  ],
+  "ArrayRunResult": {
+    "Stage": "RMQ.Core.WordRAM.Packed.ArrayRun",
+    "ExitCode": 0,
+    "Output": [],
+    "StandardOutput": [],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 6.972,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  },
+  "CurrentDisposition": "ArrayRun has exited0; only inventory remains. No further Lean launch until inventory has actual final exit.",
+  "SourceEffect": "ArrayRun is an independent existing direct prerequisite; no source changed and it is not imported by the running inventory. Do not report the overlap as single-slot scheduling compliance.",
+  "Correction": "Keep waits and dependent launches in separate inspected orchestration steps; preserve exact result before grant."
+}

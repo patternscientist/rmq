@@ -1,0 +1,28 @@
+{
+  "Stage": "raw-library",
+  "ExitCode": 1,
+  "Output": [
+    "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\raw\\.lake\\opt1-certificate-replay\\20260912T153738Z-739687be195a417282c206941cb3becc",
+    "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+    "OPT1-CERT-STAGE import-freshness deadline=600s",
+    "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+    "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies",
+    "OPT1-CERT-IMPORT: source/artifact differs from checked provenance: RMQ/Core/Backend.lean"
+  ],
+  "StandardOutput": [
+    "OPT1-CERT-ARTIFACTS C:\\Users\\poin\\.codex\\worktrees\\ccb1\\RMQ\\.lake\\r1\\raw\\.lake\\opt1-certificate-replay\\20260912T153738Z-739687be195a417282c206941cb3becc",
+    "OPT1-CERT-STAGE tracked-source-status-before deadline=600s",
+    "OPT1-CERT-STAGE import-freshness deadline=600s",
+    "OPT1-CERT-STAGE tracked-source-status-after deadline=600s",
+    "OPT1-CERT-ORIGINALS PASS source SHA256 unchanged; mutations applied/restored only in isolated copies"
+  ],
+  "StandardError": [
+    "OPT1-CERT-IMPORT: source/artifact differs from checked provenance: RMQ/Core/Backend.lean"
+  ],
+  "TimedOut": false,
+  "OutputLimitExceeded": false,
+  "TerminatedIds": [],
+  "DurationSeconds": 22.303,
+  "DeadlineSeconds": 900,
+  "Ownership": "kill-on-close-job"
+}

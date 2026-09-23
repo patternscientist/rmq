@@ -1,0 +1,427 @@
+{
+  "schema": "native1-identity-v3-control-receipt-v1",
+  "startedUtc": "2026-09-12T12:06:37.9319144Z",
+  "completedUtc": "2026-09-12T12:08:03.4245250Z",
+  "pass": true,
+  "failure": null,
+  "selectors": false,
+  "selectorBound": false,
+  "selector": "",
+  "registrySha256": "4CB180BB0380215D14AC80058652120AA877488BDF4A231C39BF6017CD99DA14",
+  "helperSha256": "A21F67E2EDF49C8E218C657E73967E920EFB85FF025476E01BD04A83CA50B17A",
+  "runnerSha256": "D8C9C5209D2E4FD738D9F89208A3AEDAB5FC35916A9F8220CCFD94E94422BBD1",
+  "shellVersion": "7.6.5",
+  "inputPins": [
+    {
+      "property": "toolchainIdentity",
+      "path": "docs/internal/extensions/native1/commands/binary-build-20260912T111100924.json",
+      "sha256": "8486C0C039365DE086E651FBC1686531D1DCA4F000C75C62BE6A65E70E6C53EB"
+    },
+    {
+      "property": "",
+      "path": "docs/internal/extensions/native1/binary-commands/toolchain-mismatch-actual-v2.json",
+      "sha256": "AF8459AC7377D3353E5EA96D362A16EF4309D8A2F2A93B9EB1820ED9594BDA11"
+    }
+  ],
+  "expected": [
+    "ordinal-order",
+    "canonical-maps",
+    "cross-shell",
+    "unchanged",
+    "command-text",
+    "command-argument",
+    "command-file",
+    "cpp-missing-key",
+    "cpp-extra-key",
+    "cpp-root",
+    "include-order",
+    "library-order",
+    "file-row",
+    "sort-policy",
+    "missing-command",
+    "command-extra-key",
+    "digest-change",
+    "unknown-top-key",
+    "root-pin",
+    "restored"
+  ],
+  "executed": [
+    "ordinal-order",
+    "canonical-maps",
+    "cross-shell",
+    "unchanged",
+    "command-text",
+    "command-argument",
+    "command-file",
+    "cpp-missing-key",
+    "cpp-extra-key",
+    "cpp-root",
+    "include-order",
+    "library-order",
+    "file-row",
+    "sort-policy",
+    "missing-command",
+    "command-extra-key",
+    "digest-change",
+    "unknown-top-key",
+    "root-pin",
+    "restored"
+  ],
+  "results": [
+    {
+      "details": {
+        "actual": [
+          "A",
+          "a",
+          "a-b",
+          "a.b",
+          "a_b",
+          "😀",
+          ""
+        ],
+        "expected": [
+          "A",
+          "a",
+          "a-b",
+          "a.b",
+          "a_b",
+          "😀",
+          ""
+        ],
+        "input": [
+          "a_b",
+          "a.b",
+          "a-b",
+          "A",
+          "a",
+          "a",
+          "",
+          "😀"
+        ]
+      },
+      "pass": true,
+      "id": "ordinal-order"
+    },
+    {
+      "details": {
+        "counts": [
+          4856,
+          48,
+          6545,
+          145,
+          4
+        ],
+        "digest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "canonical-maps"
+    },
+    {
+      "details": {
+        "processes": [
+          {
+            "Stage": "canonical-powershell.exe",
+            "ExitCode": 0,
+            "Output": [
+              "NATIVE1-IDENTITY-V3 CANONICAL 2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+              "NATIVE1-IDENTITY-V3 PASS canonical-maps"
+            ],
+            "StandardOutput": [
+              "NATIVE1-IDENTITY-V3 CANONICAL 2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+              "NATIVE1-IDENTITY-V3 PASS canonical-maps"
+            ],
+            "StandardError": [],
+            "TimedOut": false,
+            "OutputLimitExceeded": false,
+            "TerminatedIds": [],
+            "DurationSeconds": 16.777,
+            "DeadlineSeconds": 180,
+            "Ownership": "kill-on-close-job",
+            "StartedUtc": "2026-09-12T12:06:58.5752033Z",
+            "CompletedUtc": "2026-09-12T12:07:15.5877607Z",
+            "InvokedFilePath": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+            "InvokedArguments": [
+              "-NoLogo",
+              "-NoProfile",
+              "-ExecutionPolicy",
+              "Bypass",
+              "-File",
+              "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1",
+              "-Case",
+              "canonical-maps"
+            ]
+          },
+          {
+            "Stage": "canonical-pwsh.exe",
+            "ExitCode": 0,
+            "Output": [
+              "NATIVE1-IDENTITY-V3 CANONICAL 2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+              "NATIVE1-IDENTITY-V3 PASS canonical-maps"
+            ],
+            "StandardOutput": [
+              "NATIVE1-IDENTITY-V3 CANONICAL 2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+              "NATIVE1-IDENTITY-V3 PASS canonical-maps"
+            ],
+            "StandardError": [],
+            "TimedOut": false,
+            "OutputLimitExceeded": false,
+            "TerminatedIds": [],
+            "DurationSeconds": 24.762,
+            "DeadlineSeconds": 180,
+            "Ownership": "kill-on-close-job",
+            "StartedUtc": "2026-09-12T12:07:15.6240334Z",
+            "CompletedUtc": "2026-09-12T12:07:40.4270907Z",
+            "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+            "InvokedArguments": [
+              "-NoLogo",
+              "-NoProfile",
+              "-ExecutionPolicy",
+              "Bypass",
+              "-File",
+              "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1",
+              "-Case",
+              "canonical-maps"
+            ]
+          }
+        ],
+        "digest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "cross-shell"
+    },
+    {
+      "details": {
+        "digest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "expectedAccept": true
+      },
+      "pass": true,
+      "id": "unchanged"
+    },
+    {
+      "details": {
+        "diagnostic": "native toolchain retained command mismatch: 0/text",
+        "mutatedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "actualProductionPredicate": "Assert-NativeRetainedIdentity",
+        "unchangedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "command-text"
+    },
+    {
+      "details": {
+        "diagnostic": "native toolchain retained command mismatch: 0/arguments",
+        "mutatedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "actualProductionPredicate": "Assert-NativeRetainedIdentity",
+        "unchangedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "command-argument"
+    },
+    {
+      "details": {
+        "diagnostic": "native toolchain retained command mismatch: 0/file",
+        "mutatedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "actualProductionPredicate": "Assert-NativeRetainedIdentity",
+        "unchangedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "command-file"
+    },
+    {
+      "details": {
+        "diagnostic": "native toolchain C++ dependency shape",
+        "mutatedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "actualProductionPredicate": "Assert-NativeRetainedIdentity",
+        "unchangedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "cpp-missing-key"
+    },
+    {
+      "details": {
+        "diagnostic": "native toolchain C++ dependency shape",
+        "mutatedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "actualProductionPredicate": "Assert-NativeRetainedIdentity",
+        "unchangedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "cpp-extra-key"
+    },
+    {
+      "details": {
+        "diagnostic": "native toolchain retained C++ roots mismatch: resourceRoot",
+        "mutatedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "actualProductionPredicate": "Assert-NativeRetainedIdentity",
+        "unchangedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "cpp-root"
+    },
+    {
+      "details": {
+        "diagnostic": "native toolchain retained C++ roots mismatch: includeSearch",
+        "mutatedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "actualProductionPredicate": "Assert-NativeRetainedIdentity",
+        "unchangedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "include-order"
+    },
+    {
+      "details": {
+        "diagnostic": "native toolchain retained C++ roots mismatch: librarySearch",
+        "mutatedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "actualProductionPredicate": "Assert-NativeRetainedIdentity",
+        "unchangedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "library-order"
+    },
+    {
+      "details": {
+        "diagnostic": "native toolchain retained inventory mismatch: leanFiles",
+        "mutatedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "actualProductionPredicate": "Assert-NativeRetainedIdentity",
+        "unchangedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "file-row"
+    },
+    {
+      "details": {
+        "diagnostic": "native toolchain manifest shape",
+        "mutatedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "actualProductionPredicate": "Assert-NativeRetainedIdentity",
+        "unchangedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "sort-policy"
+    },
+    {
+      "details": {
+        "diagnostic": "native toolchain command roster shape",
+        "mutatedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "actualProductionPredicate": "Assert-NativeRetainedIdentity",
+        "unchangedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "missing-command"
+    },
+    {
+      "details": {
+        "diagnostic": "native toolchain command shape",
+        "mutatedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "actualProductionPredicate": "Assert-NativeRetainedIdentity",
+        "unchangedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "command-extra-key"
+    },
+    {
+      "details": {
+        "diagnostic": "native compiler/import/runtime identity changed",
+        "mutatedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D844020",
+        "actualProductionPredicate": "Assert-NativeRetainedIdentity",
+        "unchangedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "digest-change"
+    },
+    {
+      "details": {
+        "diagnostic": "native toolchain manifest shape",
+        "mutatedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "actualProductionPredicate": "Assert-NativeRetainedIdentity",
+        "unchangedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "unknown-top-key"
+    },
+    {
+      "details": {
+        "diagnostic": "native toolchain retained inventory mismatch: leanRoot",
+        "mutatedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "actualProductionPredicate": "Assert-NativeRetainedIdentity",
+        "unchangedDigest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402"
+      },
+      "pass": true,
+      "id": "root-pin"
+    },
+    {
+      "details": {
+        "digest": "2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "expectedAccept": true
+      },
+      "pass": true,
+      "id": "restored"
+    }
+  ],
+  "commands": [
+    {
+      "Stage": "canonical-powershell.exe",
+      "ExitCode": 0,
+      "Output": [
+        "NATIVE1-IDENTITY-V3 CANONICAL 2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "NATIVE1-IDENTITY-V3 PASS canonical-maps"
+      ],
+      "StandardOutput": [
+        "NATIVE1-IDENTITY-V3 CANONICAL 2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "NATIVE1-IDENTITY-V3 PASS canonical-maps"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 16.777,
+      "DeadlineSeconds": 180,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T12:06:58.5752033Z",
+      "CompletedUtc": "2026-09-12T12:07:15.5877607Z",
+      "InvokedFilePath": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1",
+        "-Case",
+        "canonical-maps"
+      ]
+    },
+    {
+      "Stage": "canonical-pwsh.exe",
+      "ExitCode": 0,
+      "Output": [
+        "NATIVE1-IDENTITY-V3 CANONICAL 2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "NATIVE1-IDENTITY-V3 PASS canonical-maps"
+      ],
+      "StandardOutput": [
+        "NATIVE1-IDENTITY-V3 CANONICAL 2E1772C727BBEB16A0B65CFEA6902C74E8184A49CF483D65DF482A8177D84402",
+        "NATIVE1-IDENTITY-V3 PASS canonical-maps"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 24.762,
+      "DeadlineSeconds": 180,
+      "Ownership": "kill-on-close-job",
+      "StartedUtc": "2026-09-12T12:07:15.6240334Z",
+      "CompletedUtc": "2026-09-12T12:07:40.4270907Z",
+      "InvokedFilePath": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+      "InvokedArguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "C:\\Users\\poin\\.codex\\worktrees\\1817\\RMQ\\scripts\\packed_native_identity_v3_controls.ps1",
+        "-Case",
+        "canonical-maps"
+      ]
+    }
+  ],
+  "restored": true,
+  "scope": "Actual production sorting/digest/retained predicates on pinned captured inventories; fresh compiler byte discovery remains required by build/startup."
+}

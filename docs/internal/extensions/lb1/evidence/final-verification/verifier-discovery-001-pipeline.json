@@ -1,0 +1,16 @@
+[
+  {
+    "Type": "System.Threading.Tasks.VoidTaskResult",
+    "Properties": [
+      null
+    ],
+    "Text": "System.Threading.Tasks.VoidTaskResult"
+  },
+  {
+    "Type": "System.Management.Automation.PSCustomObject",
+    "Properties": [
+      "Bytes"
+    ],
+    "Text": "@{Bytes=System.Byte[]}"
+  }
+]

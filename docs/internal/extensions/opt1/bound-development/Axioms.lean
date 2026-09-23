@@ -1,0 +1,12 @@
+import RMQ.Core.WordRAM.Optimization.BranchBound
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.branchBound_le_size
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.compile_realizes_branchBound
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.compiled_run_bound_and_fuel_eq
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.BranchBoundConsumers.execution_expectedType
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.BranchBoundConsumers.realizes_expectedType
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.BranchBoundConsumers.branch_directions
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.BranchBoundConsumers.one_short_truncates
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.BranchBoundConsumers.empty_branches_at_boundary
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.BranchBoundConsumers.repeated_loads
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.BranchBoundConsumers.failed_load_stops
+#print axioms RMQ.SuccinctFinal.PackedWordRAM.Optimization.BranchBoundConsumers.nested_early_exit

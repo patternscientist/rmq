@@ -1,0 +1,2821 @@
+{
+  "utc": "2026-09-12T13:25:30.7457799Z",
+  "status": "FINAL_STATIC_AUDIT",
+  "manifestSHA256": "55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821",
+  "campaignTag": "campaign-final-v1-20260912131342256-3b473507",
+  "driver": "records/driver-selectors-r15.json",
+  "head": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "committedRangeBase": "645a0502b9da9ad6444edbe44759e1c2c5661f25",
+  "noWorkerCommit": "Parent owns final commit, strict design-policy check and post-commit aggregate; this range check covers current HEAD only.",
+  "passed": true,
+  "checks": [
+    {
+      "id": "exact32-and-eight",
+      "passed": true
+    },
+    {
+      "id": "full-path-semantic-surfaces",
+      "passed": true
+    },
+    {
+      "id": "complete-multiline-axiom-inventories",
+      "passed": true
+    },
+    {
+      "id": "276-live-source-hashes",
+      "passed": true
+    },
+    {
+      "id": "immutable-final-manifest",
+      "passed": true
+    },
+    {
+      "id": "restoration-and-owned-cleanup",
+      "passed": true
+    },
+    {
+      "id": "powershell-parse",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "required-trust-scan",
+      "passed": true,
+      "exitCode": 1,
+      "output": []
+    },
+    {
+      "id": "required-native-scan",
+      "passed": true,
+      "exitCode": 1,
+      "output": []
+    },
+    {
+      "id": "working-tree-whitespace",
+      "passed": true,
+      "exitCode": 0,
+      "arguments": [
+        "diff",
+        "--check"
+      ],
+      "output": [
+        "warning: in the working copy of 'docs/DIGESTION_LOG.md', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'docs/FAMILY_SUMMARY.md', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'docs/internal/DESIGN_DECISIONS.md', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'docs/internal/WORKFLOW_DESIGN_DECISIONS.md', LF will be replaced by CRLF the next time Git touches it"
+      ]
+    },
+    {
+      "id": "committed-range-whitespace",
+      "passed": true,
+      "exitCode": 0,
+      "arguments": [
+        "diff",
+        "--check",
+        "645a0502b9da9ad6444edbe44759e1c2c5661f25..HEAD"
+      ],
+      "output": []
+    },
+    {
+      "id": "frozen-parent-matrix",
+      "passed": true,
+      "sha256": "80BD59A314FD33D37076802954444DA24F65C87A2A91DE23BC668B6AF9CCEB24"
+    }
+  ],
+  "surfaces": [
+    {
+      "case": "unchanged",
+      "constructorExit": 0,
+      "consumerExit": 0,
+      "expectedConsumerExit": 0,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\unchanged.consumer.lean",
+      "expectedLines": null,
+      "observed": [],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "constructorExit": 0,
+      "consumerExit": 0,
+      "expectedConsumerExit": 0,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\harmless-comment.consumer.lean",
+      "expectedLines": null,
+      "observed": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-completeCapacity",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-completeCapacity.consumer.lean",
+      "expectedLines": 252,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-completeCapacity.consumer.lean",
+          "line": 252,
+          "column": 2,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-overheadLittleO",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-overheadLittleO.consumer.lean",
+      "expectedLines": 261,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-overheadLittleO.consumer.lean",
+          "line": 261,
+          "column": 33,
+          "message": "type mismatch",
+          "diagnosticClass": "type mismatch"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-widthBounds",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-widthBounds.consumer.lean",
+      "expectedLines": 263,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-widthBounds.consumer.lean",
+          "line": 263,
+          "column": 50,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-memoryWordsFit",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-memoryWordsFit.consumer.lean",
+      "expectedLines": 268,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-memoryWordsFit.consumer.lean",
+          "line": 268,
+          "column": 2,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-readerGeometry",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-readerGeometry.consumer.lean",
+      "expectedLines": 280,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-readerGeometry.consumer.lean",
+          "line": 280,
+          "column": 2,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-readerCorrect",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-readerCorrect.consumer.lean",
+      "expectedLines": 286,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-readerCorrect.consumer.lean",
+          "line": 286,
+          "column": 2,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-accessCorrect",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-accessCorrect.consumer.lean",
+      "expectedLines": 298,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-accessCorrect.consumer.lean",
+          "line": 298,
+          "column": 63,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-rankCorrect",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-rankCorrect.consumer.lean",
+      "expectedLines": 301,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-rankCorrect.consumer.lean",
+          "line": 301,
+          "column": 2,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-selectCorrect",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-selectCorrect.consumer.lean",
+      "expectedLines": 306,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-selectCorrect.consumer.lean",
+          "line": 306,
+          "column": 60,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-accessExecution",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-accessExecution.consumer.lean",
+      "expectedLines": 309,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-accessExecution.consumer.lean",
+          "line": 309,
+          "column": 26,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-rankExecution",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-rankExecution.consumer.lean",
+      "expectedLines": 320,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-rankExecution.consumer.lean",
+          "line": 320,
+          "column": 27,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-selectExecution",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-selectExecution.consumer.lean",
+      "expectedLines": 336,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-selectExecution.consumer.lean",
+          "line": 336,
+          "column": 68,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        },
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-selectExecution.consumer.lean",
+          "line": 336,
+          "column": 68,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-accessSafety",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-accessSafety.consumer.lean",
+      "expectedLines": 358,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-accessSafety.consumer.lean",
+          "line": 358,
+          "column": 2,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-rankSafety",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-rankSafety.consumer.lean",
+      "expectedLines": 377,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-rankSafety.consumer.lean",
+          "line": 377,
+          "column": 2,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-selectSafety",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-selectSafety.consumer.lean",
+      "expectedLines": 396,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-selectSafety.consumer.lean",
+          "line": 396,
+          "column": 2,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-programLengths",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-programLengths.consumer.lean",
+      "expectedLines": 400,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-programLengths.consumer.lean",
+          "line": 400,
+          "column": 2,
+          "message": "type mismatch",
+          "diagnosticClass": "type mismatch"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-sourceBudgets",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-sourceBudgets.consumer.lean",
+      "expectedLines": 404,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-sourceBudgets.consumer.lean",
+          "line": 404,
+          "column": 2,
+          "message": "type mismatch",
+          "diagnosticClass": "type mismatch"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-stepsBound",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-stepsBound.consumer.lean",
+      "expectedLines": 412,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-stepsBound.consumer.lean",
+          "line": 412,
+          "column": 2,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-categoryPartition",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-categoryPartition.consumer.lean",
+      "expectedLines": 417,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-categoryPartition.consumer.lean",
+          "line": 417,
+          "column": 2,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-categoryBounds",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-categoryBounds.consumer.lean",
+      "expectedLines": 425,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-categoryBounds.consumer.lean",
+          "line": 425,
+          "column": 2,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-finiteScratch",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-finiteScratch.consumer.lean",
+      "expectedLines": 431,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-finiteScratch.consumer.lean",
+          "line": 431,
+          "column": 2,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-suppliedMemoryAgreement",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-suppliedMemoryAgreement.consumer.lean",
+      "expectedLines": 436,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-suppliedMemoryAgreement.consumer.lean",
+          "line": 436,
+          "column": 2,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "weaken-validArgumentFits",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-validArgumentFits.consumer.lean",
+      "expectedLines": 445,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\weaken-validArgumentFits.consumer.lean",
+          "line": 445,
+          "column": 2,
+          "message": "Function expected at",
+          "diagnosticClass": "function expected"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "delete-accessCorrect",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\delete-accessCorrect.consumer.lean",
+      "expectedLines": 292,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\delete-accessCorrect.consumer.lean",
+          "line": 292,
+          "column": 63,
+          "message": "Invalid field `accessCorrect`: The environment does not contain `RMQ.PackedBitvector.FullyChargedBitvectorCapstone.accessCorrect`",
+          "diagnosticClass": "invalid field"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "sibling-completeCapacity",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\sibling-completeCapacity.consumer.lean",
+      "expectedLines": 259,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\sibling-completeCapacity.consumer.lean",
+          "line": 259,
+          "column": 2,
+          "message": "type mismatch",
+          "diagnosticClass": "type mismatch"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "sibling-selectSafety",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\sibling-selectSafety.consumer.lean",
+      "expectedLines": 399,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\sibling-selectSafety.consumer.lean",
+          "line": 399,
+          "column": 2,
+          "message": "type mismatch",
+          "diagnosticClass": "type mismatch"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "sibling-readerCorrect",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\sibling-readerCorrect.consumer.lean",
+      "expectedLines": 288,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\sibling-readerCorrect.consumer.lean",
+          "line": 288,
+          "column": 2,
+          "message": "type mismatch",
+          "diagnosticClass": "type mismatch"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "public-proposition-True",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\public-proposition-True.consumer.lean",
+      "expectedLines": 371,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\public-proposition-True.consumer.lean",
+          "line": 371,
+          "column": 2,
+          "message": "type mismatch",
+          "diagnosticClass": "type mismatch"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "capacity-without-code",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\capacity-without-code.consumer.lean",
+      "expectedLines": 258,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\capacity-without-code.consumer.lean",
+          "line": 258,
+          "column": 2,
+          "message": "type mismatch",
+          "diagnosticClass": "type mismatch"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "case": "capacity-without-scratch",
+      "constructorExit": 0,
+      "consumerExit": 1,
+      "expectedConsumerExit": 1,
+      "expectedFullPath": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\capacity-without-scratch.consumer.lean",
+      "expectedLines": 258,
+      "observed": [
+        {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\c974\\RMQ\\docs\\internal\\extensions\\bv1\\controls\\public_mutations\\fixtures\\55DAA6A25A1E74050631EAE23A4FDC0F8FA4A467AFE3BF5759291D444350F821\\capacity-without-scratch.consumer.lean",
+          "line": 258,
+          "column": 2,
+          "message": "type mismatch",
+          "diagnosticClass": "type mismatch"
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "axiomPhases": [
+    {
+      "case": "unchanged",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "unchanged",
+      "phase": "consumer",
+      "directives": 25,
+      "dependencyRecords": 25,
+      "parsedDependencyRecords": 25,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "harmless-comment",
+      "phase": "consumer",
+      "directives": 25,
+      "dependencyRecords": 25,
+      "parsedDependencyRecords": 25,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-completeCapacity",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-overheadLittleO",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-widthBounds",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-memoryWordsFit",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-readerGeometry",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-readerCorrect",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-accessCorrect",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-rankCorrect",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-selectCorrect",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-accessExecution",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-rankExecution",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-selectExecution",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-accessSafety",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-rankSafety",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-selectSafety",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-programLengths",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-sourceBudgets",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-stepsBound",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-categoryPartition",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-categoryBounds",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-finiteScratch",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-suppliedMemoryAgreement",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "weaken-validArgumentFits",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "delete-accessCorrect",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "sibling-completeCapacity",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "sibling-selectSafety",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "sibling-readerCorrect",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "public-proposition-True",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 0,
+      "parsedDependencyRecords": 0,
+      "noAxiomRecords": 1,
+      "axioms": [],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "capacity-without-code",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    },
+    {
+      "case": "capacity-without-scratch",
+      "phase": "constructor",
+      "directives": 1,
+      "dependencyRecords": 1,
+      "parsedDependencyRecords": 1,
+      "noAxiomRecords": 0,
+      "axioms": [
+        "Classical.choice",
+        "propext",
+        "Quot.sound"
+      ],
+      "unexpected": [],
+      "passed": true
+    }
+  ],
+  "sourceHashes": [
+    {
+      "path": "docs/internal/extensions/bv1/controls/public_expected_type.lean",
+      "expected": "FEA8D045EF0A9CB9679949ED8825F2E04A4542C01E8F056A778BB0B474BF7A9E",
+      "actual": "FEA8D045EF0A9CB9679949ED8825F2E04A4542C01E8F056A778BB0B474BF7A9E",
+      "passed": true
+    },
+    {
+      "path": "lakefile.toml",
+      "expected": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A",
+      "actual": "66F2730CC65D0A796A6595D230B18C0554826DFEE9407799F64D0F744D3D823A",
+      "passed": true
+    },
+    {
+      "path": "lean-toolchain",
+      "expected": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F",
+      "actual": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/Backend.lean",
+      "expected": "8D911857ED6E9669936D5F8818149E23EBF4874C2C508D63CEEA889660ACC751",
+      "actual": "8D911857ED6E9669936D5F8818149E23EBF4874C2C508D63CEEA889660ACC751",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/Cartesian.lean",
+      "expected": "A0C175425B7DF234F8CF59E177B36E3ED593D81D78337D40E6E2ED74028D9580",
+      "actual": "A0C175425B7DF234F8CF59E177B36E3ED593D81D78337D40E6E2ED74028D9580",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/Cost.lean",
+      "expected": "887CDCCA893969756F6B7F785E1CA2249106F215A4155C6BA6FE714A6373BAA4",
+      "actual": "887CDCCA893969756F6B7F785E1CA2249106F215A4155C6BA6FE714A6373BAA4",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/EncodingLowerBound.lean",
+      "expected": "BA555AADFA7F3AB3BF0B8DC1D09E093A33DE6A4747DCE6BA707FA68BCBAE61E5",
+      "actual": "BA555AADFA7F3AB3BF0B8DC1D09E093A33DE6A4747DCE6BA707FA68BCBAE61E5",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Arithmetic.lean",
+      "expected": "188659DFE14431FA924C60BE82D03EE1733CFC01AC5E5DB046FAB129DB4B88AC",
+      "actual": "188659DFE14431FA924C60BE82D03EE1733CFC01AC5E5DB046FAB129DB4B88AC",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/DenseEntryTable.lean",
+      "expected": "9AF07D6EC8A806E0F7966D3F62801989F8E7DEC84A20C245A9A80555F0655EAB",
+      "actual": "9AF07D6EC8A806E0F7966D3F62801989F8E7DEC84A20C245A9A80555F0655EAB",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/DenseWord.lean",
+      "expected": "771195F6125E8DE11C24F1F94876B620151CD4A2EA86DB3464E0C9E6E26FA728",
+      "actual": "771195F6125E8DE11C24F1F94876B620151CD4A2EA86DB3464E0C9E6E26FA728",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Directory.lean",
+      "expected": "1B99217374A50A1DA29B9E2625D8884F89B1EF255FFF3EC643A32DA58CE246B9",
+      "actual": "1B99217374A50A1DA29B9E2625D8884F89B1EF255FFF3EC643A32DA58CE246B9",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Entries.lean",
+      "expected": "AE17F58FF740414FE9DFB6DF59B1EE92D2912A26E50D0AB042DD26C813C341F8",
+      "actual": "AE17F58FF740414FE9DFB6DF59B1EE92D2912A26E50D0AB042DD26C813C341F8",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Family.lean",
+      "expected": "982BA48D8EB6EE8271FE6037BD0A84A0920AC1A5CFE6076B8800211EAA0F891F",
+      "actual": "982BA48D8EB6EE8271FE6037BD0A84A0920AC1A5CFE6076B8800211EAA0F891F",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/FlagRank.lean",
+      "expected": "25EF697C1D68E47DEAD370FFF58717279317E3BB7B5103CD9A5FD8E71896359C",
+      "actual": "25EF697C1D68E47DEAD370FFF58717279317E3BB7B5103CD9A5FD8E71896359C",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/LowLevel.lean",
+      "expected": "D80DC849E26E30EB31487C03865098CD582A62E89EEB2BCD7CAE1020AB306535",
+      "actual": "D80DC849E26E30EB31487C03865098CD582A62E89EEB2BCD7CAE1020AB306535",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Params.lean",
+      "expected": "05F8E4CB75A07792F6B51E5F561EE5E20EEB8F7F51EC05664CDDAF0E55440EA1",
+      "actual": "05F8E4CB75A07792F6B51E5F561EE5E20EEB8F7F51EC05664CDDAF0E55440EA1",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Primitives.lean",
+      "expected": "EAF0C05A429B425A40E8CC77044F268BC8FF36F8B9BB648473D6576F53DF6840",
+      "actual": "EAF0C05A429B425A40E8CC77044F268BC8FF36F8B9BB648473D6576F53DF6840",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/RAM.lean",
+      "expected": "FEE4D7BE36077D93F928716E4909B4773F818CE39FDA17BC17E85E944EC2892F",
+      "actual": "FEE4D7BE36077D93F928716E4909B4773F818CE39FDA17BC17E85E944EC2892F",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/RAMStoreParam.lean",
+      "expected": "F17C7F141928ADEA7320B3187C98F2983B34E3D95B9E6F629860AB4C1313A277",
+      "actual": "F17C7F141928ADEA7320B3187C98F2983B34E3D95B9E6F629860AB4C1313A277",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/RelativeSplit.lean",
+      "expected": "89E4188223B34F322480147FE5EA4D57542E79A00763408B2EC45D4C80DD9C36",
+      "actual": "89E4188223B34F322480147FE5EA4D57542E79A00763408B2EC45D4C80DD9C36",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/RelativeTables.lean",
+      "expected": "7131A37475059E917D114531BA34726E1C34432BC9DF271D56C166370DC9F1EC",
+      "actual": "7131A37475059E917D114531BA34726E1C34432BC9DF271D56C166370DC9F1EC",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/SelectFacts.lean",
+      "expected": "DF6E9CB61E7FEEE0659B62960379FB8CD851B6BD914347A2D3BD06785CF93C69",
+      "actual": "DF6E9CB61E7FEEE0659B62960379FB8CD851B6BD914347A2D3BD06785CF93C69",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/SelectSource.lean",
+      "expected": "222526C0D6D8AD56EB1E4FD5678111471961A6D3674614790BD5ACE58098D57A",
+      "actual": "222526C0D6D8AD56EB1E4FD5678111471961A6D3674614790BD5ACE58098D57A",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Slots.lean",
+      "expected": "AE96B766A1D0CF34CE468B3EE9C9FDF82195AE25FA4ACA41E150AE426FA59051",
+      "actual": "AE96B766A1D0CF34CE468B3EE9C9FDF82195AE25FA4ACA41E150AE426FA59051",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/GenericSelect/Source.lean",
+      "expected": "D1A404009FB648D1F256AFB0EFC396594C00B6E0EC85192F978B16BC0F08932E",
+      "actual": "D1A404009FB648D1F256AFB0EFC396594C00B6E0EC85192F978B16BC0F08932E",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/LCA.lean",
+      "expected": "E981D40A5C3429A6794BD7857AEB01A0B49653F869C1139232AFB8766F1B053C",
+      "actual": "E981D40A5C3429A6794BD7857AEB01A0B49653F869C1139232AFB8766F1B053C",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/ListLemmas.lean",
+      "expected": "E4DF7A2D19754BC5BA77BA05235EC72E839DF226B00D4A38BAEB452B46ECA1FA",
+      "actual": "E4DF7A2D19754BC5BA77BA05235EC72E839DF226B00D4A38BAEB452B46ECA1FA",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/LowerBound.lean",
+      "expected": "FEFE56A46F206F5233C7E4B9EDAFC6BC1FA5CB0E04B03494FB94D9D0DFD6DF56",
+      "actual": "FEFE56A46F206F5233C7E4B9EDAFC6BC1FA5CB0E04B03494FB94D9D0DFD6DF56",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/Microtable.lean",
+      "expected": "7AC16582B05226A39314CB12CF4032394BCC9802E01867697E1271BBD9C21A80",
+      "actual": "7AC16582B05226A39314CB12CF4032394BCC9802E01867697E1271BBD9C21A80",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/PayloadLowerBound.lean",
+      "expected": "24523EC8D3DD5859738DDBDF69BCC14C41FB0E21D7175ADDD494072FFF1BCA55",
+      "actual": "24523EC8D3DD5859738DDBDF69BCC14C41FB0E21D7175ADDD494072FFF1BCA55",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/PlusMinusOne.lean",
+      "expected": "F66CFC4256FA0F3806E4C64EB3DC530E9675A86F3D1C3082AF349DFA9A3F74EF",
+      "actual": "F66CFC4256FA0F3806E4C64EB3DC530E9675A86F3D1C3082AF349DFA9A3F74EF",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/RAM.lean",
+      "expected": "208E621844CA2A0F5CA73312B3C5688406AFD330EB753506987DAB603AADEF4F",
+      "actual": "208E621844CA2A0F5CA73312B3C5688406AFD330EB753506987DAB603AADEF4F",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/RankSelectSpec.lean",
+      "expected": "2D48B2089432B601337E7FDB6CF9B081D8382A44019068D5DF64FBC4867DBCD1",
+      "actual": "2D48B2089432B601337E7FDB6CF9B081D8382A44019068D5DF64FBC4867DBCD1",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/Reduction.lean",
+      "expected": "A15808CA01F085C691CC30F73EEEB88E8AA858670D4BF0B707F2DED1AA1791EF",
+      "actual": "A15808CA01F085C691CC30F73EEEB88E8AA858670D4BF0B707F2DED1AA1791EF",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/Refine.lean",
+      "expected": "75953F297DE26411AF75EA9BE3CDBF2FD6D0403EE0AE88E3310DDCD5ABBBEB2A",
+      "actual": "75953F297DE26411AF75EA9BE3CDBF2FD6D0403EE0AE88E3310DDCD5ABBBEB2A",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/Shape.lean",
+      "expected": "A29366B989E786A5C762764C2DA1FFC9DF1487BE212A113A122384D9A1E2C863",
+      "actual": "A29366B989E786A5C762764C2DA1FFC9DF1487BE212A113A122384D9A1E2C863",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/Spec.lean",
+      "expected": "D32B9EF9873E9C9D8E2AEFE1227770F2B565122FAE01C0AE86737FA750F74AE3",
+      "actual": "D32B9EF9873E9C9D8E2AEFE1227770F2B565122FAE01C0AE86737FA750F74AE3",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/Succinct.lean",
+      "expected": "C81AF4978110198561B109893832045509D8C8846CF2FCB179C809B5BA67E74E",
+      "actual": "C81AF4978110198561B109893832045509D8C8846CF2FCB179C809B5BA67E74E",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose.lean",
+      "expected": "D0DCF4A2D323A65FE03D901AD6C37189281522A75DF01447B2C9CF9FDE56718D",
+      "actual": "D0DCF4A2D323A65FE03D901AD6C37189281522A75DF01447B2C9CF9FDE56718D",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/BlockLocal.lean",
+      "expected": "818D93BC4665385FD6F5E45431DFC783E1A1D0860DCA35DCB9B75EFCDB5F0B62",
+      "actual": "818D93BC4665385FD6F5E45431DFC783E1A1D0860DCA35DCB9B75EFCDB5F0B62",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe.lean",
+      "expected": "47F178B980D4386FA297A3BC8352F5D8FFD73AE9CA5C8E5CE8C5994FAC04F6F3",
+      "actual": "47F178B980D4386FA297A3BC8352F5D8FFD73AE9CA5C8E5CE8C5994FAC04F6F3",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro.lean",
+      "expected": "466D70E742C3B92EE02833F796B1776DDFC3BEA4CF487F0EB2F1734B48005732",
+      "actual": "466D70E742C3B92EE02833F796B1776DDFC3BEA4CF487F0EB2F1734B48005732",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/MicroCodebook.lean",
+      "expected": "3E9DFFFD9C463376798509E1E88919A47EA52C39D7DF18D8369996954929BF04",
+      "actual": "3E9DFFFD9C463376798509E1E88919A47EA52C39D7DF18D8369996954929BF04",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro.lean",
+      "expected": "F9E7C1471B2167BDAF3D049E187224E27AAB87971C3404C5F17298C55E0A99D9",
+      "actual": "F9E7C1471B2167BDAF3D049E187224E27AAB87971C3404C5F17298C55E0A99D9",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/Concrete.lean",
+      "expected": "1A72C3A22D9EC67B1F7D728E4E369E0AF4CC33384C8922583A971CA4224E74B2",
+      "actual": "1A72C3A22D9EC67B1F7D728E4E369E0AF4CC33384C8922583A971CA4224E74B2",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/PayloadMacro.lean",
+      "expected": "9FA35FD83C7F46FBA374B549AE1F85F2733A2409FFB03B9CCBEAFCC6510CD08B",
+      "actual": "9FA35FD83C7F46FBA374B549AE1F85F2733A2409FFB03B9CCBEAFCC6510CD08B",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/RangeTables.lean",
+      "expected": "C036F7B736ABF755A8B8D9B1A02CE5810AD441CDAC7F546993F8D5B5AF63F041",
+      "actual": "C036F7B736ABF755A8B8D9B1A02CE5810AD441CDAC7F546993F8D5B5AF63F041",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/RelativeMerge.lean",
+      "expected": "ABDEAEBF1C169C5EDE34EF2323C2C942D26C8052BE68C6E1E21D2FE0A86C09EF",
+      "actual": "ABDEAEBF1C169C5EDE34EF2323C2C942D26C8052BE68C6E1E21D2FE0A86C09EF",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate.lean",
+      "expected": "948813C73489C2642729997DC9AB448EB8FCFB70966A9F6307783F4DE5434BCC",
+      "actual": "948813C73489C2642729997DC9AB448EB8FCFB70966A9F6307783F4DE5434BCC",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/Candidate.lean",
+      "expected": "C843AABE9ADCA16A463EFC1307CF629604470E8847D3591131EC29784D4C6D83",
+      "actual": "C843AABE9ADCA16A463EFC1307CF629604470E8847D3591131EC29784D4C6D83",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean",
+      "expected": "92A2322E6DD91D8D2718E65F52B5DAC2572C142297501F0DF3882BF84534BC16",
+      "actual": "92A2322E6DD91D8D2718E65F52B5DAC2572C142297501F0DF3882BF84534BC16",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/Base.lean",
+      "expected": "65522F59E57BE29618BCA88A624F9A867C8DE02469A42C526B48E087751391A1",
+      "actual": "65522F59E57BE29618BCA88A624F9A867C8DE02469A42C526B48E087751391A1",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/SparseLevelWidth.lean",
+      "expected": "25A067E1C7E41C525680E44BB0767868EEEACE8D09825F232CB957EE000996B1",
+      "actual": "25A067E1C7E41C525680E44BB0767868EEEACE8D09825F232CB957EE000996B1",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/ValueDependency.lean",
+      "expected": "B10110A3A0231D1FAD754A830EE0397A55ECB894C16B0864B6DD8A0B6F607D2C",
+      "actual": "B10110A3A0231D1FAD754A830EE0397A55ECB894C16B0864B6DD8A0B6F607D2C",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorRAM.lean",
+      "expected": "E6850BE91B2120958019452EE26658AB2AA13CDAFD42BDDE649B6BA177EFD956",
+      "actual": "E6850BE91B2120958019452EE26658AB2AA13CDAFD42BDDE649B6BA177EFD956",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/LocalGlobalSparse.lean",
+      "expected": "B2A3B8866E5FCB52CC5A0884B22AFBE6DE2B74C92CED3D36B6F5C1CB8D29EFA6",
+      "actual": "B2A3B8866E5FCB52CC5A0884B22AFBE6DE2B74C92CED3D36B6F5C1CB8D29EFA6",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/RelativeScan.lean",
+      "expected": "AD29744DA234215194478A2D8D0F2BF31FCCA119E5E9C9554A11970F2C9E0B21",
+      "actual": "AD29744DA234215194478A2D8D0F2BF31FCCA119E5E9C9554A11970F2C9E0B21",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/TwoLevelCandidate.lean",
+      "expected": "6900B5DDEB67DF79BA9A1A2B39682FEFCD9EA975E2E408ECD8291316748D15A8",
+      "actual": "6900B5DDEB67DF79BA9A1A2B39682FEFCD9EA975E2E408ECD8291316748D15A8",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/WordReads.lean",
+      "expected": "995F2E38D1F5C43FCAA1E4815FD2235EA481F7DBDCFFE3738EB5CFF7BACC37F6",
+      "actual": "995F2E38D1F5C43FCAA1E4815FD2235EA481F7DBDCFFE3738EB5CFF7BACC37F6",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange.lean",
+      "expected": "A0FED5EE46F3152D63EF42F8791D802FA34CCF8AE9D4A98A3288DF1425302B0D",
+      "actual": "A0FED5EE46F3152D63EF42F8791D802FA34CCF8AE9D4A98A3288DF1425302B0D",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/AnswerSemantics.lean",
+      "expected": "148B0E1DB197AADFD8F0927A82A89195D5F066F98B8BFF31C92718DCA1D66A9F",
+      "actual": "148B0E1DB197AADFD8F0927A82A89195D5F066F98B8BFF31C92718DCA1D66A9F",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/LocalSparseOffset.lean",
+      "expected": "717A2514A0255D9994D780C87E0BA952D193EE791EFFAFF440D194438765B82D",
+      "actual": "717A2514A0255D9994D780C87E0BA952D193EE791EFFAFF440D194438765B82D",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/PrefixArgMin.lean",
+      "expected": "02EAC18E6679B60A7A78BA101C39E3269C18EAF8202178B3C0335441FE548CAD",
+      "actual": "02EAC18E6679B60A7A78BA101C39E3269C18EAF8202178B3C0335441FE548CAD",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/PrefixWitnessTable.lean",
+      "expected": "07538D0E27689BCB02915F5101ED158B5258A168ABB172F35DE0CF5733C2B56B",
+      "actual": "07538D0E27689BCB02915F5101ED158B5258A168ABB172F35DE0CF5733C2B56B",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/RelativeSummaryCandidate.lean",
+      "expected": "4092148FDDBF60A1F481128DC96EFFB2FABD121CAD14F8EAA0142DDF6F30ECAA",
+      "actual": "4092148FDDBF60A1F481128DC96EFFB2FABD121CAD14F8EAA0142DDF6F30ECAA",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/SparseArgMin.lean",
+      "expected": "BD98AF45F9D43B75768E23013EAEC66400850215124102C7720BE4CA115A774E",
+      "actual": "BD98AF45F9D43B75768E23013EAEC66400850215124102C7720BE4CA115A774E",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange/SparseLevelTable.lean",
+      "expected": "15E23994297D09D37CABDCFB2277BC8F819FF76C307636AC6E3889C1B7E61043",
+      "actual": "15E23994297D09D37CABDCFB2277BC8F819FF76C307636AC6E3889C1B7E61043",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RangeSummary.lean",
+      "expected": "4DBE30022D3066FB44C1405D2C52FD8D4469537B6DE0C589DB6F99FBABB9A7EE",
+      "actual": "4DBE30022D3066FB44C1405D2C52FD8D4469537B6DE0C589DB6F99FBABB9A7EE",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RangeWitness.lean",
+      "expected": "4A9EF0FAD0B84ED02F55A1313353375F5159322DA5B159DBC6081E8781F378DC",
+      "actual": "4A9EF0FAD0B84ED02F55A1313353375F5159322DA5B159DBC6081E8781F378DC",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro.lean",
+      "expected": "9F55F443ED0234E9C509664F31CC90884C455C2783491FDB6EBA058FDFCD27EC",
+      "actual": "9F55F443ED0234E9C509664F31CC90884C455C2783491FDB6EBA058FDFCD27EC",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/AbstractMacro.lean",
+      "expected": "4A368521FB415863E5FD77A7B0F4ED83CBD49983DBF4A7CD4A2B6921A0407553",
+      "actual": "4A368521FB415863E5FD77A7B0F4ED83CBD49983DBF4A7CD4A2B6921A0407553",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeChunks.lean",
+      "expected": "7D3C02BF0F79FF53008D322C7FB92A99449252AA1303FB539222BB4F0B75CC6A",
+      "actual": "7D3C02BF0F79FF53008D322C7FB92A99449252AA1303FB539222BB4F0B75CC6A",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeSubstitution.lean",
+      "expected": "A76B18F22F18D2F26F60136ECA544921FC6177B55718E092D6C92A74071D9BEB",
+      "actual": "A76B18F22F18D2F26F60136ECA544921FC6177B55718E092D6C92A74071D9BEB",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeTableFacts.lean",
+      "expected": "CD0E8F62E7AA6F58EFF3CB7C937F2025B98D99AF5798C7B8EC55676224670744",
+      "actual": "CD0E8F62E7AA6F58EFF3CB7C937F2025B98D99AF5798C7B8EC55676224670744",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeTrace.lean",
+      "expected": "3958821F9FFB5FE5A3E51664ECF50191AF3BC27FEF1303BCA27565D772B61E26",
+      "actual": "3958821F9FFB5FE5A3E51664ECF50191AF3BC27FEF1303BCA27565D772B61E26",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeWiring.lean",
+      "expected": "BE36BA283C012EA66699A85AACC45D435465BD6C535F6BD142F53A231BF2C117",
+      "actual": "BE36BA283C012EA66699A85AACC45D435465BD6C535F6BD142F53A231BF2C117",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedRankSelectLeafTrace.lean",
+      "expected": "418AAB560F5E0A6DB37CB4D5B3245D44580BE8004ADCC3A98528DEC598B87C96",
+      "actual": "418AAB560F5E0A6DB37CB4D5B3245D44580BE8004ADCC3A98528DEC598B87C96",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedRankSelectLeaves.lean",
+      "expected": "4964AD5844644F486DF44F75ABC31862DFFD3BE4A507B503E120A615657BB418",
+      "actual": "4964AD5844644F486DF44F75ABC31862DFFD3BE4A507B503E120A615657BB418",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedRankSelectTrace.lean",
+      "expected": "D22D91D49051A544BC511FBB7D0663069323F41BAD782B092B147185707FB595",
+      "actual": "D22D91D49051A544BC511FBB7D0663069323F41BAD782B092B147185707FB595",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedRankSelectWiring.lean",
+      "expected": "E4CB679DBA4B995B33C411A7FDB49859C4DDA0B2D4402ED14C8F673F072D9570",
+      "actual": "E4CB679DBA4B995B33C411A7FDB49859C4DDA0B2D4402ED14C8F673F072D9570",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedSameBlockChunks.lean",
+      "expected": "F3E233EDD10FC8DE7098ED037A3A173A3096FB026043F6F81E9AA83F09D34470",
+      "actual": "F3E233EDD10FC8DE7098ED037A3A173A3096FB026043F6F81E9AA83F09D34470",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedSameBlockSubstitution.lean",
+      "expected": "CAA29118F8302CD07D50B7E824AFCC30A31C58991446DE9AF841CA99DA7B8C77",
+      "actual": "CAA29118F8302CD07D50B7E824AFCC30A31C58991446DE9AF841CA99DA7B8C77",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedSameBlockTrace.lean",
+      "expected": "F68059B658962AA7D00942DA93B27415B19D2D04A9D6E5A1614706A914D37373",
+      "actual": "F68059B658962AA7D00942DA93B27415B19D2D04A9D6E5A1614706A914D37373",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedWordChunks.lean",
+      "expected": "32AFF7472532A2CD3FDBD8DEECB92148466ABBA6780CEAFF695BE52F83F467C8",
+      "actual": "32AFF7472532A2CD3FDBD8DEECB92148466ABBA6780CEAFF695BE52F83F467C8",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/CompactEndpoint.lean",
+      "expected": "383F30B3C6662F9C455632E6AE96F5935ADCA6EB65D25642676139DB08681761",
+      "actual": "383F30B3C6662F9C455632E6AE96F5935ADCA6EB65D25642676139DB08681761",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectory.lean",
+      "expected": "823081F1FF979F77970BA2477CD9F9F5BB6E1255EA15129C061B726BA62CB7CE",
+      "actual": "823081F1FF979F77970BA2477CD9F9F5BB6E1255EA15129C061B726BA62CB7CE",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectoryRAM.lean",
+      "expected": "0CED594DE17F432C8FDB3BBDFF926FAF26F051BCACE6B9EB5040D70A91172E49",
+      "actual": "0CED594DE17F432C8FDB3BBDFF926FAF26F051BCACE6B9EB5040D70A91172E49",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectoryRAMStoreParam.lean",
+      "expected": "074AE2026220430F9B6D00805FC51BA46917C8C0C50FD599A777245E029CC31E",
+      "actual": "074AE2026220430F9B6D00805FC51BA46917C8C0C50FD599A777245E029CC31E",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/EndpointCodebook.lean",
+      "expected": "5029E982326AB8DEA8D0E0F22B0A29081F2D802B2C78770E5D7584158BDB66A7",
+      "actual": "5029E982326AB8DEA8D0E0F22B0A29081F2D802B2C78770E5D7584158BDB66A7",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/LocalBPDecoder.lean",
+      "expected": "54CAD93011FDA3A464BE6F93D102332A375712E3993E4A8380D88EDDBE5F5B8A",
+      "actual": "54CAD93011FDA3A464BE6F93D102332A375712E3993E4A8380D88EDDBE5F5B8A",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeRmmMacro/MacroMicroFamily.lean",
+      "expected": "9D3CEED171681840D7A81D65E2D6507AA1C8922C4A268DA9EB4AB0253C01E642",
+      "actual": "9D3CEED171681840D7A81D65E2D6507AA1C8922C4A268DA9EB4AB0253C01E642",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctClose/RelativeSummary.lean",
+      "expected": "14346D7A6E5C881DA559C423A53CE82170EE2A78D77F7ED31282671504AF034E",
+      "actual": "14346D7A6E5C881DA559C423A53CE82170EE2A78D77F7ED31282671504AF034E",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal.lean",
+      "expected": "372A0C59D175950DC6111ACBD1E6E71FF8B913B2738912220CCB17D4C08BCFEC",
+      "actual": "372A0C59D175950DC6111ACBD1E6E71FF8B913B2738912220CCB17D4C08BCFEC",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/FlatPayload.lean",
+      "expected": "104480BB2E138921504FB96DEB7153D11B603DFA4085FA1DDE36B274244A07C3",
+      "actual": "104480BB2E138921504FB96DEB7153D11B603DFA4085FA1DDE36B274244A07C3",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/GeometryClosure.lean",
+      "expected": "67907F202156D3D0583041E4508D3BC33A57623598CB59A57407C41B02D3DDCB",
+      "actual": "67907F202156D3D0583041E4508D3BC33A57623598CB59A57407C41B02D3DDCB",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Address.lean",
+      "expected": "6E8F3EC58E4A1C7588FF98C425CE71098916932C5E8ACC26E244C8EE5426A119",
+      "actual": "6E8F3EC58E4A1C7588FF98C425CE71098916932C5E8ACC26E244C8EE5426A119",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Boundaries.lean",
+      "expected": "CCF5D924505569FE557DB6BF3B6974ADA7322393C215656AB0D48DD35C5C5BEF",
+      "actual": "CCF5D924505569FE557DB6BF3B6974ADA7322393C215656AB0D48DD35C5C5BEF",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ExecutedUniverse.lean",
+      "expected": "F2A04D822F298BBCEBDF7D00CB27CD8E8CD5D018B3B888D23662FEB133A194D3",
+      "actual": "F2A04D822F298BBCEBDF7D00CB27CD8E8CD5D018B3B888D23662FEB133A194D3",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Header.lean",
+      "expected": "2711A6F855F3A6D83C053B7C32C0A42F4940793266A44959FD804D9886644A2D",
+      "actual": "2711A6F855F3A6D83C053B7C32C0A42F4940793266A44959FD804D9886644A2D",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Memory.lean",
+      "expected": "64F8BF4F8FD67CE1ADA3635CFA5608BE6F9235CBF3A502342C475E65A1EDDEDE",
+      "actual": "64F8BF4F8FD67CE1ADA3635CFA5608BE6F9235CBF3A502342C475E65A1EDDEDE",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Payload.lean",
+      "expected": "500E2ADE7D46B6F9C884EBE06D19C031C1CFE7A75852150E3EC50C449CA54808",
+      "actual": "500E2ADE7D46B6F9C884EBE06D19C031C1CFE7A75852150E3EC50C449CA54808",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/PhysicalRead.lean",
+      "expected": "BB56CEF34E6E743B4CE522AFB8C85882D992E0C6C2128EDEB5C71970001724EA",
+      "actual": "BB56CEF34E6E743B4CE522AFB8C85882D992E0C6C2128EDEB5C71970001724EA",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Probe.lean",
+      "expected": "34E468F86DD5C6A35C83B4A5B36E9E217F4661CD94BA219709001C207473709B",
+      "actual": "34E468F86DD5C6A35C83B4A5B36E9E217F4661CD94BA219709001C207473709B",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReadProgram.lean",
+      "expected": "391D87D69679A4D9A263AF6193DFDD1DF0979541C8B5805569B6215E3998BE15",
+      "actual": "391D87D69679A4D9A263AF6193DFDD1DF0979541C8B5805569B6215E3998BE15",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerClosedGeometry.lean",
+      "expected": "3F97100E132680EA8F901884AA383532031224F99DEA4255AB807E8E20B677AE",
+      "actual": "3F97100E132680EA8F901884AA383532031224F99DEA4255AB807E8E20B677AE",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCloseGeometry.lean",
+      "expected": "B0828658CBD2453B7BC4178EC859D9C9C77006899C3B20195131F6CA8D8C270B",
+      "actual": "B0828658CBD2453B7BC4178EC859D9C9C77006899C3B20195131F6CA8D8C270B",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCloseRead.lean",
+      "expected": "E3377018D62A378D745B2402AE46BD61382A10D7F6B490727659E6F0724DF399",
+      "actual": "E3377018D62A378D745B2402AE46BD61382A10D7F6B490727659E6F0724DF399",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCloseWidth.lean",
+      "expected": "E69298E7D3C8167609C2D74387D5482198F9A6CB783955BB6C6FF0F5BB20768E",
+      "actual": "E69298E7D3C8167609C2D74387D5482198F9A6CB783955BB6C6FF0F5BB20768E",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerComponentAccess.lean",
+      "expected": "35DD259730F4861FA6A3B7CF01AF9E9C5B8D4BDB2F0F2F2C214236B7D7585336",
+      "actual": "35DD259730F4861FA6A3B7CF01AF9E9C5B8D4BDB2F0F2F2C214236B7D7585336",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerConcatIndex.lean",
+      "expected": "B7417D93358DED4340DF33CE8A04C4C4C925E54937789CE214488E0C940504D7",
+      "actual": "B7417D93358DED4340DF33CE8A04C4C4C925E54937789CE214488E0C940504D7",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerController.lean",
+      "expected": "AD9943085CF3E19D2F72129D5832AF1894C183229CD468DC6EECDBEC06572C4C",
+      "actual": "AD9943085CF3E19D2F72129D5832AF1894C183229CD468DC6EECDBEC06572C4C",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerControllerProof.lean",
+      "expected": "1225A5D847B0F3D4D9653A51DFAA39A51A744A13D524261236286FC98E993401",
+      "actual": "1225A5D847B0F3D4D9653A51DFAA39A51A744A13D524261236286FC98E993401",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerCrossing.lean",
+      "expected": "003BE10AA05F2B025F83ECE30EC7A91A4F092CA9179B5FF2EF33CEB433A2AE28",
+      "actual": "003BE10AA05F2B025F83ECE30EC7A91A4F092CA9179B5FF2EF33CEB433A2AE28",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerEntryAddress.lean",
+      "expected": "41E67F063A92159E64467A56FEF20828AD65E8AC585A53CF815812177B96B214",
+      "actual": "41E67F063A92159E64467A56FEF20828AD65E8AC585A53CF815812177B96B214",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerEntryChunks.lean",
+      "expected": "9B365EF07A62FE3D989C3EDDA7119D72D765B9676C88A40FDF258D12460A4FD9",
+      "actual": "9B365EF07A62FE3D989C3EDDA7119D72D765B9676C88A40FDF258D12460A4FD9",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerInteriorCount.lean",
+      "expected": "4F07D21A9FB1C6799131C4D4F778616A60BC18CCDA0B42C4D27251663F2731E3",
+      "actual": "4F07D21A9FB1C6799131C4D4F778616A60BC18CCDA0B42C4D27251663F2731E3",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerInteriorProtocol.lean",
+      "expected": "AC1ECA986A2411B88393C5006C89CAAEBA97C86CEBD0B4AB67A8CD958547D159",
+      "actual": "AC1ECA986A2411B88393C5006C89CAAEBA97C86CEBD0B4AB67A8CD958547D159",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerInteriorRead.lean",
+      "expected": "074780F3536806DE36BC094BDA66AC0448529992E5C406F85824C63EDD75B1DF",
+      "actual": "074780F3536806DE36BC094BDA66AC0448529992E5C406F85824C63EDD75B1DF",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerInteriorWidths.lean",
+      "expected": "F08390B3A3C5ACF0036DAFEAD1A6384607317681C31299E7B4225971EAF43B7A",
+      "actual": "F08390B3A3C5ACF0036DAFEAD1A6384607317681C31299E7B4225971EAF43B7A",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLcaProtocol.lean",
+      "expected": "B06E4D6C57BAFA21EB75F76AF099B18BB975FFACE9025F3AB5F7EA2EF8016D7A",
+      "actual": "B06E4D6C57BAFA21EB75F76AF099B18BB975FFACE9025F3AB5F7EA2EF8016D7A",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLength.lean",
+      "expected": "3589BC63E435F307A5A6457DA7043DCA5A2AF9DD4018F615EBED4A194C1068CF",
+      "actual": "3589BC63E435F307A5A6457DA7043DCA5A2AF9DD4018F615EBED4A194C1068CF",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLogicalLowering.lean",
+      "expected": "CE1F85F0181467AC28E431DF8BE90010649FDB541038278A20D29D82CB3DB895",
+      "actual": "CE1F85F0181467AC28E431DF8BE90010649FDB541038278A20D29D82CB3DB895",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLogicalProtocol.lean",
+      "expected": "E9169BE01037693A6893CB46E5F99E4AE8F2AA79C415F0C9D2BAF0098DA19BB7",
+      "actual": "E9169BE01037693A6893CB46E5F99E4AE8F2AA79C415F0C9D2BAF0098DA19BB7",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerLogicalSimulation.lean",
+      "expected": "7F2F353F7D53ED1E0BCB0D963A162193B6C87C912A8D80D5FCC683E0BA06E5B1",
+      "actual": "7F2F353F7D53ED1E0BCB0D963A162193B6C87C912A8D80D5FCC683E0BA06E5B1",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerMachineWords.lean",
+      "expected": "63AAE89D756E47255AD8821B336B3D3D2FE1607FC03C7771F2B36C6A35BC400A",
+      "actual": "63AAE89D756E47255AD8821B336B3D3D2FE1607FC03C7771F2B36C6A35BC400A",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerMemory.lean",
+      "expected": "B25D62BCBA1BFF603EE1E364B8EA355A36010906D159927AAC800EB1145179F8",
+      "actual": "B25D62BCBA1BFF603EE1E364B8EA355A36010906D159927AAC800EB1145179F8",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerPayload.lean",
+      "expected": "F383AC00585EF7389C72610BA44E2941F45F6B6E9CC13AD6FA39EDDD38B4C75C",
+      "actual": "F383AC00585EF7389C72610BA44E2941F45F6B6E9CC13AD6FA39EDDD38B4C75C",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerPhysicalRead.lean",
+      "expected": "4C773AD3FA0EEC82DFABBE8F142A07AD583B4DBAE9455ABFD57CC593D1AB833B",
+      "actual": "4C773AD3FA0EEC82DFABBE8F142A07AD583B4DBAE9455ABFD57CC593D1AB833B",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerProbe.lean",
+      "expected": "01280EABBC2CDB4BB38E1EA22E3A55E6C64FCB9EF8AC4723D11BC26215317BBC",
+      "actual": "01280EABBC2CDB4BB38E1EA22E3A55E6C64FCB9EF8AC4723D11BC26215317BBC",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerSelectProtocol.lean",
+      "expected": "6BF0867042F07B9A4B8A26EF8AC83E5144C0A533932F10EA9E747BBC010F0A3C",
+      "actual": "6BF0867042F07B9A4B8A26EF8AC83E5144C0A533932F10EA9E747BBC010F0A3C",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerSourceAddress.lean",
+      "expected": "93EB4EF3697DED2867172D7E46E690550EBFFBCBC3D9003CA83863C2115DD9BA",
+      "actual": "93EB4EF3697DED2867172D7E46E690550EBFFBCBC3D9003CA83863C2115DD9BA",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerSpace.lean",
+      "expected": "56918F51DBDE05F1B69E449A6E41E944D706A65F2423D549426A3037B2D76BBF",
+      "actual": "56918F51DBDE05F1B69E449A6E41E944D706A65F2423D549426A3037B2D76BBF",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerSparsePrelude.lean",
+      "expected": "3A99BA036F6651EEE2A0823DBF2A6BAC365D5D6AB78A52949DDA0D480ECE8DA4",
+      "actual": "3A99BA036F6651EEE2A0823DBF2A6BAC365D5D6AB78A52949DDA0D480ECE8DA4",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerWholeProtocol.lean",
+      "expected": "492436C51E2CAD4EFC13AB2B6D20704492780EEDB5F2B4BD9E3213F0331E045C",
+      "actual": "492436C51E2CAD4EFC13AB2B6D20704492780EEDB5F2B4BD9E3213F0331E045C",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/ReviewerWidth.lean",
+      "expected": "07F0A4D08CA3A599BD1DA8D747CB7298376A74DC24D8F722B411B41AD64E16D6",
+      "actual": "07F0A4D08CA3A599BD1DA8D747CB7298376A74DC24D8F722B411B41AD64E16D6",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/SourceFactorization.lean",
+      "expected": "04500A8A27354B5B2A19BE2DB4067ED56D85268A8D266E4F411A82E7B9F4C693",
+      "actual": "04500A8A27354B5B2A19BE2DB4067ED56D85268A8D266E4F411A82E7B9F4C693",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/SourceGeometry.lean",
+      "expected": "99CCED87772781D6C4311F92831277DC08BB5481EF411BEF24DB8A5A0AA351F6",
+      "actual": "99CCED87772781D6C4311F92831277DC08BB5481EF411BEF24DB8A5A0AA351F6",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/SourceWords.lean",
+      "expected": "901CBE8A30F7FFA92AAD48F3DEB7E01B5384CFB17A7B912D32D999FF020B5F23",
+      "actual": "901CBE8A30F7FFA92AAD48F3DEB7E01B5384CFB17A7B912D32D999FF020B5F23",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/Space.lean",
+      "expected": "E128DB764C24210CFB01CA197CAC427EAE126DD743D5695F580C414071791FE4",
+      "actual": "E128DB764C24210CFB01CA197CAC427EAE126DD743D5695F580C414071791FE4",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/PackedCellProbe/WordWidth.lean",
+      "expected": "462C7120F2480CEC505EB53E2F6F49FEADFB92EB968504912B1D9ADA086992A0",
+      "actual": "462C7120F2480CEC505EB53E2F6F49FEADFB92EB968504912B1D9ADA086992A0",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean",
+      "expected": "0E506752E7843836CE715C57287CA3FC016D7CBB13E817C77A8DE6AC9D27DDB1",
+      "actual": "0E506752E7843836CE715C57287CA3FC016D7CBB13E817C77A8DE6AC9D27DDB1",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean",
+      "expected": "0E0FE1E5F7E56104EB8007BFF55B844B1EC9627F88F5CB519B0A8DB625297A18",
+      "actual": "0E0FE1E5F7E56104EB8007BFF55B844B1EC9627F88F5CB519B0A8DB625297A18",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinal/RAM/Segments.lean",
+      "expected": "F99920A82633074FF9018646D221154B2D23CEBEF860A3BA3FF09164D0ABAC81",
+      "actual": "F99920A82633074FF9018646D221154B2D23CEBEF860A3BA3FF09164D0ABAC81",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinalModelAdequacy.lean",
+      "expected": "C86323DB215E020CB46B88B2D92BAFF8DC210D8270E2B821B60EACD22F3E11B4",
+      "actual": "C86323DB215E020CB46B88B2D92BAFF8DC210D8270E2B821B60EACD22F3E11B4",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinalRAM.lean",
+      "expected": "86E5424B05BD18A81BAA544C4A0E1638B536A6B4A6FF3B7FA818E61297D3FC33",
+      "actual": "86E5424B05BD18A81BAA544C4A0E1638B536A6B4A6FF3B7FA818E61297D3FC33",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctFinalStoreParam.lean",
+      "expected": "466DF9555BAB1EBE77567DC6D269C2DE7F73C421BD78BE15C0271B0D292C4636",
+      "actual": "466DF9555BAB1EBE77567DC6D269C2DE7F73C421BD78BE15C0271B0D292C4636",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctRank.lean",
+      "expected": "164F2C7BF988559DB4EFE7FC8C933E91DB66737C9C6F0297D6993831FFFF335B",
+      "actual": "164F2C7BF988559DB4EFE7FC8C933E91DB66737C9C6F0297D6993831FFFF335B",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctRMQClassic.lean",
+      "expected": "07D34D2D79DC23B04235802D61ABFF2695F521131D0816304E79B3C1C6ECC177",
+      "actual": "07D34D2D79DC23B04235802D61ABFF2695F521131D0816304E79B3C1C6ECC177",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/AsymptoticFacts.lean",
+      "expected": "8E628E9C4A94F239AC78157F9A2874E5596B5C8E9CF37E765968CA1382086BFB",
+      "actual": "8E628E9C4A94F239AC78157F9A2874E5596B5C8E9CF37E765968CA1382086BFB",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/Basic.lean",
+      "expected": "B845BF8D2D94D1C92BAD544D5A1BC8AFD7F13F2D2BE451D370D36CA3E20D0283",
+      "actual": "B845BF8D2D94D1C92BAD544D5A1BC8AFD7F13F2D2BE451D370D36CA3E20D0283",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting.lean",
+      "expected": "6D7093C011DB8B7172463714B57556CFED2F22D19528002936DC67008748DFCE",
+      "actual": "6D7093C011DB8B7172463714B57556CFED2F22D19528002936DC67008748DFCE",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/FlagRankTables.lean",
+      "expected": "F4AC00DF7B9C78AB09B9962F7A18D9AAB68A6FA1B6AC152D7E2C7258276EE069",
+      "actual": "F4AC00DF7B9C78AB09B9962F7A18D9AAB68A6FA1B6AC152D7E2C7258276EE069",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/LookupDense.lean",
+      "expected": "29FB384ACE2DB0C5716E07211E52707345DA8E9E492A9030155EA419900A3B47",
+      "actual": "29FB384ACE2DB0C5716E07211E52707345DA8E9E492A9030155EA419900A3B47",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/RelativeEntries.lean",
+      "expected": "125C26C48D1BF6FAEC9D2F22AF23A171A3920F803C42F502692FA1D649B22361",
+      "actual": "125C26C48D1BF6FAEC9D2F22AF23A171A3920F803C42F502692FA1D649B22361",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/SlotBasics.lean",
+      "expected": "F71F91BC5CC954EC2BD4B979837F1D6D2E7924AEA42AF76B495F1867A3BAEDFE",
+      "actual": "F71F91BC5CC954EC2BD4B979837F1D6D2E7924AEA42AF76B495F1867A3BAEDFE",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/SpanBudgets.lean",
+      "expected": "393E33B53C6311FB5982839D0A1ADF4B89F470A893CDA779AE98FC053C590A6B",
+      "actual": "393E33B53C6311FB5982839D0A1ADF4B89F470A893CDA779AE98FC053C590A6B",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/BuiltRouting/WidthBounds.lean",
+      "expected": "0F179C2CD32543C45759957FFD726E426400954F8A045D1C0AC880E3AD55B955",
+      "actual": "0F179C2CD32543C45759957FFD726E426400954F8A045D1C0AC880E3AD55B955",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/RelativeSplit.lean",
+      "expected": "9AC682EA9A955744E44E79235112FC7609BCAABE6AF3F04DBE63E6BF50631BF1",
+      "actual": "9AC682EA9A955744E44E79235112FC7609BCAABE6AF3F04DBE63E6BF50631BF1",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionCloseData/BuildProfile.lean",
+      "expected": "5B43A04B43B22E69ABAD58A00394A6F54B519B84E9938473638A2CFB6D4609C4",
+      "actual": "5B43A04B43B22E69ABAD58A00394A6F54B519B84E9938473638A2CFB6D4609C4",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionCloseData/BuiltExact.lean",
+      "expected": "D1FA216A2236B3DD3CA6924373AF9A93D0644DEA9BCB338F2BCDA18C76C3DF36",
+      "actual": "D1FA216A2236B3DD3CA6924373AF9A93D0644DEA9BCB338F2BCDA18C76C3DF36",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionCloseData/DataSurface.lean",
+      "expected": "42ED0155C69A52FAB233C97D370FD8D94A112497E527AF21A4C5AE08C56D02AB",
+      "actual": "42ED0155C69A52FAB233C97D370FD8D94A112497E527AF21A4C5AE08C56D02AB",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/CloseSelect/SparseExceptionDirectory.lean",
+      "expected": "60CE8CB87F721A02EDCAB06CE16FDD164C276C93E393D51A911CB5E8D35E6A7E",
+      "actual": "60CE8CB87F721A02EDCAB06CE16FDD164C276C93E393D51A911CB5E8D35E6A7E",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/DenseLocalTables.lean",
+      "expected": "EB63021D1866BF0F9A621270FCFBB0D43FD5CAC72FEAAEC230D3CA0FB57245BF",
+      "actual": "EB63021D1866BF0F9A621270FCFBB0D43FD5CAC72FEAAEC230D3CA0FB57245BF",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel.lean",
+      "expected": "016C04966B6641D8DD2011856D1BC953F5A8769C2808B7EDA81416E94B8DE74E",
+      "actual": "016C04966B6641D8DD2011856D1BC953F5A8769C2808B7EDA81416E94B8DE74E",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/BPCloseNavigation.lean",
+      "expected": "4BEF79B1C636F11DEFE0A48035461C25958A4B203F3D2C6BF04B1D3E812A825E",
+      "actual": "4BEF79B1C636F11DEFE0A48035461C25958A4B203F3D2C6BF04B1D3E812A825E",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/ClarkSource.lean",
+      "expected": "5BC9B60B0A33EE3CE6ECF02A9E6F4B05A8D308FBDC1A83905110F78FE598ED86",
+      "actual": "5BC9B60B0A33EE3CE6ECF02A9E6F4B05A8D308FBDC1A83905110F78FE598ED86",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/RankSelectAdapters.lean",
+      "expected": "4EAEF65F1BF992E99862E839C2B66EB928280812FE696A29F3C53593CEE51C61",
+      "actual": "4EAEF65F1BF992E99862E839C2B66EB928280812FE696A29F3C53593CEE51C61",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/SelectData.lean",
+      "expected": "9D53AA16D945BE4AC2EF041AD3850F7150FEFD99B7696A0CB75AA38B4246092C",
+      "actual": "9D53AA16D945BE4AC2EF041AD3850F7150FEFD99B7696A0CB75AA38B4246092C",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/SelectSamples.lean",
+      "expected": "03B22A47CCA422EDA459FAD2B14EFF1EE8FA822F0D54B254A72C7D6AE9A8A329",
+      "actual": "03B22A47CCA422EDA459FAD2B14EFF1EE8FA822F0D54B254A72C7D6AE9A8A329",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSelect/TwoLevel/WordExact.lean",
+      "expected": "C50B1CF6D8B98AE698918955B84EE490DF1BDCC662B68B5B0E8A3441AAD9BC22",
+      "actual": "C50B1CF6D8B98AE698918955B84EE490DF1BDCC662B68B5B0E8A3441AAD9BC22",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace.lean",
+      "expected": "2DB86CA92D7EFBEB75B4DEB59A039ACA1E1C9DFE9BD597330A814568A12D7FEB",
+      "actual": "2DB86CA92D7EFBEB75B4DEB59A039ACA1E1C9DFE9BD597330A814568A12D7FEB",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/Asymptotics.lean",
+      "expected": "39493F9BD2B86C041ED7471C310244E4FCED9DE831C566A8FEB8593EA783FFCE",
+      "actual": "39493F9BD2B86C041ED7471C310244E4FCED9DE831C566A8FEB8593EA783FFCE",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPAccess.lean",
+      "expected": "F79B2360503863665F30953566AEFF88BAC736063F725C599858460F13F344DF",
+      "actual": "F79B2360503863665F30953566AEFF88BAC736063F725C599858460F13F344DF",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPCloseLCA.lean",
+      "expected": "00C85BEEA48B2DFA4BEFA8A3DAAF70ADA06F876B71F7DAE6CC185FF47DC465AF",
+      "actual": "00C85BEEA48B2DFA4BEFA8A3DAAF70ADA06F876B71F7DAE6CC185FF47DC465AF",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPCloseLCARAM.lean",
+      "expected": "776D7F64C12CF9F6515D121FECFAA28C963887C0C9DD34E834CFC9B2FEF3C1DF",
+      "actual": "776D7F64C12CF9F6515D121FECFAA28C963887C0C9DD34E834CFC9B2FEF3C1DF",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPCloseRMQNavigation.lean",
+      "expected": "9F7FA7CCDDB6F4106559D483EA35313BD1AE34B00F27259723DA6AD9E4A1AB55",
+      "actual": "9F7FA7CCDDB6F4106559D483EA35313BD1AE34B00F27259723DA6AD9E4A1AB55",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPCloseRMQNavigationRAM.lean",
+      "expected": "11541F260779F41468BECE8C941B16B6ED06AB32487AEEA9F916279DC36248DE",
+      "actual": "11541F260779F41468BECE8C941B16B6ED06AB32487AEEA9F916279DC36248DE",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BPShape.lean",
+      "expected": "633C2CFCEE96751D7CB84B5492A16E1DE3A79B7BE4904C799188363D5B75A00F",
+      "actual": "633C2CFCEE96751D7CB84B5492A16E1DE3A79B7BE4904C799188363D5B75A00F",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/BroadwordRMQ.lean",
+      "expected": "FB21261792E59FEC4A48350A968076CA8E45454F7F7CBA32EF36538DB5F163AD",
+      "actual": "FB21261792E59FEC4A48350A968076CA8E45454F7F7CBA32EF36538DB5F163AD",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/MachineChunkedTable.lean",
+      "expected": "CA5804E728E7CCB5AEE8C8BC2EBC220D5E7AE27A5BD286599337BC6EB682576A",
+      "actual": "CA5804E728E7CCB5AEE8C8BC2EBC220D5E7AE27A5BD286599337BC6EB682576A",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/MachineChunkedTableProgram.lean",
+      "expected": "E8BAA33AA98DBBC67CD12E033B85DA1BC0B3A46303938A6A47A400C5FE34FB80",
+      "actual": "E8BAA33AA98DBBC67CD12E033B85DA1BC0B3A46303938A6A47A400C5FE34FB80",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/RankSelect.lean",
+      "expected": "8DDB5D45C8EA60413EC5A0478C968895172406E855A4B1E5BB8405ECFE66B4A4",
+      "actual": "8DDB5D45C8EA60413EC5A0478C968895172406E855A4B1E5BB8405ECFE66B4A4",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/RankSelectRAM.lean",
+      "expected": "42CE073D6492EE4FAD5E45A3D41F26B73BBE6493B33ACC189AEAB8681342F0EE",
+      "actual": "42CE073D6492EE4FAD5E45A3D41F26B73BBE6493B33ACC189AEAB8681342F0EE",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/SelectSamples.lean",
+      "expected": "62B18FA9CB7301DAA61490224C65068A38B3FB10D48B9E9FEF57359194B23495",
+      "actual": "62B18FA9CB7301DAA61490224C65068A38B3FB10D48B9E9FEF57359194B23495",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/SelectSamplesRAM.lean",
+      "expected": "4931E8C80A9490DF33ADD8DE32ED3DE84041FB16A7E01B8031F400C44C01AFF4",
+      "actual": "4931E8C80A9490DF33ADD8DE32ED3DE84041FB16A7E01B8031F400C44C01AFF4",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/Tables.lean",
+      "expected": "5676C8B39B17EB0C183C9CE7C7E5B7210CEB947182D44933355A24BFB34A3BBF",
+      "actual": "5676C8B39B17EB0C183C9CE7C7E5B7210CEB947182D44933355A24BFB34A3BBF",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/TablesRAM.lean",
+      "expected": "6E5E99094B6B9D4C273AF2A6D3988C7627FEACC8EE0F75ADABB2652FAD4322BE",
+      "actual": "6E5E99094B6B9D4C273AF2A6D3988C7627FEACC8EE0F75ADABB2652FAD4322BE",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/WordStore.lean",
+      "expected": "E508F5EEBA21D642E94D391B29E0DA85228A941539C341BCC97B333D2A23BC34",
+      "actual": "E508F5EEBA21D642E94D391B29E0DA85228A941539C341BCC97B333D2A23BC34",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/SuccinctSpace/WordStoreRAM.lean",
+      "expected": "E73D6D9DB3D61E28CFA9F108E23C97E8CA3C7176A59C28E14B91C320574EA5C3",
+      "actual": "E73D6D9DB3D61E28CFA9F108E23C97E8CA3C7176A59C28E14B91C320574EA5C3",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/TableModel.lean",
+      "expected": "B015B94A0B2E130B6E6ABBB44415868B824AD5242148D614355E580EFA5D8159",
+      "actual": "B015B94A0B2E130B6E6ABBB44415868B824AD5242148D614355E580EFA5D8159",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/Window.lean",
+      "expected": "C135E68A11AF7FF52623A7CCD8439330A93D5758B2E548330889BBF04B08432C",
+      "actual": "C135E68A11AF7FF52623A7CCD8439330A93D5758B2E548330889BBF04B08432C",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM.lean",
+      "expected": "7A47CED349D84C379135918115E3A0424B1DE2D9F4DDA0BB774FF42A94A174A9",
+      "actual": "7A47CED349D84C379135918115E3A0424B1DE2D9F4DDA0BB774FF42A94A174A9",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/AccessExecution.lean",
+      "expected": "966E88F15B6CED25C337F4614B774FE85AAA0358E44F7EFDEBFB5BE0A0087300",
+      "actual": "966E88F15B6CED25C337F4614B774FE85AAA0358E44F7EFDEBFB5BE0A0087300",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/AccessProof.lean",
+      "expected": "0077FE19D2E693D7F02936FDB4A9592D68B9E67AC1FB9A1E905D361F1DB30DE2",
+      "actual": "0077FE19D2E693D7F02936FDB4A9592D68B9E67AC1FB9A1E905D361F1DB30DE2",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Allocation.lean",
+      "expected": "B4DE6C3B923589A2AA890399D7D0B8236E3C46E1608ADE74F8CEFE65B60F392B",
+      "actual": "B4DE6C3B923589A2AA890399D7D0B8236E3C46E1608ADE74F8CEFE65B60F392B",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/AllocationFacts.lean",
+      "expected": "F189969208B13333219EE460DB8581D43BABB88F18480C68A37F47C070801623",
+      "actual": "F189969208B13333219EE460DB8581D43BABB88F18480C68A37F47C070801623",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/AllocationLayout.lean",
+      "expected": "EDE611982080F8600CE5F59BE89D8D331DC7920855F55B969A66F39C60E99ACF",
+      "actual": "EDE611982080F8600CE5F59BE89D8D331DC7920855F55B969A66F39C60E99ACF",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CanonicalLimits.lean",
+      "expected": "1B0B761C9A42D0CE4C3EF3972B3EB43E3FE02BF56B9D3B7D501D23067C4D5A1F",
+      "actual": "1B0B761C9A42D0CE4C3EF3972B3EB43E3FE02BF56B9D3B7D501D23067C4D5A1F",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CanonicalMemoryBounds.lean",
+      "expected": "182406E5BCAD21C8EF5EE236B92F3EBB63441B8DEECB15B9E46019CB8A97AA21",
+      "actual": "182406E5BCAD21C8EF5EE236B92F3EBB63441B8DEECB15B9E46019CB8A97AA21",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CanonicalRankAccessSafety.lean",
+      "expected": "1C39E9D0A2637C45B7306DBD5077DD2319BA2F6C2AF7CA43D0DE189F9BBAC03C",
+      "actual": "1C39E9D0A2637C45B7306DBD5077DD2319BA2F6C2AF7CA43D0DE189F9BBAC03C",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CanonicalSelectSafety.lean",
+      "expected": "FCBC3B363E47BC16298DEDBDE693921EC4CA45672753AD564161807D6CE7D753",
+      "actual": "FCBC3B363E47BC16298DEDBDE693921EC4CA45672753AD564161807D6CE7D753",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CanonicalStoreBounds.lean",
+      "expected": "1209D9A14B0B92D5CCD6455197C57189903CF65C1502BB049DF25CA4472038BA",
+      "actual": "1209D9A14B0B92D5CCD6455197C57189903CF65C1502BB049DF25CA4472038BA",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Capstone.lean",
+      "expected": "1C6CD0A85B77FBA7706C77DA87DE358808A24FA661D5635A3C4B3BBF96005D69",
+      "actual": "1C6CD0A85B77FBA7706C77DA87DE358808A24FA661D5635A3C4B3BBF96005D69",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/ChargedSetup.lean",
+      "expected": "21440D54C844202F5AF6816C5BFD1DFBE07EFA18ED23A7C546F8BF29948476E9",
+      "actual": "21440D54C844202F5AF6816C5BFD1DFBE07EFA18ED23A7C546F8BF29948476E9",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CompleteLayout.lean",
+      "expected": "E2C61B99E504E99940B3D63645F62CBE805FF21FF4B28473C1DE7646E08803DD",
+      "actual": "E2C61B99E504E99940B3D63645F62CBE805FF21FF4B28473C1DE7646E08803DD",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CompleteReader.lean",
+      "expected": "53926E3596E4C98A76D939E14CFBB26BFC939950E7A25CB774FBDB0617F73055",
+      "actual": "53926E3596E4C98A76D939E14CFBB26BFC939950E7A25CB774FBDB0617F73055",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/CompleteReadStore.lean",
+      "expected": "3A8A6F6F57CE5C7368C8115D4A95521DBC92FF25934BF9B5CD8D8A31AB92FD46",
+      "actual": "3A8A6F6F57CE5C7368C8115D4A95521DBC92FF25934BF9B5CD8D8A31AB92FD46",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/ControllerInterface.lean",
+      "expected": "14F14B5A78FC77DB768536BF78DA47CB60922364538859535198C1E440B30981",
+      "actual": "14F14B5A78FC77DB768536BF78DA47CB60922364538859535198C1E440B30981",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/DescriptorReader.lean",
+      "expected": "A85C55E8962F8F9F78E0FB00EDD81ED9DFF7E870792F62830DB6CADB54F45108",
+      "actual": "A85C55E8962F8F9F78E0FB00EDD81ED9DFF7E870792F62830DB6CADB54F45108",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/GenericRankProof.lean",
+      "expected": "01544E3B71EBCB90B7ABF34F8C241BA6ED6F7954027C3E22443AD9AC65192F94",
+      "actual": "01544E3B71EBCB90B7ABF34F8C241BA6ED6F7954027C3E22443AD9AC65192F94",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/GenericRankSafety.lean",
+      "expected": "46D1C897F34BA42A3DA76B5B9876D3C7CE46D05A63950FE9E1F2F9E513D3B4A5",
+      "actual": "46D1C897F34BA42A3DA76B5B9876D3C7CE46D05A63950FE9E1F2F9E513D3B4A5",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/GenericSelectProof.lean",
+      "expected": "07D1090314E454341CCECBEFB74009600C9AFB40A812DC218C6810C450790EA0",
+      "actual": "07D1090314E454341CCECBEFB74009600C9AFB40A812DC218C6810C450790EA0",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/GenericSelectSafety.lean",
+      "expected": "DE8C9B1CD5C13C0B4D630839872DE55542116046EBDB4CC9B823C53B59C5B678",
+      "actual": "DE8C9B1CD5C13C0B4D630839872DE55542116046EBDB4CC9B823C53B59C5B678",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/InterfaceProof.lean",
+      "expected": "9B04897F77EF88A00B85F71BD7A43119572157F9266E74DACEFB726856D431CF",
+      "actual": "9B04897F77EF88A00B85F71BD7A43119572157F9266E74DACEFB726856D431CF",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/MemoryLayout.lean",
+      "expected": "2CB94877358664BDC93234128FE2115B626C10442AEC87C9429A89395B0D6A24",
+      "actual": "2CB94877358664BDC93234128FE2115B626C10442AEC87C9429A89395B0D6A24",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Metadata.lean",
+      "expected": "CBA9B8CC9B574EC9D66FA4CCF8E4CE277BE6AA864B68BCFE6B9AAAB7AE955720",
+      "actual": "CBA9B8CC9B574EC9D66FA4CCF8E4CE277BE6AA864B68BCFE6B9AAAB7AE955720",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Normalization.lean",
+      "expected": "BA10A82917C9914E0BB11F619A15A51CFC65E2C0842C066F372339C77FF5F9D4",
+      "actual": "BA10A82917C9914E0BB11F619A15A51CFC65E2C0842C066F372339C77FF5F9D4",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/NumericReader.lean",
+      "expected": "7E2CC443F2DE7351112460B7C2B0699C2879B51E760DEC3261B055790133897D",
+      "actual": "7E2CC443F2DE7351112460B7C2B0699C2879B51E760DEC3261B055790133897D",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/NumericSafety.lean",
+      "expected": "621FC88A3FD86C8188A3074608CB254FA1D507CC4482F21C9EA13F8888A02C92",
+      "actual": "621FC88A3FD86C8188A3074608CB254FA1D507CC4482F21C9EA13F8888A02C92",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Observations.lean",
+      "expected": "76B7CAE29F31ADDEDD6A90D0FD80BA52FB62F26A6FEF02D94BA41FD731CE880B",
+      "actual": "76B7CAE29F31ADDEDD6A90D0FD80BA52FB62F26A6FEF02D94BA41FD731CE880B",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/RankExecution.lean",
+      "expected": "BD4BDCDE4443E60E624DCEB0CC87673CF51321AD277DADE3A33DC898559A3B7F",
+      "actual": "BD4BDCDE4443E60E624DCEB0CC87673CF51321AD277DADE3A33DC898559A3B7F",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/RankLayout.lean",
+      "expected": "7A5756940175BD775A0F4F0928EBB01F222C7C8DB0461CB12C74770A6F8D629B",
+      "actual": "7A5756940175BD775A0F4F0928EBB01F222C7C8DB0461CB12C74770A6F8D629B",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/RankSemantics.lean",
+      "expected": "9AC0B86BC1630635EAA63A3DC3C3889206A0FDFB0205DD86C36ECF7F5516AB7C",
+      "actual": "9AC0B86BC1630635EAA63A3DC3C3889206A0FDFB0205DD86C36ECF7F5516AB7C",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/ReaderGeometry.lean",
+      "expected": "F8FF6C3B35B86208E3C56B09FFA5CA1113FE17650F98EE51E8EA5D9515394133",
+      "actual": "F8FF6C3B35B86208E3C56B09FFA5CA1113FE17650F98EE51E8EA5D9515394133",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/ReaderInterface.lean",
+      "expected": "ECD8043060AAE4A3F753B81ADCFE47F9E22B2914744DB6686ABBFB18A218A210",
+      "actual": "ECD8043060AAE4A3F753B81ADCFE47F9E22B2914744DB6686ABBFB18A218A210",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/RegularLayout.lean",
+      "expected": "172ED0F83F0D8E63136F7A3063F8EDC009F71D57C4BF8B1D311067F1AC53638C",
+      "actual": "172ED0F83F0D8E63136F7A3063F8EDC009F71D57C4BF8B1D311067F1AC53638C",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/SafetyInterface.lean",
+      "expected": "9BD0732D2863E80F4311D92C75366A0F280B7EBB250D51C32F66DA4540766CD5",
+      "actual": "9BD0732D2863E80F4311D92C75366A0F280B7EBB250D51C32F66DA4540766CD5",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/ScratchFrame.lean",
+      "expected": "0EB35B270F66D55C250D9EF6DC46D897F7AFD1AA8E07D5EA40A6EB2D7784905A",
+      "actual": "0EB35B270F66D55C250D9EF6DC46D897F7AFD1AA8E07D5EA40A6EB2D7784905A",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/SegmentMap.lean",
+      "expected": "8F9454FD730B9B857A99BBC33530DAF23E2F185AC66E21CC0845F29742C55B41",
+      "actual": "8F9454FD730B9B857A99BBC33530DAF23E2F185AC66E21CC0845F29742C55B41",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/SelectExecution.lean",
+      "expected": "580DB81FDE442C341332A1185FD524C2925E45744F1B6918447D915E1E3FD4D0",
+      "actual": "580DB81FDE442C341332A1185FD524C2925E45744F1B6918447D915E1E3FD4D0",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/SelectExperiment.lean",
+      "expected": "156744CBE4DEC77C874114E10408820F7B107B86D5635068D6B855B8363AF0E8",
+      "actual": "156744CBE4DEC77C874114E10408820F7B107B86D5635068D6B855B8363AF0E8",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/SelectSemantics.lean",
+      "expected": "D950323B3DE006F320335F68AF96BE9F8A7D50A425EDDB35B493EFA2AB8DD3A2",
+      "actual": "D950323B3DE006F320335F68AF96BE9F8A7D50A425EDDB35B493EFA2AB8DD3A2",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Source.lean",
+      "expected": "8277F15D876437BD6C35835C57C9332E839AAA94EA63EC8A9F10B8BC661D1074",
+      "actual": "8277F15D876437BD6C35835C57C9332E839AAA94EA63EC8A9F10B8BC661D1074",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Space.lean",
+      "expected": "DBF34F5508AC1A1FC57F722DEF6A4724B6B495B5416AE2A9970179E5780BEFC1",
+      "actual": "DBF34F5508AC1A1FC57F722DEF6A4724B6B495B5416AE2A9970179E5780BEFC1",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/Width.lean",
+      "expected": "873FE2E55102BEEB0E5B0450E86BF83CEF569303EF76C93D9B8AFC7A26860556",
+      "actual": "873FE2E55102BEEB0E5B0450E86BF83CEF569303EF76C93D9B8AFC7A26860556",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Bitvector/WordBounds.lean",
+      "expected": "756AD2CF263E310966CEE28F214B0190B3F748365C9D5B6E808D1BD994956AB0",
+      "actual": "756AD2CF263E310966CEE28F214B0190B3F748365C9D5B6E808D1BD994956AB0",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/E1FringeBridge.lean",
+      "expected": "B0287F964144901282A2949DC7FDCE9B682506EFB34F0BEC15F9098A5C8351DF",
+      "actual": "B0287F964144901282A2949DC7FDCE9B682506EFB34F0BEC15F9098A5C8351DF",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/E1Machine.lean",
+      "expected": "69CC3DDEFD185F7B6E9B09B64E8B2FB0FEFBE0669210E3D17D96CA707F3E1F94",
+      "actual": "69CC3DDEFD185F7B6E9B09B64E8B2FB0FEFBE0669210E3D17D96CA707F3E1F94",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/E1MachineCalculus.lean",
+      "expected": "15138768C905F6B462B52C2A128801B94E57A70411AAE7439CBE36183446FE66",
+      "actual": "15138768C905F6B462B52C2A128801B94E57A70411AAE7439CBE36183446FE66",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/E1RankBridge.lean",
+      "expected": "40754A0D37317F48F88125E66E6CE207683F639BB4DDBEDDA4669D80BF1B4ED0",
+      "actual": "40754A0D37317F48F88125E66E6CE207683F639BB4DDBEDDA4669D80BF1B4ED0",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Allocation.lean",
+      "expected": "7FDC39400FF3AB877BECD63D2E367E24ACE0C71F373C7F54017039EE578E7D49",
+      "actual": "7FDC39400FF3AB877BECD63D2E367E24ACE0C71F373C7F54017039EE578E7D49",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/ArrayRun.lean",
+      "expected": "CD45C07C1F822C1BA57B65ACCA2F5CE916FA735B33269AFB7CEB17F4E3B9C82F",
+      "actual": "CD45C07C1F822C1BA57B65ACCA2F5CE916FA735B33269AFB7CEB17F4E3B9C82F",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Calculus.lean",
+      "expected": "2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45",
+      "actual": "2BA830CA4AD97FE7A51A6561C5F18EAFF7D2BC4084EDD0D124FE47C41D955A45",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/ChunkArithmetic.lean",
+      "expected": "0F1B3DE7E3CF3DC37036335DA47FEA5F4A859E06BFBDF47314F23C6312A982FE",
+      "actual": "0F1B3DE7E3CF3DC37036335DA47FEA5F4A859E06BFBDF47314F23C6312A982FE",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Compiler.lean",
+      "expected": "C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505",
+      "actual": "C7AAA88DFB6A24099F8E7B22D7AC77942043476A47874A414BDAB58C77EE5505",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/DensePacking.lean",
+      "expected": "75487722A3DBB6BCB3D445B0C242E8380F7B9F77A0762354D83F692CBC956913",
+      "actual": "75487722A3DBB6BCB3D445B0C242E8380F7B9F77A0762354D83F692CBC956913",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Frame.lean",
+      "expected": "480EA8DF315B6DEE0F2048EEEAC03131368FD27EF09E0AAFA21DA2A676929939",
+      "actual": "480EA8DF315B6DEE0F2048EEEAC03131368FD27EF09E0AAFA21DA2A676929939",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Guard.lean",
+      "expected": "B911E50388FBDCDCD82A8E3ADEDD754473B6E5AB162A0D5D25B5C009A9160FFC",
+      "actual": "B911E50388FBDCDCD82A8E3ADEDD754473B6E5AB162A0D5D25B5C009A9160FFC",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/InteriorLocate.lean",
+      "expected": "E570243D505D2498085A4CA289DEB74E7CCC98985F08AFF7BFB9D9D3151600E7",
+      "actual": "E570243D505D2498085A4CA289DEB74E7CCC98985F08AFF7BFB9D9D3151600E7",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/LoadSafety.lean",
+      "expected": "AA7F502022E29C3D10A808E68CA0C9BB1481A0032659FA3C05BBB6D860850369",
+      "actual": "AA7F502022E29C3D10A808E68CA0C9BB1481A0032659FA3C05BBB6D860850369",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Locate.lean",
+      "expected": "3220FEECE22BAEF77AB8466675B8BDE65BD3FEF3A3C3832AEB176ADB4AF81578",
+      "actual": "3220FEECE22BAEF77AB8466675B8BDE65BD3FEF3A3C3832AEB176ADB4AF81578",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/LogicalSpan.lean",
+      "expected": "3A3BF287E8221FD1825D2205260FD7E5F02ED75FF930CEBF603FBA67420B1573",
+      "actual": "3A3BF287E8221FD1825D2205260FD7E5F02ED75FF930CEBF603FBA67420B1573",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/PhysicalRead.lean",
+      "expected": "49C9CE18F81B0B7A00E96C0E32F12121EE27401412146752DB845CE22581558F",
+      "actual": "49C9CE18F81B0B7A00E96C0E32F12121EE27401412146752DB845CE22581558F",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Primitive.lean",
+      "expected": "4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4",
+      "actual": "4C73250DF41AE328F6A9C6CD33FCEA48190A8A77AC81F09F1731B789D79B05C4",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/RankProof.lean",
+      "expected": "52106920B98F295C699008619DE132D320A3F97258074C8027FD8F6B2D5231BC",
+      "actual": "52106920B98F295C699008619DE132D320A3F97258074C8027FD8F6B2D5231BC",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/RankSafety.lean",
+      "expected": "BFF7F9CB3BC558EC41B0B1BC4B73C08F4F8F2ACC5DF9EB734E7FF20D9974D4F4",
+      "actual": "BFF7F9CB3BC558EC41B0B1BC4B73C08F4F8F2ACC5DF9EB734E7FF20D9974D4F4",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/RankSource.lean",
+      "expected": "B10BA599D21313AC0E5FC7D837D1FE1B999D270280959CA1AE30B8690AB4F6FB",
+      "actual": "B10BA599D21313AC0E5FC7D837D1FE1B999D270280959CA1AE30B8690AB4F6FB",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/ReaderSafety.lean",
+      "expected": "AE8AA18EAE3C6639AE66843EFCA0A4A4E4CA9F52ED974756F092214408BAEA44",
+      "actual": "AE8AA18EAE3C6639AE66843EFCA0A4A4E4CA9F52ED974756F092214408BAEA44",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/ReadInterface.lean",
+      "expected": "75509F98331EB79E87809851B1BFB340BC3157E4482405F9F47D1D49A7C1EA87",
+      "actual": "75509F98331EB79E87809851B1BFB340BC3157E4482405F9F47D1D49A7C1EA87",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/RegularLocate.lean",
+      "expected": "047ECF38990BD410085689FDE702417C035785C59C738BA6E1D66B248709D360",
+      "actual": "047ECF38990BD410085689FDE702417C035785C59C738BA6E1D66B248709D360",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Safety.lean",
+      "expected": "EF0273D4B16F5876A949CAD219EC421864D7533FDDD5BB492BFF360C0134CC1C",
+      "actual": "EF0273D4B16F5876A949CAD219EC421864D7533FDDD5BB492BFF360C0134CC1C",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Scalar.lean",
+      "expected": "5D25C758D77F5523DF8AE1C1136AE85FAE12BD9B11BCB6E472DBFABF97506493",
+      "actual": "5D25C758D77F5523DF8AE1C1136AE85FAE12BD9B11BCB6E472DBFABF97506493",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/ScalarSafety.lean",
+      "expected": "E7AFB1FB9E238AD9F051DFC5236E3E095EF259B4D0CFD875E4A757C10AF858BC",
+      "actual": "E7AFB1FB9E238AD9F051DFC5236E3E095EF259B4D0CFD875E4A757C10AF858BC",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Scratch.lean",
+      "expected": "320DDD6C1F6549902951B99CCF99C66B231D2A0106487A710D8638372EF32E64",
+      "actual": "320DDD6C1F6549902951B99CCF99C66B231D2A0106487A710D8638372EF32E64",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/SelectProof.lean",
+      "expected": "292AD12DC2879B2F523B29300DB2E5251AEA57BBACC5AD2154B2660DAF8946FB",
+      "actual": "292AD12DC2879B2F523B29300DB2E5251AEA57BBACC5AD2154B2660DAF8946FB",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/SelectSafety.lean",
+      "expected": "43C6C183A6B08B38B58521C42320F56A7AC87C27D23DC7AAF0DD5F73EEFC13E3",
+      "actual": "43C6C183A6B08B38B58521C42320F56A7AC87C27D23DC7AAF0DD5F73EEFC13E3",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/SelectSource.lean",
+      "expected": "9C41270FE301B417CA622E523F6546E1EB4CB707FDF68D38F64F2975A97C9A5D",
+      "actual": "9C41270FE301B417CA622E523F6546E1EB4CB707FDF68D38F64F2975A97C9A5D",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Setup.lean",
+      "expected": "B1BEF6D6859A63C33E8ABD31387697012C002209503D3E13F79B2C8145E6A918",
+      "actual": "B1BEF6D6859A63C33E8ABD31387697012C002209503D3E13F79B2C8145E6A918",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Span.lean",
+      "expected": "54E1A81BDDE51E0C460C9BA5ADFD57A04254FE5D14CA6A77259F4108A64584B7",
+      "actual": "54E1A81BDDE51E0C460C9BA5ADFD57A04254FE5D14CA6A77259F4108A64584B7",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/SpanAssembly.lean",
+      "expected": "EA0B7CA706C9750A6E0CDF6220F5F8B411A54CEC33CFADDDED4F010020239106",
+      "actual": "EA0B7CA706C9750A6E0CDF6220F5F8B411A54CEC33CFADDDED4F010020239106",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Structured.lean",
+      "expected": "F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887",
+      "actual": "F7F580A6A5E7BE2BED61F3C126AC83720046FE3A3D18C07286CF6B5AEF81A887",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Packed/Width.lean",
+      "expected": "6FB1D7DFE053E4A415B861819E46E448750EE056F8A0A6CAB8ED904277F9F9E5",
+      "actual": "6FB1D7DFE053E4A415B861819E46E448750EE056F8A0A6CAB8ED904277F9F9E5",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/ReadStoreEval.lean",
+      "expected": "862496D886BE52077FD0B6F9A8AD6D4E49EE0C39234DCD3213C3DF33300397D2",
+      "actual": "862496D886BE52077FD0B6F9A8AD6D4E49EE0C39234DCD3213C3DF33300397D2",
+      "passed": true
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Register.lean",
+      "expected": "93284E2A6DCACF9C3B425C3267EB8A0568E38CB2CDB083D21EC93FCDB32B783D",
+      "actual": "93284E2A6DCACF9C3B425C3267EB8A0568E38CB2CDB083D21EC93FCDB32B783D",
+      "passed": true
+    },
+    {
+      "path": "scripts/owned_process_tree.ps1",
+      "expected": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+      "actual": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+      "passed": true
+    },
+    {
+      "path": "scripts/packed_bitvector_public_controls.ps1",
+      "expected": "CF2D7C080AD7F4ADF42313C693ACF474CF87147DE1FCAF93A31AA164994BA085",
+      "actual": "CF2D7C080AD7F4ADF42313C693ACF474CF87147DE1FCAF93A31AA164994BA085",
+      "passed": true
+    }
+  ],
+  "baselineWasGloballyClean": false
+}

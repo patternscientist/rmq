@@ -1,0 +1,73 @@
+{
+  "Phase": "Development inventory syntax repair; no semantic replay verdict",
+  "UTC": "2026-09-12T08:48:47.4015495Z",
+  "Governance": "0e6a00f654abc64f8b68988fa9675b9a839dca2f",
+  "ContractCheckpoint": "0bbbe8ca4a937bc9782b2f7c5cc5419faa1a75a2",
+  "Tree": "Shared dirty development tree after parent adapter/validation compilation",
+  "Source": "scripts/variable_payload_inventory.lean",
+  "Inputs": [
+    {
+      "Path": "scripts/variable_payload_inventory.lean",
+      "SHA256": "1E4A84883CE5695C3392B5DB38B02335D0853B4FAFF772040D351FDB15E30721",
+      "Bytes": 5522
+    },
+    {
+      "Path": "RMQ/Core/EncodingVariableLowerBound.lean",
+      "SHA256": "688E98C5FBCC12D17CB475FD4B381B707EC224805C9A3C1C0B1858B3270B1FFA",
+      "Bytes": 14176
+    },
+    {
+      "Path": "RMQ/Core/WordRAM/Packed/AllocationLowerBound.lean",
+      "SHA256": "FB78AD4A5C23709E0EAB724D02F5DEB46E23A535D5AC63CC6E2B4DE54192972D",
+      "Bytes": 26282
+    },
+    {
+      "Path": ".lake/build/lib/lean/RMQ/Core/EncodingVariableLowerBound.olean",
+      "SHA256": "60AA66069D8CEC88DEA37566AF56A38CAF2FBD21E88D285A9372AC32E2983A77",
+      "Bytes": 438312
+    },
+    {
+      "Path": ".lake/build/lib/lean/RMQ/Core/WordRAM/Packed/AllocationLowerBound.olean",
+      "SHA256": "1098267A5CB01553CB49ECCC8B1571F56C2F26BF2A7C9B0F1F917A0AF6B0CD54",
+      "Bytes": 433376
+    }
+  ],
+  "InputsUnchanged": true,
+  "HistoricalEvidence": "docs/internal/extensions/lb1/evidence/development-checks.json",
+  "HistoricalEvidenceSHA256": "B7AD3379491473351D00E8790C616DD8F2A95CA105F7AE89EC8FD827E132E433",
+  "HistoricalEvidencePreserved": true,
+  "Version": {
+    "Stage": "inventory-repair-lean-version",
+    "ExitCode": 0,
+    "Output": [
+      "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+    ],
+    "StandardOutput": [
+      "Lean (version 4.22.0, x86_64-w64-windows-gnu, commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05, Release)"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 3.838,
+    "DeadlineSeconds": 60,
+    "Ownership": "kill-on-close-job"
+  },
+  "Result": {
+    "Stage": "field-inventory-repaired",
+    "ExitCode": 0,
+    "Output": [
+      "LB1-FIELDS PASS actual=4,16,33; unchanged and ordered controls accepted; defaulted, indented, underscore, apostrophe, Unicode, escaped, absent, missing, reversed and parent controls rejected"
+    ],
+    "StandardOutput": [
+      "LB1-FIELDS PASS actual=4,16,33; unchanged and ordered controls accepted; defaulted, indented, underscore, apostrophe, Unicode, escaped, absent, missing, reversed and parent controls rejected"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 13.23,
+    "DeadlineSeconds": 600,
+    "Ownership": "kill-on-close-job"
+  }
+}

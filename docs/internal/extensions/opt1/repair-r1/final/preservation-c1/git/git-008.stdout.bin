@@ -1,0 +1,173 @@
+{
+  "Version": "opt1-certificate-fields-v3",
+  "FieldCount": 39,
+  "FrozenAtAuthoring": "continuation over 8e355fda7788077f548865c1d6acf2ae5e88da55",
+  "Fields": [
+    {
+      "Name": "allocationResidualLittleO",
+      "ExpectedType": "LittleOLinear allocationRho"
+    },
+    {
+      "Name": "completeResidualLittleO",
+      "ExpectedType": "LittleOLinear compactQueryCompleteRho"
+    },
+    {
+      "Name": "widthBounds",
+      "ExpectedType": "\u2200 n, Nat.log2 (n + 2) + 1 \u2264 wordWidth n \u2227\n    wordWidth n \u2264 192 * (Nat.log2 (n + 2) + 1)"
+    },
+    {
+      "Name": "dataCapacity",
+      "ExpectedType": "\u2200 xs : List Int, (buildMemory xs).length * wordWidth xs.length \u2264\n    2 * xs.length + allocationRho xs.length"
+    },
+    {
+      "Name": "completeCapacity",
+      "ExpectedType": "\u2200 xs : List Int,\n    ((buildMemory xs).length + (compactQueryProgram.map Instruction.encoding).flatten.length +\n      (compactQueryRegisterCount + 3)) * wordWidth xs.length \u2264\n        2 * xs.length + compactQueryCompleteRho xs.length"
+    },
+    {
+      "Name": "memoryWordsFit",
+      "ExpectedType": "\u2200 (xs : List Int) word, word \u2208 buildMemory xs \u2192 word < 2 ^ wordWidth xs.length"
+    },
+    {
+      "Name": "allocationAddressesFit",
+      "ExpectedType": "\u2200 (xs : List Int) address, address \u2264 (buildMemory xs).length \u2192\n    address < 2 ^ wordWidth xs.length"
+    },
+    {
+      "Name": "programFieldsFit",
+      "ExpectedType": "\u2200 n instruction, instruction \u2208 compactQueryProgram \u2192 instruction.Fits (wordWidth n)"
+    },
+    {
+      "Name": "budgetExact",
+      "ExpectedType": "compactQueryBudget = 151978"
+    },
+    {
+      "Name": "programLength",
+      "ExpectedType": "compactQueryProgram.length = 212964"
+    },
+    {
+      "Name": "encodedProgramLength",
+      "ExpectedType": "(compactQueryProgram.map Instruction.encoding).flatten.length =\n    722339"
+    },
+    {
+      "Name": "programReduction",
+      "ExpectedType": "compactQueryProgram.length < queryProgram.length"
+    },
+    {
+      "Name": "emittedProgram",
+      "ExpectedType": "compactQueryProgram = compactAt compactQuerySource compactQueryFresh 0 0"
+    },
+    {
+      "Name": "originalExecutionBound",
+      "ExpectedType": "\u2200 memory n left right, (queryRun memory n left right).steps \u2264 150739"
+    },
+    {
+      "Name": "originalReducedFuel",
+      "ExpectedType": "\u2200 memory n left right,\n    run memory queryProgram 150739 (initialState n left right) = queryRun memory n left right"
+    },
+    {
+      "Name": "arbitraryMemoryObservations",
+      "ExpectedType": "\u2200 memory n left right,\n    (compactQueryRun memory n left right).result = (queryRun memory n left right).result \u2227\n    (compactQueryRun memory n left right).reads = (queryRun memory n left right).reads"
+    },
+    {
+      "Name": "completedExecution",
+      "ExpectedType": "\u2200 memory n left right,\n    (compactQueryRun memory n left right).final.status \u2260 .running"
+    },
+    {
+      "Name": "adequateFuel",
+      "ExpectedType": "\u2200 memory n left right fuel, compactQueryBudget \u2264 fuel \u2192\n    run memory compactQueryProgram fuel (initialState n left right) =\n      compactQueryRun memory n left right"
+    },
+    {
+      "Name": "registerCount",
+      "ExpectedType": "compactQueryRegisterCount = 8273"
+    },
+    {
+      "Name": "scratchCount",
+      "ExpectedType": "compactQueryScratchWords = 8276"
+    },
+    {
+      "Name": "unusedRegisters",
+      "ExpectedType": "\u2200 (xs : List Int) left right fuel r, compactQueryRegisterCount \u2264 r \u2192\n    (run (buildMemory xs) compactQueryProgram fuel (initialState xs.length left right)).final.regs r = 0"
+    },
+    {
+      "Name": "validInputs",
+      "ExpectedType": "\u2200 (xs : List Int) left right, ValidRange xs left right \u2192\n    encodeInputs xs.length left right = some (initialState xs.length left right) \u2227\n      left < 2 ^ wordWidth xs.length \u2227 right < 2 ^ wordWidth xs.length"
+    },
+    {
+      "Name": "natContract",
+      "ExpectedType": "\u2200 (xs : List Int) left right,\n    compactQueryNat (buildMemory xs) xs.length left right =\n      if ValidRange xs left right then some (scanWindow xs left (right - left)) else none"
+    },
+    {
+      "Name": "leftmost",
+      "ExpectedType": "\u2200 (xs : List Int) left right index,\n    compactQueryNat (buildMemory xs) xs.length left right = some index \u2192 LeftmostArgMin xs left right index"
+    },
+    {
+      "Name": "result",
+      "ExpectedType": "\u2200 (xs : List Int) left right,\n    left < 2 ^ wordWidth xs.length \u2192 right < 2 ^ wordWidth xs.length \u2192\n    (run (buildMemory xs) compactQueryProgram compactQueryBudget (initialState xs.length left right)).result =\n      some (optionNatPacket (SuccinctClassic.queryTraceResult xs left right).value)"
+    },
+    {
+      "Name": "halt",
+      "ExpectedType": "\u2200 (xs : List Int) left right,\n    left < 2 ^ wordWidth xs.length \u2192 right < 2 ^ wordWidth xs.length \u2192\n    (run (buildMemory xs) compactQueryProgram compactQueryBudget (initialState xs.length left right)).final.status =\n      .halted (optionNatPacket (SuccinctClassic.queryTraceResult xs left right).value)"
+    },
+    {
+      "Name": "invalidGuard",
+      "ExpectedType": "\u2200 (xs : List Int) left right,\n    left < 2 ^ wordWidth xs.length \u2192 right < 2 ^ wordWidth xs.length \u2192 \u00ac ValidRange xs left right \u2192\n    (run (buildMemory xs) compactQueryProgram compactQueryBudget (initialState xs.length left right)).result = some 0 \u2227\n      (run (buildMemory xs) compactQueryProgram compactQueryBudget (initialState xs.length left right)).reads = []"
+    },
+    {
+      "Name": "stepBound",
+      "ExpectedType": "\u2200 (xs : List Int) left right,\n    (run (buildMemory xs) compactQueryProgram compactQueryBudget (initialState xs.length left right)).steps \u2264 compactQueryBudget"
+    },
+    {
+      "Name": "categoryPartition",
+      "ExpectedType": "\u2200 (xs : List Int) left right,\n    let actual := run (buildMemory xs) compactQueryProgram compactQueryBudget (initialState xs.length left right)\n    actual.steps = actual.categoryCount .memoryRead + actual.categoryCount .registerWrite +\n      actual.categoryCount .arithmetic + actual.categoryCount .comparison +\n      actual.categoryCount .branch + actual.categoryCount .control"
+    },
+    {
+      "Name": "finalStateFit",
+      "ExpectedType": "\u2200 (xs : List Int) left right,\n    left < 2 ^ wordWidth xs.length \u2192 right < 2 ^ wordWidth xs.length \u2192\n    (run (buildMemory xs) compactQueryProgram compactQueryBudget (initialState xs.length left right)).final.Fits (wordWidth xs.length)"
+    },
+    {
+      "Name": "transitionSafety",
+      "ExpectedType": "\u2200 (xs : List Int) left right,\n    left < 2 ^ wordWidth xs.length \u2192 right < 2 ^ wordWidth xs.length \u2192\n    \u2200 (index : Nat) (t : Transition),\n      (run (buildMemory xs) compactQueryProgram compactQueryBudget (initialState xs.length left right)).transitions[index]? = some t \u2192\n      Instruction.Safe (wordWidth xs.length) t.before t.instruction \u2227 t.after.Fits (wordWidth xs.length)"
+    },
+    {
+      "Name": "prefixSafety",
+      "ExpectedType": "\u2200 (xs : List Int) left right,\n    left < 2 ^ wordWidth xs.length \u2192 right < 2 ^ wordWidth xs.length \u2192\n    \u2200 fuel, fuel \u2264 compactQueryBudget \u2192\n      (run (buildMemory xs) compactQueryProgram fuel (initialState xs.length left right)).final.Fits (wordWidth xs.length)"
+    },
+    {
+      "Name": "readWidth",
+      "ExpectedType": "\u2200 (xs : List Int) left right,\n    left < 2 ^ wordWidth xs.length \u2192 right < 2 ^ wordWidth xs.length \u2192\n    \u2200 (index : Nat) (t : Transition) (receipt : Receipt),\n      (run (buildMemory xs) compactQueryProgram compactQueryBudget (initialState xs.length left right)).transitions[index]? = some t \u2192\n      t.receipt = some receipt \u2192\n      receipt.address < 2 ^ wordWidth xs.length \u2227 receipt.reply = (buildMemory xs)[receipt.address]? \u2227\n        (\u2200 value, receipt.reply = some value \u2192 value < 2 ^ wordWidth xs.length)"
+    },
+    {
+      "Name": "positionalReadBacking",
+      "ExpectedType": "\u2200 (xs : List Int) left right index (t : Transition) (receipt : Receipt),\n    (run (buildMemory xs) compactQueryProgram compactQueryBudget (initialState xs.length left right)).transitions[index]? = some t \u2192\n    t.receipt = some receipt \u2192\n    t.before = (run (buildMemory xs) compactQueryProgram index (initialState xs.length left right)).final \u2227\n      t.before.status = .running \u2227 compactQueryProgram[t.before.pc]? = some t.instruction \u2227\n      execute (buildMemory xs) t.instruction t.before = (t.after, t.receipt) \u2227\n      \u2203 dst addrReg, t.instruction = .load dst addrReg \u2227\n        receipt.address = t.before.regs addrReg \u2227 receipt.reply = (buildMemory xs)[receipt.address]?"
+    },
+    {
+      "Name": "orderedLogicalRefinement",
+      "ExpectedType": "\u2200 (xs : List Int) left right,\n    (run (buildMemory xs) compactQueryProgram compactQueryBudget (initialState xs.length left right)).reads =\n      if ValidRange xs left right then\n        (List.range 174).map (fun i => \u27e8i, (metadata (SuccinctClassic.cartesianShape xs))[i]?\u27e9) ++\n          logicalTraceReads (SuccinctClassic.cartesianShape xs) (buildMemory xs)\n            (SuccinctClassic.queryTraceResult xs left right).trace\n      else []"
+    },
+    {
+      "Name": "logicalReadOnly",
+      "ExpectedType": "\u2200 (xs : List Int) left right,\n    ReadOnlyTrace (SuccinctClassic.queryTraceResult xs left right).trace"
+    },
+    {
+      "Name": "suppliedMemoryAgreement",
+      "ExpectedType": "\u2200 (xs : List Int) (memory : Memory) left right,\n    (\u2200 receipt \u2208 (run (buildMemory xs) compactQueryProgram compactQueryBudget (initialState xs.length left right)).reads,\n      memory[receipt.address]? = (buildMemory xs)[receipt.address]?) \u2192\n    run memory compactQueryProgram compactQueryBudget (initialState xs.length left right) =\n      run (buildMemory xs) compactQueryProgram compactQueryBudget (initialState xs.length left right)"
+    },
+    {
+      "Name": "specResult",
+      "ExpectedType": "\u2200 (xs : List Int) left right, ValidRange xs left right \u2192\n    (run (buildMemory xs) compactQueryProgram compactQueryBudget (initialState xs.length left right)).result =\n      some (scanWindow xs left (right - left) + 1)"
+    },
+    {
+      "Name": "noFailedLoads",
+      "ExpectedType": "\u2200 (xs : List Int) left right, ValidRange xs left right \u2192\n    \u2200 receipt \u2208 (run (buildMemory xs) compactQueryProgram compactQueryBudget (initialState xs.length left right)).reads,\n      \u2203 value, receipt.reply = some value"
+    }
+  ],
+  "MutationKinds": [
+    "delete-field-and-initializer",
+    "weaken-field-to-True-and-initializer-to-trivial"
+  ],
+  "ExpectedRejectSurface": "fixed exact-type consumer of the same field after the altered producer compiles",
+  "Controls": [
+    "unaltered-canonical-producer-consumers",
+    "nonsemantic-comment-change"
+  ],
+  "Amendment": "Before replay execution, expose required arbitrary-memory termination/full Run adequacy and strengthen existing numeric fields to independently measured literals 151978/212964/722339. Original acceptance rows unchanged."
+}
