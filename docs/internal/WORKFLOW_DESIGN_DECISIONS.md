@@ -13987,3 +13987,13 @@ Decision: `.github/workflows/ci.yml` runs the gate step under bash with `ulimit 
 Alternatives rejected: changing the frozen packed-query replay runner to wrap its runtime stage (it is pinned by its lane's provenance checks); rewriting `runArray` to be tail-recursive for the interpreter (a proof-bearing definition; out of scope for integration); running the fixtures through a compiled executable only (changes what the lane's replay certifies).
 
 Consequences: a user running the gate directly on Linux or macOS without the reproduction script must raise the stack limit themselves; the README's reproduction path goes through the script. Whether the whole gate fits the hosted job time limit is still unmeasured and is tracked separately.
+
+## WDD-20260923-CI-001: preserve the complete bounded PRE warm-up failure log
+
+Context: required Linux CI at bf31f983 reported a failed Constants module but the PRE warm-up wrapper kept only its last forty lines, dropping the actual compiler error among parallel build messages. A clean Ubuntu reproduction retained the full output and identified a Lean worker stack overflow (DD-20260923-CI-001).
+
+Decision: keep the complete owned-process warm-up output for the existing failure handler, bounded by the unchanged 16 MiB output limit. Successful warm-ups still print only their existing progress and duration. Exit, timeout, overflow predicates, deadlines, full replay and mutation registry stay unchanged. No failure is reclassified as a successful rejection.
+
+Alternatives: first-and-last excerpts can still omit a middle diagnostic; weakening or skipping the warm-up would hide the required build. No new wrapper or special-case success path is introduced.
+
+Consequences: subsequent hosted failures expose their diagnostic in the normal workflow log. The user explicitly authorized repair and normal protected-main promotion of the accepted integration checkpoint; required checks and branch protection remain binding, and the separate lifecycle candidate is not included. The incoming 121 non-merge commits already pass the production strict per-commit design checker; new repair commits must pass it independently.

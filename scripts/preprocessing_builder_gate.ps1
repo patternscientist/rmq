@@ -87,7 +87,8 @@ try {
     -WorkingDirectory $script:RepositoryRoot -Stage 'builder-replay-warm' `
     -DeadlineSeconds $WarmDeadlineSeconds -OutputLimitBytes $script:OutputLimitBytes `
     -TempRoot $script:TempRoot -Environment @{ LEAN_NUM_THREADS = '1' }
-  $script:LastOutput = @($warm.Output | Select-Object -Last 40)
+  # Keep the complete bounded warm-up log: a compiler error can precede many successful builds.
+  $script:LastOutput = @($warm.Output)
   if ($warm.TimedOut -or $warm.OutputLimitExceeded -or $warm.ExitCode -ne 0) {
     throw "warm-up build failed or was inconclusive after $($warm.DurationSeconds)s: exit=$($warm.ExitCode), timeout=$($warm.TimedOut), outputLimit=$($warm.OutputLimitExceeded)"
   }

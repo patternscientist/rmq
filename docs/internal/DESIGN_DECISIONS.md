@@ -13203,3 +13203,13 @@ Decision: `lakefile.toml` is stored with LF line endings throughout, like main. 
 Alternatives rejected: keeping the mixed bytes and re-pinning a new whole-file hash (a permanently mixed manifest, carriage-return noise in every later diff, and a pin that the next added target breaks again); converting the whole file to CRLF (differs from main and from four of the five lanes for no benefit).
 
 Consequences: the BV-1 semantic manifest check (exactly one added target with the expected name and root) still describes the BV-1 contribution; the BV-1 raw-byte manifest receipts describe the lane tip and are not re-run on the integrated tree. No gate checker reads the manifest's bytes: the baseline gate on the candidate passed every stage that reads `lakefile.toml` (executable discovery and builds) with the mixed file, and the content those stages parse is unchanged.
+
+## DD-20260923-CI-001: explicit Lean worker stack for the integrated build
+
+Context: the accepted integration at bf31f983 fails Linux CI while building Construction.Proof.Constants. An independent clean Ubuntu 24.04 reproduction with pinned Lean 4.22.0, one Lean worker and a 1 GiB OS stack limit reports `Stack overflow detected. Aborting.` and Lean exit 134; Lake returns 1 after 146.57 seconds, without timeout or output overflow. The original CI wrapper omitted this diagnostic from its last forty output lines.
+
+Decision: set package `moreLeanArgs = ["-s", "65536"]` in lakefile.toml. The pinned compiler documents this as a 64 MiB worker-thread stack. Lake passes it to module compilation and includes it in build traces, so cached outputs are rebuilt under the declared configuration. No theorem, proof term, reduction limit, trust option, public root or model changes. Direct `lake env lean` commands do not inherit package arguments; their actual checks remain required.
+
+Alternatives: increasing the OS stack again does not set Lean's explicit worker stack; rewriting the literal program proofs would change proof source before testing the compiler's resource setting. The worker-stack setting is a candidate repair until the required Linux checks pass; this entry does not claim those pending results.
+
+Consequences: reproducible resource configuration applies to local and hosted Lake builds. The existing OS stack setup remains needed for interpreter execution. Both required protected-main checks must pass on the final candidate before promotion; lifecycle work is excluded.
