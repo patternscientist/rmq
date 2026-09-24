@@ -671,8 +671,7 @@ foreach ($path in $trackedFiles) {
   }
 
   $lineNumber = 0
-  foreach ($line in [regex]::Split($text, '?
-')) {
+  foreach ($line in [regex]::Split($text, '\r?\n')) {
     $lineNumber += 1
     $isPreciselyFrozen = Is-PreciselyFrozenSnapshotLine $path $line
     if ($line.Contains($frozenSnapshotMarker) -and -not $isPreciselyFrozen) {
