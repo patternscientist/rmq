@@ -1,0 +1,115 @@
+{
+    "source":  {
+                   "sourceVariant":  "repaired",
+                   "base":  "12bd7f0fc2c87f2c9bdef3825bd92477e48e3433",
+                   "productionPath":  "scripts/lifecycle_dependency_replay.ps1",
+                   "sourceSha256":  "df55d2967f7c684bc24790cf11fea019d1d405b459763df12585f3c3d536473a",
+                   "sourceByteLength":  22112,
+                   "workingProductionSha256":  "df55d2967f7c684bc24790cf11fea019d1d405b459763df12585f3c3d536473a",
+                   "helperSha256":  "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+                   "registrySha256":  "1303ecf93c0a0c74e0a48023fe52258b7e847d020d009eb2f4deba7f084ab6df",
+                   "harnessSha256":  "17d050e70a045292cbbdc778177825c06e08f22629a11ede48abc3bf00c23b87",
+                   "shell":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                   "shellSha256":  "8bb6fa8c283b4d92120b1ef249a9b311b0f804d4cabbe9981159976c8be76a5e",
+                   "pieces":  [
+                                  {
+                                      "name":  "Hash-Bytes",
+                                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\FC-Q\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-46e16ee167c343e8bda3913f8143b06b\\Hash-Bytes.source.ps1",
+                                      "startCharacter":  1453,
+                                      "endCharacter":  1690,
+                                      "startByte":  1453,
+                                      "byteLength":  237,
+                                      "sha256":  "b6a1322df223db890a9065d3a2d3be08d425256fe1d50075b3a67fb9f6501eb3"
+                                  },
+                                  {
+                                      "name":  "Hash-File",
+                                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\FC-Q\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-46e16ee167c343e8bda3913f8143b06b\\Hash-File.source.ps1",
+                                      "startCharacter":  1692,
+                                      "endCharacter":  1780,
+                                      "startByte":  1692,
+                                      "byteLength":  88,
+                                      "sha256":  "1619305d8593281081e1ca9ee5d63ffe859e0705f133687d68a622e5e4be31eb"
+                                  },
+                                  {
+                                      "name":  "Write-Json",
+                                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\FC-Q\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-46e16ee167c343e8bda3913f8143b06b\\Write-Json.source.ps1",
+                                      "startCharacter":  1891,
+                                      "endCharacter":  3164,
+                                      "startByte":  1891,
+                                      "byteLength":  1273,
+                                      "sha256":  "6b95ac82386f9b2c7de169c507256fd43f24a090474c7ed3a42f415fcaae6c3a"
+                                  },
+                                  {
+                                      "name":  "Assert-Restored",
+                                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\FC-Q\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-46e16ee167c343e8bda3913f8143b06b\\Assert-Restored.source.ps1",
+                                      "startCharacter":  10075,
+                                      "endCharacter":  10331,
+                                      "startByte":  10075,
+                                      "byteLength":  256,
+                                      "sha256":  "2e2ab5f253865cd15fcbe5a097fba5420d8b2a8c2116846b96068eddf68e12df"
+                                  },
+                                  {
+                                      "name":  "Remove-Shadow",
+                                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\FC-Q\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-46e16ee167c343e8bda3913f8143b06b\\Remove-Shadow.source.ps1",
+                                      "startCharacter":  10811,
+                                      "endCharacter":  11305,
+                                      "startByte":  10811,
+                                      "byteLength":  494,
+                                      "sha256":  "79d6d36733f4adf30d275ee8068d9900c9757dfea439d54fbc79cda77ff827a9"
+                                  },
+                                  {
+                                      "name":  "main-catch-finally",
+                                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\FC-Q\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-46e16ee167c343e8bda3913f8143b06b\\main-catch-finally.source.ps1",
+                                      "startCharacter":  21066,
+                                      "endCharacter":  22022,
+                                      "startByte":  21066,
+                                      "byteLength":  956,
+                                      "sha256":  "168751badfbf158bf5abfe347e565ec967e119444925ea15e3941343a8deb14f"
+                                  },
+                                  {
+                                      "name":  "post-try-terminal",
+                                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\FC-Q\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-46e16ee167c343e8bda3913f8143b06b\\post-try-terminal.source.ps1",
+                                      "startCharacter":  22022,
+                                      "endCharacter":  22112,
+                                      "startByte":  22022,
+                                      "byteLength":  90,
+                                      "sha256":  "7555eb26d15caf5b3b0adb620d7b8a53e4fdb35b35f1d658087b6ea4ede31da8"
+                                  },
+                                  {
+                                      "name":  "finally",
+                                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\FC-Q\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-46e16ee167c343e8bda3913f8143b06b\\finally.source.ps1",
+                                      "startCharacter":  21315,
+                                      "endCharacter":  22022,
+                                      "startByte":  21315,
+                                      "byteLength":  707,
+                                      "sha256":  "b5577fdd0fa524b8d4f917e2660cf2eea4db5b9f6397187ea00ee6cc8ee0f47b"
+                                  }
+                              ],
+                   "chain":  "main try fixture -\u003e exact catch -\u003e exact finally -\u003e Assert-Restored -\u003e Hash-File -\u003e Hash-Bytes; independent/old coupled Remove-Shadow -\u003e guarded Remove-Item; exact mutex release/dispose; exact summary and terminal exit/PASS",
+                   "scope":  "Source-derived finalizer component with real bounded process and real owned scratch files; full production compiler replay is separate evidence",
+                   "streams":  "Inherited helper returned nonblank lines, not original raw stream bytes; helper may throw before returning overflow/cleanup output"
+               },
+    "id":  "F01_INTACT_SUCCESS",
+    "childSourceSha256":  "4879ee1f54e41b478f2b87977d14ea2faf79e43bd671721f193d7a7f094aebee",
+    "emptyBaselineLimit":  "A successful empty baseline quantifies over no files; it cannot establish whole-tree integrity",
+    "passed":  false,
+    "error":  "L1R1-FINALIZER: P unexpected child exit: 1",
+    "records":  [
+
+                ],
+    "deadlineSeconds":  30,
+    "outputLimitBytes":  1048576,
+    "expected":  {
+                     "id":  "F01_INTACT_SUCCESS",
+                     "sourceVariant":  "repaired",
+                     "mode":  "success",
+                     "expectedExit":  0,
+                     "stageFailure":  false,
+                     "integrityFailure":  false,
+                     "cleanupFailure":  false,
+                     "shadowRemoved":  true,
+                     "baselineCount":  2,
+                     "minimumShellMajor":  5,
+                     "challenge":  "Legitimate successful finalizer with two captured pins and actual held private mutex"
+                 }
+}

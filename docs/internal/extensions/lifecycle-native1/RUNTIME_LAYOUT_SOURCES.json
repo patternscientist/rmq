@@ -1,0 +1,29 @@
+{
+  "layout": "non-GMP mpz_object = public Lean header + bool sign + size_t digit count + pointer to unsigned-int digits; mpz::allocate requests count*sizeof(unsigned int); destructor uses same count",
+  "schema": "life-native1-runtime-layout-source-v1",
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/leanprover/lean4/ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05/src/runtime/object.h",
+      "bytes": 30129,
+      "sha256": "8B995769D8C2A5205F75EE9D9061099AFD26D3008B1157E87BD79A3FA2F3C7D4"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/leanprover/lean4/ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05/src/runtime/mpz.h",
+      "bytes": 10766,
+      "sha256": "333799842914E8A09D084C5C5087361D28EB5CD431E91A04B095D7C1A8C590D8"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/leanprover/lean4/ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05/src/runtime/mpn.h",
+      "bytes": 1098,
+      "sha256": "5460F152EB6CE3CB36426323FE409E2FC334E0752814C8686FC54EA0A2327643"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/leanprover/lean4/ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05/src/runtime/mpz.cpp",
+      "bytes": 25388,
+      "sha256": "B61CA00E93D82B6D27E9A53E853D02A7C47F415BA2765508A8905836DAE4D6B5"
+    }
+  ],
+  "boundary": "Requested live representation, not allocator usable storage or RSS; GNU C and Lean runtime layout are native trust assumptions",
+  "nativeVerification": "PENDING: match loaded runtime identity, non-GMP API surface, offsets, known wide Nat value and digit bytes before enabling graph measurements",
+  "commit": "ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05"
+}

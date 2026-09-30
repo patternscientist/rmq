@@ -1,0 +1,111 @@
+{
+  "passed": false,
+  "profile": "pwsh",
+  "shell": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+  "runtime": {
+    "profile": "pwsh",
+    "path": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+    "sha256": "362a356ce7f0940ec74f73a8fc2c990a2cc24a38a11c90bbd8eca947110ad139",
+    "version": "7.6.5",
+    "dotnet": "10.0.11",
+    "edition": "Core"
+  },
+  "shellSha256": "362A356CE7F0940EC74F73A8FC2C990A2CC24A38A11C90BBD8ECA947110AD139",
+  "registrySha256": "385c9bc95ac09b3cc046a7049e954cdf19361330c31f99bd83c9da0c822423f2",
+  "selected": [
+    "D07_ENV_VALID"
+  ],
+  "results": [],
+  "entrySourcePins": {
+    "scripts/lifecycle_validator.ps1": "8135040DFB712CB81DD083DB8F4B58D42E333BC196DB3770F2B5C28E228F0CB3",
+    "scripts/lifecycle_validator_environment.ps1": "2FB2C4D95EAF3F6633FFAA60413D3D798B26E5BF8B4E712E6A254E293E4F9F19",
+    "scripts/lifecycle_dependency_replay.ps1": "4BF287CF5E0715DBE2413DE0E842E21781A38D51A94DA5873E1CF8A8972003FB",
+    "scripts/owned_process_tree.ps1": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+    "scripts/lifecycle_dependency_cases.json": "003343871E23C93DF874A960A8AF60AE7A8A2E615ADB05B6E581DC4407A1C84B"
+  },
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "fail",
+    "stageError": "Could not find file 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\RC-S\\root\\.lake\\build\\bin\\rmq_lifecycle_validate.exe'.",
+    "integrityErrors": [],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "scripts/lifecycle_validator.ps1",
+        "entrySha256": "8135040DFB712CB81DD083DB8F4B58D42E333BC196DB3770F2B5C28E228F0CB3",
+        "finalSha256": "8135040DFB712CB81DD083DB8F4B58D42E333BC196DB3770F2B5C28E228F0CB3",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/lifecycle_validator_environment.ps1",
+        "entrySha256": "2FB2C4D95EAF3F6633FFAA60413D3D798B26E5BF8B4E712E6A254E293E4F9F19",
+        "finalSha256": "2FB2C4D95EAF3F6633FFAA60413D3D798B26E5BF8B4E712E6A254E293E4F9F19",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/lifecycle_dependency_replay.ps1",
+        "entrySha256": "4BF287CF5E0715DBE2413DE0E842E21781A38D51A94DA5873E1CF8A8972003FB",
+        "finalSha256": "4BF287CF5E0715DBE2413DE0E842E21781A38D51A94DA5873E1CF8A8972003FB",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/owned_process_tree.ps1",
+        "entrySha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+        "finalSha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/lifecycle_dependency_cases.json",
+        "entrySha256": "003343871E23C93DF874A960A8AF60AE7A8A2E615ADB05B6E581DC4407A1C84B",
+        "finalSha256": "003343871E23C93DF874A960A8AF60AE7A8A2E615ADB05B6E581DC4407A1C84B",
+        "status": "verified"
+      },
+      {
+        "path": ".lake/build/bin/rmq_lifecycle_validate.exe",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/run_controls.ps1",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/runtime_profile.ps1",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/selector_child.ps1",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/dependency_child.ps1",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/deadline_control.ps1",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/finalizer_control.ps1",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      }
+    ],
+    "entryPinCount": 5,
+    "verifiedPinCount": 5,
+    "caseSlotChecks": []
+  },
+  "streamLimit": "Inherited helper returned nonempty lines; overflow/exception may prevent output recovery."
+}

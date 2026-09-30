@@ -1,0 +1,2113 @@
+{
+  "helper": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\scripts\\packed_native_lifecycle_integrity_check.ps1",
+    "bytes": 7857,
+    "sha256": "4DBDE3FF1B030829C89DE70EFFD12D959404181A545117ADD11AC869BE0E426A"
+  },
+  "source": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+    "bytes": 44594,
+    "sha256": "C35BB6D38EB54562CB1E650D437D0914DE72852594DFDB865DB04E24104AD345"
+  },
+  "entrySource": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+    "bytes": 44594,
+    "sha256": "C35BB6D38EB54562CB1E650D437D0914DE72852594DFDB865DB04E24104AD345"
+  },
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "pass",
+    "stageError": null,
+    "integrityErrors": [],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "scripts/packed_native_lifecycle_storage_replay.ps1",
+        "entrySha256": "C35BB6D38EB54562CB1E650D437D0914DE72852594DFDB865DB04E24104AD345",
+        "finalSha256": "C35BB6D38EB54562CB1E650D437D0914DE72852594DFDB865DB04E24104AD345",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/packed_native_lifecycle_integrity_check.ps1",
+        "entrySha256": "4DBDE3FF1B030829C89DE70EFFD12D959404181A545117ADD11AC869BE0E426A",
+        "finalSha256": "4DBDE3FF1B030829C89DE70EFFD12D959404181A545117ADD11AC869BE0E426A",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/owned_process_tree.ps1",
+        "entrySha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+        "finalSha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/packed_native_lifecycle_stream_check.ps1",
+        "entrySha256": "71084788A6FE3E5662E187E82F74F078C65FC2F9425ECC9A0C23554BB2E641B7",
+        "finalSha256": "71084788A6FE3E5662E187E82F74F078C65FC2F9425ECC9A0C23554BB2E641B7",
+        "status": "verified"
+      },
+      {
+        "path": "native/packed-rmq/tests/lifecycle_storage_probe.c",
+        "entrySha256": "5F32F4A91B21697F86B4F2FEA855CD050E59E330CE6C6FFDA28898353B66D7B1",
+        "finalSha256": "5F32F4A91B21697F86B4F2FEA855CD050E59E330CE6C6FFDA28898353B66D7B1",
+        "status": "verified"
+      },
+      {
+        "path": "lean-toolchain",
+        "entrySha256": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F",
+        "finalSha256": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F",
+        "status": "verified"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle-native-p0/REGISTRY.json",
+        "entrySha256": "6CD97F40E7C39D2212A8C8705D264D4832DCF2542815B72CD927906A01DC8B20",
+        "finalSha256": "6CD97F40E7C39D2212A8C8705D264D4832DCF2542815B72CD927906A01DC8B20",
+        "status": "verified"
+      }
+    ],
+    "treeCheck": {
+      "attempted": true,
+      "equal": true,
+      "error": null
+    },
+    "entryPinCount": 7,
+    "verifiedPinCount": 7
+  },
+  "fixtureRestoration": true,
+  "candidateUnchanged": true,
+  "entryHelper": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\scripts\\packed_native_lifecycle_integrity_check.ps1",
+    "bytes": 7857,
+    "sha256": "4DBDE3FF1B030829C89DE70EFFD12D959404181A545117ADD11AC869BE0E426A"
+  },
+  "controls": [
+    {
+      "actualExit": 0,
+      "expectedStageError": null,
+      "stageFailure": null,
+      "outer": {
+        "Stage": "intact-success",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 6.114,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job",
+        "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\launcher\\retained.stdout",
+        "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\launcher\\retained.stderr",
+        "RetentionErrors": []
+      },
+      "expectedIntegrity": true,
+      "integrity": {
+        "attempted": true,
+        "success": true,
+        "checkedPins": 17,
+        "treeChecked": true,
+        "errors": [],
+        "restorationWrites": 0
+      },
+      "streamContract": {
+        "expectedStderr": "",
+        "expectedStdout": "LIFECYCLE-REPLAY evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\lifecycle-native-p0\\runs\\7346437d301d4667aff3809308154f28\r\nLIFECYCLE-REPLAY PASS cases=1 selfTest=False\r\n",
+        "expectedExit": 0,
+        "validated": true
+      },
+      "expectedSuccess": true,
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\lifecycle-native-p0\\runs\\7346437d301d4667aff3809308154f28\\SUMMARY.json",
+        "bytes": 11319,
+        "sha256": "D1C599FD37976A1AD5CFF78074D53818041A2D628A88E3CD132502AF7B7F4F1E"
+      },
+      "id": "intact-success",
+      "seconds": 6.114,
+      "capture": {
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\stdout.log",
+            "bytes": 283,
+            "sha256": "1C488F732C0E96FB3FBF28F70786521804E90A7139AB4AB53D31FB2F6EE2EB33"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\stderr.log",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\exit.json",
+            "bytes": 54,
+            "sha256": "DD2154A646B513DCA9174EDEE6695EFE00018D52A6D83A8519639041C3E451C9"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\pid",
+            "bytes": 5,
+            "sha256": "9A8AD62B80D90E10EF8EDC0BF13A1F9D716F56AFAF6AF46687CD239DF465DB41"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\raw-child.ps1",
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\spec.json",
+            "bytes": 1827,
+            "sha256": "12B86E78D00EFE3F806D0BCC8D1888B3FC95025948791432589B4BB4D73875A3"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\launcher\\retained.stdout",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\launcher\\retained.stderr",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\error",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\exit.json",
+          "environment": {},
+          "outputLimit": 16777216,
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\stdout.log",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\overflow"
+        },
+        "actual": {
+          "pid": 26864,
+          "exitCode": 0,
+          "durationSeconds": 5.5287969
+        },
+        "launcher": {
+          "Stage": "intact-success",
+          "ExitCode": 0,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.114,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        }
+      },
+      "fixtureSource": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-success\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+        "bytes": 38006,
+        "sha256": "F117F58D1171A34517DE38A0D20362EFDEF0193A3CE0947807C81F2094A8C54C"
+      }
+    },
+    {
+      "actualExit": 1,
+      "expectedStageError": "PROCESS:",
+      "stageFailure": "PROCESS: fixture-stage actual child or launcher exit differs from 0",
+      "outer": {
+        "Stage": "intact-stage-error",
+        "ExitCode": 1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 5.753,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job",
+        "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\launcher\\retained.stdout",
+        "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\launcher\\retained.stderr",
+        "RetentionErrors": []
+      },
+      "expectedIntegrity": true,
+      "integrity": {
+        "attempted": true,
+        "success": true,
+        "checkedPins": 17,
+        "treeChecked": true,
+        "errors": [],
+        "restorationWrites": 0
+      },
+      "streamContract": {
+        "expectedStderr": "PROCESS: fixture-stage actual child or launcher exit differs from 0\r\n",
+        "expectedStdout": "LIFECYCLE-REPLAY evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\lifecycle-native-p0\\runs\\3f07544fd1ce4db48b525a86d5f12335\r\n",
+        "expectedExit": 1,
+        "validated": true
+      },
+      "expectedSuccess": false,
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\lifecycle-native-p0\\runs\\3f07544fd1ce4db48b525a86d5f12335\\SUMMARY.json",
+        "bytes": 11495,
+        "sha256": "02702182AA9ECB9A2834F74D886BEF47281B58D4F40DEC3BA76B23F7239A68AB"
+      },
+      "id": "intact-stage-error",
+      "seconds": 5.753,
+      "capture": {
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\stdout.log",
+            "bytes": 241,
+            "sha256": "41F7E12570581805B9AF5E2C6410F9C0E9F758808301D72B6E7CEBE9207D5BC8"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\stderr.log",
+            "bytes": 69,
+            "sha256": "8C81C3B9AFB215DD4D494A7D532DF16AB3BB9181D971C9026143A33824637DFF"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\exit.json",
+            "bytes": 54,
+            "sha256": "D06D4F1B6BD5B9A3699923C1FE56CF314C92895CB82A523889F2A78789610C3E"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\pid",
+            "bytes": 5,
+            "sha256": "6EB1ACE78F6C1FD1A8FBE9D798E53A3EE19D297FC4DEAC67D076D1B280B84E05"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\raw-child.ps1",
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\spec.json",
+            "bytes": 1859,
+            "sha256": "D14C0391C31D87CFF5402A47C2A0B5E6BAFADB9477469B045D2DBFE8191AD974"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\launcher\\retained.stdout",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\launcher\\retained.stderr",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\error",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\exit.json",
+          "environment": {},
+          "outputLimit": 16777216,
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\stdout.log",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\overflow"
+        },
+        "actual": {
+          "pid": 28196,
+          "exitCode": 1,
+          "durationSeconds": 5.2285342
+        },
+        "launcher": {
+          "Stage": "intact-stage-error",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 5.753,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        }
+      },
+      "fixtureSource": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\intact-stage-error\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+        "bytes": 38006,
+        "sha256": "6C3BC31E0F322801CEC7F06641C0C4089AE4559ACB38D04BF53861B9EA28A667"
+      }
+    },
+    {
+      "actualExit": 1,
+      "expectedStageError": "DIAGNOSTIC:",
+      "stageFailure": "DIAGNOSTIC: invalid raw stage evidence for fixture-stage; Exception calling \"ReadAllText\" with \"2\" argument(s): \"Unable to translate bytes [FF] at index 0 from specified code page to Unicode.\"",
+      "outer": {
+        "Stage": "malformed-stdout-intact",
+        "ExitCode": 1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 6.111,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job",
+        "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\launcher\\retained.stdout",
+        "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\launcher\\retained.stderr",
+        "RetentionErrors": []
+      },
+      "expectedIntegrity": true,
+      "integrity": {
+        "attempted": true,
+        "success": true,
+        "checkedPins": 14,
+        "treeChecked": true,
+        "errors": [],
+        "restorationWrites": 0
+      },
+      "streamContract": {
+        "expectedStderr": "DIAGNOSTIC: invalid raw stage evidence for fixture-stage; Exception calling \"ReadAllText\" with \"2\" argument(s): \"Unable to translate bytes [FF] at index 0 from specified code page to Unicode.\"\r\n",
+        "expectedStdout": "LIFECYCLE-REPLAY evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\lifecycle-native-p0\\runs\\93856b5f508845a2bc7edaa51e218979\r\n",
+        "expectedExit": 1,
+        "validated": true
+      },
+      "expectedSuccess": false,
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\lifecycle-native-p0\\runs\\93856b5f508845a2bc7edaa51e218979\\SUMMARY.json",
+        "bytes": 8539,
+        "sha256": "8A6DF4BB526DBCC034E0844A038F6D10B54E6BF3F44F02D0C54C846F84197C43"
+      },
+      "id": "malformed-stdout-intact",
+      "seconds": 6.111,
+      "capture": {
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\stdout.log",
+            "bytes": 246,
+            "sha256": "B728C135CFAA89F1D8E2F51A33D9DFAF4D70602D5E348B61D8A3E7D69D5E7417"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\stderr.log",
+            "bytes": 194,
+            "sha256": "C123CA15C5E241ED6550ECA060AE50869A730442F8EEDA29C343F07E742C2FB7"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\exit.json",
+            "bytes": 54,
+            "sha256": "8FFDF0D680D2AAA36DBE642B863518735198F01A692009485F08A6895865585B"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\pid",
+            "bytes": 5,
+            "sha256": "FC0AD00427702DE037E3CAADE558D9277680320CDDEAAF9CA2C1F1216CFF4217"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\raw-child.ps1",
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\spec.json",
+            "bytes": 1899,
+            "sha256": "F5A715F9E2194E597C06E00E2E3CB1E1939D0C7F08543BCF9EA0EBC2EC9781C8"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\launcher\\retained.stdout",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\launcher\\retained.stderr",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\error",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\exit.json",
+          "environment": {},
+          "outputLimit": 16777216,
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\stdout.log",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\overflow"
+        },
+        "actual": {
+          "pid": 16200,
+          "exitCode": 1,
+          "durationSeconds": 5.5490176
+        },
+        "launcher": {
+          "Stage": "malformed-stdout-intact",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.111,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        }
+      },
+      "fixtureSource": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\malformed-stdout-intact\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+        "bytes": 38053,
+        "sha256": "1E1F6CBC0C5AED9B3109234D74F949C04FA22592FD2A57E6BA20CCB5F7F12485"
+      }
+    },
+    {
+      "actualExit": 1,
+      "expectedStageError": "PROCESS:",
+      "stageFailure": "PROCESS: fixture-stage actual child or launcher exit differs from 0",
+      "outer": {
+        "Stage": "stage-error-and-pin-change",
+        "ExitCode": 1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 6.838,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job",
+        "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\launcher\\retained.stdout",
+        "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\launcher\\retained.stderr",
+        "RetentionErrors": []
+      },
+      "expectedIntegrity": false,
+      "integrity": {
+        "attempted": true,
+        "success": false,
+        "checkedPins": 17,
+        "treeChecked": true,
+        "errors": [
+          "INTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c",
+          "INTEGRITY: live tracked/index/untracked baseline changed"
+        ],
+        "restorationWrites": 0
+      },
+      "streamContract": {
+        "expectedStderr": "PROCESS: fixture-stage actual child or launcher exit differs from 0\r\nINTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c\r\nINTEGRITY: live tracked/index/untracked baseline changed\r\n",
+        "expectedStdout": "LIFECYCLE-REPLAY evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\lifecycle-native-p0\\runs\\2aacbb88667c4fa4b0d731307f325185\r\n",
+        "expectedExit": 1,
+        "validated": true
+      },
+      "expectedSuccess": false,
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\lifecycle-native-p0\\runs\\2aacbb88667c4fa4b0d731307f325185\\SUMMARY.json",
+        "bytes": 12058,
+        "sha256": "DFFDB3C4DB3C8130D9460D1AD2A311117C18FD42995F86ED659AE322783ABDC9"
+      },
+      "id": "stage-error-and-pin-change",
+      "seconds": 6.838,
+      "capture": {
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\stdout.log",
+            "bytes": 249,
+            "sha256": "DC67C85272F6E2E2747DE125CE7E29F9EE7105711BFCCD398B9FA0DE2DEC0C68"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\stderr.log",
+            "bytes": 369,
+            "sha256": "2895BCC1954132B02734EA330D6F77FCCE8A091B5D3824F0163B9981C9505987"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\exit.json",
+            "bytes": 54,
+            "sha256": "37F7A43B311AA3B70720FFB1F026271F8ACB6A37C2B850A0479B8ECC0EAF308B"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\pid",
+            "bytes": 5,
+            "sha256": "27804D520F5BE7CD6C6DB36ACD2D4B0861101AC5A37B8BDE300C935090DD2E24"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\raw-child.ps1",
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\spec.json",
+            "bytes": 1923,
+            "sha256": "C77CDA4BE0CB7D883A2EB0D311357B6813E01BCF2193C52ACCFB4CF0B7E9B807"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\launcher\\retained.stdout",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\launcher\\retained.stderr",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\error",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\exit.json",
+          "environment": {},
+          "outputLimit": 16777216,
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\stdout.log",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\overflow"
+        },
+        "actual": {
+          "pid": 10168,
+          "exitCode": 1,
+          "durationSeconds": 6.2664032
+        },
+        "launcher": {
+          "Stage": "stage-error-and-pin-change",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.838,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        }
+      },
+      "fixtureSource": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-pin-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+        "bytes": 38122,
+        "sha256": "D5CD80BD5BA3B8106212479AC29517074239F712F5AB4D4E371A164FB8D64B6C"
+      }
+    },
+    {
+      "actualExit": 1,
+      "expectedStageError": "PROCESS:",
+      "stageFailure": "PROCESS: fixture-stage actual child or launcher exit differs from 0",
+      "outer": {
+        "Stage": "stage-error-and-capture-error",
+        "ExitCode": 1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 8.069,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job",
+        "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\launcher\\retained.stdout",
+        "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\launcher\\retained.stderr",
+        "RetentionErrors": []
+      },
+      "expectedIntegrity": false,
+      "integrity": {
+        "attempted": true,
+        "success": false,
+        "checkedPins": 17,
+        "treeChecked": true,
+        "errors": [
+          "INTEGRITY: artifact capture failed: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\lifecycle-native-p0\\runs\\e156ed2bae0a4d2da6bb3317a50b4660\\link.map; The process cannot access the file 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\lifecycle-native-p0\\runs\\e156ed2bae0a4d2da6bb3317a50b4660\\link.map' because it is being used by another process."
+        ],
+        "restorationWrites": 0
+      },
+      "streamContract": {
+        "expectedStderr": "PROCESS: fixture-stage actual child or launcher exit differs from 0\r\nINTEGRITY: artifact capture failed: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\lifecycle-native-p0\\runs\\e156ed2bae0a4d2da6bb3317a50b4660\\link.map; The process cannot access the file 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\lifecycle-native-p0\\runs\\e156ed2bae0a4d2da6bb3317a50b4660\\link.map' because it is being used by another process.\r\n",
+        "expectedStdout": "LIFECYCLE-REPLAY evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\lifecycle-native-p0\\runs\\e156ed2bae0a4d2da6bb3317a50b4660\r\n",
+        "expectedExit": 1,
+        "validated": true
+      },
+      "expectedSuccess": false,
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\lifecycle-native-p0\\runs\\e156ed2bae0a4d2da6bb3317a50b4660\\SUMMARY.json",
+        "bytes": 12438,
+        "sha256": "CE5CB3A8540EEAA15D158661902080AD1C17EBA23A342BA8C60E3104C1415332"
+      },
+      "id": "stage-error-and-capture-error",
+      "seconds": 8.069,
+      "capture": {
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\stdout.log",
+            "bytes": 252,
+            "sha256": "DFA473956BDBFEFAF30C305C4825ACB31D8CF23BFE615A9B0A0063B42323BCEA"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\stderr.log",
+            "bytes": 657,
+            "sha256": "CDC2F1BF21186E3CDD790E5A980B60CE2CAA3B2A5BDFABE433E10A33EB85489B"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\exit.json",
+            "bytes": 54,
+            "sha256": "7ACE8C18760CFB8869A904385B9F13B911D521AF4430F6F993EDCA8F7AA4330F"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\pid",
+            "bytes": 5,
+            "sha256": "3EB9A715427FA5788AC88D6F179129BD3163C03878459A05B7E4155B60D3D3B1"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\raw-child.ps1",
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\spec.json",
+            "bytes": 1947,
+            "sha256": "B1B59FFE0F7329347005D9E57275D8FD21B56A0C228712776DE875A34B2D3507"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\launcher\\retained.stdout",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\launcher\\retained.stderr",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\error",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\exit.json",
+          "environment": {},
+          "outputLimit": 16777216,
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\stdout.log",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\overflow"
+        },
+        "actual": {
+          "pid": 16340,
+          "exitCode": 1,
+          "durationSeconds": 7.4679543
+        },
+        "launcher": {
+          "Stage": "stage-error-and-capture-error",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 8.069,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        }
+      },
+      "fixtureSource": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\stage-error-and-capture-error\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+        "bytes": 38241,
+        "sha256": "46303EBDE5E5410488E98AFA6320D9290A3D46948C546D2DDF13477ED9EC405F"
+      }
+    },
+    {
+      "actualExit": 1,
+      "expectedStageError": null,
+      "stageFailure": null,
+      "outer": {
+        "Stage": "success-and-pin-change",
+        "ExitCode": 1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 7.062,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job",
+        "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\launcher\\retained.stdout",
+        "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\launcher\\retained.stderr",
+        "RetentionErrors": []
+      },
+      "expectedIntegrity": false,
+      "integrity": {
+        "attempted": true,
+        "success": false,
+        "checkedPins": 17,
+        "treeChecked": true,
+        "errors": [
+          "INTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c",
+          "INTEGRITY: live tracked/index/untracked baseline changed"
+        ],
+        "restorationWrites": 0
+      },
+      "streamContract": {
+        "expectedStderr": "INTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c\r\nINTEGRITY: live tracked/index/untracked baseline changed\r\n",
+        "expectedStdout": "LIFECYCLE-REPLAY evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\lifecycle-native-p0\\runs\\1f69812535e44f45aa5040392f67af74\r\n",
+        "expectedExit": 1,
+        "validated": true
+      },
+      "expectedSuccess": false,
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\lifecycle-native-p0\\runs\\1f69812535e44f45aa5040392f67af74\\SUMMARY.json",
+        "bytes": 11879,
+        "sha256": "188526C93EBA5C96F0831FADAA267615A87C9F616D5D5566D1A785568D27E493"
+      },
+      "id": "success-and-pin-change",
+      "seconds": 7.062,
+      "capture": {
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\stdout.log",
+            "bytes": 245,
+            "sha256": "11A080C84CE7D540788163844CEE12ECAB6B82B1B4B391CC979E25B573952913"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\stderr.log",
+            "bytes": 296,
+            "sha256": "D0380B0E6496FFDCB79B187485F111860278899ABBBA14413535B04AF0F01952"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\exit.json",
+            "bytes": 54,
+            "sha256": "8665CD9CB37C8ADCA361B844A2B0988B4DFB58CE857927D5F752494FB3B51679"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\pid",
+            "bytes": 5,
+            "sha256": "EB122AA1FA89EFAD381C03D240E1A69B71AB4C9EBCD79D21355445262E77C925"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\raw-child.ps1",
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\spec.json",
+            "bytes": 1891,
+            "sha256": "3F33D45946A38BB8013982F81981D50754D23276C0BB02BFEDB5F810581018E4"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\launcher\\retained.stdout",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\launcher\\retained.stderr",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\error",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\exit.json",
+          "environment": {},
+          "outputLimit": 16777216,
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\stdout.log",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\overflow"
+        },
+        "actual": {
+          "pid": 14924,
+          "exitCode": 1,
+          "durationSeconds": 6.4374825
+        },
+        "launcher": {
+          "Stage": "success-and-pin-change",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.062,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        }
+      },
+      "fixtureSource": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-pin-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+        "bytes": 38122,
+        "sha256": "C7F8DF55BBFAEDF159A1FC43F4A1B38859C3A5D7ED2F260F27F2AC53083690BF"
+      }
+    },
+    {
+      "actualExit": 1,
+      "expectedStageError": "DIAGNOSTIC:",
+      "stageFailure": "DIAGNOSTIC: unexpected or mixed stderr for fixture-stage",
+      "outer": {
+        "Stage": "mixed-diagnostic-and-pin-change",
+        "ExitCode": 1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 7.132,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job",
+        "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\launcher\\retained.stdout",
+        "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\launcher\\retained.stderr",
+        "RetentionErrors": []
+      },
+      "expectedIntegrity": false,
+      "integrity": {
+        "attempted": true,
+        "success": false,
+        "checkedPins": 17,
+        "treeChecked": true,
+        "errors": [
+          "INTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c",
+          "INTEGRITY: live tracked/index/untracked baseline changed"
+        ],
+        "restorationWrites": 0
+      },
+      "streamContract": {
+        "expectedStderr": "DIAGNOSTIC: unexpected or mixed stderr for fixture-stage\r\nINTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c\r\nINTEGRITY: live tracked/index/untracked baseline changed\r\n",
+        "expectedStdout": "LIFECYCLE-REPLAY evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\lifecycle-native-p0\\runs\\6c86f2de196e4772a44584ba04ee0aa4\r\n",
+        "expectedExit": 1,
+        "validated": true
+      },
+      "expectedSuccess": false,
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\lifecycle-native-p0\\runs\\6c86f2de196e4772a44584ba04ee0aa4\\SUMMARY.json",
+        "bytes": 12197,
+        "sha256": "80FC6EB9EABFD3897F35C76397E39582E7D21D5A1BD5FD3EA0D0C9A0DE4DC3F3"
+      },
+      "id": "mixed-diagnostic-and-pin-change",
+      "seconds": 7.132,
+      "capture": {
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\stdout.log",
+            "bytes": 254,
+            "sha256": "5AD5638B86E9918516E513A2AE190B506B92F2251229D603573492BD90EA6861"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\stderr.log",
+            "bytes": 363,
+            "sha256": "27A8681AFF59389604A4A023E70D5C4FB69BEB3E8ABED9D0F8465B9E570B4743"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\exit.json",
+            "bytes": 54,
+            "sha256": "23E2047EF2AF70DFBCDCAFE77FCCFD0B4B699240CC14E9058036162804F336F3"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\pid",
+            "bytes": 5,
+            "sha256": "2AB5E84F25B6AE7B37E8D4639586C92904E3CF526737BF01D6AA777D32D8290C"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\raw-child.ps1",
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\spec.json",
+            "bytes": 1963,
+            "sha256": "807307443F616224D1E8EE5AC13AE97521DF636ADBC06BD876B69FC8BF097A63"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\launcher\\retained.stdout",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\launcher\\retained.stderr",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\error",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\exit.json",
+          "environment": {},
+          "outputLimit": 16777216,
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\stdout.log",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\overflow"
+        },
+        "actual": {
+          "pid": 15808,
+          "exitCode": 1,
+          "durationSeconds": 6.4587105
+        },
+        "launcher": {
+          "Stage": "mixed-diagnostic-and-pin-change",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.132,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        }
+      },
+      "fixtureSource": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\mixed-diagnostic-and-pin-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+        "bytes": 38165,
+        "sha256": "1AE8306F903CE408D7C0FDD0D6C02948B765210A8B0378B42805AC2004565CEB"
+      }
+    },
+    {
+      "actualExit": 1,
+      "expectedStageError": "PROCESS:",
+      "stageFailure": "PROCESS: fixture-stage was not a completed bounded process; see retained logs",
+      "outer": {
+        "Stage": "timeout-and-pin-change",
+        "ExitCode": 1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 13.597,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job",
+        "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\launcher\\retained.stdout",
+        "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\launcher\\retained.stderr",
+        "RetentionErrors": []
+      },
+      "expectedIntegrity": false,
+      "integrity": {
+        "attempted": true,
+        "success": false,
+        "checkedPins": 15,
+        "treeChecked": true,
+        "errors": [
+          "INTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c",
+          "INTEGRITY: live tracked/index/untracked baseline changed"
+        ],
+        "restorationWrites": 0
+      },
+      "streamContract": {
+        "expectedStderr": "PROCESS: fixture-stage was not a completed bounded process; see retained logs\r\nINTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c\r\nINTEGRITY: live tracked/index/untracked baseline changed\r\n",
+        "expectedStdout": "LIFECYCLE-REPLAY evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\lifecycle-native-p0\\runs\\f8a60d05c1b14f27a69aa2c2d19b1945\r\n",
+        "expectedExit": 1,
+        "validated": true
+      },
+      "expectedSuccess": false,
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\lifecycle-native-p0\\runs\\f8a60d05c1b14f27a69aa2c2d19b1945\\SUMMARY.json",
+        "bytes": 11127,
+        "sha256": "2E3477772CE1B074890ED278EB283D3A23E08EE19FB36F677D43AE9686004E86"
+      },
+      "id": "timeout-and-pin-change",
+      "seconds": 13.597,
+      "capture": {
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\stdout.log",
+            "bytes": 245,
+            "sha256": "B0F7D835C3AE803B8AD33AB0CC84B5D7FE3FB81D8659950637F5CE43D5CC4E63"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\stderr.log",
+            "bytes": 375,
+            "sha256": "839487D6D903DAB2EC22622ED0B02291DF5E5AF09A9D9F6267F0E2CCE10BB5AC"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\exit.json",
+            "bytes": 55,
+            "sha256": "F2D914667258204D25D8B3F14C46AE6FE29D5766A997EB898405426670D87294"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\pid",
+            "bytes": 5,
+            "sha256": "87EC1F790F0FD69AD63A0C4B3B0956CE5FBFF4852ACC901AD091687DBECB61BB"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\raw-child.ps1",
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\spec.json",
+            "bytes": 1891,
+            "sha256": "F3F5540D297B9E6677815257A0BDD168D0DB39A2C97122D16A23886E67CC740B"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\launcher\\retained.stdout",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\launcher\\retained.stderr",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\error",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\exit.json",
+          "environment": {},
+          "outputLimit": 16777216,
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\stdout.log",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\overflow"
+        },
+        "actual": {
+          "pid": 11176,
+          "exitCode": 1,
+          "durationSeconds": 13.0584192
+        },
+        "launcher": {
+          "Stage": "timeout-and-pin-change",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 13.597,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        }
+      },
+      "fixtureSource": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\timeout-and-pin-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+        "bytes": 38139,
+        "sha256": "A11683C1CF47CE19FCF38DCDB95420A5D3E92AC9C43ED56F74985E0D20ECA108"
+      }
+    },
+    {
+      "actualExit": 1,
+      "expectedStageError": null,
+      "stageFailure": null,
+      "outer": {
+        "Stage": "success-and-tracked-change",
+        "ExitCode": 1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 6.18,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job",
+        "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\launcher\\retained.stdout",
+        "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\launcher\\retained.stderr",
+        "RetentionErrors": []
+      },
+      "expectedIntegrity": false,
+      "integrity": {
+        "attempted": true,
+        "success": false,
+        "checkedPins": 17,
+        "treeChecked": true,
+        "errors": [
+          "INTEGRITY: live tracked/index/untracked baseline changed"
+        ],
+        "restorationWrites": 0
+      },
+      "streamContract": {
+        "expectedStderr": "INTEGRITY: live tracked/index/untracked baseline changed\r\n",
+        "expectedStdout": "LIFECYCLE-REPLAY evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\lifecycle-native-p0\\runs\\b66f2709ce2d4c8d8f3e18f6c458c38e\r\n",
+        "expectedExit": 1,
+        "validated": true
+      },
+      "expectedSuccess": false,
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\lifecycle-native-p0\\runs\\b66f2709ce2d4c8d8f3e18f6c458c38e\\SUMMARY.json",
+        "bytes": 11729,
+        "sha256": "FAE0CFF3FCF05E18A2737DBA5CF774E3377D860DFB5E8B5E1E7F1D0446C7D274"
+      },
+      "id": "success-and-tracked-change",
+      "seconds": 6.18,
+      "capture": {
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\stdout.log",
+            "bytes": 249,
+            "sha256": "41ECD11A9B321967EE77E1D6E1FD630EBD2E48231C41838F7B62A606D6D8BD90"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\stderr.log",
+            "bytes": 58,
+            "sha256": "71378851A8124825E2D76F242EEBD70D9489781EEDD343C0D8316239C3CD6AE2"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\exit.json",
+            "bytes": 54,
+            "sha256": "E4160303C17A7DB6B9D0FADB5BA26FBA2CCD71EE11AE7B57F85AA10D1AFECBCD"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\pid",
+            "bytes": 5,
+            "sha256": "3C10A4E7CF7A59167BEC93554F817F5D51744019BD85587AF26D1B716161BC60"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\raw-child.ps1",
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\spec.json",
+            "bytes": 1923,
+            "sha256": "13285D61AE606AF89DB20898EA5B4BEE02D08C20853E2977318261ECC6FD05D0"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\launcher\\retained.stdout",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\launcher\\retained.stderr",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\error",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\exit.json",
+          "environment": {},
+          "outputLimit": 16777216,
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\stdout.log",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\overflow"
+        },
+        "actual": {
+          "pid": 14080,
+          "exitCode": 1,
+          "durationSeconds": 5.5517059
+        },
+        "launcher": {
+          "Stage": "success-and-tracked-change",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.18,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        }
+      },
+      "fixtureSource": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-tracked-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+        "bytes": 38076,
+        "sha256": "A40CB773D12B6FCC7686F3CCE30055D54B1225B2638852E1C7DE5417DBD7372D"
+      }
+    },
+    {
+      "actualExit": 1,
+      "expectedStageError": null,
+      "stageFailure": null,
+      "outer": {
+        "Stage": "success-and-index-change",
+        "ExitCode": 1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 7.214,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job",
+        "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\launcher\\retained.stdout",
+        "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\launcher\\retained.stderr",
+        "RetentionErrors": []
+      },
+      "expectedIntegrity": false,
+      "integrity": {
+        "attempted": true,
+        "success": false,
+        "checkedPins": 17,
+        "treeChecked": true,
+        "errors": [
+          "INTEGRITY: live tracked/index/untracked baseline changed"
+        ],
+        "restorationWrites": 0
+      },
+      "streamContract": {
+        "expectedStderr": "INTEGRITY: live tracked/index/untracked baseline changed\r\n",
+        "expectedStdout": "LIFECYCLE-REPLAY evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\lifecycle-native-p0\\runs\\ea6e4d9f30eb4dd9b1dcca9ece7f13d9\r\n",
+        "expectedExit": 1,
+        "validated": true
+      },
+      "expectedSuccess": false,
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\lifecycle-native-p0\\runs\\ea6e4d9f30eb4dd9b1dcca9ece7f13d9\\SUMMARY.json",
+        "bytes": 11672,
+        "sha256": "4A1AEFA11082169460DCE8660D7BE0192033FB3148763A567B5A35CC8D148078"
+      },
+      "id": "success-and-index-change",
+      "seconds": 7.214,
+      "capture": {
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\stdout.log",
+            "bytes": 247,
+            "sha256": "3E42CEABEC0A574E657D2AE5AA61752312B00ECF5BF176F7E2D2887863DB809E"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\stderr.log",
+            "bytes": 58,
+            "sha256": "71378851A8124825E2D76F242EEBD70D9489781EEDD343C0D8316239C3CD6AE2"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\exit.json",
+            "bytes": 54,
+            "sha256": "3E20B505759F2086CE8D68242C47468788983EE370E0C83451D9C80627702CA3"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\pid",
+            "bytes": 5,
+            "sha256": "603714D23B8B83D5A01263EB2E80768833DFDED1ECF63C3E55600F8ED4DE2015"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\raw-child.ps1",
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\spec.json",
+            "bytes": 1907,
+            "sha256": "793483D639A2F83E711D22A72FF5D16D91BEF6FFB65E66CD0CAE030E241B7B47"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\launcher\\retained.stdout",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\launcher\\retained.stderr",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\error",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\exit.json",
+          "environment": {},
+          "outputLimit": 16777216,
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\stdout.log",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\overflow"
+        },
+        "actual": {
+          "pid": 24756,
+          "exitCode": 1,
+          "durationSeconds": 6.5367244
+        },
+        "launcher": {
+          "Stage": "success-and-index-change",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.214,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        }
+      },
+      "fixtureSource": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-index-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+        "bytes": 38200,
+        "sha256": "97E414E0FA9FF6EBBB53641AD2974518B95B41E72D3405357B8909E88040FACA"
+      }
+    },
+    {
+      "actualExit": 1,
+      "expectedStageError": null,
+      "stageFailure": null,
+      "outer": {
+        "Stage": "success-and-untracked-addition",
+        "ExitCode": 1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 7.246,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job",
+        "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\launcher\\retained.stdout",
+        "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\launcher\\retained.stderr",
+        "RetentionErrors": []
+      },
+      "expectedIntegrity": false,
+      "integrity": {
+        "attempted": true,
+        "success": false,
+        "checkedPins": 17,
+        "treeChecked": true,
+        "errors": [
+          "INTEGRITY: live tracked/index/untracked baseline changed"
+        ],
+        "restorationWrites": 0
+      },
+      "streamContract": {
+        "expectedStderr": "INTEGRITY: live tracked/index/untracked baseline changed\r\n",
+        "expectedStdout": "LIFECYCLE-REPLAY evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\lifecycle-native-p0\\runs\\e2cf699c08284d9e97c3df6b74e59eb6\r\n",
+        "expectedExit": 1,
+        "validated": true
+      },
+      "expectedSuccess": false,
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\lifecycle-native-p0\\runs\\e2cf699c08284d9e97c3df6b74e59eb6\\SUMMARY.json",
+        "bytes": 11841,
+        "sha256": "70D94947EE863219F84402C168203370696349000ED646E727EF84B2DAC8F9D6"
+      },
+      "id": "success-and-untracked-addition",
+      "seconds": 7.246,
+      "capture": {
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\stdout.log",
+            "bytes": 253,
+            "sha256": "3E7567CA3F837F0D370A3A4383134CF9FE460BDEEF835340954221A317DBAD2D"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\stderr.log",
+            "bytes": 58,
+            "sha256": "71378851A8124825E2D76F242EEBD70D9489781EEDD343C0D8316239C3CD6AE2"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\exit.json",
+            "bytes": 54,
+            "sha256": "A53EDCF710144E9E32860D287AFED2232729E85069FCC45C3BCB996DCDC78530"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\pid",
+            "bytes": 5,
+            "sha256": "316E382E7954704C6FA392FF27BD9C2AD8FBDBC9B631E5B5CE142F116883F853"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\raw-child.ps1",
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\spec.json",
+            "bytes": 1955,
+            "sha256": "C0FE79D202A6989F439381F84B081DBC547E438447DBEF5A639EB4BA3E6A59BA"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\launcher\\retained.stdout",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\launcher\\retained.stderr",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\error",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\exit.json",
+          "environment": {},
+          "outputLimit": 16777216,
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\stdout.log",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\overflow"
+        },
+        "actual": {
+          "pid": 27952,
+          "exitCode": 1,
+          "durationSeconds": 6.6269446
+        },
+        "launcher": {
+          "Stage": "success-and-untracked-addition",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.246,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        }
+      },
+      "fixtureSource": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-addition\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+        "bytes": 38075,
+        "sha256": "E4BDF451F3F960A0F01BC2281B2373E6E0E65EC2166BC9E32FF4A9E89E718076"
+      }
+    },
+    {
+      "actualExit": 1,
+      "expectedStageError": null,
+      "stageFailure": null,
+      "outer": {
+        "Stage": "success-and-untracked-byte-change",
+        "ExitCode": 1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 6.92,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job",
+        "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\launcher\\retained.stdout",
+        "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\launcher\\retained.stderr",
+        "RetentionErrors": []
+      },
+      "expectedIntegrity": false,
+      "integrity": {
+        "attempted": true,
+        "success": false,
+        "checkedPins": 17,
+        "treeChecked": true,
+        "errors": [
+          "INTEGRITY: live tracked/index/untracked baseline changed"
+        ],
+        "restorationWrites": 0
+      },
+      "streamContract": {
+        "expectedStderr": "INTEGRITY: live tracked/index/untracked baseline changed\r\n",
+        "expectedStdout": "LIFECYCLE-REPLAY evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\lifecycle-native-p0\\runs\\cc44710176bb49d98e9cf1cce2cb4337\r\n",
+        "expectedExit": 1,
+        "validated": true
+      },
+      "expectedSuccess": false,
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\lifecycle-native-p0\\runs\\cc44710176bb49d98e9cf1cce2cb4337\\SUMMARY.json",
+        "bytes": 11925,
+        "sha256": "D2CA6A3BBE88F9C8555AE8FDD41E9AF72AE6C4CAB304E5804D87460B553C0A43"
+      },
+      "id": "success-and-untracked-byte-change",
+      "seconds": 6.92,
+      "capture": {
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\stdout.log",
+            "bytes": 256,
+            "sha256": "42C80BF91F4C9EA59D9A7DE9E3A9CB5844B6B48EDA37E7E7BF2668805F6528A3"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\stderr.log",
+            "bytes": 58,
+            "sha256": "71378851A8124825E2D76F242EEBD70D9489781EEDD343C0D8316239C3CD6AE2"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\exit.json",
+            "bytes": 54,
+            "sha256": "11AE728765CC408C37A743EC42F56B6591E2BC3AE88C7359E0A356985D28E2DB"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\pid",
+            "bytes": 5,
+            "sha256": "8C6C163BD65E1DCFBE8BC89355BFE6ED5B5E2528EA128850052A05BC8E3AE26E"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\raw-child.ps1",
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\spec.json",
+            "bytes": 1979,
+            "sha256": "7DF9B9BAAE0DDE7A6CF8B8C8A0D51569E7A2018276751DEA050C7FAEA4376941"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\launcher\\retained.stdout",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\launcher\\retained.stderr",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\error",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\exit.json",
+          "environment": {},
+          "outputLimit": 16777216,
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\stdout.log",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\overflow"
+        },
+        "actual": {
+          "pid": 31456,
+          "exitCode": 1,
+          "durationSeconds": 6.2978944
+        },
+        "launcher": {
+          "Stage": "success-and-untracked-byte-change",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.92,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        }
+      },
+      "fixtureSource": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-untracked-byte-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+        "bytes": 38087,
+        "sha256": "BE956B8E9FA628018761BF434322B9D8C8923E29196ED33F642B6A8349FEBFE9"
+      }
+    },
+    {
+      "actualExit": 1,
+      "expectedStageError": null,
+      "stageFailure": null,
+      "outer": {
+        "Stage": "success-and-link-map-change",
+        "ExitCode": 1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 7.02,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job",
+        "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\launcher\\retained.stdout",
+        "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\launcher\\retained.stderr",
+        "RetentionErrors": []
+      },
+      "expectedIntegrity": false,
+      "integrity": {
+        "attempted": true,
+        "success": false,
+        "checkedPins": 18,
+        "treeChecked": true,
+        "errors": [
+          "INTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\lifecycle-native-p0\\runs\\3ef5754965b5470491356e33fe27d325\\link.map"
+        ],
+        "restorationWrites": 0
+      },
+      "streamContract": {
+        "expectedStderr": "INTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\lifecycle-native-p0\\runs\\3ef5754965b5470491356e33fe27d325\\link.map\r\n",
+        "expectedStdout": "LIFECYCLE-REPLAY evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\lifecycle-native-p0\\runs\\3ef5754965b5470491356e33fe27d325\r\n",
+        "expectedExit": 1,
+        "validated": true
+      },
+      "expectedSuccess": false,
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\lifecycle-native-p0\\runs\\3ef5754965b5470491356e33fe27d325\\SUMMARY.json",
+        "bytes": 12365,
+        "sha256": "26ECA5200C3B56FA41B939C842CD19E721CA2B613321E19E171DBBA4D8DC791B"
+      },
+      "id": "success-and-link-map-change",
+      "seconds": 7.02,
+      "capture": {
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\stdout.log",
+            "bytes": 250,
+            "sha256": "8D5D4DF03DA192C314D4EF845C29516BE38C45304704D5BDEF2C1E7AFFBEEA25"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\stderr.log",
+            "bytes": 266,
+            "sha256": "B39EFEB5BFEB8ADE1B1DE1B4E22B8C5AA666C681D6F9382ED4E7CC5E1143A083"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\exit.json",
+            "bytes": 54,
+            "sha256": "3ACA9D2543F79E90D08A7F4590C2853C74691B9A83A17293FB5DE0A5958066B3"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\pid",
+            "bytes": 5,
+            "sha256": "3BC3059C076F1A0BBC553A52350A4C0587D3EAB52DD6D4411C3D2674EED0721E"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\raw-child.ps1",
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\spec.json",
+            "bytes": 1931,
+            "sha256": "9A5DE91CC26EEFCB4EDCF69A992638183C99F7ED4B2E626E4152707A3F122BC6"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\launcher\\retained.stdout",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\launcher\\retained.stderr",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\error",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\exit.json",
+          "environment": {},
+          "outputLimit": 16777216,
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\stdout.log",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\overflow"
+        },
+        "actual": {
+          "pid": 13984,
+          "exitCode": 1,
+          "durationSeconds": 6.4512033
+        },
+        "launcher": {
+          "Stage": "success-and-link-map-change",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.02,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        }
+      },
+      "fixtureSource": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\success-and-link-map-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+        "bytes": 38146,
+        "sha256": "C299259064357462535B39B61C505C39857D3EA76ECC016C4D7A29B639E6A72C"
+      }
+    },
+    {
+      "actualExit": 1,
+      "expectedStageError": "IDENTITY:",
+      "stageFailure": "IDENTITY: missing file C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\missing-tool.exe",
+      "outer": {
+        "Stage": "partial-identity-and-pin-change",
+        "ExitCode": 1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 6.945,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job",
+        "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\launcher\\retained.stdout",
+        "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\launcher\\retained.stderr",
+        "RetentionErrors": []
+      },
+      "expectedIntegrity": false,
+      "integrity": {
+        "attempted": true,
+        "success": false,
+        "checkedPins": 18,
+        "treeChecked": true,
+        "errors": [
+          "INTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c",
+          "INTEGRITY: live tracked/index/untracked baseline changed"
+        ],
+        "restorationWrites": 0
+      },
+      "streamContract": {
+        "expectedStderr": "IDENTITY: missing file C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\missing-tool.exe\r\nINTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c\r\nINTEGRITY: live tracked/index/untracked baseline changed\r\n",
+        "expectedStdout": "LIFECYCLE-REPLAY evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\lifecycle-native-p0\\runs\\bb53e2d8f2b5475dbcc12526077ae0d1\r\n",
+        "expectedExit": 1,
+        "validated": true
+      },
+      "expectedSuccess": false,
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\lifecycle-native-p0\\runs\\bb53e2d8f2b5475dbcc12526077ae0d1\\SUMMARY.json",
+        "bytes": 12719,
+        "sha256": "5D9F0E78D864C94B1FA0887CF296210F63CB7412160A71224427B5D642392D0E"
+      },
+      "id": "partial-identity-and-pin-change",
+      "seconds": 6.945,
+      "capture": {
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\stdout.log",
+            "bytes": 254,
+            "sha256": "D1F3772CFD1507F57470C507F78B7A598A59F1D1553971E9A818BDBE4C4C52FE"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\stderr.log",
+            "bytes": 509,
+            "sha256": "44BD522C72A987469FBFAC0FA077E419A53D8CE8D0BB40180F02E8B01B1C1480"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\exit.json",
+            "bytes": 53,
+            "sha256": "9561181B478791623605D5E83362EA24D6CBA78D802D4B072E277845FA319DD8"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\pid",
+            "bytes": 5,
+            "sha256": "D5DD8DC829D1C9D2D5EE39DDAF234B2EE822348D4122AB3B01B58B815FA0ACCA"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\raw-child.ps1",
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\spec.json",
+            "bytes": 1963,
+            "sha256": "D5D2408E048C9C66E18FA526FAB03AD2C04BEBA0A992F13226414323C46951A3"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\launcher\\retained.stdout",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\launcher\\retained.stderr",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\error",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\exit.json",
+          "environment": {},
+          "outputLimit": 16777216,
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\stdout.log",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\overflow"
+        },
+        "actual": {
+          "pid": 19460,
+          "exitCode": 1,
+          "durationSeconds": 6.313457
+        },
+        "launcher": {
+          "Stage": "partial-identity-and-pin-change",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 6.945,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        }
+      },
+      "fixtureSource": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\partial-identity-and-pin-change\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+        "bytes": 38225,
+        "sha256": "21493E9D44DB332496D2C4DFC6D326D21FD99E1CCB62BC082F1143463D77238C"
+      }
+    },
+    {
+      "actualExit": 1,
+      "expectedStageError": null,
+      "stageFailure": null,
+      "outer": {
+        "Stage": "missing-baseline",
+        "ExitCode": 1,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 5.28,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job",
+        "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\launcher\\retained.stdout",
+        "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\launcher\\retained.stderr",
+        "RetentionErrors": []
+      },
+      "expectedIntegrity": false,
+      "integrity": {
+        "attempted": true,
+        "success": false,
+        "checkedPins": 17,
+        "treeChecked": false,
+        "errors": [
+          "INTEGRITY: UNCOVERED; initial tree inventory unavailable"
+        ],
+        "restorationWrites": 0
+      },
+      "streamContract": {
+        "expectedStderr": "INTEGRITY: UNCOVERED; initial tree inventory unavailable\r\n",
+        "expectedStdout": "LIFECYCLE-REPLAY evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\lifecycle-native-p0\\runs\\dd824a9713dd4f8c804481b9d70aa47e\r\n",
+        "expectedExit": 1,
+        "validated": true
+      },
+      "expectedSuccess": false,
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\lifecycle-native-p0\\runs\\dd824a9713dd4f8c804481b9d70aa47e\\SUMMARY.json",
+        "bytes": 11450,
+        "sha256": "7DC6C83894E050ADFD96A6A12275C1A53C1B1110AFB8FEF3B233E89AC8AED615"
+      },
+      "id": "missing-baseline",
+      "seconds": 5.28,
+      "capture": {
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\stdout.log",
+            "bytes": 239,
+            "sha256": "00E31A0A3CD312AA16877F83814458D9664225CA59D37BCD5D53CF7B80ABB3C5"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\stderr.log",
+            "bytes": 58,
+            "sha256": "F517C89BAE63FBC5791874A2B52D0E74014B1D832E8B204182A86DFA4B9E6C78"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\exit.json",
+            "bytes": 53,
+            "sha256": "7B0A0B453B73038170582CE918E3759AC38961F7ACFDBD566C0EC05DC0DEA872"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\pid",
+            "bytes": 5,
+            "sha256": "CAA2FA1A1970F3437D42B18CAA7C32A55C74F0FFD5BC4390A69ACBD8E9C2DC35"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\raw-child.ps1",
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\spec.json",
+            "bytes": 1843,
+            "sha256": "861B3A7074D415D313E2CFA411DC1831BE1B28E757B48B67ED19E813DC9B2381"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\launcher\\retained.stdout",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\launcher\\retained.stderr",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\error",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\exit.json",
+          "environment": {},
+          "outputLimit": 16777216,
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\stdout.log",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\overflow"
+        },
+        "actual": {
+          "pid": 13136,
+          "exitCode": 1,
+          "durationSeconds": 4.635552
+        },
+        "launcher": {
+          "Stage": "missing-baseline",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 5.28,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        }
+      },
+      "fixtureSource": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-8b9fa96942304ae0b11f791d32650975\\missing-baseline\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+        "bytes": 38040,
+        "sha256": "BF4FF15D76C940B90778A815DAA5180A82D8F65194E697EEEBCAB82CBC41E827"
+      }
+    }
+  ],
+  "stageSplice": {
+    "stop": 43236,
+    "preserved": "entire prefix and suffix, including production catch/finally/final verdict; only stage body replaced",
+    "start": 36355
+  }
+}

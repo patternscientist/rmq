@@ -1,0 +1,114 @@
+{
+  "id": "FC-S",
+  "harness": "FC",
+  "shape": "S",
+  "fault": "intact",
+  "mode": "candidate",
+  "profile": "pwsh",
+  "deadlineSeconds": 180,
+  "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root",
+  "setupError": null,
+  "launchError": null,
+  "process": {
+    "Stage": "FC-S",
+    "ExitCode": 1,
+    "Output": [
+      "Exception: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\finalizer_control.ps1:30",
+      "Line |",
+      "  30 |  . ng]$path) {return Hash-ControlBytes ([IO.File]::ReadAllBytes($path))}",
+      "     |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | Exception calling \"ReadAllBytes\" with \"1\" argument(s): \"Could not find file",
+      "     | 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root\\scripts\\owned_process_tree.ps1'.\""
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "Exception: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\finalizer_control.ps1:30",
+      "Line |",
+      "  30 |  . ng]$path) {return Hash-ControlBytes ([IO.File]::ReadAllBytes($path))}",
+      "     |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | Exception calling \"ReadAllBytes\" with \"1\" argument(s): \"Could not find file",
+      "     | 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root\\scripts\\owned_process_tree.ps1'.\""
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 1.183,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  },
+  "durable": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-f86590095194412baa828780c99c05c0\\result.json",
+    "ambiguous": false,
+    "parseError": null,
+    "sha256": "203d45cfbdaa1de00cca0bdd66094ad3650c76123016e748d928f65109232d8e"
+  },
+  "core": {
+    "launchCompleted": true,
+    "exitClass": true,
+    "durablePresent": true,
+    "durableAsExpected": true,
+    "stageRecorded": true,
+    "integrityRecorded": true,
+    "cleanupRecorded": true,
+    "verdictAsExpected": true,
+    "values": null,
+    "labels": null,
+    "stderrAsExpected": true,
+    "absentFiles": true,
+    "stdoutWithoutSuccess": true
+  },
+  "structural": {
+    "applicable": true,
+    "finalizationPresent": true,
+    "verdictMatches": true,
+    "stageFieldMatches": true,
+    "integrityFieldMatches": true,
+    "cleanupEmpty": true,
+    "pinsVerified": true,
+    "pinCoverage": "captured 2 of 4 rows, all re-verified"
+  },
+  "restoration": {
+    "restored": [],
+    "removed": [],
+    "errors": [],
+    "verified": true,
+    "gitClean": true,
+    "gitState": "0e722f170f56127d5eb4bc704e34ce0f8e425b21\n--"
+  },
+  "verdict": "PASS",
+  "expected": "accept-all-predicates",
+  "lockWaitSeconds": 0.0,
+  "removedAtSetup": "scripts/owned_process_tree.ps1",
+  "manifest": {
+    "docs/internal/extensions/lifecycle1/repair-r1/finalizer_control.ps1": "924e46111803d0d40e7bbf1d2517efdf646d55f8b1387418790226665eeb42b2",
+    "docs/internal/extensions/lifecycle1/repair-r1/finalizer_cases.json": "1303ecf93c0a0c74e0a48023fe52258b7e847d020d009eb2f4deba7f084ab6df",
+    "scripts/lifecycle_dependency_replay.ps1": "ac21ed7fc218b1318111c0b9d54b4f474be497280a9b78d204a6ba0aa5ce332b",
+    ".gitignore": "fde850d24186b6e99c8c0debd641fb3ab85198b109eb66f71a1fea02bd6ea1b3"
+  },
+  "harnessSha256": "924e46111803d0d40e7bbf1d2517efdf646d55f8b1387418790226665eeb42b2",
+  "arguments": [
+    "-NoLogo",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\finalizer_control.ps1",
+    "-Case",
+    "F01_INTACT_SUCCESS",
+    "-Shell",
+    "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+    "-RepositoryRoot",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root",
+    "-EvidenceRoot",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root/.lake/r3-evidence"
+  ],
+  "environment": {
+    "R3_FAULT_TARGET": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root\\scripts\\lifecycle_dependency_replay.ps1",
+    "R3_FAULT_MARKER": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\fault.marker",
+    "R3_FAULT_MODE": "intact",
+    "R3_FAULT_SCOPE": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root"
+  },
+  "coreAll": true,
+  "structuralAll": true,
+  "predicateOutcome": true
+}

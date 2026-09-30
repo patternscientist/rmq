@@ -1,0 +1,1108 @@
+{
+  "schema": "life1-r2-source-freeze-v1",
+  "base": "0485a64920a273d0830b926ee46275085222819d",
+  "productionCommit": "cb4739220c01e6554a25ff8333652c0501486fa8",
+  "controlCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+  "sources": [
+    {
+      "path": "RMQ/Validation/LifecycleContract.lean",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "cb87275bec76845642e33406c1c6496fc0379192",
+      "gitBytes": {
+        "bytes": 12199,
+        "sha256": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b"
+      },
+      "currentRaw": {
+        "bytes": 12403,
+        "sha256": "f7022ac916813779745b9847b43d9091a90f4f2356615bdbf3b560f2861ad9ec"
+      },
+      "rawEqualsGit": false,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "RMQ/Validation/PackedLifecycle.lean",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "69d6ade9d2ec84521c208b559af1912561b80316",
+      "gitBytes": {
+        "bytes": 14684,
+        "sha256": "9da6975799204debd1a92127e4b585339da7983a55ce9fa6510d857f0dbc93b2"
+      },
+      "currentRaw": {
+        "bytes": 14971,
+        "sha256": "624236001fc72817441cc3dc536da9c299ccb1dc9c050687b09896b7f1679c14"
+      },
+      "rawEqualsGit": false,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/CACHE_PROVENANCE.json",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "58ebd6e210f206173ccb797adb33034f890b9aa8",
+      "gitBytes": {
+        "bytes": 566,
+        "sha256": "2cf778938d95ca66617ef94eb3c869cb256e09ab905fa935cb8cd00c337b06ca"
+      },
+      "currentRaw": {
+        "bytes": 578,
+        "sha256": "dd303f0f93e929651bb57bc3a3f66294624dcdb8c6fa15cba594c1635c12408c"
+      },
+      "rawEqualsGit": false,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/CONTRACT.json",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "4a7f4f984557cf7d391ba24952570ac2abe6dd09",
+      "gitBytes": {
+        "bytes": 19880,
+        "sha256": "25a1a4550548280950d7e7dbc01fb910321ed261c11ff129bfe92f1f20b78dc6"
+      },
+      "currentRaw": {
+        "bytes": 19880,
+        "sha256": "25a1a4550548280950d7e7dbc01fb910321ed261c11ff129bfe92f1f20b78dc6"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.frozen.json",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "204d6c1d48268fdec3a3d369d9b3dacd38ecb8e1",
+      "gitBytes": {
+        "bytes": 74726,
+        "sha256": "385c9bc95ac09b3cc046a7049e954cdf19361330c31f99bd83c9da0c822423f2"
+      },
+      "currentRaw": {
+        "bytes": 74726,
+        "sha256": "385c9bc95ac09b3cc046a7049e954cdf19361330c31f99bd83c9da0c822423f2"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.json",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "204d6c1d48268fdec3a3d369d9b3dacd38ecb8e1",
+      "gitBytes": {
+        "bytes": 74726,
+        "sha256": "385c9bc95ac09b3cc046a7049e954cdf19361330c31f99bd83c9da0c822423f2"
+      },
+      "currentRaw": {
+        "bytes": 74726,
+        "sha256": "385c9bc95ac09b3cc046a7049e954cdf19361330c31f99bd83c9da0c822423f2"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/EVIDENCE_INDEX.json",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "83a62a24f1a6a12c745e1a0e5c2e935c80a8e980",
+      "gitBytes": {
+        "bytes": 2093336,
+        "sha256": "a22875c3db4fd447716c3d9e333a1b7d5c83b4ae8c4ecb106b86dac3e468c512"
+      },
+      "currentRaw": {
+        "bytes": 2093336,
+        "sha256": "a22875c3db4fd447716c3d9e333a1b7d5c83b4ae8c4ecb106b86dac3e468c512"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/INITIAL_WORKING_FILES.json",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "52501ead077dbe569e9676338ba569e0afc3b86a",
+      "gitBytes": {
+        "bytes": 692757,
+        "sha256": "7568f90a8e594b79e707d0df575bb998feb5843e544c756b353764710decf806"
+      },
+      "currentRaw": {
+        "bytes": 692757,
+        "sha256": "7568f90a8e594b79e707d0df575bb998feb5843e544c756b353764710decf806"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/SCOPE_VERIFICATION.json",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "b823a4e6fed43598bbf4d97e51d8c7012abd263a",
+      "gitBytes": {
+        "bytes": 32374,
+        "sha256": "ae72105c72f193fca74cf30bb642ffaaf43faaa3fb7d840fc817232031652cbf"
+      },
+      "currentRaw": {
+        "bytes": 32374,
+        "sha256": "ae72105c72f193fca74cf30bb642ffaaf43faaa3fb7d840fc817232031652cbf"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/SOURCE_FREEZE.json",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "6b883ce07a59c068a318f82b096085a2b1cd4afc",
+      "gitBytes": {
+        "bytes": 338110,
+        "sha256": "2be35602f79cce010ff8bff16e7cd367906c3cd8a107d99d1c6f857f19a66097"
+      },
+      "currentRaw": {
+        "bytes": 338110,
+        "sha256": "2be35602f79cce010ff8bff16e7cd367906c3cd8a107d99d1c6f857f19a66097"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/START.json",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "166a5b92fe16c8722237e995bea6f8c4a5522025",
+      "gitBytes": {
+        "bytes": 2584,
+        "sha256": "950f814313282e605435efe7f2b241999c00d9db5d35ce9a177640882427076b"
+      },
+      "currentRaw": {
+        "bytes": 2584,
+        "sha256": "950f814313282e605435efe7f2b241999c00d9db5d35ce9a177640882427076b"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/build_row_dispositions.py",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "36c0bcdb41590781ed1d9b600ea4216b84b8164a",
+      "gitBytes": {
+        "bytes": 36855,
+        "sha256": "5fbadebad6df9955e757f29a7afb2f941d0937e3654a7ff251feb8ded2d3aae8"
+      },
+      "currentRaw": {
+        "bytes": 36855,
+        "sha256": "5fbadebad6df9955e757f29a7afb2f941d0937e3654a7ff251feb8ded2d3aae8"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/collect_evidence.py",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "94e8ac24a23e2b7edeffa898b1425eaf8d528967",
+      "gitBytes": {
+        "bytes": 4269,
+        "sha256": "2bd897fc5afbb73e1f08a08c42dc812f3906aa3c3c97aca200baad43b39a43ff"
+      },
+      "currentRaw": {
+        "bytes": 4269,
+        "sha256": "2bd897fc5afbb73e1f08a08c42dc812f3906aa3c3c97aca200baad43b39a43ff"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/contract_verification.json",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "c985666c30fa9c5eafcc3aa4b91162df4010ec6f",
+      "gitBytes": {
+        "bytes": 15428,
+        "sha256": "9b43dd8e1ec0396f469721bb7e53e802ef0de1bde7e450789898779b429f6427"
+      },
+      "currentRaw": {
+        "bytes": 15428,
+        "sha256": "9b43dd8e1ec0396f469721bb7e53e802ef0de1bde7e450789898779b429f6427"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/deadline_control.ps1",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "e985da4bb21ba3cb6646623fdc0efd0808fde264",
+      "gitBytes": {
+        "bytes": 3181,
+        "sha256": "3875dc386a78160f342667624814f70092fcc806850e1854111ff23b9f9418f4"
+      },
+      "currentRaw": {
+        "bytes": 3181,
+        "sha256": "3875dc386a78160f342667624814f70092fcc806850e1854111ff23b9f9418f4"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/dependency_boundary_cases.json",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "c5e63fc9f4ce0f7ae97c41a5570e74019ad7cced",
+      "gitBytes": {
+        "bytes": 28234,
+        "sha256": "3e15d23027e3e1adc37a401f4f80cfde95383c11998e76f4427bb15126af4f8c"
+      },
+      "currentRaw": {
+        "bytes": 28695,
+        "sha256": "d9e56dc40888cfdb937f0acbd9ec945846a5cac585c99341d21daa9b793d9ecf"
+      },
+      "rawEqualsGit": false,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/dependency_child.ps1",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "b16c812db3acb30043ec470237b86833b9b62b56",
+      "gitBytes": {
+        "bytes": 7843,
+        "sha256": "596ee87f0330dd6367737e0c7d235e099cac23f421ab0a99623fbccd803852d8"
+      },
+      "currentRaw": {
+        "bytes": 7843,
+        "sha256": "596ee87f0330dd6367737e0c7d235e099cac23f421ab0a99623fbccd803852d8"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/finalizer_cases.json",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "84c8df0b0339a48a60af93ad446532d2a186cb58",
+      "gitBytes": {
+        "bytes": 4711,
+        "sha256": "1303ecf93c0a0c74e0a48023fe52258b7e847d020d009eb2f4deba7f084ab6df"
+      },
+      "currentRaw": {
+        "bytes": 4711,
+        "sha256": "1303ecf93c0a0c74e0a48023fe52258b7e847d020d009eb2f4deba7f084ab6df"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/finalizer_control.ps1",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "76165bc0c27e07a7c9aa6874492a140cbb4c5195",
+      "gitBytes": {
+        "bytes": 26604,
+        "sha256": "17d050e70a045292cbbdc778177825c06e08f22629a11ede48abc3bf00c23b87"
+      },
+      "currentRaw": {
+        "bytes": 26604,
+        "sha256": "17d050e70a045292cbbdc778177825c06e08f22629a11ede48abc3bf00c23b87"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/finish_report.py",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "2e3c2ea92ed013b9768bdc21cd3e32976c83bc99",
+      "gitBytes": {
+        "bytes": 6629,
+        "sha256": "623a77d9bdb8f2952c68b9a8b9ffe9dfc916f9664c1a30394bcc339e63b9d117"
+      },
+      "currentRaw": {
+        "bytes": 6629,
+        "sha256": "623a77d9bdb8f2952c68b9a8b9ffe9dfc916f9664c1a30394bcc339e63b9d117"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/freeze_controls.py",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "b385c8f2f32d8d903c2c712771c272fc5ca2c457",
+      "gitBytes": {
+        "bytes": 1757,
+        "sha256": "f5ac6df8f63a1cfdd7839275a50d43be98dd07e8113477abe7c127525a088e7d"
+      },
+      "currentRaw": {
+        "bytes": 1757,
+        "sha256": "f5ac6df8f63a1cfdd7839275a50d43be98dd07e8113477abe7c127525a088e7d"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/initialize_contract.py",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "648be366f7ce6dec0636f00ee4238ccede69b2b1",
+      "gitBytes": {
+        "bytes": 5414,
+        "sha256": "f4c8d9a97d30afa8fac05fe18ca513554ff46ceea9d4a3730c5c883d2f3d355e"
+      },
+      "currentRaw": {
+        "bytes": 5414,
+        "sha256": "f4c8d9a97d30afa8fac05fe18ca513554ff46ceea9d4a3730c5c883d2f3d355e"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/make_dependency_registry.py",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "3992bc4ce288246c858771067667d37fa2a25041",
+      "gitBytes": {
+        "bytes": 3706,
+        "sha256": "d908cb5d350b1e73450a2c755368a4c85af8cfc8cb606b497b58cf84b686a3a0"
+      },
+      "currentRaw": {
+        "bytes": 3706,
+        "sha256": "d908cb5d350b1e73450a2c755368a4c85af8cfc8cb606b497b58cf84b686a3a0"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/make_selector_registry.py",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "1150b33fe1b2fca49f84159864dcdce8d8d0ded7",
+      "gitBytes": {
+        "bytes": 5109,
+        "sha256": "9987f1aa1dcc60b33d8a80e34ad8cad36d0297a949d3d4c45b2d42bcb2dfc82a"
+      },
+      "currentRaw": {
+        "bytes": 5109,
+        "sha256": "9987f1aa1dcc60b33d8a80e34ad8cad36d0297a949d3d4c45b2d42bcb2dfc82a"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/old_environment_control.ps1",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "253b002ea3e9928a827e45430b2b63772dfd68c5",
+      "gitBytes": {
+        "bytes": 2775,
+        "sha256": "b3a9132b173db445c7ea8099ff5430d3aba24cbefd2f1e4cecb3db7b830176ec"
+      },
+      "currentRaw": {
+        "bytes": 2775,
+        "sha256": "b3a9132b173db445c7ea8099ff5430d3aba24cbefd2f1e4cecb3db7b830176ec"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/prepare_cache.py",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "ba174899fc48bd9ad8e5c2b8c94036d54351c710",
+      "gitBytes": {
+        "bytes": 2970,
+        "sha256": "53c344dfe8b8314a9f18886b95b507caff82d2532e54d12161ee0b4384b96213"
+      },
+      "currentRaw": {
+        "bytes": 2970,
+        "sha256": "53c344dfe8b8314a9f18886b95b507caff82d2532e54d12161ee0b4384b96213"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/prepare_old_root.py",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "172e0a3cd5bc49e103513f7c93919b6f606cb78b",
+      "gitBytes": {
+        "bytes": 1672,
+        "sha256": "8e37ec16a275565f4d8e0438f18bfb0a0e5cd9499fd0c7429c4d1297f13aa21d"
+      },
+      "currentRaw": {
+        "bytes": 1672,
+        "sha256": "8e37ec16a275565f4d8e0438f18bfb0a0e5cd9499fd0c7429c4d1297f13aa21d"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/registry_control_cases.json",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "694154da863eddcb7823dd400c92eb4d4b6bb9ab",
+      "gitBytes": {
+        "bytes": 12330,
+        "sha256": "59d2a546c64eef274e878407583b51164d0676edd98fef46b04549d6fdf44a4a"
+      },
+      "currentRaw": {
+        "bytes": 12330,
+        "sha256": "59d2a546c64eef274e878407583b51164d0676edd98fef46b04549d6fdf44a4a"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/registry_controls.ps1",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "1615a4676738c90178f545a47904ffaee1978c09",
+      "gitBytes": {
+        "bytes": 16022,
+        "sha256": "f3b73384e6ef6ca4e6bda3afbae29c18afc1cae07b3d5af349c489c3e7a15e03"
+      },
+      "currentRaw": {
+        "bytes": 16022,
+        "sha256": "f3b73384e6ef6ca4e6bda3afbae29c18afc1cae07b3d5af349c489c3e7a15e03"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/run_check.ps1",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "f21505428701c77abd2b6390b64cf127b9a267aa",
+      "gitBytes": {
+        "bytes": 2542,
+        "sha256": "21afc81bf1cd8f2469886869998b57058734d59af684ab3fbd6bf420735cc41e"
+      },
+      "currentRaw": {
+        "bytes": 2542,
+        "sha256": "21afc81bf1cd8f2469886869998b57058734d59af684ab3fbd6bf420735cc41e"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/run_controls.ps1",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "288a0f4e70adfc3d613f2893e0cb293a2e12a667",
+      "gitBytes": {
+        "bytes": 7565,
+        "sha256": "dd963c8c08f2dee8cd6cabf190514494b3b52c44a3ad186646f6b430b0380a7c"
+      },
+      "currentRaw": {
+        "bytes": 7565,
+        "sha256": "dd963c8c08f2dee8cd6cabf190514494b3b52c44a3ad186646f6b430b0380a7c"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/runtime_profile.ps1",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "4f26065b241fc676c12249f56d0ea3025590101e",
+      "gitBytes": {
+        "bytes": 1461,
+        "sha256": "88911f7db7a662e198e0f377ba2a2cabf92b1afabb4192408cec739c5025b08a"
+      },
+      "currentRaw": {
+        "bytes": 1461,
+        "sha256": "88911f7db7a662e198e0f377ba2a2cabf92b1afabb4192408cec739c5025b08a"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/selector_cases.json",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "0f14678abfb13f44af973d4a2f349b87da7e7bd0",
+      "gitBytes": {
+        "bytes": 25616,
+        "sha256": "910896f0f118a5e7f7ef41cc8ea4c33de240a4125110ea57c8ac5da46956bbc2"
+      },
+      "currentRaw": {
+        "bytes": 26312,
+        "sha256": "407e9f8455aec21ef6ecad8098c0fd0febaf557d7be423eccaa0af32f08fbe3b"
+      },
+      "rawEqualsGit": false,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/selector_child.ps1",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "58ff6de108feb2389868e73bff49a32c788a4f39",
+      "gitBytes": {
+        "bytes": 10696,
+        "sha256": "de9ddfe2036dff22a0747bcc4b97acf8a1a1ac22f8f60bea0a8647388758a6f7"
+      },
+      "currentRaw": {
+        "bytes": 10696,
+        "sha256": "de9ddfe2036dff22a0747bcc4b97acf8a1a1ac22f8f60bea0a8647388758a6f7"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/source_manifest.py",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "151d7031b30e62bbb0151c421676c4b0c2a43411",
+      "gitBytes": {
+        "bytes": 22987,
+        "sha256": "8505349ad739e61610429b5dde3d90eb0496fee77a97ed415c17cf06151d1f83"
+      },
+      "currentRaw": {
+        "bytes": 22987,
+        "sha256": "8505349ad739e61610429b5dde3d90eb0496fee77a97ed415c17cf06151d1f83"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/verify_contract.py",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "2b353beb90079032a8a444a864664b1892265c59",
+      "gitBytes": {
+        "bytes": 21171,
+        "sha256": "b988c295bce0d462e5d346bb105e79b90b60f31a0ecabb0618cab35b0d6bd9b5"
+      },
+      "currentRaw": {
+        "bytes": 21171,
+        "sha256": "b988c295bce0d462e5d346bb105e79b90b60f31a0ecabb0618cab35b0d6bd9b5"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/verify_scope.py",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "400f55963696731fb2874a4f348f840ebc890f50",
+      "gitBytes": {
+        "bytes": 20433,
+        "sha256": "e5302f9a17c201b27d0f06c033d43445e52f635e5dbeb90bd7ec81e56336a044"
+      },
+      "currentRaw": {
+        "bytes": 20433,
+        "sha256": "e5302f9a17c201b27d0f06c033d43445e52f635e5dbeb90bd7ec81e56336a044"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/ACCEPTANCE_MATRIX.frozen.md",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "edf51bdd84f398ceac473075018fdc8ab4bc9dee",
+      "gitBytes": {
+        "bytes": 49039,
+        "sha256": "ad03e9572fff3c630bae7b80f2235d03302d2ab48fadfcc2c6e180c489b975c2"
+      },
+      "currentRaw": {
+        "bytes": 49039,
+        "sha256": "ad03e9572fff3c630bae7b80f2235d03302d2ab48fadfcc2c6e180c489b975c2"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/CONTRACT.json",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "1b41a4f7c0de6a061443700a4b0732eb81f3b4d7",
+      "gitBytes": {
+        "bytes": 23564,
+        "sha256": "cf7b4e3b7d6124b03ea28f9b05d79ee3288f8e7c7c39ee409b0263c4d147befc"
+      },
+      "currentRaw": {
+        "bytes": 23564,
+        "sha256": "cf7b4e3b7d6124b03ea28f9b05d79ee3288f8e7c7c39ee409b0263c4d147befc"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/HASH_CHANGE.json",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "266ecb432e6371b648895f186c94ec24b0d8574d",
+      "gitBytes": {
+        "bytes": 629,
+        "sha256": "26a87479d3a58b3611d1e060417b2d1aec293d683e8e88e57f802ab18ccfd19a"
+      },
+      "currentRaw": {
+        "bytes": 641,
+        "sha256": "b5459aa84f31d8263da9ee3540312a09c07308f879bd46d5fc79533e75b76c71"
+      },
+      "rawEqualsGit": false,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/HASH_VECTORS.json",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "1105b0851ce4cfec9203ee22cc5faa0f863f930c",
+      "gitBytes": {
+        "bytes": 1687,
+        "sha256": "6e2f6e3592a715b0dc497184ef38a7345827d9d8f834f7729a143c314ff67080"
+      },
+      "currentRaw": {
+        "bytes": 1687,
+        "sha256": "6e2f6e3592a715b0dc497184ef38a7345827d9d8f834f7729a143c314ff67080"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/INITIAL_FILES.json",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "c1bbd17cda85a6fd054405cf88588b9f3e787962",
+      "gitBytes": {
+        "bytes": 1807644,
+        "sha256": "55b43f6fab8592d95c3cb9714fa6fca70546b4dcad2b679bab44ea584a81080f"
+      },
+      "currentRaw": {
+        "bytes": 1807644,
+        "sha256": "55b43f6fab8592d95c3cb9714fa6fca70546b4dcad2b679bab44ea584a81080f"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/MATERIALIZATION.json",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "d6f0e1b6f8f6cd5ced82c3cf926fc2a7100f51e7",
+      "gitBytes": {
+        "bytes": 8448,
+        "sha256": "cbb6b5d3e9a6d922133a5da55163703dc1282567348273fce0b9b9d9a3b9308a"
+      },
+      "currentRaw": {
+        "bytes": 8448,
+        "sha256": "cbb6b5d3e9a6d922133a5da55163703dc1282567348273fce0b9b9d9a3b9308a"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/PREFLIGHT.json",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "4024982fde5e08b3f7d9da31672c1c7efb908651",
+      "gitBytes": {
+        "bytes": 1391,
+        "sha256": "d5dd1a8dcaf6ed72574204fcaa83b5b74dae589ec831c9643bbd47e78f1be025"
+      },
+      "currentRaw": {
+        "bytes": 1391,
+        "sha256": "d5dd1a8dcaf6ed72574204fcaa83b5b74dae589ec831c9643bbd47e78f1be025"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/PROMPT.md",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "88c4332107732eaf72257a90b23cc2dee67b1345",
+      "gitBytes": {
+        "bytes": 42538,
+        "sha256": "18ae1f54dcb8036416ef1b6b7ab2922a816698d22da514a02511653b7ff82873"
+      },
+      "currentRaw": {
+        "bytes": 42538,
+        "sha256": "18ae1f54dcb8036416ef1b6b7ab2922a816698d22da514a02511653b7ff82873"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/PROTECTED_BASELINE.json",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "b719f02e73bf7689d955874d15ce9b34cfcb10a0",
+      "gitBytes": {
+        "bytes": 700447,
+        "sha256": "10adce9d9a3b5909a9feb710494f990f94abc17fe17c8b018ea3fc5cc3558b47"
+      },
+      "currentRaw": {
+        "bytes": 700447,
+        "sha256": "10adce9d9a3b5909a9feb710494f990f94abc17fe17c8b018ea3fc5cc3558b47"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/START.json",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "e621a05e2a021300a9f3101504cb5ccf51765af6",
+      "gitBytes": {
+        "bytes": 6480,
+        "sha256": "ce8b7611e57554b1c1e169eaf18cfe9f47a641038b7a1e4436480c0823d37af1"
+      },
+      "currentRaw": {
+        "bytes": 6480,
+        "sha256": "ce8b7611e57554b1c1e169eaf18cfe9f47a641038b7a1e4436480c0823d37af1"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/bootstrap.py",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "8cfa05738f6b9bd1f0257398ff1348d24c400666",
+      "gitBytes": {
+        "bytes": 6716,
+        "sha256": "8d7f3ddd01062aebb96d175e2a450742159f02d9969bee8f3fe9e336b82d75f3"
+      },
+      "currentRaw": {
+        "bytes": 6716,
+        "sha256": "8d7f3ddd01062aebb96d175e2a450742159f02d9969bee8f3fe9e336b82d75f3"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/build_rows.py",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "cd0266a1d09b5f14db68bcb0c388304793dcedb8",
+      "gitBytes": {
+        "bytes": 30549,
+        "sha256": "e003c4f829c1d28560ccff49a0d273f5222418f833d3d09a691e2d1900ec1988"
+      },
+      "currentRaw": {
+        "bytes": 30549,
+        "sha256": "e003c4f829c1d28560ccff49a0d273f5222418f833d3d09a691e2d1900ec1988"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/hash_control.ps1",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "a8b24591062123e7977e1ed79f1da2e5cabfe0d7",
+      "gitBytes": {
+        "bytes": 4627,
+        "sha256": "b920c6164b35e9c9642fa6dc4433bb183197d5e7de7d65da29ef07dbfe8997c3"
+      },
+      "currentRaw": {
+        "bytes": 4627,
+        "sha256": "b920c6164b35e9c9642fa6dc4433bb183197d5e7de7d65da29ef07dbfe8997c3"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/materialize_contract.py",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "706fcc51dbb5d0e7523c53764daac7201160066c",
+      "gitBytes": {
+        "bytes": 6517,
+        "sha256": "ad307429667b813edaafa67624b9b72321456dcd87f79907f4a81c74a63ec883"
+      },
+      "currentRaw": {
+        "bytes": 6517,
+        "sha256": "ad307429667b813edaafa67624b9b72321456dcd87f79907f4a81c74a63ec883"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/package_results.py",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "96c44881fbfe06ffb6b875b83b8afdd43d90613b",
+      "gitBytes": {
+        "bytes": 1556,
+        "sha256": "33190482c772f946106aeadb4ff878086ded980fb1d0d55d690dffb555702a10"
+      },
+      "currentRaw": {
+        "bytes": 1556,
+        "sha256": "33190482c772f946106aeadb4ff878086ded980fb1d0d55d690dffb555702a10"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/prepare_runs.py",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "72785f46b35e2aa37a661a6fdc6341cb3b3d9fe4",
+      "gitBytes": {
+        "bytes": 3118,
+        "sha256": "44b0b18f670a8e86c2697a57447bc2adf29335a1d4eedea76cb79891d810405f"
+      },
+      "currentRaw": {
+        "bytes": 3118,
+        "sha256": "44b0b18f670a8e86c2697a57447bc2adf29335a1d4eedea76cb79891d810405f"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/render_report.py",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "394b67a629e69e71035f9d548dc07e3ebb120f2d",
+      "gitBytes": {
+        "bytes": 20812,
+        "sha256": "fe7323d28256dab2e939071137f2a220d0f50368b844457446959a25eb658942"
+      },
+      "currentRaw": {
+        "bytes": 20812,
+        "sha256": "fe7323d28256dab2e939071137f2a220d0f50368b844457446959a25eb658942"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/run_check.ps1",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "1377712ad2e86e8ea3ed0ab497c25960cdebb045",
+      "gitBytes": {
+        "bytes": 3324,
+        "sha256": "c865baf801e3e6634b805823c03f01143419528776faa94c19d31d222b83edf5"
+      },
+      "currentRaw": {
+        "bytes": 3324,
+        "sha256": "c865baf801e3e6634b805823c03f01143419528776faa94c19d31d222b83edf5"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/source_freeze.py",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "a68ca0066eea5c04af01e42b8c29a76236ea8165",
+      "gitBytes": {
+        "bytes": 4522,
+        "sha256": "3460f3643acd21c64e3a95389f629cd3939fdedd9bd35f6ff4efa69492fa1e4a"
+      },
+      "currentRaw": {
+        "bytes": 4522,
+        "sha256": "3460f3643acd21c64e3a95389f629cd3939fdedd9bd35f6ff4efa69492fa1e4a"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/verify_contract.py",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "aae2c76ea3d3f670b102cbdbeb33c350a14d8dbc",
+      "gitBytes": {
+        "bytes": 25139,
+        "sha256": "5e53bf80118dcf6caf16275a1f14a2ac2a5cb4cfd8feffa143139c8833583fbf"
+      },
+      "currentRaw": {
+        "bytes": 25139,
+        "sha256": "5e53bf80118dcf6caf16275a1f14a2ac2a5cb4cfd8feffa143139c8833583fbf"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/verify_evidence.py",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "c6436243788fc270d2f5d7c34287182cdf4c5d6e",
+      "gitBytes": {
+        "bytes": 30366,
+        "sha256": "f4d421ae3bda57f52cfe51cdff4b037efae33da04377be8d03e09cb16d72994b"
+      },
+      "currentRaw": {
+        "bytes": 30366,
+        "sha256": "f4d421ae3bda57f52cfe51cdff4b037efae33da04377be8d03e09cb16d72994b"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/verify_history.py",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "9aa64b4988de69ecfb5a0dd0bcb08237b91c1b24",
+      "gitBytes": {
+        "bytes": 40922,
+        "sha256": "6a5e0b1ddb2d7c7efb66f75843d794d6b9b6072f2f3baebb0c52d7ed48686f59"
+      },
+      "currentRaw": {
+        "bytes": 40922,
+        "sha256": "6a5e0b1ddb2d7c7efb66f75843d794d6b9b6072f2f3baebb0c52d7ed48686f59"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/verify_scope.py",
+      "producingCommit": "d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe",
+      "gitObject": "d1e937a09cad712d6c9370560da77ea2e2ccde07",
+      "gitBytes": {
+        "bytes": 4758,
+        "sha256": "02d00541080c9ae1f347f18db4f9f5c5380bb21fa9e41c1b2f755d9a0bb352ad"
+      },
+      "currentRaw": {
+        "bytes": 4758,
+        "sha256": "02d00541080c9ae1f347f18db4f9f5c5380bb21fa9e41c1b2f755d9a0bb352ad"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "lakefile.toml",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "b0e72516918125c22272b36c360db7f91182ade5",
+      "gitBytes": {
+        "bytes": 1114,
+        "sha256": "b28f9abbf9d42139f70036c1352d1ed245dc17053d4f5a0a62747d5c1234d597"
+      },
+      "currentRaw": {
+        "bytes": 1176,
+        "sha256": "b47c7abe3955d1a2e9ba51a4c71fc2e7961423d2bf5f3856f79a24bebc8bdd50"
+      },
+      "rawEqualsGit": false,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "lean-toolchain",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "b9994064fbbb081ca94a50384ff5951b50ea5b42",
+      "gitBytes": {
+        "bytes": 26,
+        "sha256": "34d34f94186cfe3e1485485d9a46aff11d7dd2b8901e7622124d98413c6a3123"
+      },
+      "currentRaw": {
+        "bytes": 28,
+        "sha256": "ad3e6363c78908c80953282baf57162702f1134173a5247aad3dbfea108a525f"
+      },
+      "rawEqualsGit": false,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "scripts/lifecycle_contract_integrity.ps1",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "a75884897c856177f180e90c359c9d2d2ba0ed5f",
+      "gitBytes": {
+        "bytes": 8613,
+        "sha256": "16ccb2e7c3dbbad3dd187d98325f11b72b36bf1b944cafa0d55d6018994511f3"
+      },
+      "currentRaw": {
+        "bytes": 8781,
+        "sha256": "f582fdc21665307b946b41f17eeb95c9bbe96db7b025fde6cc0d7141f5c4a9df"
+      },
+      "rawEqualsGit": false,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "scripts/lifecycle_dependency_cases.json",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "57f1d4427f09299814542172b93fe164c098fbea",
+      "gitBytes": {
+        "bytes": 37911,
+        "sha256": "4c9c7a4259808bb64c74656fd52559752e76f02834f2ac8567f5830968a5b80d"
+      },
+      "currentRaw": {
+        "bytes": 38490,
+        "sha256": "003343871e23c93df874a960a8af60ae7a8a2e615adb05b6e581dc4407a1c84b"
+      },
+      "rawEqualsGit": false,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "scripts/lifecycle_dependency_replay.ps1",
+      "producingCommit": "cb4739220c01e6554a25ff8333652c0501486fa8",
+      "gitObject": "2218a00913f0dd8865cd298d81279b0f41b1e998",
+      "gitBytes": {
+        "bytes": 20653,
+        "sha256": "da5d115ba2971f12ffa492ce57d218078d7477a24774230ac8a8a0121e1c88f3"
+      },
+      "currentRaw": {
+        "bytes": 20972,
+        "sha256": "66d1d42b1c01288fcb362dd716493f3154cc3c606b49d65b9f1e5f8fbaed68e1"
+      },
+      "rawEqualsGit": false,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "scripts/lifecycle_inventory.lean",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "aede16830f7cfcf79c8121fc354f31e2ebf0686d",
+      "gitBytes": {
+        "bytes": 3699,
+        "sha256": "21e123fcf97dab5c492ab22f6cf7e8eb9a7a0bbfc189281e0582a65668dcd2ec"
+      },
+      "currentRaw": {
+        "bytes": 3790,
+        "sha256": "a6d2c6b8afa097ba21a5bbb11f529f375e4b1cc5a087f58ab0b143b924790001"
+      },
+      "rawEqualsGit": false,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "scripts/lifecycle_provenance_contract.lean",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "f7962d23c57e778daf937a7280e48c5ce5518b64",
+      "gitBytes": {
+        "bytes": 5560,
+        "sha256": "d7d291fb45e376ef2be54cca1d1c93a603c69fbd41ade2a702836fc3a687bb4a"
+      },
+      "currentRaw": {
+        "bytes": 5660,
+        "sha256": "767743a4dd79b34377f5f5550bab88693df4a966826b02de7aedda78043fd020"
+      },
+      "rawEqualsGit": false,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "scripts/lifecycle_validator.ps1",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "6034e73e8214d0701a6429a4cbde0df9b2ecbc68",
+      "gitBytes": {
+        "bytes": 7947,
+        "sha256": "cd016bbdc5b9dea046d718af51a0786f0791a15ec01db1ae863517912eed9262"
+      },
+      "currentRaw": {
+        "bytes": 8062,
+        "sha256": "94dd5022a8161dbdff69bc8d0fa2d9140c874b3a4d8e8fa03662f71b38db5cb3"
+      },
+      "rawEqualsGit": false,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "scripts/lifecycle_validator_environment.ps1",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "6204df919a21f2c40d8c3d9f213e675d152a88c3",
+      "gitBytes": {
+        "bytes": 2027,
+        "sha256": "d0faf0a59ecb26d931f4f4536b5bab0e7532eb01d367ee0d0ae8873124d4c1eb"
+      },
+      "currentRaw": {
+        "bytes": 2027,
+        "sha256": "d0faf0a59ecb26d931f4f4536b5bab0e7532eb01d367ee0d0ae8873124d4c1eb"
+      },
+      "rawEqualsGit": true,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    },
+    {
+      "path": "scripts/owned_process_tree.ps1",
+      "producingCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "gitObject": "71b2704e9b77af3b55d4b97c626207013938b5b0",
+      "gitBytes": {
+        "bytes": 45948,
+        "sha256": "cae4c7f51f79f0d40352640f4c51d273369416ab2773526fe7b3459d4c115bb1"
+      },
+      "currentRaw": {
+        "bytes": 47060,
+        "sha256": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e"
+      },
+      "rawEqualsGit": false,
+      "relation": "Exact raw identity recorded; LF/CRLF serialization compared to immutable Git content separately, never asserted byte-equal when different."
+    }
+  ],
+  "tools": [
+    {
+      "path": "C:\\Python314\\python.exe",
+      "bytes": 106328,
+      "sha256": "7ca24f26d6e3f463419ee4f537ddd3acd312c38fe45e678cce08572f26a8bd1a"
+    },
+    {
+      "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+      "bytes": 82432,
+      "sha256": "9b5af669d8dc9b5826a1f5427584915eeca659e9bf34c7ee72667b93c0bfdcb0"
+    },
+    {
+      "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lake.exe",
+      "bytes": 85504,
+      "sha256": "aed396c5f1948b673416c8b509fa2ca31f3e2bb9596cc2d75485963f3e17bdd7"
+    },
+    {
+      "path": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+      "bytes": 301368,
+      "sha256": "362a356ce7f0940ec74f73a8fc2c990a2cc24a38a11c90bbd8eca947110ad139",
+      "observedRuntime": {
+        "shell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+        "version": "7.6.5",
+        "edition": "Core",
+        "dotnet": "10.0.11"
+      }
+    },
+    {
+      "path": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+      "bytes": 495616,
+      "sha256": "8bb6fa8c283b4d92120b1ef249a9b311b0f804d4cabbe9981159976c8be76a5e",
+      "observedRuntime": {
+        "shell": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        "version": "5.1.26100.9444",
+        "edition": "Desktop",
+        "dotnet": "4.0.30319.42000"
+      }
+    }
+  ],
+  "nativeExecutable": {
+    "path": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ\\.lake\\build\\bin\\rmq_lifecycle_validate.exe",
+    "bytes": 25018368,
+    "sha256": "4752591ec5a7d962e09440391aa38d0e2fc534b2f04775aab9c0c735e43ba99c"
+  },
+  "historyApplicability": {
+    "path": "HISTORY_APPLICABILITY.json",
+    "bytes": 72023,
+    "sha256": "3572096cba5b9c9bd08b479df190102ce30ebed17c39f5dcbece57b879cce748"
+  },
+  "coverage": "All old tracked raw sources and actual cache/artifact closure are separately exhaustively checked by verify_scope.py and verify_history.py. This manifest records executed scripts, registries, formal consumers and current evidence-generator code at immutable producing commits. Final report/rows/active matrix/WDD and delivery are packaging and have separate final pins."
+}

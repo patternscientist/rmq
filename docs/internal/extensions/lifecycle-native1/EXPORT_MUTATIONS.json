@@ -1,0 +1,1385 @@
+{
+  "schema": "lifecycle-native1-export-mutations-v1",
+  "status": "PROSPECTIVE_NOT_REPLAYED",
+  "source_identity": {
+    "base": "3dbdebedcc6ba6b2a864df0d46dcc09ccaaa7536",
+    "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+    "producer_sha256": "a61d3359b1d3066abe8f8cd5d3f3be3597798ea4a2d09e0cb825f9ef5ed7baea",
+    "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean",
+    "consumer_sha256": "4075aa30a3587995091debe002aea8ca0b111dddbf210082f0e9a019fd6314c2",
+    "source_line_ending": "LF",
+    "boundary_proofs_path": "RMQ/Core/WordRAM/Native/Lifecycle/BoundaryProofs.lean",
+    "boundary_proofs_sha256": "519d089c5b26c2a75153f2c6fee666333f921da3766892411178b313023cc879",
+    "admission_sources": [
+      {
+        "path": "RMQ/Core/WordRAM/Native/Lifecycle/Admission.lean",
+        "sha256": "36bf7eb2fbc592fe178bef884591c5962a43a34b6870405789287b4106f3e6d4"
+      },
+      {
+        "path": "RMQ/Core/WordRAM/Native/Lifecycle/Codec.lean",
+        "sha256": "219669a34fa433efe27b6cfb8e98c22813c98d96cc4e7dcd018c3f044fdf84ca"
+      },
+      {
+        "path": "RMQ/Core/WordRAM/Native/Lifecycle/AdmissionContract.lean",
+        "sha256": "98e6cc6ca683b93eb288f692fdcff6c63800fff879490e2665b68fbf420d67ea"
+      }
+    ]
+  },
+  "acceptance_rows": [
+    "N1-01",
+    "N1-05",
+    "N1-06",
+    "N1-12",
+    "INV-CERTIFICATE-ANTI-BYPASS",
+    "INV-MUTATION-REPRODUCIBILITY",
+    "CHK-LEAN"
+  ],
+  "registry_policy": {
+    "ordered_ids": "Require exact ordered case IDs, per-ID mappings, and counts; reject missing/duplicate/reordered IDs.",
+    "edits": "Apply every literal edit exactly once to one disposable producer copy; never edit the independent consumer.",
+    "producer_stage": "Successful producer compilation is mandatory before attempting the client. A producer failure does not establish a client dependency.",
+    "client_stage": "Compile the unchanged independent consumer against the mutated producer artifact and the same transitive source closure, rebuilding every affected descendant before the consumer.",
+    "diagnostics": "The class/check names below identify intended surfaces, not a substring acceptance rule. Before final replay, record and freeze every complete stdout/stderr diagnostic for each case with strict bytes/UTF-8 policy. Reject extra or unrelated diagnostics on either stream.",
+    "outcomes": "Expected outcomes are prospective, not observations. Assign observed verdicts only after actual producer and client execution. No case presently closes an acceptance row.",
+    "cleanup": "Independently verify live-source and tool identities and disposable cleanup in finally, even after setup/compiler/client failure."
+  },
+  "consumer_common_parameters": "variable (model : InputModel) (xs : List Int) (left right : Nat)\n  (domain : InputDomain model xs) (hl : left < 2 ^ wordWidth xs.length)\n  (hr : right < 2 ^ wordWidth xs.length)",
+  "consumer_query_parameters": "variable (es : Owner) (newLeft newRight answer : Nat) (ready : ExpectedReady xs es)\n  (halted : es.status = .halted answer) (hnewLeft : newLeft < 2 ^ wordWidth xs.length)\n  (hnewRight : newRight < 2 ^ wordWidth xs.length)",
+  "counts": {
+    "mandatory_export_fields": 13,
+    "mandatory_query_fields": 10,
+    "weakening": 23,
+    "deletion": 2,
+    "sibling": 4,
+    "expected_accept": 2,
+    "total": 34,
+    "admission_leaf": 3
+  },
+  "ordered_ids": [
+    "EX-WEAK-E01-PROGRAM",
+    "EX-WEAK-E02-OWNER",
+    "EX-WEAK-E03-PROJECTION",
+    "EX-WEAK-E04-READY",
+    "EX-WEAK-E05-HALTED",
+    "EX-WEAK-E06-MEMORY",
+    "EX-WEAK-E07-EMPTYKEYS",
+    "EX-WEAK-E08-BANK",
+    "EX-WEAK-E09-CAPACITY",
+    "EX-WEAK-E10-METADATA",
+    "EX-WEAK-E11-OBSERVATIONS",
+    "EX-WEAK-E12-CONTINUATION",
+    "EX-WEAK-E13-REPACKING",
+    "EX-WEAK-Q01-SOURCE",
+    "EX-WEAK-Q02-PROJECTION",
+    "EX-WEAK-Q03-READY",
+    "EX-WEAK-Q04-HALTED",
+    "EX-WEAK-Q05-MEMORY",
+    "EX-WEAK-Q06-OBSERVATIONS",
+    "EX-WEAK-Q07-BOUNDARY",
+    "EX-WEAK-Q08-STEPS",
+    "EX-WEAK-Q09-BUDGET",
+    "EX-WEAK-Q10-CAPACITY",
+    "EX-DELETE-E01-PROGRAM",
+    "EX-DELETE-Q05-MEMORY",
+    "EX-SIBLING-E01-FIXED-WORD",
+    "EX-SIBLING-E02-OTHER-REQUEST",
+    "EX-SIBLING-Q05-OUTPUT-REFLEXIVITY",
+    "EX-SIBLING-Q10-INCOMING-CAPACITY",
+    "EX-ACCEPT-COMMENT",
+    "EX-ACCEPT-UNUSED-FACT",
+    "AD-WEAK-COUNT-CONVERSION",
+    "AD-WEAK-WORD-DOMAIN",
+    "AD-WEAK-NATURAL-DECODE"
+  ],
+  "cases": [
+    {
+      "id": "EX-WEAK-E01-PROGRAM",
+      "kind": "mandatory-field-weakening",
+      "record": "ExportContract",
+      "field": "program",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  program : cachedProgram model = (Layout.program model).toArray",
+          "replace": "  program : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    program := cachedProgram_eq model",
+          "replace": "    program := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE01_program",
+            "signature_source": "theorem checkE01_program : cachedProgram model = (Layout.program model).toArray",
+            "declaration_line": 36
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-E02-OWNER",
+      "kind": "mandatory-field-weakening",
+      "record": "ExportContract",
+      "field": "owner",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  owner : buildFirst model xs left right = Ownership.owner model xs left right",
+          "replace": "  owner : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    owner := buildFirst_eq model xs left right",
+          "replace": "    owner := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE02_owner",
+            "signature_source": "theorem checkE02_owner : buildFirst model xs left right = Ownership.owner model xs left right",
+            "declaration_line": 39
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-E03-PROJECTION",
+      "kind": "mandatory-field-weakening",
+      "record": "ExportContract",
+      "field": "projection",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  projection : (buildFirst model xs left right).toState =\n    (Continuous.continuousRun model xs left right).final",
+          "replace": "  projection : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    projection := by rw [buildFirst_eq]; exact refinement.1",
+          "replace": "    projection := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE03_projection",
+            "signature_source": "theorem checkE03_projection : (buildFirst model xs left right).toState =\n    (Continuous.continuousRun model xs left right).final",
+            "declaration_line": 42
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-E04-READY",
+      "kind": "mandatory-field-weakening",
+      "record": "ExportContract",
+      "field": "ready",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  ready : Ownership.Ready xs (buildFirst model xs left right)",
+          "replace": "  ready : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    ready := ready",
+          "replace": "    ready := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE04_ready",
+            "signature_source": "theorem checkE04_ready : ExpectedReady xs (buildFirst model xs left right)",
+            "declaration_line": 46
+          },
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE13_invalid",
+            "signature_source": "theorem checkE13_invalid (invalid : ¬ ValidRange xs left right) :\n    (buildFirst model xs left right).status = .halted 0 ∧\n      ExpectedReady xs (buildFirst model xs left right)",
+            "declaration_line": 145
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-E05-HALTED",
+      "kind": "mandatory-field-weakening",
+      "record": "ExportContract",
+      "field": "halted",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  halted : (buildFirst model xs left right).status = .halted\n    (PackedWordRAM.optionNatPacket (SuccinctClassic.queryTraceResult xs left right).value)",
+          "replace": "  halted : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    halted := by rw [buildFirst_eq]; exact Ownership.halted model xs left right domain hl hr",
+          "replace": "    halted := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch",
+          "rewrite-requires-equality"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE05_halted",
+            "signature_source": "theorem checkE05_halted : (buildFirst model xs left right).status = .halted\n    (PackedWordRAM.optionNatPacket (SuccinctClassic.queryTraceResult xs left right).value)",
+            "declaration_line": 49
+          },
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE13_invalid",
+            "signature_source": "theorem checkE13_invalid (invalid : ¬ ValidRange xs left right) :\n    (buildFirst model xs left right).status = .halted 0 ∧\n      ExpectedReady xs (buildFirst model xs left right)",
+            "declaration_line": 145
+          },
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkU02_word",
+            "signature_source": "theorem checkU02_word (input : PackedConstruction.InputFits (wordWidth xs.length) xs)\n    (hleft : left < 2 ^ wordWidth xs.length) (hright : right < 2 ^ wordWidth xs.length) :\n    (buildFirst .word xs left right).status = .halted\n      (PackedWordRAM.optionNatPacket (SuccinctClassic.queryTraceResult xs left right).value)",
+            "declaration_line": 169
+          },
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkU03_comparison",
+            "signature_source": "theorem checkU03_comparison\n    (hleft : left < 2 ^ wordWidth xs.length) (hright : right < 2 ^ wordWidth xs.length) :\n    (buildFirst .comparison xs left right).status = .halted\n      (PackedWordRAM.optionNatPacket (SuccinctClassic.queryTraceResult xs left right).value)",
+            "declaration_line": 176
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-E06-MEMORY",
+      "kind": "mandatory-field-weakening",
+      "record": "ExportContract",
+      "field": "memory",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  memory : (∀ a, (buildFirst model xs left right).memory.getD a none = (buildMemory xs)[a]?) ∧\n    (buildFirst model xs left right).memory.size = (buildMemory xs).length",
+          "replace": "  memory : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    memory := ⟨fun a => congrFun ready.2.1.1 a, ready.memory_size⟩",
+          "replace": "    memory := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE06_memory",
+            "signature_source": "theorem checkE06_memory :\n    (∀ a, (buildFirst model xs left right).memory.getD a none = (buildMemory xs)[a]?) ∧\n    (buildFirst model xs left right).memory.size = (buildMemory xs).length",
+            "declaration_line": 53
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-E07-EMPTYKEYS",
+      "kind": "mandatory-field-weakening",
+      "record": "ExportContract",
+      "field": "emptyKeys",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  emptyKeys : (buildFirst model xs left right).keys = #[] ∧\n    (buildFirst model xs left right).keyRegs = #[]",
+          "replace": "  emptyKeys : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    emptyKeys := ready.empty_keys",
+          "replace": "    emptyKeys := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE07_emptyKeys",
+            "signature_source": "theorem checkE07_emptyKeys : (buildFirst model xs left right).keys = #[] ∧\n    (buildFirst model xs left right).keyRegs = #[]",
+            "declaration_line": 58
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-E08-BANK",
+      "kind": "mandatory-field-weakening",
+      "record": "ExportContract",
+      "field": "bank",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  bank : (buildFirst model xs left right).regs.size = 8273",
+          "replace": "  bank : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    bank := ready.1",
+          "replace": "    bank := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE08_bank",
+            "signature_source": "theorem checkE08_bank : (buildFirst model xs left right).regs.size = 8273",
+            "declaration_line": 62
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-E09-CAPACITY",
+      "kind": "mandatory-field-weakening",
+      "record": "ExportContract",
+      "field": "capacity",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  capacity : Ownership.capacity model (buildFirst model xs left right) * wordWidth xs.length ≤\n    2 * xs.length + retainedRho xs.length",
+          "replace": "  capacity : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    capacity := ready.capacity_bound model",
+          "replace": "    capacity := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE09_capacity",
+            "signature_source": "theorem checkE09_capacity :\n    ((buildFirst model xs left right).memory.size + (encodedProgram model).length +\n      (buildFirst model xs left right).regs.size + 8) * wordWidth xs.length ≤\n    2 * xs.length + retainedRho xs.length",
+            "declaration_line": 65
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-E10-METADATA",
+      "kind": "mandatory-field-weakening",
+      "record": "ExportContract",
+      "field": "metadata",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  metadata : (buildFirst model xs left right).memory.getD 0 none = some xs.length ∧\n    (buildFirst model xs left right).memory.getD 7 none =\n      some (buildFirst model xs left right).memory.size",
+          "replace": "  metadata : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    metadata := ready_metadata ready",
+          "replace": "    metadata := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE10_metadata",
+            "signature_source": "theorem checkE10_metadata : (buildFirst model xs left right).memory.getD 0 none = some xs.length ∧\n    (buildFirst model xs left right).memory.getD 7 none =\n      some (buildFirst model xs left right).memory.size",
+            "declaration_line": 71
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-E11-OBSERVATIONS",
+      "kind": "mandatory-field-weakening",
+      "record": "ExportContract",
+      "field": "observations",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  observations : (Ownership.observations model xs left right).toRun =\n    Continuous.continuousRun model xs left right",
+          "replace": "  observations : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    observations := refinement.2.2",
+          "replace": "    observations := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE11_observations",
+            "signature_source": "theorem checkE11_observations : (Ownership.observations model xs left right).toRun =\n    Continuous.continuousRun model xs left right",
+            "declaration_line": 76
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-E12-CONTINUATION",
+      "kind": "mandatory-field-weakening",
+      "record": "ExportContract",
+      "field": "continuation",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  continuation : ∀ (es : Owner) (newLeft newRight answer : Nat), Ownership.Ready xs es →\n    es.status = .halted answer → newLeft < 2 ^ wordWidth xs.length →\n    newRight < 2 ^ wordWidth xs.length → QueryContract model xs newLeft newRight es",
+          "replace": "  continuation : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    continuation := fun es newLeft newRight answer hrdy hhalt hleft hright =>\n      query_contract model xs newLeft newRight answer es hrdy hhalt hleft hright",
+          "replace": "    continuation := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "function-expected"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ01_source",
+            "signature_source": "theorem checkQ01_source : query model newLeft newRight es = Executable.queryOwner model newLeft newRight es",
+            "declaration_line": 95
+          },
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ02_projection",
+            "signature_source": "theorem checkQ02_projection : (query model newLeft newRight es).toState =\n    (Reusable.queryRun model newLeft newRight es.toState).final",
+            "declaration_line": 99
+          },
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ03_ready",
+            "signature_source": "theorem checkQ03_ready : ExpectedReady xs (query model newLeft newRight es)",
+            "declaration_line": 104
+          },
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ04_halted",
+            "signature_source": "theorem checkQ04_halted : (query model newLeft newRight es).status = .halted\n    (PackedWordRAM.optionNatPacket (SuccinctClassic.queryTraceResult xs newLeft newRight).value)",
+            "declaration_line": 108
+          },
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ05_memory",
+            "signature_source": "theorem checkQ05_memory : (query model newLeft newRight es).memory = es.memory",
+            "declaration_line": 113
+          },
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ06_observations",
+            "signature_source": "theorem checkQ06_observations : (Executable.queryArray model newLeft newRight es).toRun =\n    Reusable.queryRun model newLeft newRight es.toState",
+            "declaration_line": 117
+          },
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ07_boundary",
+            "signature_source": "theorem checkQ07_boundary : (requestProtocol Layout.serviceEntry newLeft newRight es.toState).steps = 4 ∧\n    (requestProtocol Layout.serviceEntry newLeft newRight es.toState).categories =\n      [.requestAdmission, .requestAdmission, .controlEntry, .controlEntry]",
+            "declaration_line": 122
+          },
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ08_steps",
+            "signature_source": "theorem checkQ08_steps : (Reusable.queryRun model newLeft newRight es.toState).steps =\n    4 + 4 + 8271 + (compactQueryRun (buildMemory xs) xs.length newLeft newRight).steps",
+            "declaration_line": 128
+          },
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ09_budget",
+            "signature_source": "theorem checkQ09_budget : (Reusable.queryRun model newLeft newRight es.toState).steps ≤ 160257",
+            "declaration_line": 133
+          },
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ10_capacity",
+            "signature_source": "theorem checkQ10_capacity :\n    ((query model newLeft newRight es).memory.size + (encodedProgram model).length +\n      (query model newLeft newRight es).regs.size + 8) * wordWidth xs.length ≤\n    2 * xs.length + retainedRho xs.length",
+            "declaration_line": 137
+          },
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ11_invalid",
+            "signature_source": "theorem checkQ11_invalid (invalid : ¬ ValidRange xs newLeft newRight) :\n    (query model newLeft newRight es).status = .halted 0 ∧\n      ExpectedReady xs (query model newLeft newRight es)",
+            "declaration_line": 153
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-E13-REPACKING",
+      "kind": "mandatory-field-weakening",
+      "record": "ExportContract",
+      "field": "repacking",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  repacking : ∀ (source target : Owner) (newLeft newRight : Nat), Repacked source target →\n    target = source ∧ target.toState = source.toState ∧ target.status = source.status ∧\n      (Ownership.Ready xs target ↔ Ownership.Ready xs source) ∧\n      Ownership.capacity model target = Ownership.capacity model source ∧\n      query model newLeft newRight target = query model newLeft newRight source",
+          "replace": "  repacking : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    repacking := fun source target newLeft newRight copy =>\n      repack_transport xs model newLeft newRight source target copy",
+          "replace": "    repacking := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "function-expected"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE12_repacking",
+            "signature_source": "theorem checkE12_repacking (source target : Owner) (newLeft newRight : Nat)\n    (copy : Repacked source target) :\n    target = source ∧ target.toState = source.toState ∧ target.status = source.status ∧\n      (ExpectedReady xs target ↔ ExpectedReady xs source) ∧\n      (target.memory.size + (encodedProgram model).length + target.regs.size + 8) =\n        (source.memory.size + (encodedProgram model).length + source.regs.size + 8) ∧\n      query model newLeft newRight target = query model newLeft newRight source",
+            "declaration_line": 80
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-Q01-SOURCE",
+      "kind": "mandatory-field-weakening",
+      "record": "QueryContract",
+      "field": "source",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  source : query model left right owner = Executable.queryOwner model left right owner",
+          "replace": "  source : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    source := query_eq model left right owner",
+          "replace": "    source := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ01_source",
+            "signature_source": "theorem checkQ01_source : query model newLeft newRight es = Executable.queryOwner model newLeft newRight es",
+            "declaration_line": 95
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-Q02-PROJECTION",
+      "kind": "mandatory-field-weakening",
+      "record": "QueryContract",
+      "field": "projection",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  projection : (query model left right owner).toState =\n    (Reusable.queryRun model left right owner.toState).final",
+          "replace": "  projection : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    projection := by rw [query_eq]; exact refinement.1",
+          "replace": "    projection := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ02_projection",
+            "signature_source": "theorem checkQ02_projection : (query model newLeft newRight es).toState =\n    (Reusable.queryRun model newLeft newRight es.toState).final",
+            "declaration_line": 99
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-Q03-READY",
+      "kind": "mandatory-field-weakening",
+      "record": "QueryContract",
+      "field": "ready",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  ready : Ownership.Ready xs (query model left right owner)",
+          "replace": "  ready : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    ready := by rw [query_eq]; exact reuse.1",
+          "replace": "    ready := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ03_ready",
+            "signature_source": "theorem checkQ03_ready : ExpectedReady xs (query model newLeft newRight es)",
+            "declaration_line": 104
+          },
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ11_invalid",
+            "signature_source": "theorem checkQ11_invalid (invalid : ¬ ValidRange xs newLeft newRight) :\n    (query model newLeft newRight es).status = .halted 0 ∧\n      ExpectedReady xs (query model newLeft newRight es)",
+            "declaration_line": 153
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-Q04-HALTED",
+      "kind": "mandatory-field-weakening",
+      "record": "QueryContract",
+      "field": "halted",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  halted : (query model left right owner).status = .halted\n    (PackedWordRAM.optionNatPacket (SuccinctClassic.queryTraceResult xs left right).value)",
+          "replace": "  halted : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    halted := by rw [query_eq]; exact reuse.2.1",
+          "replace": "    halted := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch",
+          "rewrite-requires-equality"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ04_halted",
+            "signature_source": "theorem checkQ04_halted : (query model newLeft newRight es).status = .halted\n    (PackedWordRAM.optionNatPacket (SuccinctClassic.queryTraceResult xs newLeft newRight).value)",
+            "declaration_line": 108
+          },
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ11_invalid",
+            "signature_source": "theorem checkQ11_invalid (invalid : ¬ ValidRange xs newLeft newRight) :\n    (query model newLeft newRight es).status = .halted 0 ∧\n      ExpectedReady xs (query model newLeft newRight es)",
+            "declaration_line": 153
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-Q05-MEMORY",
+      "kind": "mandatory-field-weakening",
+      "record": "QueryContract",
+      "field": "memory",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  memory : (query model left right owner).memory = owner.memory",
+          "replace": "  memory : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    memory := by rw [query_eq]; exact reuse.2.2.1",
+          "replace": "    memory := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ05_memory",
+            "signature_source": "theorem checkQ05_memory : (query model newLeft newRight es).memory = es.memory",
+            "declaration_line": 113
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-Q06-OBSERVATIONS",
+      "kind": "mandatory-field-weakening",
+      "record": "QueryContract",
+      "field": "observations",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  observations : (Executable.queryArray model left right owner).toRun =\n    Reusable.queryRun model left right owner.toState",
+          "replace": "  observations : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    observations := reuse.2.2.2.1",
+          "replace": "    observations := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ06_observations",
+            "signature_source": "theorem checkQ06_observations : (Executable.queryArray model newLeft newRight es).toRun =\n    Reusable.queryRun model newLeft newRight es.toState",
+            "declaration_line": 117
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-Q07-BOUNDARY",
+      "kind": "mandatory-field-weakening",
+      "record": "QueryContract",
+      "field": "boundary",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  boundary : (requestProtocol Layout.serviceEntry left right owner.toState).steps = 4 ∧\n    (requestProtocol Layout.serviceEntry left right owner.toState).categories =\n      [.requestAdmission, .requestAdmission, .controlEntry, .controlEntry]",
+          "replace": "  boundary : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    boundary := (requestProtocol_exact Layout.serviceEntry left right answer owner.toState halted).2",
+          "replace": "    boundary := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ07_boundary",
+            "signature_source": "theorem checkQ07_boundary : (requestProtocol Layout.serviceEntry newLeft newRight es.toState).steps = 4 ∧\n    (requestProtocol Layout.serviceEntry newLeft newRight es.toState).categories =\n      [.requestAdmission, .requestAdmission, .controlEntry, .controlEntry]",
+            "declaration_line": 122
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-Q08-STEPS",
+      "kind": "mandatory-field-weakening",
+      "record": "QueryContract",
+      "field": "steps",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  steps : (Reusable.queryRun model left right owner.toState).steps = 4 + 4 + QueryEntry.setupCost +\n    (compactQueryRun (buildMemory xs) xs.length left right).steps",
+          "replace": "  steps : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    steps := correct.2.2.2.2.1",
+          "replace": "    steps := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ08_steps",
+            "signature_source": "theorem checkQ08_steps : (Reusable.queryRun model newLeft newRight es.toState).steps =\n    4 + 4 + 8271 + (compactQueryRun (buildMemory xs) xs.length newLeft newRight).steps",
+            "declaration_line": 128
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-Q09-BUDGET",
+      "kind": "mandatory-field-weakening",
+      "record": "QueryContract",
+      "field": "budget",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  budget : (Reusable.queryRun model left right owner.toState).steps ≤ 160257",
+          "replace": "  budget : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    budget := reuse.2.2.2.2",
+          "replace": "    budget := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ09_budget",
+            "signature_source": "theorem checkQ09_budget : (Reusable.queryRun model newLeft newRight es.toState).steps ≤ 160257",
+            "declaration_line": 133
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-WEAK-Q10-CAPACITY",
+      "kind": "mandatory-field-weakening",
+      "record": "QueryContract",
+      "field": "capacity",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  capacity : Ownership.capacity model (query model left right owner) * wordWidth xs.length ≤\n    2 * xs.length + retainedRho xs.length",
+          "replace": "  capacity : True",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    capacity := by rw [query_eq]; exact reuse.1.capacity_bound model",
+          "replace": "    capacity := True.intro",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ10_capacity",
+            "signature_source": "theorem checkQ10_capacity :\n    ((query model newLeft newRight es).memory.size + (encodedProgram model).length +\n      (query model newLeft newRight es).regs.size + 8) * wordWidth xs.length ≤\n    2 * xs.length + retainedRho xs.length",
+            "declaration_line": 137
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-DELETE-E01-PROGRAM",
+      "kind": "mandatory-field-deletion",
+      "record": "ExportContract",
+      "field": "program",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  program : cachedProgram model = (Layout.program model).toArray",
+          "replace": "",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    program := cachedProgram_eq model",
+          "replace": "",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "unknown-field"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE01_program",
+            "signature_source": "theorem checkE01_program : cachedProgram model = (Layout.program model).toArray",
+            "declaration_line": 36
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-DELETE-Q05-MEMORY",
+      "kind": "mandatory-field-deletion",
+      "record": "QueryContract",
+      "field": "memory",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  memory : (query model left right owner).memory = owner.memory",
+          "replace": "",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    memory := by rw [query_eq]; exact reuse.2.2.1",
+          "replace": "",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "unknown-field"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ05_memory",
+            "signature_source": "theorem checkQ05_memory : (query model newLeft newRight es).memory = es.memory",
+            "declaration_line": 113
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-SIBLING-E01-FIXED-WORD",
+      "kind": "sibling-proposition-substitution",
+      "record": "ExportContract",
+      "field": "program",
+      "reason": "A reflexive fact about the word-model cache does not identify the selected model's cache.",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  program : cachedProgram model = (Layout.program model).toArray",
+          "replace": "  program : wordProgram = wordProgram",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    program := cachedProgram_eq model",
+          "replace": "    program := rfl",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE01_program",
+            "signature_source": "theorem checkE01_program : cachedProgram model = (Layout.program model).toArray",
+            "declaration_line": 36
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-SIBLING-E02-OTHER-REQUEST",
+      "kind": "sibling-proposition-substitution",
+      "record": "ExportContract",
+      "field": "owner",
+      "reason": "A reflexive owner fact at endpoints 0/0 does not identify the actual caller's request.",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  owner : buildFirst model xs left right = Ownership.owner model xs left right",
+          "replace": "  owner : buildFirst model xs 0 0 = buildFirst model xs 0 0",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    owner := buildFirst_eq model xs left right",
+          "replace": "    owner := rfl",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkE02_owner",
+            "signature_source": "theorem checkE02_owner : buildFirst model xs left right = Ownership.owner model xs left right",
+            "declaration_line": 39
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-SIBLING-Q05-OUTPUT-REFLEXIVITY",
+      "kind": "sibling-proposition-substitution",
+      "record": "QueryContract",
+      "field": "memory",
+      "reason": "Output reflexivity does not preserve the incoming owner's allocation.",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  memory : (query model left right owner).memory = owner.memory",
+          "replace": "  memory : (query model left right owner).memory = (query model left right owner).memory",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    memory := by rw [query_eq]; exact reuse.2.2.1",
+          "replace": "    memory := rfl",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ05_memory",
+            "signature_source": "theorem checkQ05_memory : (query model newLeft newRight es).memory = es.memory",
+            "declaration_line": 113
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-SIBLING-Q10-INCOMING-CAPACITY",
+      "kind": "sibling-proposition-substitution",
+      "record": "QueryContract",
+      "field": "capacity",
+      "reason": "The incoming owner's bound does not identify the query's actual output owner.",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "  capacity : Ownership.capacity model (query model left right owner) * wordWidth xs.length ≤\n    2 * xs.length + retainedRho xs.length",
+          "replace": "  capacity : Ownership.capacity model owner * wordWidth xs.length ≤\n    2 * xs.length + retainedRho xs.length",
+          "expected_occurrences": 1
+        },
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "    capacity := by rw [query_eq]; exact reuse.1.capacity_bound model",
+          "replace": "    capacity := ready.capacity_bound model",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkQ10_capacity",
+            "signature_source": "theorem checkQ10_capacity :\n    ((query model newLeft newRight es).memory.size + (encodedProgram model).length +\n      (query model newLeft newRight es).regs.size + 8) * wordWidth xs.length ≤\n    2 * xs.length + retainedRho xs.length",
+            "declaration_line": 137
+          }
+        ]
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-ACCEPT-COMMENT",
+      "kind": "expected-accept-control",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "Every construction projection below concerns `buildFirst`, without assuming a",
+          "replace": "Each construction projection below concerns `buildFirst`, without assuming a",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-exit-zero",
+        "diagnostics": "No new warnings or errors on either stream."
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "EX-ACCEPT-UNUSED-FACT",
+      "kind": "expected-accept-control",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+          "find": "end RMQ.SuccinctFinal.PackedNative.Lifecycle",
+          "replace": "theorem mutationControl_unused : True := True.intro\n\nend RMQ.SuccinctFinal.PackedNative.Lifecycle",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-exit-zero",
+        "diagnostics": "No new warnings or errors on either stream."
+      },
+      "observation": "PENDING",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Contract.lean",
+      "consumer_path": "RMQ/Validation/LifecycleNativeContract.lean"
+    },
+    {
+      "id": "AD-WEAK-COUNT-CONVERSION",
+      "kind": "admission-leaf-weakening",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Admission.lean",
+      "consumer_path": "RMQ/Core/WordRAM/Native/Lifecycle/AdmissionContract.lean",
+      "theorem": "nativeCount_toUSize_exact",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Admission.lean",
+          "find": "theorem nativeCount_toUSize_exact (count : Nat) (bounded : count ≤ nativeCountLimit) :\n    (USize.ofNat count).toNat = count := by\n  apply USize.toNat_ofNat_of_lt_32\n  change count ≤ 4096 at bounded\n  omega",
+          "replace": "theorem nativeCount_toUSize_exact (count : Nat) (bounded : count ≤ nativeCountLimit) : True := by\n  have _ := count\n  have _ := bounded\n  trivial",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.AdmissionContract.count_conversion",
+            "signature_source": "theorem count_conversion (count : Nat) (bounded : count ≤ 4096) :\n    (USize.ofNat count).toNat = count",
+            "declaration_line": 60
+          }
+        ]
+      },
+      "observation": "PENDING"
+    },
+    {
+      "id": "AD-WEAK-WORD-DOMAIN",
+      "kind": "admission-leaf-weakening",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Admission.lean",
+      "consumer_path": "RMQ/Core/WordRAM/Native/Lifecycle/AdmissionContract.lean",
+      "theorem": "buildAdmission_word_rejects",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Admission.lean",
+          "find": "theorem buildAdmission_word_rejects (xs : List Int) (suppliedCount : Nat)\n    (left right : ByteArray)\n    (outside : ¬ PackedConstruction.InputFits (wordWidth xs.length) xs) :\n    buildAdmission .word xs suppliedCount left right = false := by\n  cases result : buildAdmission .word xs suppliedCount left right with\n  | false => rfl\n  | true => exact False.elim (outside (buildAdmission_success _ _ _ _ _ result).2.2.1)",
+          "replace": "theorem buildAdmission_word_rejects (xs : List Int) (suppliedCount : Nat)\n    (left right : ByteArray)\n    (outside : ¬ PackedConstruction.InputFits (wordWidth xs.length) xs) : True := by\n  have _ := xs\n  have _ := suppliedCount\n  have _ := left\n  have _ := right\n  have _ := outside\n  trivial",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.AdmissionContract.word_domain_failure",
+            "signature_source": "theorem word_domain_failure (xs : List Int) (count : Nat) (left right : ByteArray)\n    (outside : ¬ PackedConstruction.InputFits (wordWidth xs.length) xs) :\n    buildAdmission .word xs count left right = false",
+            "declaration_line": 126
+          }
+        ]
+      },
+      "observation": "PENDING"
+    },
+    {
+      "id": "AD-WEAK-NATURAL-DECODE",
+      "kind": "admission-leaf-weakening",
+      "producer_path": "RMQ/Core/WordRAM/Native/Lifecycle/Codec.lean",
+      "consumer_path": "RMQ/Core/WordRAM/Native/Lifecycle/AdmissionContract.lean",
+      "theorem": "encodeNatural_exact",
+      "edits": [
+        {
+          "path": "RMQ/Core/WordRAM/Native/Lifecycle/Codec.lean",
+          "find": "theorem encodeNatural_exact (value : Nat) :\n    0 < (encodeNatural value).size ∧\n      (encodeNatural value).size = value.log2 / 8 + 1 ∧\n      decodeMagnitude (encodeNatural value) = value := by\n  refine ⟨by simp [encodeNatural], by simp [encodeNatural], ?_⟩\n  apply decodeMagnitude_encodeMagnitude\n  rw [LimbWord.byte_capacity]\n  exact Nat.lt_of_lt_of_le Nat.lt_log2_self\n    (Nat.pow_le_pow_right (by decide : 0 < 2) (by omega))",
+          "replace": "theorem encodeNatural_exact (value : Nat) : True := by\n  have _ := value\n  trivial",
+          "expected_occurrences": 1
+        }
+      ],
+      "expected": {
+        "producer": "ordinary-exit-zero",
+        "consumer": "ordinary-nonzero-intended-client-rejection",
+        "diagnostic_classes": [
+          "type-mismatch"
+        ],
+        "intended_checks": [
+          {
+            "name": "RMQ.SuccinctFinal.PackedNative.Lifecycle.AdmissionContract.natural_serialization",
+            "signature_source": "theorem natural_serialization (value : Nat) :\n    0 < (encodeNatural value).size ∧\n      (encodeNatural value).size = value.log2 / 8 + 1 ∧\n      decodeMagnitude (encodeNatural value) = value",
+            "declaration_line": 31
+          }
+        ]
+      },
+      "observation": "PENDING"
+    }
+  ]
+}

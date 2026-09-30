@@ -1,0 +1,1085 @@
+{
+  "schemaVersion": 1,
+  "controls": [
+    {
+      "id": "wrapper-focused-positive",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "positive",
+      "expected": "accept",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-extra-stdout",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "extra-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-extra-stderr",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "extra-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-blank-stdout",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "blank-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-blank-stderr",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "blank-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-missing-output",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "missing-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-duplicate-output",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "duplicate-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-misleading-success",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "misleading-success",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-mixed-streams",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "mixed-streams",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-wrong-exit",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "wrong-exit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-missing-ordinary-exit",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "missing-ordinary-exit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-timeout",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "timeout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-output-limit",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "output-limit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-launcher-blank-stdout",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "launcher-blank-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-launcher-blank-stderr",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "launcher-blank-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-launcher-output",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "launcher-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-launcher-retention-error",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "launcher-retention-error",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-missing-launcher-raw",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "missing-launcher-raw",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-positive",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "positive",
+      "expected": "accept",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-extra-stdout",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "extra-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-extra-stderr",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "extra-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-blank-stdout",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "blank-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-blank-stderr",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "blank-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-missing-output",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "missing-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-duplicate-output",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "duplicate-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-misleading-success",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "misleading-success",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-mixed-streams",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "mixed-streams",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-wrong-exit",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "wrong-exit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-missing-ordinary-exit",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "missing-ordinary-exit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-timeout",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "timeout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-output-limit",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "output-limit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-launcher-blank-stdout",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "launcher-blank-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-launcher-blank-stderr",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "launcher-blank-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-launcher-output",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "launcher-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-launcher-retention-error",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "launcher-retention-error",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-full-missing-launcher-raw",
+      "profile": "full",
+      "mode": "component",
+      "mutation": "missing-launcher-raw",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-positive",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "positive",
+      "expected": "accept",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-extra-stdout",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "extra-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-extra-stderr",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "extra-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-blank-stdout",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "blank-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-blank-stderr",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "blank-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-missing-output",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "missing-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-duplicate-output",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "duplicate-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-misleading-success",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "misleading-success",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-mixed-streams",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "mixed-streams",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-wrong-exit",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "wrong-exit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-missing-ordinary-exit",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "missing-ordinary-exit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-timeout",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "timeout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-output-limit",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "output-limit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-launcher-blank-stdout",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "launcher-blank-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-launcher-blank-stderr",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "launcher-blank-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-launcher-output",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "launcher-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-launcher-retention-error",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "launcher-retention-error",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-integrity-missing-launcher-raw",
+      "profile": "integrity",
+      "mode": "component",
+      "mutation": "missing-launcher-raw",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-positive",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "positive",
+      "expected": "accept",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-extra-stdout",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "extra-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-extra-stderr",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "extra-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-blank-stdout",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "blank-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-blank-stderr",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "blank-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-missing-output",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "missing-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-duplicate-output",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "duplicate-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-misleading-success",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "misleading-success",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-mixed-streams",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "mixed-streams",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-wrong-exit",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "wrong-exit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-missing-ordinary-exit",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "missing-ordinary-exit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-timeout",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "timeout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-output-limit",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "output-limit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-launcher-blank-stdout",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "launcher-blank-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-launcher-blank-stderr",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "launcher-blank-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-launcher-output",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "launcher-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-launcher-retention-error",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "launcher-retention-error",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-dependencies-missing-launcher-raw",
+      "profile": "dependencies",
+      "mode": "component",
+      "mutation": "missing-launcher-raw",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-positive",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "positive",
+      "expected": "accept",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-extra-stdout",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "extra-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-extra-stderr",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "extra-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-blank-stdout",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "blank-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-blank-stderr",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "blank-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-missing-output",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "missing-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-duplicate-output",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "duplicate-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-misleading-success",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "misleading-success",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-mixed-streams",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "mixed-streams",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-wrong-exit",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "wrong-exit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-missing-ordinary-exit",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "missing-ordinary-exit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-timeout",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "timeout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-output-limit",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "output-limit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-launcher-blank-stdout",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "launcher-blank-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-launcher-blank-stderr",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "launcher-blank-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-launcher-output",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "launcher-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-launcher-retention-error",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "launcher-retention-error",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-claims-missing-launcher-raw",
+      "profile": "claims",
+      "mode": "component",
+      "mutation": "missing-launcher-raw",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-positive",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "positive",
+      "expected": "accept",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-extra-stdout",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "extra-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-extra-stderr",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "extra-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-blank-stdout",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "blank-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-blank-stderr",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "blank-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-missing-output",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "missing-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-duplicate-output",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "duplicate-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-misleading-success",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "misleading-success",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-mixed-streams",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "mixed-streams",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-wrong-exit",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "wrong-exit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-missing-ordinary-exit",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "missing-ordinary-exit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-timeout",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "timeout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-output-limit",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "output-limit",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-launcher-blank-stdout",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "launcher-blank-stdout",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-launcher-blank-stderr",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "launcher-blank-stderr",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-launcher-output",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "launcher-output",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-launcher-retention-error",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "launcher-retention-error",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-checks-missing-launcher-raw",
+      "profile": "checks",
+      "mode": "component",
+      "mutation": "missing-launcher-raw",
+      "expected": "reject",
+      "predicate": "Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-process-positive",
+      "profile": "focused",
+      "mode": "process",
+      "mutation": "positive",
+      "expected": "accept",
+      "predicate": "run_owned.ps1 -> Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-process-extra-stdout",
+      "profile": "focused",
+      "mode": "process",
+      "mutation": "extra-stdout",
+      "expected": "reject",
+      "predicate": "run_owned.ps1 -> Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-focused-process-extra-stderr",
+      "profile": "focused",
+      "mode": "process",
+      "mutation": "extra-stderr",
+      "expected": "reject",
+      "predicate": "run_owned.ps1 -> Assert-LNWrapperCapture",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    },
+    {
+      "id": "wrapper-boundary-controlids-empty-array",
+      "profile": "boundary",
+      "mode": "boundary",
+      "mutation": "controlids-empty-array",
+      "expected": "reject",
+      "predicate": "wrapper_stream_controls.ps1 command boundary",
+      "failureSurface": "Exact exception message, exception type and FullyQualifiedErrorId; no other raw output"
+    },
+    {
+      "id": "wrapper-boundary-controlids-empty-string",
+      "profile": "boundary",
+      "mode": "boundary",
+      "mutation": "controlids-empty-string",
+      "expected": "reject",
+      "predicate": "wrapper_stream_controls.ps1 command boundary",
+      "failureSurface": "Exact exception message, exception type and FullyQualifiedErrorId; no other raw output"
+    },
+    {
+      "id": "wrapper-boundary-controlids-whitespace",
+      "profile": "boundary",
+      "mode": "boundary",
+      "mutation": "controlids-whitespace",
+      "expected": "reject",
+      "predicate": "wrapper_stream_controls.ps1 command boundary",
+      "failureSurface": "Exact exception message, exception type and FullyQualifiedErrorId; no other raw output"
+    },
+    {
+      "id": "wrapper-boundary-controlids-unknown",
+      "profile": "boundary",
+      "mode": "boundary",
+      "mutation": "controlids-unknown",
+      "expected": "reject",
+      "predicate": "wrapper_stream_controls.ps1 command boundary",
+      "failureSurface": "Exact exception message, exception type and FullyQualifiedErrorId; no other raw output"
+    },
+    {
+      "id": "wrapper-boundary-controlids-duplicate",
+      "profile": "boundary",
+      "mode": "boundary",
+      "mutation": "controlids-duplicate",
+      "expected": "reject",
+      "predicate": "wrapper_stream_controls.ps1 command boundary",
+      "failureSurface": "Exact exception message, exception type and FullyQualifiedErrorId; no other raw output"
+    },
+    {
+      "id": "wrapper-boundary-kind-missing",
+      "profile": "boundary",
+      "mode": "boundary",
+      "mutation": "kind-missing",
+      "expected": "reject",
+      "predicate": "run_owned.ps1 parameter boundary",
+      "failureSurface": "Exact exception message, exception type and FullyQualifiedErrorId; no other raw output"
+    },
+    {
+      "id": "wrapper-boundary-kind-empty",
+      "profile": "boundary",
+      "mode": "boundary",
+      "mutation": "kind-empty",
+      "expected": "reject",
+      "predicate": "run_owned.ps1 parameter boundary",
+      "failureSurface": "Exact exception message, exception type and FullyQualifiedErrorId; no other raw output"
+    },
+    {
+      "id": "wrapper-boundary-kind-unknown",
+      "profile": "boundary",
+      "mode": "boundary",
+      "mutation": "kind-unknown",
+      "expected": "reject",
+      "predicate": "run_owned.ps1 parameter boundary",
+      "failureSurface": "Exact exception message, exception type and FullyQualifiedErrorId; no other raw output"
+    },
+    {
+      "id": "wrapper-focused-observed-mixed-holdout",
+      "profile": "focused",
+      "mode": "component",
+      "mutation": "observed-mixed-holdout",
+      "expected": "reject",
+      "predicate": "Assert-LNOuterCapture same process-observed-stream contract",
+      "failureSurface": "Get-ExpectedWrapperFailure exact derived string"
+    }
+  ]
+}

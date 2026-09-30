@@ -1,0 +1,1 @@
+LIFE1-VALIDATOR PASS stage=startup processes=2 logs=C:\Users\poin\Documents\RMQ\.claude\worktrees\life1-r4-run-check-verdict\.lake\lifecycle-validator\060c5724ad814bbd80a9394110d854c5

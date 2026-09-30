@@ -1,0 +1,1275 @@
+{
+  "base": "2307e3ad0739e0e1d9c3f186cdc568631086fddf",
+  "head": "4d6f195b306bd1615aced8c7a7cd1db0d48a8d69",
+  "worktree": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ",
+  "profiles": {
+    "focused": {
+      "receipt": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\source-certification-stable\\focused\\RECEIPT.json",
+        "bytes": 3683,
+        "sha256": "A92152D571E98C88C752B009318A8439345624010370A77D1953DAE6DC8ABDC0"
+      },
+      "actualExit": 0,
+      "seconds": 49.522,
+      "deadlineSeconds": 1200,
+      "streamValidation": true,
+      "facts": {
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\lifecycle-native-p0\\runs\\5b2d10d020e64c24b8d81f8278eb39a7\\SUMMARY.json",
+          "bytes": 117086,
+          "sha256": "B71497497654E9544C07B73A693A411AAC20713495EBE5716CF93D8CEFEE9934"
+        },
+        "selected": [
+          "pop-unique"
+        ],
+        "checks": 2,
+        "stages": 7,
+        "capturedPins": 191,
+        "integritySuccess": true
+      }
+    },
+    "full": {
+      "receipt": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\source-certification-stable\\full\\RECEIPT.json",
+        "bytes": 3636,
+        "sha256": "CC99783460FD12ECF240F745C99218FC62BF0FE14A25BDC40F96BDDA97912B74"
+      },
+      "actualExit": 0,
+      "seconds": 188.136,
+      "deadlineSeconds": 1200,
+      "streamValidation": true,
+      "facts": {
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\lifecycle-native-p0\\runs\\613c019061d14e24982de6651e433cd8\\SUMMARY.json",
+          "bytes": 330214,
+          "sha256": "4997E4F2A0273AB2866985FB5573C570BA1ADC8870BD8898F615A03F2E0204A7"
+        },
+        "selected": [
+          "pop-unique",
+          "shrink-unique",
+          "pop-shared",
+          "shrink-shared",
+          "pop-empty-unique",
+          "pop-empty-shared",
+          "shrink-noop",
+          "replace-prefix",
+          "replace-overlap",
+          "replace-tail",
+          "replace-empty",
+          "replace-alias",
+          "replace-element-alias",
+          "fail-alloc",
+          "fail-after-alloc",
+          "fail-mid-copy",
+          "fail-handoff",
+          "fail-after-consume",
+          "fail-alias",
+          "negative-shrink",
+          "negative-alias",
+          "negative-cleanup",
+          "negative-value"
+        ],
+        "checks": 65,
+        "stages": 58,
+        "capturedPins": 616,
+        "integritySuccess": true
+      }
+    },
+    "integrity": {
+      "receipt": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\source-certification-stable\\integrity\\RECEIPT.json",
+        "bytes": 4296,
+        "sha256": "C18DBEA18865E5D139E6796EB38D6545E2ABE27FCF8656EC061FBF60A78254B5"
+      },
+      "actualExit": 0,
+      "seconds": 533.411,
+      "deadlineSeconds": 2400,
+      "streamValidation": true,
+      "facts": {
+        "results": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r1\\controls-f62ef16b877d46a0a2c4c66a469bdff5\\RESULTS.json",
+          "bytes": 125992,
+          "sha256": "773FF578752329F0EAD5A1C36AC579D90C9C5420694E37BBD267B826252AA0F1"
+        },
+        "controls": [
+          {
+            "id": "intact-success",
+            "outerExit": 0,
+            "nativeExit": 0,
+            "timeout": false,
+            "integritySuccess": true,
+            "stageFailure": null
+          },
+          {
+            "id": "intact-stage-error",
+            "outerExit": 1,
+            "nativeExit": 7,
+            "timeout": false,
+            "integritySuccess": true,
+            "stageFailure": "PROCESS: fixture-stage actual child or launcher exit differs from 0"
+          },
+          {
+            "id": "malformed-stdout-intact",
+            "outerExit": 1,
+            "nativeExit": 0,
+            "timeout": false,
+            "integritySuccess": true,
+            "stageFailure": "DIAGNOSTIC: invalid raw stage evidence for fixture-stage; Exception calling \"ReadAllText\" with \"2\" argument(s): \"Unable to translate bytes [FF] at index 0 from specified code page to Unicode.\""
+          },
+          {
+            "id": "stage-error-and-pin-change",
+            "outerExit": 1,
+            "nativeExit": 7,
+            "timeout": false,
+            "integritySuccess": false,
+            "stageFailure": "PROCESS: fixture-stage actual child or launcher exit differs from 0"
+          },
+          {
+            "id": "stage-error-and-capture-error",
+            "outerExit": 1,
+            "nativeExit": 7,
+            "timeout": false,
+            "integritySuccess": false,
+            "stageFailure": "PROCESS: fixture-stage actual child or launcher exit differs from 0"
+          },
+          {
+            "id": "success-and-pin-change",
+            "outerExit": 1,
+            "nativeExit": 0,
+            "timeout": false,
+            "integritySuccess": false,
+            "stageFailure": null
+          },
+          {
+            "id": "mixed-diagnostic-and-pin-change",
+            "outerExit": 1,
+            "nativeExit": 0,
+            "timeout": false,
+            "integritySuccess": false,
+            "stageFailure": "DIAGNOSTIC: unexpected or mixed stderr for fixture-stage"
+          },
+          {
+            "id": "timeout-and-pin-change",
+            "outerExit": 1,
+            "nativeExit": null,
+            "timeout": true,
+            "integritySuccess": false,
+            "stageFailure": "PROCESS: fixture-stage was not a completed bounded process; see retained logs"
+          },
+          {
+            "id": "success-and-tracked-change",
+            "outerExit": 1,
+            "nativeExit": 0,
+            "timeout": false,
+            "integritySuccess": false,
+            "stageFailure": null
+          },
+          {
+            "id": "success-and-index-change",
+            "outerExit": 1,
+            "nativeExit": 0,
+            "timeout": false,
+            "integritySuccess": false,
+            "stageFailure": null
+          },
+          {
+            "id": "success-and-untracked-addition",
+            "outerExit": 1,
+            "nativeExit": 0,
+            "timeout": false,
+            "integritySuccess": false,
+            "stageFailure": null
+          },
+          {
+            "id": "success-and-untracked-byte-change",
+            "outerExit": 1,
+            "nativeExit": 0,
+            "timeout": false,
+            "integritySuccess": false,
+            "stageFailure": null
+          },
+          {
+            "id": "success-and-link-map-change",
+            "outerExit": 1,
+            "nativeExit": 0,
+            "timeout": false,
+            "integritySuccess": false,
+            "stageFailure": null
+          },
+          {
+            "id": "partial-identity-and-pin-change",
+            "outerExit": 1,
+            "nativeExit": 0,
+            "timeout": false,
+            "integritySuccess": false,
+            "stageFailure": "IDENTITY: missing file C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r1\\controls-f62ef16b877d46a0a2c4c66a469bdff5\\partial-identity-and-pin-change\\missing-tool.exe"
+          },
+          {
+            "id": "missing-baseline",
+            "outerExit": 1,
+            "nativeExit": 0,
+            "timeout": false,
+            "integritySuccess": false,
+            "stageFailure": null
+          }
+        ],
+        "fixtureRestoration": true,
+        "candidateUnchanged": true
+      }
+    },
+    "dependencies": {
+      "receipt": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\source-certification-stable\\dependencies\\RECEIPT.json",
+        "bytes": 3718,
+        "sha256": "2E3A098EAEFC7FA48533E47C02788B1350397E4A34E8C3127821E1DD5A6E9796"
+      },
+      "actualExit": 0,
+      "seconds": 25.864,
+      "deadlineSeconds": 1200,
+      "streamValidation": true,
+      "facts": {
+        "results": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r1\\dependencies-991cc83249ae46c8b489ba9c165f53f2\\RESULTS.json",
+          "bytes": 37270,
+          "sha256": "6D0F7B07ECF1D467C5D0C348E6C230AA7AB34FE390C2B7E28C78FD62C66D5524"
+        },
+        "controls": [
+          "complete-inventory",
+          "bea5ce75-incomplete",
+          "omit-lean.exe",
+          "omit-leanc.exe",
+          "omit-clang.exe",
+          "omit-ld.lld.exe",
+          "omit-libleanshared.dll",
+          "omit-libInit_shared.dll",
+          "omit-libclang-cpp.dll",
+          "omit-libLLVM-19.dll",
+          "omit-libc++.dll",
+          "omit-zlib1.dll",
+          "omit-libleanshared_1.dll",
+          "same-name-wrong-path",
+          "complete-unchanged-finalizer",
+          "tamper-zlib1.dll",
+          "tamper-link.map",
+          "tamper-manifest-hash",
+          "restored-finalizer"
+        ],
+        "localNodes": 11,
+        "oldMissing": [
+          "libc++.dll",
+          "libclang-cpp.dll",
+          "libllvm-19.dll",
+          "zlib1.dll"
+        ],
+        "installedToolsUnchanged": true,
+        "fixtureRestored": true
+      }
+    },
+    "claims": {
+      "receipt": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\corrected-certification\\claims\\RECEIPT.json",
+        "bytes": 147679,
+        "sha256": "9528FD2D96904BC0C182768E1B869C15A9230500F76FF8B923164A5FE1004A56"
+      },
+      "actualExit": 0,
+      "seconds": 4.68,
+      "deadlineSeconds": 7200,
+      "streamValidation": true,
+      "facts": {
+        "expectation": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\claim-expectation-d2a8f00f8694453ebb14dc9a252e7da6\\EXPECTATION.json",
+          "bytes": 196177,
+          "sha256": "51797DD2068ED56EFFC71CC87AC165694E0CC95183BDDA6CF40CC9F61391DBFB"
+        },
+        "records": 268,
+        "hits": 387,
+        "strictFailures": 0,
+        "footer": "CLAIM-DRIFT: scan complete (387 hits, 0 strict failures)"
+      }
+    },
+    "checks": {
+      "receipt": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\corrected-certification\\checks\\RECEIPT.json",
+        "bytes": 3520,
+        "sha256": "56E13EE3A3B1A6C616EDB427F7145D8F40ED23438C01BA7CA8D381A8B2C03E98"
+      },
+      "actualExit": 0,
+      "seconds": 22.449,
+      "deadlineSeconds": 1200,
+      "streamValidation": true,
+      "facts": {
+        "results": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r1\\final-checks-bd4375e3b52347c49a44c533aa4ffd47\\RESULTS.json",
+          "bytes": 7459,
+          "sha256": "C26981BB30695D394F7DBC813210170A51F5C5042271F9A2EFBC59A958CDFC74"
+        },
+        "head": "4d6f195b306bd1615aced8c7a7cd1db0d48a8d69",
+        "checks": [
+          "contract",
+          "hygiene",
+          "native-decision",
+          "working-whitespace",
+          "range-whitespace",
+          "design-whole",
+          "design-c3fcc2e0beb0",
+          "design-4d6f195b306b",
+          "clean"
+        ]
+      }
+    }
+  },
+  "verifier": {
+    "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r2\\verify_results.py",
+    "bytes": 41462,
+    "sha256": "CE931FD260A5FDA818E06BEEF1C66C6152189B46984FC4510EB445376244CAD2"
+  },
+  "harness": {
+    "results": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\source-harness\\controls\\RESULTS.json",
+      "bytes": 95033,
+      "sha256": "B9E7FCA0C6E5797FC85E40F18954BF93EF3906D73E05883AED81720E65D30905"
+    },
+    "controls": [
+      {
+        "id": "success-positive",
+        "outcome": "accept",
+        "surface": "",
+        "predicate": "Assert-LNOuterCapture"
+      },
+      {
+        "id": "error-positive",
+        "outcome": "accept",
+        "surface": "",
+        "predicate": "Assert-LNOuterCapture"
+      },
+      {
+        "id": "success-extra-stderr",
+        "outcome": "reject",
+        "surface": "STREAM: integrity-intact-success stderr differs",
+        "predicate": "Assert-LNOuterCapture"
+      },
+      {
+        "id": "error-extra-stderr",
+        "outcome": "reject",
+        "surface": "STREAM: integrity-intact-stage-error stderr differs",
+        "predicate": "Assert-LNOuterCapture"
+      },
+      {
+        "id": "success-extra-stdout",
+        "outcome": "reject",
+        "surface": "STREAM: integrity-intact-success stdout differs",
+        "predicate": "Assert-LNOuterCapture"
+      },
+      {
+        "id": "error-extra-stdout",
+        "outcome": "reject",
+        "surface": "STREAM: integrity-intact-stage-error stdout differs",
+        "predicate": "Assert-LNOuterCapture"
+      },
+      {
+        "id": "selector-empty",
+        "outcome": "reject",
+        "surface": "STREAM-SELECTOR: empty",
+        "predicate": "command-selector"
+      },
+      {
+        "id": "selector-unknown",
+        "outcome": "reject",
+        "surface": "STREAM-SELECTOR: unknown",
+        "predicate": "command-selector"
+      },
+      {
+        "id": "selector-duplicate",
+        "outcome": "reject",
+        "surface": "STREAM-SELECTOR: duplicate",
+        "predicate": "command-selector"
+      },
+      {
+        "id": "launcher-blank-stdout",
+        "outcome": "reject",
+        "surface": "STREAM: launcher-blank-stdout launcher stdout differs",
+        "predicate": "Assert-LNOuterCapture"
+      },
+      {
+        "id": "launcher-blank-stderr",
+        "outcome": "reject",
+        "surface": "STREAM: launcher-blank-stderr launcher stderr differs",
+        "predicate": "Assert-LNOuterCapture"
+      }
+    ],
+    "completeRegistry": true
+  },
+  "wrapperControls": {
+    "results": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\wrapper-final-5b8e1eb2ebd3423db3defcbb7b703f9e\\controls\\RESULTS.json",
+      "bytes": 399623,
+      "sha256": "A767068C5B88F5F25783519540302D7321E4D551E632407D58C6EDBEA7484C69"
+    },
+    "count": 120,
+    "completeRegistry": true,
+    "controls": [
+      {
+        "id": "wrapper-focused-positive",
+        "mode": "component",
+        "expected": "accept",
+        "actualFailure": null
+      },
+      {
+        "id": "wrapper-focused-extra-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused stdout differs"
+      },
+      {
+        "id": "wrapper-focused-extra-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused stderr differs"
+      },
+      {
+        "id": "wrapper-focused-blank-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused stdout differs"
+      },
+      {
+        "id": "wrapper-focused-blank-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused stderr differs"
+      },
+      {
+        "id": "wrapper-focused-missing-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused stdout differs"
+      },
+      {
+        "id": "wrapper-focused-duplicate-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused stdout differs"
+      },
+      {
+        "id": "wrapper-focused-misleading-success",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused stdout differs"
+      },
+      {
+        "id": "wrapper-focused-mixed-streams",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused stderr differs"
+      },
+      {
+        "id": "wrapper-focused-wrong-exit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused ordinary exit differs"
+      },
+      {
+        "id": "wrapper-focused-missing-ordinary-exit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused ordinary exit differs"
+      },
+      {
+        "id": "wrapper-focused-timeout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused incomplete bounded capture"
+      },
+      {
+        "id": "wrapper-focused-output-limit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused incomplete bounded capture"
+      },
+      {
+        "id": "wrapper-focused-launcher-blank-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused launcher stdout differs"
+      },
+      {
+        "id": "wrapper-focused-launcher-blank-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused launcher stderr differs"
+      },
+      {
+        "id": "wrapper-focused-launcher-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused launcher output"
+      },
+      {
+        "id": "wrapper-focused-launcher-retention-error",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused launcher retention failed"
+      },
+      {
+        "id": "wrapper-focused-missing-launcher-raw",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: raw capture missing: C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\wrapper-final-5b8e1eb2ebd3423db3defcbb7b703f9e\\controls\\wrapper-focused-missing-launcher-raw\\fixture\\launcherStdout.raw"
+      },
+      {
+        "id": "wrapper-full-positive",
+        "mode": "component",
+        "expected": "accept",
+        "actualFailure": null
+      },
+      {
+        "id": "wrapper-full-extra-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-full stdout differs"
+      },
+      {
+        "id": "wrapper-full-extra-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-full stderr differs"
+      },
+      {
+        "id": "wrapper-full-blank-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-full stdout differs"
+      },
+      {
+        "id": "wrapper-full-blank-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-full stderr differs"
+      },
+      {
+        "id": "wrapper-full-missing-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-full stdout differs"
+      },
+      {
+        "id": "wrapper-full-duplicate-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-full stdout differs"
+      },
+      {
+        "id": "wrapper-full-misleading-success",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-full stdout differs"
+      },
+      {
+        "id": "wrapper-full-mixed-streams",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-full stderr differs"
+      },
+      {
+        "id": "wrapper-full-wrong-exit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-full ordinary exit differs"
+      },
+      {
+        "id": "wrapper-full-missing-ordinary-exit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-full ordinary exit differs"
+      },
+      {
+        "id": "wrapper-full-timeout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-full incomplete bounded capture"
+      },
+      {
+        "id": "wrapper-full-output-limit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-full incomplete bounded capture"
+      },
+      {
+        "id": "wrapper-full-launcher-blank-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-full launcher stdout differs"
+      },
+      {
+        "id": "wrapper-full-launcher-blank-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-full launcher stderr differs"
+      },
+      {
+        "id": "wrapper-full-launcher-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-full launcher output"
+      },
+      {
+        "id": "wrapper-full-launcher-retention-error",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-full launcher retention failed"
+      },
+      {
+        "id": "wrapper-full-missing-launcher-raw",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: raw capture missing: C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\wrapper-final-5b8e1eb2ebd3423db3defcbb7b703f9e\\controls\\wrapper-full-missing-launcher-raw\\fixture\\launcherStdout.raw"
+      },
+      {
+        "id": "wrapper-integrity-positive",
+        "mode": "component",
+        "expected": "accept",
+        "actualFailure": null
+      },
+      {
+        "id": "wrapper-integrity-extra-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-integrity stdout differs"
+      },
+      {
+        "id": "wrapper-integrity-extra-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-integrity stderr differs"
+      },
+      {
+        "id": "wrapper-integrity-blank-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-integrity stdout differs"
+      },
+      {
+        "id": "wrapper-integrity-blank-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-integrity stderr differs"
+      },
+      {
+        "id": "wrapper-integrity-missing-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: evidence line missing"
+      },
+      {
+        "id": "wrapper-integrity-duplicate-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-integrity stdout differs"
+      },
+      {
+        "id": "wrapper-integrity-misleading-success",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-integrity stdout differs"
+      },
+      {
+        "id": "wrapper-integrity-mixed-streams",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-integrity stderr differs"
+      },
+      {
+        "id": "wrapper-integrity-wrong-exit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-integrity ordinary exit differs"
+      },
+      {
+        "id": "wrapper-integrity-missing-ordinary-exit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-integrity ordinary exit differs"
+      },
+      {
+        "id": "wrapper-integrity-timeout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-integrity incomplete bounded capture"
+      },
+      {
+        "id": "wrapper-integrity-output-limit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-integrity incomplete bounded capture"
+      },
+      {
+        "id": "wrapper-integrity-launcher-blank-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-integrity launcher stdout differs"
+      },
+      {
+        "id": "wrapper-integrity-launcher-blank-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-integrity launcher stderr differs"
+      },
+      {
+        "id": "wrapper-integrity-launcher-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-integrity launcher output"
+      },
+      {
+        "id": "wrapper-integrity-launcher-retention-error",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-integrity launcher retention failed"
+      },
+      {
+        "id": "wrapper-integrity-missing-launcher-raw",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: raw capture missing: C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\wrapper-final-5b8e1eb2ebd3423db3defcbb7b703f9e\\controls\\wrapper-integrity-missing-launcher-raw\\fixture\\launcherStdout.raw"
+      },
+      {
+        "id": "wrapper-dependencies-positive",
+        "mode": "component",
+        "expected": "accept",
+        "actualFailure": null
+      },
+      {
+        "id": "wrapper-dependencies-extra-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-dependencies stdout differs"
+      },
+      {
+        "id": "wrapper-dependencies-extra-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-dependencies stderr differs"
+      },
+      {
+        "id": "wrapper-dependencies-blank-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-dependencies stdout differs"
+      },
+      {
+        "id": "wrapper-dependencies-blank-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-dependencies stderr differs"
+      },
+      {
+        "id": "wrapper-dependencies-missing-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: evidence line missing"
+      },
+      {
+        "id": "wrapper-dependencies-duplicate-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-dependencies stdout differs"
+      },
+      {
+        "id": "wrapper-dependencies-misleading-success",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-dependencies stdout differs"
+      },
+      {
+        "id": "wrapper-dependencies-mixed-streams",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-dependencies stderr differs"
+      },
+      {
+        "id": "wrapper-dependencies-wrong-exit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-dependencies ordinary exit differs"
+      },
+      {
+        "id": "wrapper-dependencies-missing-ordinary-exit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-dependencies ordinary exit differs"
+      },
+      {
+        "id": "wrapper-dependencies-timeout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-dependencies incomplete bounded capture"
+      },
+      {
+        "id": "wrapper-dependencies-output-limit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-dependencies incomplete bounded capture"
+      },
+      {
+        "id": "wrapper-dependencies-launcher-blank-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-dependencies launcher stdout differs"
+      },
+      {
+        "id": "wrapper-dependencies-launcher-blank-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-dependencies launcher stderr differs"
+      },
+      {
+        "id": "wrapper-dependencies-launcher-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-dependencies launcher output"
+      },
+      {
+        "id": "wrapper-dependencies-launcher-retention-error",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-dependencies launcher retention failed"
+      },
+      {
+        "id": "wrapper-dependencies-missing-launcher-raw",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: raw capture missing: C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\wrapper-final-5b8e1eb2ebd3423db3defcbb7b703f9e\\controls\\wrapper-dependencies-missing-launcher-raw\\fixture\\launcherStdout.raw"
+      },
+      {
+        "id": "wrapper-claims-positive",
+        "mode": "component",
+        "expected": "accept",
+        "actualFailure": null
+      },
+      {
+        "id": "wrapper-claims-extra-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: claim footer differs"
+      },
+      {
+        "id": "wrapper-claims-extra-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-claims stderr differs"
+      },
+      {
+        "id": "wrapper-claims-blank-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: claim footer differs"
+      },
+      {
+        "id": "wrapper-claims-blank-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-claims stderr differs"
+      },
+      {
+        "id": "wrapper-claims-missing-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: claim footer differs"
+      },
+      {
+        "id": "wrapper-claims-duplicate-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: unexpected or duplicate claim record/text at character 135616"
+      },
+      {
+        "id": "wrapper-claims-misleading-success",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: claim footer differs"
+      },
+      {
+        "id": "wrapper-claims-mixed-streams",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-claims stderr differs"
+      },
+      {
+        "id": "wrapper-claims-wrong-exit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-claims ordinary exit differs"
+      },
+      {
+        "id": "wrapper-claims-missing-ordinary-exit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-claims ordinary exit differs"
+      },
+      {
+        "id": "wrapper-claims-timeout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-claims incomplete bounded capture"
+      },
+      {
+        "id": "wrapper-claims-output-limit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-claims incomplete bounded capture"
+      },
+      {
+        "id": "wrapper-claims-launcher-blank-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-claims launcher stdout differs"
+      },
+      {
+        "id": "wrapper-claims-launcher-blank-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-claims launcher stderr differs"
+      },
+      {
+        "id": "wrapper-claims-launcher-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-claims launcher output"
+      },
+      {
+        "id": "wrapper-claims-launcher-retention-error",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-claims launcher retention failed"
+      },
+      {
+        "id": "wrapper-claims-missing-launcher-raw",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: raw capture missing: C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\wrapper-final-5b8e1eb2ebd3423db3defcbb7b703f9e\\controls\\wrapper-claims-missing-launcher-raw\\fixture\\launcherStdout.raw"
+      },
+      {
+        "id": "wrapper-checks-positive",
+        "mode": "component",
+        "expected": "accept",
+        "actualFailure": null
+      },
+      {
+        "id": "wrapper-checks-extra-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-checks stdout differs"
+      },
+      {
+        "id": "wrapper-checks-extra-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-checks stderr differs"
+      },
+      {
+        "id": "wrapper-checks-blank-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-checks stdout differs"
+      },
+      {
+        "id": "wrapper-checks-blank-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-checks stderr differs"
+      },
+      {
+        "id": "wrapper-checks-missing-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: evidence line missing"
+      },
+      {
+        "id": "wrapper-checks-duplicate-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-checks stdout differs"
+      },
+      {
+        "id": "wrapper-checks-misleading-success",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-checks stdout differs"
+      },
+      {
+        "id": "wrapper-checks-mixed-streams",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-checks stderr differs"
+      },
+      {
+        "id": "wrapper-checks-wrong-exit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-checks ordinary exit differs"
+      },
+      {
+        "id": "wrapper-checks-missing-ordinary-exit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-checks ordinary exit differs"
+      },
+      {
+        "id": "wrapper-checks-timeout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-checks incomplete bounded capture"
+      },
+      {
+        "id": "wrapper-checks-output-limit",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-checks incomplete bounded capture"
+      },
+      {
+        "id": "wrapper-checks-launcher-blank-stdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-checks launcher stdout differs"
+      },
+      {
+        "id": "wrapper-checks-launcher-blank-stderr",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-checks launcher stderr differs"
+      },
+      {
+        "id": "wrapper-checks-launcher-output",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-checks launcher output"
+      },
+      {
+        "id": "wrapper-checks-launcher-retention-error",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-checks launcher retention failed"
+      },
+      {
+        "id": "wrapper-checks-missing-launcher-raw",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: raw capture missing: C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\wrapper-final-5b8e1eb2ebd3423db3defcbb7b703f9e\\controls\\wrapper-checks-missing-launcher-raw\\fixture\\launcherStdout.raw"
+      },
+      {
+        "id": "wrapper-focused-process-positive",
+        "mode": "process",
+        "expected": "accept",
+        "actualFailure": null
+      },
+      {
+        "id": "wrapper-focused-process-extra-stdout",
+        "mode": "process",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused stdout differs"
+      },
+      {
+        "id": "wrapper-focused-process-extra-stderr",
+        "mode": "process",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-focused stderr differs"
+      },
+      {
+        "id": "wrapper-boundary-controlids-empty-array",
+        "mode": "boundary",
+        "expected": "reject",
+        "actualFailure": "WRAPPER-STREAM: empty selector",
+        "exceptionType": "System.Management.Automation.RuntimeException",
+        "fullyQualifiedErrorId": "WRAPPER-STREAM: empty selector",
+        "driverExit": 0
+      },
+      {
+        "id": "wrapper-boundary-controlids-empty-string",
+        "mode": "boundary",
+        "expected": "reject",
+        "actualFailure": "WRAPPER-STREAM: empty selector",
+        "exceptionType": "System.Management.Automation.RuntimeException",
+        "fullyQualifiedErrorId": "WRAPPER-STREAM: empty selector",
+        "driverExit": 0
+      },
+      {
+        "id": "wrapper-boundary-controlids-whitespace",
+        "mode": "boundary",
+        "expected": "reject",
+        "actualFailure": "WRAPPER-STREAM: empty selector",
+        "exceptionType": "System.Management.Automation.RuntimeException",
+        "fullyQualifiedErrorId": "WRAPPER-STREAM: empty selector",
+        "driverExit": 0
+      },
+      {
+        "id": "wrapper-boundary-controlids-unknown",
+        "mode": "boundary",
+        "expected": "reject",
+        "actualFailure": "WRAPPER-STREAM: unknown selector __unknown__",
+        "exceptionType": "System.Management.Automation.RuntimeException",
+        "fullyQualifiedErrorId": "WRAPPER-STREAM: unknown selector __unknown__",
+        "driverExit": 0
+      },
+      {
+        "id": "wrapper-boundary-controlids-duplicate",
+        "mode": "boundary",
+        "expected": "reject",
+        "actualFailure": "WRAPPER-STREAM: duplicate selector",
+        "exceptionType": "System.Management.Automation.RuntimeException",
+        "fullyQualifiedErrorId": "WRAPPER-STREAM: duplicate selector",
+        "driverExit": 0
+      },
+      {
+        "id": "wrapper-boundary-kind-missing",
+        "mode": "boundary",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper Kind is required",
+        "exceptionType": "System.Management.Automation.RuntimeException",
+        "fullyQualifiedErrorId": "STREAM: wrapper Kind is required",
+        "driverExit": 0
+      },
+      {
+        "id": "wrapper-boundary-kind-empty",
+        "mode": "boundary",
+        "expected": "reject",
+        "actualFailure": "Cannot validate argument on parameter 'Kind'. The argument \"\" does not belong to the set \"focused,full,integrity,dependencies,claims,checks\" specified by the ValidateSet attribute. Supply an argument that is in the set and then try the command again.",
+        "exceptionType": "System.Management.Automation.ParameterBindingValidationException",
+        "fullyQualifiedErrorId": "ParameterArgumentValidationError,run_owned.ps1",
+        "driverExit": 0
+      },
+      {
+        "id": "wrapper-boundary-kind-unknown",
+        "mode": "boundary",
+        "expected": "reject",
+        "actualFailure": "Cannot validate argument on parameter 'Kind'. The argument \"__unknown__\" does not belong to the set \"focused,full,integrity,dependencies,claims,checks\" specified by the ValidateSet attribute. Supply an argument that is in the set and then try the command again.",
+        "exceptionType": "System.Management.Automation.ParameterBindingValidationException",
+        "fullyQualifiedErrorId": "ParameterArgumentValidationError,run_owned.ps1",
+        "driverExit": 0
+      },
+      {
+        "id": "wrapper-focused-observed-mixed-holdout",
+        "mode": "component",
+        "expected": "reject",
+        "actualFailure": "STREAM: wrapper-observed-focused-extra-stdout stderr differs"
+      }
+    ],
+    "immutableInputsUnchanged": true
+  },
+  "oldReproduction": {
+    "receipt": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\old-reproduction-a3c583930b944c11a2b8b3e1f48c566d\\actual-outer-diagnostic-9e1222ab76c34ab1b5fd39eaeb8a674c\\RECEIPT.json",
+      "bytes": 4455,
+      "sha256": "5A148AA0AF4FE33785D17F71A06F4C853D968036056459F7495DD907AAA018AC"
+    },
+    "identity": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\old-reproduction-a3c583930b944c11a2b8b3e1f48c566d\\IDENTITY.json",
+      "bytes": 2072,
+      "sha256": "BD9B60028CEFDCCE90590B98227E646A173F1890BDF369517BB3182843C01C60"
+    },
+    "historicalReceipt": {
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\lifecycle-implementation-20260920\\native-p0-r1-review\\actual-outer-diagnostic-68bbac4f331c4ff5b154e4c68e983681\\RECEIPT.json",
+      "bytes": 4331,
+      "sha256": "D47623CC4480AD592093871D59224ED8DB3B33B5E34D65C64F3BBD08BF7C83F7"
+    },
+    "actualHarnessExit": 0,
+    "cases": [
+      {
+        "id": "intact-success",
+        "nativeExit": 0,
+        "runnerExit": 0,
+        "harnessAccepted": true,
+        "stderr": [
+          "UNEXPECTED OUTER DIAGNOSTIC"
+        ]
+      },
+      {
+        "id": "intact-stage-error",
+        "nativeExit": 7,
+        "runnerExit": 1,
+        "harnessAccepted": true,
+        "stderr": [
+          "UNEXPECTED OUTER DIAGNOSTIC",
+          "PROCESS: fixture-stage actual child or launcher exit differs from 0"
+        ]
+      }
+    ],
+    "meaning": "Old harness still accepted; never relabeled rejected."
+  },
+  "success": true,
+  "distinctPins": 1938,
+  "pinOccurrences": 2931,
+  "seconds": 4.69,
+  "fixturePinBoundary": "Native successful-run captures are rehashed. Mutated/restored control summaries contribute only immutable summary/raw-stage/capture evidence, never stale fixture-source/map hashes from their capturedPins inventory.",
+  "status": "Local diagnostic certification evidence; coordinator acceptance, consuming adapter and campaign audit remain separate.",
+  "fullLedger": {
+    "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\SOURCE_RESULTS.json",
+    "bytes": 620359,
+    "sha256": "7F9855A6781CDD9A9CBABE6B34C4679030B46E1D07C18FC7683F884D8F4E3F95"
+  },
+  "compactProjection": "All collector facts retained; only the top-level per-file pin array is held in the hash-bound fullLedger.",
+  "supplementalEvidence": {
+    "record": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\SUPPLEMENTAL_FINAL_VERIFIED.json",
+      "bytes": 8411,
+      "sha256": "B4BDAF2773643F1D507376C9DB095F05D31AEA775A1AD09B224C83764469C352"
+    },
+    "harnessOuter": {
+      "capture": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\source-harness\\capture\\CAPTURE.json",
+        "bytes": 3986,
+        "sha256": "E2675CB96181815E2A70A2606C239DCAFE935A75722425522CD6708AE5D8FF1A"
+      },
+      "actualExit": 0,
+      "seconds": 355.183,
+      "deadlineSeconds": 2400,
+      "exactFull11Stdout": true,
+      "emptyStderrAndLauncherRaw": true
+    },
+    "generatedProbeImports": {
+      "record": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\PROBE_DEPENDENCIES.json",
+        "bytes": 793,
+        "sha256": "94CB1BA6F7B675ABFC355D412DDE595DCD5086A45A11B1E02C73FB50868AB1F9"
+      },
+      "binary": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\lifecycle-native-p0\\runs\\613c019061d14e24982de6651e433cd8\\lifecycle_storage_probe.exe",
+        "bytes": 7091712,
+        "sha256": "58D0451DC0A48A78E2885CFD8A2AA86100ADD46435317292F1C7BC99478129F9"
+      },
+      "imports": [
+        "ucrtbase.dll",
+        "KERNEL32.dll",
+        "icu.dll",
+        "bcrypt.dll",
+        "ADVAPI32.dll",
+        "WS2_32.dll",
+        "IPHLPAPI.DLL",
+        "USERENV.dll",
+        "USER32.dll",
+        "SHELL32.dll",
+        "ole32.dll",
+        "dbghelp.dll"
+      ],
+      "delayRva": 0,
+      "delaySize": 0,
+      "verification": "Actual protected Get-LNPeImports reparsed the hash-checked generated binary; twelve recorded imports and zero delay metadata matched. OS/dynamic-loading assumptions remain external."
+    },
+    "wrapperOuter": {
+      "capture": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\wrapper-final-5b8e1eb2ebd3423db3defcbb7b703f9e\\outer\\CAPTURE.json",
+        "bytes": 4627,
+        "sha256": "F56927BF8B6846B00F40C34D222F1AF2673ABC8B88900AB66C93730987973206"
+      },
+      "independentWorkerVerification": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ\\.lake\\repair-r2\\wrapper-final-5b8e1eb2ebd3423db3defcbb7b703f9e\\VERIFIED.json",
+        "bytes": 2709,
+        "sha256": "3BE5539A2873C4764895AE513BD6144FE12F6F87B89FF6C0AE2624C15AA40444"
+      },
+      "actualExit": 0,
+      "seconds": 93.55,
+      "deadlineSeconds": 1200,
+      "exactOrdered120PassLines": true,
+      "emptyStderrAndLauncherRaw": true
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "controls": [],
+  "oldSummary": null,
+  "closure": null,
+  "fixtureRestored": false,
+  "pins": [],
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "fail",
+    "stageError": "INTEGRITY: missing file C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\candidate-pwsh\\controls\\DP-S\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\RESULTS.json",
+    "integrityErrors": [],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\candidate-pwsh\\controls\\DP-S\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\RESULTS.json",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      }
+    ],
+    "fixtureCheck": null,
+    "entryPinCount": 0,
+    "verifiedPinCount": 0
+  },
+  "installedToolsUnchanged": false,
+  "oldMissing": null
+}

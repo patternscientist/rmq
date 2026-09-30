@@ -1,0 +1,70 @@
+{
+  "schema": "life-native1-start-v1",
+  "handle": "LIFE-NATIVE-1",
+  "title": "(LIFE-NATIVE-1) Consume the proved lifecycle in a native owner",
+  "utc": "2026-09-23T02:03:55.3325825Z",
+  "worktree": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ",
+  "base": "3dbdebedcc6ba6b2a864df0d46dcc09ccaaa7536",
+  "head": "3dbdebedcc6ba6b2a864df0d46dcc09ccaaa7536",
+  "branch": "codex/life-native-1-consuming-owner",
+  "initialClean": true,
+  "initialPorcelain": "",
+  "parents": [
+    "7d247703a7009aa0f5faa1a9a67abf5f2ce526b6",
+    "8a74ad3af84feaf0ccea7185813ce8b55c50d96a"
+  ],
+  "governance": "7b227c49ef2ec044b702126cc41c9add847eed01",
+  "actualRuntimeCatalog": [
+    {
+      "paths": [
+        "C:/Users/poin/.codex/worktrees/44d6/RMQ/.agents/skills/rmq-audit-prompt/SKILL.md",
+        "C:/Users/poin/.codex/skills/rmq-audit-prompt/SKILL.md"
+      ],
+      "name": "rmq-audit-prompt"
+    },
+    {
+      "paths": [
+        "C:/Users/poin/.codex/worktrees/44d6/RMQ/.agents/skills/rmq-coordinator/SKILL.md",
+        "C:/Users/poin/.codex/skills/rmq-coordinator/SKILL.md"
+      ],
+      "name": "rmq-coordinator"
+    },
+    {
+      "paths": [
+        "C:/Users/poin/.codex/worktrees/44d6/RMQ/.agents/skills/rmq-proof-sprint/SKILL.md"
+      ],
+      "name": "rmq-proof-sprint"
+    }
+  ],
+  "required": [
+    "rmq-proof-sprint"
+  ],
+  "preflight": {
+    "result": "PASS",
+    "output": [
+      "SKILL-PREFLIGHT: governance=7b227c49ef2ec044b702126cc41c9add847eed01",
+      "SKILL-PREFLIGHT: checkout=3dbdebedcc6ba6b2a864df0d46dcc09ccaaa7536",
+      "SKILL-PREFLIGHT: expected=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint",
+      "SKILL-PREFLIGHT: checkout_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint",
+      "SKILL-PREFLIGHT: working_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint",
+      "SKILL-PREFLIGHT: runtime_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint",
+      "SKILL-PREFLIGHT: required=rmq-proof-sprint",
+      "SKILL-PREFLIGHT: required_mode=role-skills",
+      "SKILL-PREFLIGHT: PASS"
+    ],
+    "command": "powershell -ExecutionPolicy Bypass -File scripts/project_skill_preflight.ps1 -GovernanceRef 7b227c49ef2ec044b702126cc41c9add847eed01 -RequiredSkills rmq-proof-sprint -RuntimeProjectSkills \"rmq-coordinator,rmq-proof-sprint,rmq-audit-prompt\"",
+    "warnings": [
+      "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+      "same Git global-ignore warning occurred three times"
+    ],
+    "toolResultChunk": "9460d4",
+    "exitCode": 0
+  },
+  "branchCreation": {
+    "initialSandboxExit": 128,
+    "approvedRetryExit": 0,
+    "initialError": "cannot lock ref: shared .git directory outside workspace write root",
+    "result": "Switched to a new branch 'codex/life-native-1-consuming-owner'"
+  },
+  "status": "STARTUP_VERIFIED_NOT_ACCEPTED"
+}

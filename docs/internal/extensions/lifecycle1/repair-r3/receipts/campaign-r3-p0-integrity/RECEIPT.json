@@ -1,0 +1,75 @@
+{
+  "kind": "integrity",
+  "outer": {
+    "Stage": "integrity",
+    "ExitCode": 0,
+    "Output": [],
+    "StandardOutput": [],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 283.978,
+    "DeadlineSeconds": 2400,
+    "Ownership": "kill-on-close-job",
+    "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-integrity\\launcher\\retained.stdout",
+    "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-integrity\\launcher\\retained.stderr",
+    "RetentionErrors": []
+  },
+  "streamValidation": {
+    "expectedStdout": "CONTROL PASS intact-success\r\nCONTROL PASS intact-stage-error\r\nCONTROL PASS malformed-stdout-intact\r\nCONTROL PASS stage-error-and-pin-change\r\nCONTROL PASS stage-error-and-capture-error\r\nCONTROL PASS success-and-pin-change\r\nCONTROL PASS mixed-diagnostic-and-pin-change\r\nCONTROL PASS timeout-and-pin-change\r\nCONTROL PASS success-and-tracked-change\r\nCONTROL PASS success-and-index-change\r\nCONTROL PASS success-and-untracked-addition\r\nCONTROL PASS success-and-untracked-byte-change\r\nCONTROL PASS success-and-link-map-change\r\nCONTROL PASS partial-identity-and-pin-change\r\nCONTROL PASS missing-baseline\r\nINTEGRITY CONTROLS evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\controls-5a9dd2f918814c26a60ab5dea82eb20b\r\n",
+    "expectedExit": 0,
+    "profile": "integrity",
+    "validated": true,
+    "expectedStderr": ""
+  },
+  "command": "$mutex=[Threading.Mutex]::new($false,'Local\\RMQLifecycleImplementationHeavy20260920')\n$held=$false\ntry {\n  try{$held=$mutex.WaitOne(600000)}catch [Threading.AbandonedMutexException]{$held=$true}\n  if(-not $held){throw 'host mutex unavailable'}\n  & 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1/integrity_controls.ps1'; exit $LASTEXITCODE\n} finally {if($held){$mutex.ReleaseMutex()};$mutex.Dispose()}",
+  "actual": {
+    "pid": 15228,
+    "exitCode": 0,
+    "durationSeconds": 283.3854051
+  },
+  "raw": [
+    {
+      "bytes": 757,
+      "sha256": "1355F886A6AE365463D0F927372F53A8B67E18B1A40175FEA99146F24F117611",
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-integrity\\stdout.log"
+    },
+    {
+      "bytes": 0,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-integrity\\stderr.log"
+    },
+    {
+      "bytes": 56,
+      "sha256": "477E1FF1FF9BE18919D63A630286EC0F2D6E1A43F07FE5B1B6E1F5D11C89B8EA",
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-integrity\\exit.json"
+    },
+    {
+      "bytes": 3023,
+      "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00",
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-integrity\\child.ps1"
+    },
+    {
+      "bytes": 613,
+      "sha256": "FA5D23AED4A52820E8126BE4C14223D5A6FAAEFE1808AAEA296E6B4C4B3B8299",
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-integrity\\inner.ps1"
+    },
+    {
+      "bytes": 1354,
+      "sha256": "719ED7CA7B03597D0ADCF893A4BD92B9AC772F688456680CA21134D6D1ACEA7C",
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-integrity\\spec.json"
+    },
+    {
+      "bytes": 0,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-integrity\\launcher\\retained.stdout"
+    },
+    {
+      "bytes": 0,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-integrity\\launcher\\retained.stderr"
+    }
+  ],
+  "deadline": 2400
+}

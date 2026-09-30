@@ -1,5 +1,6 @@
 import RMQ.Headlines.RMQ
 import RMQ.Headlines.RMQCompatibility
+import RMQ.Headlines.Lifecycle
 import RMQ.Core.BPNavigationPublic
 import RMQ.Core.BPNavigationRAM
 import RMQ.Core.RankSelectPublic
@@ -14,6 +15,10 @@ re-exports it, explicitly adds `RMQ.Headlines.RMQCompatibility` for historical
 RMQ profiles, and adds standalone rank/select and BP-navigation spoke aliases.
 Compatibility declarations are unmistakably named `Compatibility` or `Legacy`
 and are not in the `RMQPaper` import closure.
+
+The lifecycle candidate headline is also available through this broad barrel.
+Its separate campaign acceptance and publication requirements remain in force;
+the narrow `RMQPaper` import surface is unchanged.
 -/
 
 namespace RMQ.Headlines

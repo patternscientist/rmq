@@ -1,0 +1,538 @@
+{
+  "schema": "life1-r1-contract-verification-v1",
+  "base": "12bd7f0fc2c87f2c9bdef3825bd92477e48e3433",
+  "repositoryRoot": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ",
+  "startedUtc": "2026-09-21T06:16:13.433821+00:00",
+  "gitReads": [
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "12bd7f0fc2c87f2c9bdef3825bd92477e48e3433:docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.frozen.md"
+      ],
+      "deadlineSeconds": 30,
+      "timedOut": false,
+      "elapsedSeconds": 0.048181,
+      "exitCode": 0,
+      "stdout": {
+        "bytes": 43437,
+        "sha256": "8b08e2d7c7f284634d88bfa4262ee447f79a401c78b27dc346ea34d76ccba4a7"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderrText": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "12bd7f0fc2c87f2c9bdef3825bd92477e48e3433:docs/internal/extensions/lifecycle1/CONTRACT_REQUIREMENTS.json"
+      ],
+      "deadlineSeconds": 30,
+      "timedOut": false,
+      "elapsedSeconds": 0.048667,
+      "exitCode": 0,
+      "stdout": {
+        "bytes": 53962,
+        "sha256": "5bd95d24b6cffaf9fb39abb2aa04cca9743aed7884b3f87d03d7428e6b9cd8eb"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderrText": ""
+    }
+  ],
+  "scope": "contract-byte preservation only; no theorem or campaign acceptance",
+  "inputs": {
+    "active": {
+      "bytes": 85571,
+      "sha256": "b0ce694d2c609c82f34dc605bfc6f1be07ab5e666bcddee0dd99738067f90bb0"
+    },
+    "frozen": {
+      "bytes": 46220,
+      "sha256": "ae991367ef537d61d5af0ef738aad3b7ee1693e22a1ed27469d83a3de65f6417"
+    },
+    "prompt": {
+      "bytes": 46684,
+      "sha256": "b434dd888190a1fe31a13bd1981a0f25bd3af78dd4f10f9dc7077339f56ede9b"
+    },
+    "contract": {
+      "bytes": 19880,
+      "sha256": "25a1a4550548280950d7e7dbc01fb910321ed261c11ff129bfe92f1f20b78dc6"
+    },
+    "base_frozen": {
+      "bytes": 43437,
+      "sha256": "8b08e2d7c7f284634d88bfa4262ee447f79a401c78b27dc346ea34d76ccba4a7"
+    },
+    "base_contract": {
+      "bytes": 53962,
+      "sha256": "5bd95d24b6cffaf9fb39abb2aa04cca9743aed7884b3f87d03d7428e6b9cd8eb"
+    },
+    "external_original_prompt": {
+      "bytes": 33909,
+      "sha256": "f82a24460dfa06602fc52e2c78b0fa8402fbb84a0d203b4abb95040fa56b0c18"
+    }
+  },
+  "matrixPath": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\ACCEPTANCE_MATRIX.md",
+  "verdict": {
+    "status": "PASS",
+    "rows": 45,
+    "columns": 8,
+    "changedInheritedIds": [],
+    "orderedIds": [
+      "L1-01",
+      "L1-02",
+      "L1-03",
+      "L1-04",
+      "L1-05",
+      "L1-06",
+      "L1-07",
+      "L1-08",
+      "L1-09",
+      "L1-10",
+      "L1-11",
+      "L1-12",
+      "L1-13",
+      "L1-14",
+      "L1-15",
+      "L1-16",
+      "L1-17",
+      "L1-18",
+      "L1-19",
+      "L1-20",
+      "INV-STORE-IDENTITY",
+      "INV-VALUE-DEPENDENCY",
+      "INV-SEMANTIC-NONVACUITY",
+      "INV-TRACE-EXECUTION",
+      "INV-STORE-AGREEMENT",
+      "INV-READ-BACKING",
+      "INV-WORD-WIDTH",
+      "INV-ADDRESS-WIDTH",
+      "INV-INSTRUCTION-ATOMICITY",
+      "INV-PROGRAM-ACCOUNTING",
+      "INV-ORACLE-INDEPENDENCE",
+      "INV-VALIDATION-REACH",
+      "INV-ALL-SIZE",
+      "INV-PROOF-SEPARATION",
+      "INV-NO-SYNTHETIC",
+      "INV-CATEGORY-SEPARATION",
+      "INV-PUBLIC-COMPOSITION",
+      "INV-CERTIFICATE-ANTI-BYPASS",
+      "INV-MUTATION-REPRODUCIBILITY",
+      "INV-GLOBAL-PHYSICAL-MACHINE",
+      "INV-WIDTH-SCALING",
+      "CHK-FINAL",
+      "CHK-SCOPE",
+      "L1R1-SELECTOR",
+      "L1R1-CLEANUP"
+    ],
+    "sourceRequirementEquality": "complete text",
+    "rowByteEquality": "complete UTF-8 row content, LF delimiter excluded; no normalization",
+    "immutablePrefix": true,
+    "inheritedEvidenceStatus": "historical cells preserved; closure not inferred"
+  },
+  "controlRegistry": [
+    {
+      "id": "CONTRACT-POSITIVE",
+      "expected": "PASS",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-APPEND-POSITIVE",
+      "expected": "PASS",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-MISSING-MIDDLE",
+      "expected": "ID_MISSING",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-DUPLICATE-MIDDLE",
+      "expected": "ID_DUPLICATE",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-UNKNOWN-ID",
+      "expected": "ID_UNKNOWN",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-ORDER",
+      "expected": "ID_ORDER",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-LATE-REQUIREMENT",
+      "expected": "REQUIREMENT",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-LATE-INHERITED-CELL",
+      "expected": "INHERITED_ROW_BYTES",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-EVIDENCE-CELL",
+      "expected": "INHERITED_ROW_BYTES",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-NEW-ROW-CELL",
+      "expected": "ROW_BYTES",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-EMPTY-CELL",
+      "expected": "COLUMNS",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-MOJIBAKE",
+      "expected": "MOJIBAKE",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-BAD-UTF8",
+      "expected": "UTF8",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-LATE-DUPLICATE",
+      "expected": "EVIDENCE_ROW",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-LATE-UNKNOWN",
+      "expected": "EVIDENCE_ROW",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-PREFIX",
+      "expected": "PREFIX_BYTES",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-FROZEN-LATE-CELL",
+      "expected": "INHERITED_ROW_BYTES",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-PROMPT-LATE-CLAUSE",
+      "expected": "REQUIREMENT",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-PROMPT-BYTES",
+      "expected": "PIN",
+      "predicate": "verify(Inputs)"
+    },
+    {
+      "id": "CONTRACT-EXTERNAL-PROMPT",
+      "expected": "EXTERNAL_PROMPT",
+      "predicate": "verify(Inputs)"
+    }
+  ],
+  "controls": [
+    {
+      "id": "CONTRACT-POSITIVE",
+      "expected": "PASS",
+      "observed": "PASS",
+      "status": "PASS",
+      "detail": "same verifier accepted",
+      "changedInputs": {},
+      "elapsedSeconds": 0.001952
+    },
+    {
+      "id": "CONTRACT-APPEND-POSITIVE",
+      "expected": "PASS",
+      "observed": "PASS",
+      "status": "PASS",
+      "detail": "same verifier accepted",
+      "changedInputs": {
+        "active": {
+          "bytes": 85623,
+          "sha256": "00dc7845ac0054c2a7bbf742c3847d65152e89ed6275d0c4f6e237d105a41a9a"
+        }
+      },
+      "elapsedSeconds": 0.0019
+    },
+    {
+      "id": "CONTRACT-MISSING-MIDDLE",
+      "expected": "ID_MISSING",
+      "observed": "ID_MISSING",
+      "status": "PASS",
+      "detail": "active: missing ['INV-VALUE-DEPENDENCY']",
+      "changedInputs": {
+        "active": {
+          "bytes": 84689,
+          "sha256": "c1cfc71ea769fbbf085720cc9b2908d15ff01854b54bd401dc8b0e465240d02c"
+        }
+      },
+      "elapsedSeconds": 0.000305
+    },
+    {
+      "id": "CONTRACT-DUPLICATE-MIDDLE",
+      "expected": "ID_DUPLICATE",
+      "observed": "ID_DUPLICATE",
+      "status": "PASS",
+      "detail": "active: INV-VALUE-DEPENDENCY",
+      "changedInputs": {
+        "active": {
+          "bytes": 86453,
+          "sha256": "425d41cff545afd423c0557642ee1204b2a52dd0a47b33ac3cc612519956373a"
+        }
+      },
+      "elapsedSeconds": 0.000283
+    },
+    {
+      "id": "CONTRACT-UNKNOWN-ID",
+      "expected": "ID_UNKNOWN",
+      "observed": "ID_UNKNOWN",
+      "status": "PASS",
+      "detail": "active: L1-99",
+      "changedInputs": {
+        "active": {
+          "bytes": 85571,
+          "sha256": "d8a42e5acb59295d25702d85d053cefc903cddcf65c1c2bdf37a1f01a80472ab"
+        }
+      },
+      "elapsedSeconds": 0.000277
+    },
+    {
+      "id": "CONTRACT-ORDER",
+      "expected": "ID_ORDER",
+      "observed": "ID_ORDER",
+      "status": "PASS",
+      "detail": "active: ordered IDs differ",
+      "changedInputs": {
+        "active": {
+          "bytes": 85571,
+          "sha256": "b432b906c20a6ee7bfc3bd74c6642c8b01e4a87ad8e2335dffc458dc3eef33a0"
+        }
+      },
+      "elapsedSeconds": 0.000286
+    },
+    {
+      "id": "CONTRACT-LATE-REQUIREMENT",
+      "expected": "REQUIREMENT",
+      "observed": "REQUIREMENT",
+      "status": "PASS",
+      "detail": "L1-04: full requirement differs from repair source prompt",
+      "changedInputs": {
+        "active": {
+          "bytes": 85566,
+          "sha256": "85eeaf2216697956d9fbe4a2643704d46f88f4346ae89700a7a15b51362db0b4"
+        }
+      },
+      "elapsedSeconds": 0.001614
+    },
+    {
+      "id": "CONTRACT-LATE-INHERITED-CELL",
+      "expected": "INHERITED_ROW_BYTES",
+      "observed": "INHERITED_ROW_BYTES",
+      "status": "PASS",
+      "detail": "CHK-SCOPE: inherited complete row bytes differ from base Git blob",
+      "changedInputs": {
+        "active": {
+          "bytes": 85536,
+          "sha256": "8a45c6c5b4183c35271fe8780d00205eff49f3e6363173de74be3893e885192f"
+        }
+      },
+      "elapsedSeconds": 0.001816
+    },
+    {
+      "id": "CONTRACT-EVIDENCE-CELL",
+      "expected": "INHERITED_ROW_BYTES",
+      "observed": "INHERITED_ROW_BYTES",
+      "status": "PASS",
+      "detail": "L1-04: inherited complete row bytes differ from base Git blob",
+      "changedInputs": {
+        "active": {
+          "bytes": 85508,
+          "sha256": "af5af8469e23f2e3490de6d473f832aeb7e2281dbc63ce198cc1a6a74f7e9039"
+        }
+      },
+      "elapsedSeconds": 0.001684
+    },
+    {
+      "id": "CONTRACT-NEW-ROW-CELL",
+      "expected": "ROW_BYTES",
+      "observed": "ROW_BYTES",
+      "status": "PASS",
+      "detail": "L1R1-CLEANUP: full active/frozen row bytes differ",
+      "changedInputs": {
+        "active": {
+          "bytes": 85548,
+          "sha256": "a4508749b9b6416e26bbfc25f1a2022df34717a377422332b382c5131a5f8aa7"
+        }
+      },
+      "elapsedSeconds": 0.001683
+    },
+    {
+      "id": "CONTRACT-EMPTY-CELL",
+      "expected": "COLUMNS",
+      "observed": "COLUMNS",
+      "status": "PASS",
+      "detail": "active: empty cell",
+      "changedInputs": {
+        "active": {
+          "bytes": 85486,
+          "sha256": "1b752a45ce18ea8640ae53856bea8423e60f2defad070c2eab091234e5e20b8a"
+        }
+      },
+      "elapsedSeconds": 0.000169
+    },
+    {
+      "id": "CONTRACT-MOJIBAKE",
+      "expected": "MOJIBAKE",
+      "observed": "MOJIBAKE",
+      "status": "PASS",
+      "detail": "active: recognizable mojibake",
+      "changedInputs": {
+        "active": {
+          "bytes": 85577,
+          "sha256": "cd3e7ea8855191f9ab223905777d6de0c20abbab38b1f8431d8e192bd9d9af63"
+        }
+      },
+      "elapsedSeconds": 5e-05
+    },
+    {
+      "id": "CONTRACT-BAD-UTF8",
+      "expected": "UTF8",
+      "observed": "UTF8",
+      "status": "PASS",
+      "detail": "active: 'utf-8' codec can't decode byte 0xff in position 85572: invalid start byte",
+      "changedInputs": {
+        "active": {
+          "bytes": 85574,
+          "sha256": "e1e394d5131521ce70f3d0546b2ac2225c411a2b93e308e9e6956b539b6d6bba"
+        }
+      },
+      "elapsedSeconds": 3.3e-05
+    },
+    {
+      "id": "CONTRACT-LATE-DUPLICATE",
+      "expected": "EVIDENCE_ROW",
+      "observed": "EVIDENCE_ROW",
+      "status": "PASS",
+      "detail": "active: acceptance-shaped row after append-only marker",
+      "changedInputs": {
+        "active": {
+          "bytes": 86454,
+          "sha256": "c265021e912e2ae9e0d43202c4487cadcf339035ebc19b8724381b66ef6c80ff"
+        }
+      },
+      "elapsedSeconds": 0.000454
+    },
+    {
+      "id": "CONTRACT-LATE-UNKNOWN",
+      "expected": "EVIDENCE_ROW",
+      "observed": "EVIDENCE_ROW",
+      "status": "PASS",
+      "detail": "active: acceptance-shaped row after append-only marker",
+      "changedInputs": {
+        "active": {
+          "bytes": 86448,
+          "sha256": "1066fe1081961533433468cf95ff48a50b476dd1cb8443a8fd5a48f208f40f2d"
+        }
+      },
+      "elapsedSeconds": 0.000444
+    },
+    {
+      "id": "CONTRACT-PREFIX",
+      "expected": "PREFIX_BYTES",
+      "observed": "PREFIX_BYTES",
+      "status": "PASS",
+      "detail": "active matrix changed immutable frozen prefix",
+      "changedInputs": {
+        "active": {
+          "bytes": 85571,
+          "sha256": "40bdaa29fca305ef4bc05ce32748573993d50badaa6e38ca095879eb0126124a"
+        }
+      },
+      "elapsedSeconds": 0.001742
+    },
+    {
+      "id": "CONTRACT-FROZEN-LATE-CELL",
+      "expected": "INHERITED_ROW_BYTES",
+      "observed": "INHERITED_ROW_BYTES",
+      "status": "PASS",
+      "detail": "CHK-SCOPE: inherited complete row bytes differ from base Git blob",
+      "changedInputs": {
+        "frozen": {
+          "bytes": 46187,
+          "sha256": "c109308b8b9f4014c43b20acade27483258c4a6b4d8d8b21c6a8558808dc7fcb"
+        }
+      },
+      "elapsedSeconds": 0.001724
+    },
+    {
+      "id": "CONTRACT-PROMPT-LATE-CLAUSE",
+      "expected": "REQUIREMENT",
+      "observed": "REQUIREMENT",
+      "status": "PASS",
+      "detail": "L1-04: full requirement differs from repair source prompt",
+      "changedInputs": {
+        "prompt": {
+          "bytes": 46679,
+          "sha256": "eec85284b6a95a971e3367e15d9bae0efb2ff0a933f938642b730ec29fc1f73b"
+        }
+      },
+      "elapsedSeconds": 0.001768
+    },
+    {
+      "id": "CONTRACT-PROMPT-BYTES",
+      "expected": "PIN",
+      "observed": "PIN",
+      "status": "PASS",
+      "detail": "prompt: exact frozen byte identity changed",
+      "changedInputs": {
+        "prompt": {
+          "bytes": 46685,
+          "sha256": "400cb5568849abe04ef814924f4ffaa91fc42411293a06012a99c9ae4db31662"
+        }
+      },
+      "elapsedSeconds": 0.001753
+    },
+    {
+      "id": "CONTRACT-EXTERNAL-PROMPT",
+      "expected": "EXTERNAL_PROMPT",
+      "observed": "EXTERNAL_PROMPT",
+      "status": "PASS",
+      "detail": "external repair prompt: bytes differ",
+      "changedInputs": {
+        "external_prompt": {
+          "bytes": 46685,
+          "sha256": "400cb5568849abe04ef814924f4ffaa91fc42411293a06012a99c9ae4db31662"
+        }
+      },
+      "elapsedSeconds": 0.001872
+    }
+  ],
+  "controlMode": "same verify(Inputs) predicate; immutable in-memory bytes; no fixture files written",
+  "inputFilesUnchanged": true,
+  "status": "PASS",
+  "elapsedSeconds": 0.143929,
+  "verifier": {
+    "path": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\verify_contract.py",
+    "bytes": 21171,
+    "sha256": "b988c295bce0d462e5d346bb105e79b90b60f31a0ecabb0618cab35b0d6bd9b5"
+  },
+  "python": {
+    "path": "C:\\Python314\\python.exe",
+    "version": "3.14.4 (tags/v3.14.4:23116f9, Apr  7 2026, 14:10:54) [MSC v.1944 64 bit (AMD64)]",
+    "bytes": 106328,
+    "sha256": "7ca24f26d6e3f463419ee4f537ddd3acd312c38fe45e678cce08572f26a8bd1a"
+  },
+  "git": {
+    "path": "C:\\Program Files\\Git\\cmd\\git.EXE",
+    "bytes": 46480,
+    "sha256": "34a408843194be320d8a87a3c12cd5c7d2e08d03b24567a41db32e21d12569d2"
+  }
+}

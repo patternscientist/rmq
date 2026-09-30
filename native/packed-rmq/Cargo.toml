@@ -14,3 +14,12 @@ path = "src/main.rs"
 [[bin]]
 name = "packed-rmq-native"
 path = "src/native_main.rs"
+
+[[bin]]
+name = "packed-rmq-lifecycle"
+path = "src/lifecycle_main.rs"
+
+[[test]]
+name = "lifecycle_rust"
+path = "tests/lifecycle_rust.rs"
+harness = false

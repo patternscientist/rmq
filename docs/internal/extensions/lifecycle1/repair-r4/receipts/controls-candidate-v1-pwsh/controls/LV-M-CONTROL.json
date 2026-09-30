@@ -1,0 +1,122 @@
+{
+  "id": "LV-M",
+  "harness": "LV",
+  "shape": "M",
+  "fault": "delete-fail",
+  "mode": "candidate",
+  "profile": "pwsh",
+  "deadlineSeconds": 180,
+  "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\LV-M\\root",
+  "setupError": null,
+  "launchError": null,
+  "process": {
+    "Stage": "LV-M",
+    "ExitCode": 1,
+    "Output": [
+      "Source/binary identity unreadable: lakefile.toml: Could not find file 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\LV-M\\root\\lakefile.toml'.",
+      "Exception: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\LV-M\\root\\scripts\\lifecycle_validator.ps1:74",
+      "Line |",
+      "  74 |  . ctedExit) { throw \"$Name exit $($result.ExitCode), expected $Expected .",
+      "     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | single exit 1, expected 0"
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "Source/binary identity unreadable: lakefile.toml: Could not find file 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\LV-M\\root\\lakefile.toml'.",
+      "Exception: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\LV-M\\root\\scripts\\lifecycle_validator.ps1:74",
+      "Line |",
+      "  74 |  . ctedExit) { throw \"$Name exit $($result.ExitCode), expected $Expected .",
+      "     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | single exit 1, expected 0"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 4.4,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  },
+  "durable": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\LV-M\\root\\.lake\\lifecycle-validator\\359be059e9ee4c5e8e5d123d8da46896\\RESULT.json",
+    "ambiguous": false,
+    "parseError": null,
+    "sha256": "2620f4c2675aa75dcff7b16f0c5d7350978b41f2c00712ff921700235312b31b"
+  },
+  "core": {
+    "launchCompleted": true,
+    "exitClass": true,
+    "durablePresent": true,
+    "durableAsExpected": true,
+    "stageRecorded": true,
+    "integrityRecorded": true,
+    "cleanupRecorded": true,
+    "verdictAsExpected": true,
+    "values": null,
+    "labels": null,
+    "stderrAsExpected": true,
+    "absentFiles": true,
+    "stdoutWithoutSuccess": true
+  },
+  "structural": {
+    "applicable": true,
+    "finalizationPresent": true,
+    "verdictMatches": true,
+    "stageFieldMatches": true,
+    "integrityFieldMatches": true,
+    "cleanupEmpty": true,
+    "pinsVerified": true,
+    "pinCoverage": "captured 12 of 12 rows, all re-verified"
+  },
+  "restoration": {
+    "restored": [
+      "lakefile.toml"
+    ],
+    "removed": [],
+    "errors": [],
+    "verified": true,
+    "gitClean": true,
+    "gitState": "e71895ace9305cad2e7c7e96f316ef5fd8cebc41\n--"
+  },
+  "verdict": "PASS",
+  "expected": "accept-all-predicates",
+  "lockWaitSeconds": null,
+  "manifest": {
+    "scripts/lifecycle_validator.ps1": "8135040dfb712cb81dd083db8f4b58d42e333bc196db3770f2b5c28e228f0cb3",
+    "scripts/lifecycle_validator_environment.ps1": "2fb2c4d95eaf3f6633ffaa60413d3d798b26e5bf8b4e712e6a254e293e4f9f19",
+    "scripts/owned_process_tree.ps1": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+    "lakefile.toml": "b47c7abe3955d1a2e9ba51a4c71fc2e7961423d2bf5f3856f79a24bebc8bdd50",
+    "RMQ/Validation/PackedLifecycle.lean": "624236001fc72817441cc3dc536da9c299ccb1dc9c050687b09896b7f1679c14",
+    "RMQ/Core/WordRAM/Lifecycle/Executable.lean": "7ed53fd5715a4ea1d6628ae52f626b1573b2f20bb4e6b9b983c0a2c32de41baf",
+    "RMQ/Core/WordRAM/Lifecycle/Controls.lean": "207f4d5ccaca1c33143c6e457c90129ad876672bdc0786e29face52f434e8828",
+    "RMQ/Core/WordRAM/Lifecycle/ArrayRun.lean": "e9342577949ec6af15ece43ebaa742d30142f7b6769c8036b9e95f22d59dd0c7",
+    "RMQ/Core/WordRAM/Lifecycle/Machine.lean": "bbc0e439fb2fa55ae75e440ac3a6c77e6203fc6f7b39b2cae8b95e1ed2b8d57b",
+    "RMQ/Core/WordRAM/Lifecycle/Program.lean": "bb40b5ab3b7532ea4f907bf1d174dd2de14013c5e022454cb7c3b99cc2707dfc",
+    "RMQ/Core/WordRAM/Lifecycle/Service.lean": "f4157493517f232a6a83bb52c87b751f6a0c2c1f9ca9c98fb6cae036542a34e0",
+    ".lake/build/bin/rmq_lifecycle_validate.exe": "3d3338e5bea0318415e5be77f4610c3df628e7f6b0f9fa26dd7ada7d750c38f2",
+    ".gitignore": "fde850d24186b6e99c8c0debd641fb3ab85198b109eb66f71a1fea02bd6ea1b3"
+  },
+  "harnessSha256": "8135040dfb712cb81dd083db8f4b58d42e333bc196db3770f2b5c28e228f0cb3",
+  "arguments": [
+    "-NoLogo",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\LV-M\\root\\scripts\\lifecycle_validator.ps1",
+    "-Stage",
+    "single",
+    "-Case",
+    "L01-W-EMPTY",
+    "-DeadlineSeconds",
+    "60"
+  ],
+  "environment": {
+    "R3_FAULT_SCOPE": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\LV-M\\root",
+    "R3_FAULT_MODE": "delete-fail",
+    "R3_FAULT_TARGET": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\LV-M\\root\\lakefile.toml",
+    "R3_FAULT_MARKER": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\LV-M\\fault.marker"
+  },
+  "coreAll": true,
+  "structuralAll": true,
+  "predicateOutcome": true
+}

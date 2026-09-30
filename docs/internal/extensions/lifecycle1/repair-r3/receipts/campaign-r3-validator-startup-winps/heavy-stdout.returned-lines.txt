@@ -1,0 +1,1 @@
+r3-validator-startup-winps exit=0 seconds=4.214 timeout=False evidence=C:\Users\poin\Documents\RMQ\.claude\worktrees\life1-r3-finally-integrity\.lake\repair-r2\checks\r3-validator-startup-winps

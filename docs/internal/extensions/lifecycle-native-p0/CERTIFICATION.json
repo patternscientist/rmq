@@ -1,0 +1,238 @@
+{
+  "status": "CANDIDATE_COMPLETE",
+  "coordinatorAcceptanceRequired": true,
+  "sourceCommit": "bea5ce75f788c4035031ba81e69d8de36eda3f92",
+  "base": "bf31f983205175481fcb659caa4dfb70ef43e361",
+  "branch": "codex/life-native-p0-owned-finalization",
+  "report": {
+    "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\docs\\internal\\extensions\\lifecycle-native-p0\\REPORT.md",
+    "bytes": 25211,
+    "sha256": "658652FEB62B1A5DCEEC2BCC030C3DF3A24B19B8D34933A8FA4561142C8CFD98"
+  },
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "powerShell": "7.6.5",
+  "native": {
+    "status": "PASS",
+    "cases": 23,
+    "stages": 58,
+    "checks": 65,
+    "actualRunnerExit": 0,
+    "seconds": 161.682,
+    "evidence": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\docs\\internal\\extensions\\lifecycle-native-p0\\RESULTS.json",
+      "bytes": 63804,
+      "sha256": "6440A963BE7A0E65222F86AFE3CFB89E4BEE1B6BDCD0226DC0D5CDA88D296FDD"
+    }
+  },
+  "baseline": {
+    "status": "PASS",
+    "actualExit": 0,
+    "evidence": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\docs\\internal\\extensions\\lifecycle-native-p0\\BASELINE.json",
+      "bytes": 5699,
+      "sha256": "DA869E0C2AC50C3CC042C6C44ECCEF4E3DE9C59BF205AD8DBA888B9410C67238"
+    }
+  },
+  "fullClaims": {
+    "command": "scripts/claim_drift_scan.ps1 -Strict",
+    "actualExit": 0,
+    "seconds": 2211.841,
+    "deadlineSeconds": 3600,
+    "hits": 3479,
+    "strictFailures": 0,
+    "reportDraftSha256": "43F14694FC97D7B1105170E3ED36A1F38F554749E04058D60B69F00E591E620C",
+    "receipt": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\claim-full-owned\\receipt.json",
+      "bytes": 1192,
+      "sha256": "308E9954716F0102E8783AC5CC2D280427E7E507A887B29812825C79627C448D"
+    },
+    "rawFiles": [
+      {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\claim-full-owned\\stdout.log",
+        "bytes": 4118433,
+        "sha256": "C72C69D5C0127F99D0E7EF8FE82B71B3A610F1CEBA5E600ACE5B572E95CBB925"
+      },
+      {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\claim-full-owned\\stderr.log",
+        "bytes": 0,
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+      }
+    ]
+  },
+  "precommitChecks": [
+    {
+      "name": "contract",
+      "expectedExit": 0,
+      "actualExit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "durationSeconds": 2.241,
+      "deadlineSeconds": 180,
+      "lastStdout": "CONTRACT PASS: 12 exact ordered IDs, all eight columns, full prompt requirements, frozen UTF-8 row bytes"
+    },
+    {
+      "name": "design-source",
+      "expectedExit": 0,
+      "actualExit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "durationSeconds": 3.533,
+      "deadlineSeconds": 180,
+      "lastStdout": "DESIGN-CHECK: checked 15 changed files (1 code, 11 workflow, 3 neutral)"
+    },
+    {
+      "name": "design-package",
+      "expectedExit": 0,
+      "actualExit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "durationSeconds": 4.359,
+      "deadlineSeconds": 180,
+      "lastStdout": "DESIGN-CHECK: checked 3 changed files (0 code, 2 workflow, 1 neutral)"
+    },
+    {
+      "name": "design-whole",
+      "expectedExit": 0,
+      "actualExit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "durationSeconds": 3.289,
+      "deadlineSeconds": 180,
+      "lastStdout": "DESIGN-CHECK: checked 17 changed files (1 code, 13 workflow, 3 neutral)"
+    },
+    {
+      "name": "working-whitespace",
+      "expectedExit": 0,
+      "actualExit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "durationSeconds": 2.831,
+      "deadlineSeconds": 180,
+      "lastStdout": null
+    },
+    {
+      "name": "staged-whitespace",
+      "expectedExit": 0,
+      "actualExit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "durationSeconds": 2.565,
+      "deadlineSeconds": 180,
+      "lastStdout": null
+    },
+    {
+      "name": "final-owned-claims",
+      "expectedExit": 0,
+      "actualExit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "durationSeconds": 6.094,
+      "deadlineSeconds": 300,
+      "lastStdout": "CLAIM-DRIFT: scan complete (382 hits, 0 strict failures)"
+    },
+    {
+      "name": "claim-context",
+      "expectedExit": 0,
+      "actualExit": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "durationSeconds": 5.222,
+      "deadlineSeconds": 180,
+      "lastStdout": "CLAIM CONTEXT PASS: 2910 outside-rescan files have identical paths and bytes; scanner, policy and ripgrep unchanged"
+    }
+  ],
+  "precommitReceipt": {
+    "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\package-precommit\\receipt.json",
+    "bytes": 300419,
+    "sha256": "2905DCA6FA46ABC3259BD48B8F8B5483E8776BB3819004B3D742775BC14E849D"
+  },
+  "precommitRawFiles": [],
+  "otherEvidence": [
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\source-bytes.json",
+      "bytes": 2339,
+      "sha256": "B2575CEBBB93A495C87CB209B6D6F952B6EDFD3414D3324C9907CC7347713F56"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\evidence-pins.json",
+      "bytes": 58511,
+      "sha256": "179A0E923FB20D4FF1884EDDC16AFD8B14CC5C6D6FE43A853BF127242DCE76E8"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\default-claim-context.json",
+      "bytes": 646753,
+      "sha256": "93DE2690CB6509033FC93F3BDD7BA42CEF2E21F9A0AA9761DC04DF511EB0F8F4"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\hygiene.json",
+      "bytes": 243,
+      "sha256": "CAEF28A2A2660D09018E6CB329771A617AA579AC7D3BC49FF030C7638448E898"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\hygiene.stdout.txt",
+      "bytes": 0,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\hygiene.stderr.txt",
+      "bytes": 0,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\native-decision.stdout.txt",
+      "bytes": 0,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\native-decision.stderr.txt",
+      "bytes": 0,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\claim-draft-interrupted.json",
+      "bytes": 2064,
+      "sha256": "CB969E95FA505539BD57B2461E87D6EACEE9C6CE82BB34BD434A06A599894BC2"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\docs\\internal\\extensions\\lifecycle-native-p0\\RUNTIME_SOURCE.json",
+      "bytes": 1398,
+      "sha256": "F32AA70D04AA8FE2A14873DA0E6B22501781187544B5335918A7925221C7E9A6"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\lean-4.22-object.cpp",
+      "bytes": 88248,
+      "sha256": "44C1430D9C6DA2FE9FDE073D407F9FD58860D869D09B8C7EA0BC0E27D85916FB"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\final-package-checks.ps1",
+      "bytes": 2932,
+      "sha256": "C2D9529FBF0A8948E13AE19EDB1CEBE9EE946580E6CEE2DC3FC852E5A58116CB"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\verify-claim-context.ps1",
+      "bytes": 1734,
+      "sha256": "0510367F57A14D624817C05D488BB0840447E40B55E0395AAE41B3B9FF9D7CA8"
+    }
+  ],
+  "finalCoverage": {
+    "method": "Completed default-root PASS plus final changed-file PASS under the unchanged complete policy; not a second default-root execution.",
+    "finalRescan": [
+      "docs/internal/extensions/lifecycle-native-p0",
+      "docs/internal/DESIGN_DECISIONS.md",
+      "docs/internal/WORKFLOW_DESIGN_DECISIONS.md"
+    ],
+    "unchangedOutsideFiles": 2910,
+    "postcommitReceipt": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\package-postcommit\\receipt.json",
+    "finalIdentityReceipt": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\checks\\final-identity.json",
+    "note": "The report/status and this certification record are finalized after the precommit checks. The final focused scan and exact committed-range checks cover their final bytes; their outcomes and the packaging SHA are issued at handoff without a self-referential receipt commit."
+  },
+  "sourceAndScope": {
+    "assignedChangedPaths": 17,
+    "nativeSourceUnchangedAfterReplay": true,
+    "frozenRowsSha256": "F45113AE6BF3F769105A748B3D0A61EA99532A05A715410F11EF29E7E518EC29",
+    "requirementsSha256": "0983881A85F9A3B42ECD54C0BFB18170C3BE3E5A65602CDE66547042CA5421C9",
+    "published": false,
+    "productionAbiChanged": false
+  },
+  "conditionalChecks": "No predecessor native implementation changed. Aggregate gate, fresh-blind campaign audit and acceptance remain coordinator responsibilities."
+}

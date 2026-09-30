@@ -1,0 +1,63 @@
+{
+  "childSourceSha256": null,
+  "error": "Exception calling \"ReadAllBytes\" with \"1\" argument(s): \"Could not find file 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root\\scripts\\owned_process_tree.ps1'.\"",
+  "expected": {
+    "id": "F01_INTACT_SUCCESS",
+    "sourceVariant": "repaired",
+    "mode": "success",
+    "expectedExit": 0,
+    "stageFailure": false,
+    "integrityFailure": false,
+    "cleanupFailure": false,
+    "shadowRemoved": true,
+    "baselineCount": 2,
+    "minimumShellMajor": 5,
+    "challenge": "Legitimate successful finalizer with two captured pins and actual held private mutex"
+  },
+  "source": null,
+  "deadlineSeconds": 30,
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "fail",
+    "stageError": "Exception calling \"ReadAllBytes\" with \"1\" argument(s): \"Could not find file 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root\\scripts\\owned_process_tree.ps1'.\"",
+    "integrityErrors": [],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\finalizer_cases.json",
+        "label": "frozen registry",
+        "entrySha256": "1303ecf93c0a0c74e0a48023fe52258b7e847d020d009eb2f4deba7f084ab6df",
+        "finalSha256": "1303ecf93c0a0c74e0a48023fe52258b7e847d020d009eb2f4deba7f084ab6df",
+        "status": "verified"
+      },
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\finalizer_control.ps1",
+        "label": "harness",
+        "entrySha256": "924e46111803d0d40e7bbf1d2517efdf646d55f8b1387418790226665eeb42b2",
+        "finalSha256": "924e46111803d0d40e7bbf1d2517efdf646d55f8b1387418790226665eeb42b2",
+        "status": "verified"
+      },
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root\\scripts\\owned_process_tree.ps1",
+        "label": "protected helper",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\FC-S\\root\\scripts\\lifecycle_dependency_replay.ps1",
+        "label": "production script",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      }
+    ],
+    "entryPinCount": 2,
+    "verifiedPinCount": 2
+  },
+  "passed": false,
+  "outputLimitBytes": 1048576,
+  "emptyBaselineLimit": "A successful empty baseline quantifies over no files; it cannot establish whole-tree integrity",
+  "id": "F01_INTACT_SUCCESS",
+  "records": []
+}

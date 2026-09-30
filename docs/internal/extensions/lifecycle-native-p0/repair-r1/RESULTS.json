@@ -1,0 +1,2760 @@
+{
+  "sourceCommit": "1811eeb9e2f783cc455e44a618a99af77b0172ed",
+  "verificationCommit": "fda02922bf9e8c0707b9913013d3c16c80afe7c9",
+  "base": "0c873072e84be9e1d65edab1985bcff1d23abef1",
+  "native": {
+    "receipt": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\full-69ab363f7f624a1886a11a8d73fd59ca\\RECEIPT.json",
+      "bytes": 2454,
+      "sha256": "D450FDA94E24329028DA56A9441558D17BAE61F4189CE6727459F6DF79D0D491"
+    },
+    "summary": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\SUMMARY.json",
+      "bytes": 330225,
+      "sha256": "059271927D6F21D704779B995A9C88C767A717479BDA235E6041549C3C4C5B7E"
+    },
+    "seconds": 177.509,
+    "cases": [
+      {
+        "id": "pop-unique",
+        "mapping": [
+          0,
+          6,
+          0,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\006-pop-unique.stdout",
+          "bytes": 1631,
+          "sha256": "DBEF0018246A7099307D464DD441D7B5BE78C8DFF369788D46233DCF372E733C"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\006-pop-unique.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "shrink-unique",
+        "mapping": [
+          1,
+          6,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\007-shrink-unique.stdout",
+          "bytes": 1604,
+          "sha256": "B9CC9C92821FC51FA3FC93FDE2AFB74AF11561E9310F63CD71973CE9C249D71B"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\007-shrink-unique.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "pop-shared",
+        "mapping": [
+          0,
+          6,
+          0,
+          5,
+          1,
+          0,
+          0,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\008-pop-shared.stdout",
+          "bytes": 1704,
+          "sha256": "208107EF752A1D51AF15440BD3345DC4B02630AE4C347FFEEA499F9882877A65"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\008-pop-shared.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "shrink-shared",
+        "mapping": [
+          1,
+          6,
+          0,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\009-shrink-shared.stdout",
+          "bytes": 1676,
+          "sha256": "ACCD336A2BC388AC10EF52C5636B4C699BECAA90F6B267973E161CB0EF661174"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\009-shrink-shared.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "pop-empty-unique",
+        "mapping": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\010-pop-empty-unique.stdout",
+          "bytes": 1559,
+          "sha256": "F33232D51B679364F67D789FAC0B860AAEC8A916BC510B408CA7BE8CF03BD85D"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\010-pop-empty-unique.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "pop-empty-shared",
+        "mapping": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\011-pop-empty-shared.stdout",
+          "bytes": 1565,
+          "sha256": "114095E50C26F1C88D41A700A9578C419355BF87B7844FFD6F51B632EF2C3064"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\011-pop-empty-shared.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "shrink-noop",
+        "mapping": [
+          1,
+          6,
+          0,
+          6,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\012-shrink-noop.stdout",
+          "bytes": 1642,
+          "sha256": "B10080A4B804709EF818228FDC3E7F3CB024012071D18A0610B367F1C0C5C053"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\012-shrink-noop.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "replace-prefix",
+        "mapping": [
+          2,
+          6,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\013-replace-prefix.stdout",
+          "bytes": 2572,
+          "sha256": "98168629717637DD394076C0F55BDF95C89C4741DABF116D934B9CBF98101DBB"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\013-replace-prefix.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "replace-overlap",
+        "mapping": [
+          2,
+          6,
+          1,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\014-replace-overlap.stdout",
+          "bytes": 2606,
+          "sha256": "69CF3E53F85E9E09B2C3CFE4EF6685AADD539644F5498735D0BBD40AC916F034"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\014-replace-overlap.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "replace-tail",
+        "mapping": [
+          2,
+          6,
+          4,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\015-replace-tail.stdout",
+          "bytes": 2573,
+          "sha256": "021327A3FFE95D1A70722BABD7A584EFA0809FBFE6A33CA7943AE647153D8AC6"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\015-replace-tail.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "replace-empty",
+        "mapping": [
+          2,
+          6,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\016-replace-empty.stdout",
+          "bytes": 2547,
+          "sha256": "9D0B14A7E8BC17895CA7952838EBFFBB20697197F2A7752E4AEBE35C082398F9"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\016-replace-empty.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "replace-alias",
+        "mapping": [
+          2,
+          6,
+          1,
+          4,
+          1,
+          0,
+          0,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\017-replace-alias.stdout",
+          "bytes": 2750,
+          "sha256": "C8F4749C0B8C36CA12FE5062E5939D00E744D140C6D99EEB522C867561D84A88"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\017-replace-alias.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "replace-element-alias",
+        "mapping": [
+          2,
+          6,
+          4,
+          2,
+          0,
+          1,
+          0,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\018-replace-element-alias.stdout",
+          "bytes": 2578,
+          "sha256": "3CAB4C08C0D495DF917C1A66AFEDB5156BEDB3ED94342D5060941B39A6CD6507"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\018-replace-element-alias.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "fail-alloc",
+        "mapping": [
+          3,
+          6,
+          1,
+          4,
+          0,
+          0,
+          1,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\019-fail-alloc.stdout",
+          "bytes": 2089,
+          "sha256": "0AA4F5786D0BB0C48DE7B4A12703FE5835DD301889A83CB0028C47C769781B11"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\019-fail-alloc.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "fail-after-alloc",
+        "mapping": [
+          3,
+          6,
+          1,
+          4,
+          0,
+          0,
+          2,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\020-fail-after-alloc.stdout",
+          "bytes": 2578,
+          "sha256": "13B336EFCE1F07C0F4C917453C11571620DC2976F291889142297135A487EF04"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\020-fail-after-alloc.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "fail-mid-copy",
+        "mapping": [
+          3,
+          6,
+          1,
+          4,
+          0,
+          0,
+          3,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\021-fail-mid-copy.stdout",
+          "bytes": 2584,
+          "sha256": "79AB51539C7FDDD84715469F0FE9EEDEAD8594AEC1C8F53EE4EA570BECD1BAA9"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\021-fail-mid-copy.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "fail-handoff",
+        "mapping": [
+          3,
+          6,
+          1,
+          4,
+          0,
+          0,
+          4,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\022-fail-handoff.stdout",
+          "bytes": 3097,
+          "sha256": "4924D43062E84934609B0287ED7909DCDC9FE67B723631B3A9933ECFB5231D45"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\022-fail-handoff.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "fail-after-consume",
+        "mapping": [
+          3,
+          6,
+          1,
+          4,
+          0,
+          0,
+          5,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\023-fail-after-consume.stdout",
+          "bytes": 3065,
+          "sha256": "5B24A4953B35EE51244A2BC6AD2E85F7F7082C8DEE0F87F9DE11F6532E08393F"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\023-fail-after-consume.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "fail-alias",
+        "mapping": [
+          3,
+          6,
+          1,
+          4,
+          1,
+          0,
+          3,
+          0
+        ],
+        "expectedExit": 0,
+        "failure": "none",
+        "actualExit": 0,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\024-fail-alias.stdout",
+          "bytes": 2727,
+          "sha256": "E782E0A7BF3FFE85B59C49EDE28140A1C381143845EB36C759A27BA4BB98DD94"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\024-fail-alias.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "negative-shrink",
+        "mapping": [
+          2,
+          6,
+          0,
+          2,
+          0,
+          0,
+          0,
+          1
+        ],
+        "expectedExit": 3,
+        "failure": "capacity",
+        "actualExit": 3,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\025-negative-shrink.stdout",
+          "bytes": 1610,
+          "sha256": "004C0187E6C070DA7D5E3C7A1DCC8061C5B270D870B57BCDED9402BCF6724CE2"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\025-negative-shrink.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "negative-alias",
+        "mapping": [
+          2,
+          6,
+          1,
+          4,
+          1,
+          0,
+          0,
+          2
+        ],
+        "expectedExit": 3,
+        "failure": "ownership",
+        "actualExit": 3,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\026-negative-alias.stdout",
+          "bytes": 2756,
+          "sha256": "3441AB06690EBEC1198985CF10E7F10ECD3BD1A5B9130718D566E682CF1AB9E5"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\026-negative-alias.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "negative-cleanup",
+        "mapping": [
+          3,
+          6,
+          1,
+          4,
+          0,
+          0,
+          4,
+          3
+        ],
+        "expectedExit": 3,
+        "failure": "cleanup",
+        "actualExit": 3,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\027-negative-cleanup.stdout",
+          "bytes": 3127,
+          "sha256": "309DA536A1FA1A4DA53AFA4C80136530D4741D63150CBB96163C8CAF63674E07"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\027-negative-cleanup.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      },
+      {
+        "id": "negative-value",
+        "mapping": [
+          2,
+          6,
+          1,
+          4,
+          0,
+          0,
+          0,
+          4
+        ],
+        "expectedExit": 3,
+        "failure": "values",
+        "actualExit": 3,
+        "stdout": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\028-negative-value.stdout",
+          "bytes": 2609,
+          "sha256": "201A7DCC90CE5A7CE2D5AEBB4B72DF8744D283A3EB9BB96A2AEC396D1FE4BAB2"
+        },
+        "stderr": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\028-negative-value.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      }
+    ],
+    "checks": [
+      {
+        "cleanupClaim": false,
+        "actualExit": 1,
+        "id": "fatal-runtime-handler",
+        "outcome": "fatal-process-observed",
+        "scope": "Direct fatal-handler invocation; neither actual exhaustion nor recoverable allocator failure"
+      },
+      {
+        "expectedExit": 0,
+        "id": "pop-unique",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "shrink-unique",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "pop-shared",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "shrink-shared",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "pop-empty-unique",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "pop-empty-shared",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "shrink-noop",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "replace-prefix",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "replace-overlap",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "replace-tail",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "replace-empty",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "replace-alias",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "replace-element-alias",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "fail-alloc",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "fail-after-alloc",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "fail-mid-copy",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "fail-handoff",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "fail-after-consume",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 0,
+        "id": "fail-alias",
+        "outcome": "matched",
+        "failure": "none"
+      },
+      {
+        "expectedExit": 3,
+        "id": "negative-shrink",
+        "outcome": "matched",
+        "failure": "capacity"
+      },
+      {
+        "expectedExit": 3,
+        "id": "negative-alias",
+        "outcome": "matched",
+        "failure": "ownership"
+      },
+      {
+        "expectedExit": 3,
+        "id": "negative-cleanup",
+        "outcome": "matched",
+        "failure": "cleanup"
+      },
+      {
+        "expectedExit": 3,
+        "id": "negative-value",
+        "outcome": "matched",
+        "failure": "values"
+      },
+      {
+        "id": "selector-omitted",
+        "outcome": "matched",
+        "surface": ""
+      },
+      {
+        "id": "selector-focused",
+        "outcome": "matched",
+        "surface": ""
+      },
+      {
+        "id": "selector-reordered",
+        "outcome": "matched",
+        "surface": ""
+      },
+      {
+        "id": "selector-empty",
+        "outcome": "matched",
+        "surface": "SELECTOR: explicit empty selector"
+      },
+      {
+        "id": "selector-whitespace",
+        "outcome": "matched",
+        "surface": "SELECTOR: explicit empty selector"
+      },
+      {
+        "id": "selector-unknown",
+        "outcome": "matched",
+        "surface": "SELECTOR: unknown ID"
+      },
+      {
+        "id": "selector-zero",
+        "outcome": "matched",
+        "surface": "SELECTOR: unknown ID"
+      },
+      {
+        "id": "selector-case",
+        "outcome": "matched",
+        "surface": "SELECTOR: unknown ID"
+      },
+      {
+        "id": "selector-duplicate",
+        "outcome": "matched",
+        "surface": "SELECTOR: duplicate ID"
+      },
+      {
+        "id": "selector-missing",
+        "outcome": "matched",
+        "surface": "SELECTOR: missing ID"
+      },
+      {
+        "id": "registry-missing",
+        "outcome": "expected-reject",
+        "surface": "REGISTRY: cardinality differs"
+      },
+      {
+        "id": "registry-duplicate",
+        "outcome": "expected-reject",
+        "surface": "REGISTRY: duplicate ID"
+      },
+      {
+        "id": "registry-unknown",
+        "outcome": "expected-reject",
+        "surface": "REGISTRY: ordered IDs differ"
+      },
+      {
+        "id": "registry-reordered",
+        "outcome": "expected-reject",
+        "surface": "REGISTRY: ordered IDs differ"
+      },
+      {
+        "id": "registry-mapping",
+        "outcome": "expected-reject",
+        "surface": "REGISTRY: input mapping differs"
+      },
+      {
+        "id": "registry-unknown-key",
+        "outcome": "expected-reject",
+        "surface": "REGISTRY: property set differs"
+      },
+      {
+        "id": "registry-missing-key",
+        "outcome": "expected-reject",
+        "surface": "REGISTRY: property set differs"
+      },
+      {
+        "id": "native-missing-command",
+        "outcome": "expected-reject",
+        "surface": "SELECTOR: invalid invocation"
+      },
+      {
+        "id": "native-missing-id",
+        "outcome": "expected-reject",
+        "surface": "SELECTOR: invalid invocation"
+      },
+      {
+        "id": "native-empty",
+        "outcome": "expected-reject",
+        "surface": "SELECTOR: invalid invocation"
+      },
+      {
+        "id": "native-whitespace",
+        "outcome": "expected-reject",
+        "surface": "SELECTOR: unknown case"
+      },
+      {
+        "id": "native-unknown",
+        "outcome": "expected-reject",
+        "surface": "SELECTOR: unknown case"
+      },
+      {
+        "id": "native-duplicate",
+        "outcome": "expected-reject",
+        "surface": "SELECTOR: invalid invocation"
+      },
+      {
+        "id": "verdict-control-replace-prefix",
+        "outcome": "measured-control",
+        "surface": "none"
+      },
+      {
+        "id": "mixed-stderr-replace-prefix",
+        "outcome": "expected-reject",
+        "surface": "DIAGNOSTIC:"
+      },
+      {
+        "id": "mixed-stdout-replace-prefix",
+        "outcome": "expected-reject",
+        "surface": "DIAGNOSTIC:"
+      },
+      {
+        "id": "false-label-replace-prefix",
+        "outcome": "expected-reject",
+        "surface": "MEASUREMENT:"
+      },
+      {
+        "id": "false-summary-replace-prefix",
+        "outcome": "expected-reject",
+        "surface": "MEASUREMENT:"
+      },
+      {
+        "id": "verdict-control-negative-shrink",
+        "outcome": "measured-control",
+        "surface": "capacity"
+      },
+      {
+        "id": "mixed-stderr-negative-shrink",
+        "outcome": "expected-reject",
+        "surface": "DIAGNOSTIC:"
+      },
+      {
+        "id": "mixed-stdout-negative-shrink",
+        "outcome": "expected-reject",
+        "surface": "DIAGNOSTIC:"
+      },
+      {
+        "id": "false-label-negative-shrink",
+        "outcome": "expected-reject",
+        "surface": "MEASUREMENT:"
+      },
+      {
+        "id": "false-summary-negative-shrink",
+        "outcome": "expected-reject",
+        "surface": "MEASUREMENT:"
+      },
+      {
+        "id": "omitted-stage-fail-mid-copy",
+        "outcome": "expected-reject",
+        "surface": "MEASUREMENT: intermediate"
+      },
+      {
+        "challenged": "fail-mid-copy",
+        "id": "stage-control-fail-after-alloc",
+        "outcome": "actual-boundary-accepts"
+      },
+      {
+        "id": "omitted-stage-fail-after-consume",
+        "outcome": "expected-reject",
+        "surface": "MEASUREMENT: intermediate"
+      },
+      {
+        "challenged": "fail-after-consume",
+        "id": "stage-control-fail-handoff",
+        "outcome": "actual-boundary-accepts"
+      },
+      {
+        "id": "fast-overflow-verdict",
+        "outcome": "expected-reject",
+        "surface": "PROCESS:"
+      },
+      {
+        "id": "fast-overflow",
+        "bytes": 9437184,
+        "outcome": "expected-reject",
+        "actualChildExit": null
+      },
+      {
+        "id": "timeout-no-success",
+        "outcome": "expected-reject",
+        "surface": "PROCESS:"
+      },
+      {
+        "actualExitAvailable": false,
+        "grandchild": 28028,
+        "id": "owned-descendant-timeout",
+        "outcome": "expected-timeout-root-and-descendant-absent",
+        "nativeRoot": 28376
+      }
+    ],
+    "stages": [
+      {
+        "name": "lean-version",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 2.354,
+        "timedOut": false
+      },
+      {
+        "name": "clang-version",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.935,
+        "timedOut": false
+      },
+      {
+        "name": "compile",
+        "deadline": 120,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 2.531,
+        "timedOut": false
+      },
+      {
+        "name": "startup",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 2.342,
+        "timedOut": false
+      },
+      {
+        "name": "native-list",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.988,
+        "timedOut": false
+      },
+      {
+        "name": "fatal-runtime-handler",
+        "deadline": 30,
+        "actualExit": 1,
+        "launcherExit": 1,
+        "seconds": 2.485,
+        "timedOut": false
+      },
+      {
+        "name": "pop-unique",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 2.133,
+        "timedOut": false
+      },
+      {
+        "name": "shrink-unique",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.929,
+        "timedOut": false
+      },
+      {
+        "name": "pop-shared",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.486,
+        "timedOut": false
+      },
+      {
+        "name": "shrink-shared",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.389,
+        "timedOut": false
+      },
+      {
+        "name": "pop-empty-unique",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.342,
+        "timedOut": false
+      },
+      {
+        "name": "pop-empty-shared",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.343,
+        "timedOut": false
+      },
+      {
+        "name": "shrink-noop",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.374,
+        "timedOut": false
+      },
+      {
+        "name": "replace-prefix",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.367,
+        "timedOut": false
+      },
+      {
+        "name": "replace-overlap",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.385,
+        "timedOut": false
+      },
+      {
+        "name": "replace-tail",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.381,
+        "timedOut": false
+      },
+      {
+        "name": "replace-empty",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.461,
+        "timedOut": false
+      },
+      {
+        "name": "replace-alias",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.518,
+        "timedOut": false
+      },
+      {
+        "name": "replace-element-alias",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.467,
+        "timedOut": false
+      },
+      {
+        "name": "fail-alloc",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.36,
+        "timedOut": false
+      },
+      {
+        "name": "fail-after-alloc",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.412,
+        "timedOut": false
+      },
+      {
+        "name": "fail-mid-copy",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.316,
+        "timedOut": false
+      },
+      {
+        "name": "fail-handoff",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.354,
+        "timedOut": false
+      },
+      {
+        "name": "fail-after-consume",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.274,
+        "timedOut": false
+      },
+      {
+        "name": "fail-alias",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.359,
+        "timedOut": false
+      },
+      {
+        "name": "negative-shrink",
+        "deadline": 30,
+        "actualExit": 3,
+        "launcherExit": 3,
+        "seconds": 1.341,
+        "timedOut": false
+      },
+      {
+        "name": "negative-alias",
+        "deadline": 30,
+        "actualExit": 3,
+        "launcherExit": 3,
+        "seconds": 1.383,
+        "timedOut": false
+      },
+      {
+        "name": "negative-cleanup",
+        "deadline": 30,
+        "actualExit": 3,
+        "launcherExit": 3,
+        "seconds": 1.381,
+        "timedOut": false
+      },
+      {
+        "name": "negative-value",
+        "deadline": 30,
+        "actualExit": 3,
+        "launcherExit": 3,
+        "seconds": 1.352,
+        "timedOut": false
+      },
+      {
+        "name": "selector-omitted",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 3.396,
+        "timedOut": false
+      },
+      {
+        "name": "selector-focused",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 3.622,
+        "timedOut": false
+      },
+      {
+        "name": "selector-reordered",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 4.161,
+        "timedOut": false
+      },
+      {
+        "name": "selector-empty",
+        "deadline": 30,
+        "actualExit": 1,
+        "launcherExit": 1,
+        "seconds": 4.364,
+        "timedOut": false
+      },
+      {
+        "name": "selector-whitespace",
+        "deadline": 30,
+        "actualExit": 1,
+        "launcherExit": 1,
+        "seconds": 4.431,
+        "timedOut": false
+      },
+      {
+        "name": "selector-unknown",
+        "deadline": 30,
+        "actualExit": 1,
+        "launcherExit": 1,
+        "seconds": 3.463,
+        "timedOut": false
+      },
+      {
+        "name": "selector-zero",
+        "deadline": 30,
+        "actualExit": 1,
+        "launcherExit": 1,
+        "seconds": 3.315,
+        "timedOut": false
+      },
+      {
+        "name": "selector-case",
+        "deadline": 30,
+        "actualExit": 1,
+        "launcherExit": 1,
+        "seconds": 3.195,
+        "timedOut": false
+      },
+      {
+        "name": "selector-duplicate",
+        "deadline": 30,
+        "actualExit": 1,
+        "launcherExit": 1,
+        "seconds": 3.92,
+        "timedOut": false
+      },
+      {
+        "name": "selector-missing",
+        "deadline": 30,
+        "actualExit": 1,
+        "launcherExit": 1,
+        "seconds": 3.554,
+        "timedOut": false
+      },
+      {
+        "name": "registry-missing",
+        "deadline": 30,
+        "actualExit": 1,
+        "launcherExit": 1,
+        "seconds": 3.192,
+        "timedOut": false
+      },
+      {
+        "name": "registry-duplicate",
+        "deadline": 30,
+        "actualExit": 1,
+        "launcherExit": 1,
+        "seconds": 3.576,
+        "timedOut": false
+      },
+      {
+        "name": "registry-unknown",
+        "deadline": 30,
+        "actualExit": 1,
+        "launcherExit": 1,
+        "seconds": 3.143,
+        "timedOut": false
+      },
+      {
+        "name": "registry-reordered",
+        "deadline": 30,
+        "actualExit": 1,
+        "launcherExit": 1,
+        "seconds": 3.161,
+        "timedOut": false
+      },
+      {
+        "name": "registry-mapping",
+        "deadline": 30,
+        "actualExit": 1,
+        "launcherExit": 1,
+        "seconds": 3.564,
+        "timedOut": false
+      },
+      {
+        "name": "registry-unknown-key",
+        "deadline": 30,
+        "actualExit": 1,
+        "launcherExit": 1,
+        "seconds": 4.013,
+        "timedOut": false
+      },
+      {
+        "name": "registry-missing-key",
+        "deadline": 30,
+        "actualExit": 1,
+        "launcherExit": 1,
+        "seconds": 4.663,
+        "timedOut": false
+      },
+      {
+        "name": "native-missing-command",
+        "deadline": 30,
+        "actualExit": 2,
+        "launcherExit": 2,
+        "seconds": 1.852,
+        "timedOut": false
+      },
+      {
+        "name": "native-missing-id",
+        "deadline": 30,
+        "actualExit": 2,
+        "launcherExit": 2,
+        "seconds": 1.722,
+        "timedOut": false
+      },
+      {
+        "name": "native-empty",
+        "deadline": 30,
+        "actualExit": 2,
+        "launcherExit": 2,
+        "seconds": 1.508,
+        "timedOut": false
+      },
+      {
+        "name": "native-whitespace",
+        "deadline": 30,
+        "actualExit": 2,
+        "launcherExit": 2,
+        "seconds": 1.381,
+        "timedOut": false
+      },
+      {
+        "name": "native-unknown",
+        "deadline": 30,
+        "actualExit": 2,
+        "launcherExit": 2,
+        "seconds": 1.341,
+        "timedOut": false
+      },
+      {
+        "name": "native-duplicate",
+        "deadline": 30,
+        "actualExit": 2,
+        "launcherExit": 2,
+        "seconds": 1.366,
+        "timedOut": false
+      },
+      {
+        "name": "verdict-control-replace-prefix",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.387,
+        "timedOut": false
+      },
+      {
+        "name": "verdict-control-negative-shrink",
+        "deadline": 30,
+        "actualExit": 3,
+        "launcherExit": 3,
+        "seconds": 1.523,
+        "timedOut": false
+      },
+      {
+        "name": "stage-control-fail-after-alloc",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.479,
+        "timedOut": false
+      },
+      {
+        "name": "stage-control-fail-handoff",
+        "deadline": 30,
+        "actualExit": 0,
+        "launcherExit": 0,
+        "seconds": 1.612,
+        "timedOut": false
+      },
+      {
+        "name": "fast-overflow",
+        "deadline": 30,
+        "actualExit": null,
+        "launcherExit": 125,
+        "seconds": 3.038,
+        "timedOut": false
+      },
+      {
+        "name": "owned-descendant-timeout",
+        "deadline": 8,
+        "actualExit": null,
+        "launcherExit": -1,
+        "seconds": 8.099,
+        "timedOut": true
+      }
+    ],
+    "integrity": {
+      "attempted": true,
+      "success": true,
+      "checkedPins": 616,
+      "treeChecked": true,
+      "errors": [],
+      "restorationWrites": 0
+    },
+    "capturedPinCount": 616,
+    "localDependencies": [
+      {
+        "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+        "bytes": 82432,
+        "sha256": "9B5AF669D8DC9B5826A1F5427584915EECA659E9BF34C7EE72667B93C0BFDCB0"
+      },
+      {
+        "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\leanc.exe",
+        "bytes": 107520,
+        "sha256": "DE2FDFEA989B9A771DA37E44EFD0BD50C00A2E2835EF9A2408F44E2385EA7618"
+      },
+      {
+        "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+        "bytes": 224256,
+        "sha256": "64B1E469B15149BD23039F1D121DE6E14F4AEC84BFF000952CA85968E56CE391"
+      },
+      {
+        "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+        "bytes": 5927424,
+        "sha256": "6582CC45822AF5CF9A9C6245E75B85C445759C761F9B793F47BA919AD36AA643"
+      },
+      {
+        "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared.dll",
+        "bytes": 75793408,
+        "sha256": "54E0F641AE412B687BBC64EA1C069A9954E754775ED0D3379C9847BC3B9FDA89"
+      },
+      {
+        "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+        "bytes": 18534912,
+        "sha256": "5300B06EA3A45146C22996B0591CC6475ACB5B6B77802EDBECD65BAAD6485386"
+      },
+      {
+        "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+        "bytes": 82430464,
+        "sha256": "D4028A751017B44681373A4BEC8381B120A06083AC688DCDF45F45AEC46783C6"
+      },
+      {
+        "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+        "bytes": 80710656,
+        "sha256": "74A1A54619E989CDC1F52EA3F206DA83C3C55DB73594FD1D4D4F2FE6D49CC02D"
+      },
+      {
+        "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+        "bytes": 1636864,
+        "sha256": "1F3D0FF8504F19E6B6DC98426B58FA60B6A571D027F2C6AC4E169637C63A95DE"
+      },
+      {
+        "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+        "bytes": 110592,
+        "sha256": "260997C016819F60CEF902F3E7C0267804785D7B70C87CF541D0E40E6B693C75"
+      },
+      {
+        "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared_1.dll",
+        "bytes": 45882368,
+        "sha256": "1378336D32450B713FDFDA31BA2829E34831FAE74BA3E503A49FB2EE96B65F5A"
+      }
+    ],
+    "dependencyClosure": {
+      "roots": [
+        "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+        "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\leanc.exe",
+        "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+        "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe"
+      ],
+      "nodes": [
+        {
+          "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+          "imports": [
+            "ucrtbase.dll",
+            "KERNEL32.dll",
+            "libleanshared.dll"
+          ],
+          "delayRva": 0,
+          "delaySize": 0
+        },
+        {
+          "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\leanc.exe",
+          "imports": [
+            "ucrtbase.dll",
+            "KERNEL32.dll",
+            "libInit_shared.dll",
+            "libleanshared.dll"
+          ],
+          "delayRva": 0,
+          "delaySize": 0
+        },
+        {
+          "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+          "imports": [
+            "libclang-cpp.dll",
+            "libLLVM-19.dll",
+            "KERNEL32.dll",
+            "libc++.dll",
+            "api-ms-win-crt-stdio-l1-1-0.dll",
+            "api-ms-win-crt-runtime-l1-1-0.dll",
+            "api-ms-win-crt-heap-l1-1-0.dll",
+            "api-ms-win-crt-environment-l1-1-0.dll",
+            "api-ms-win-crt-private-l1-1-0.dll",
+            "api-ms-win-crt-string-l1-1-0.dll",
+            "api-ms-win-crt-math-l1-1-0.dll"
+          ],
+          "delayRva": 0,
+          "delaySize": 0
+        },
+        {
+          "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+          "imports": [
+            "libLLVM-19.dll",
+            "KERNEL32.dll",
+            "libc++.dll",
+            "api-ms-win-crt-stdio-l1-1-0.dll",
+            "api-ms-win-crt-runtime-l1-1-0.dll",
+            "api-ms-win-crt-heap-l1-1-0.dll",
+            "api-ms-win-crt-environment-l1-1-0.dll",
+            "api-ms-win-crt-private-l1-1-0.dll",
+            "api-ms-win-crt-string-l1-1-0.dll",
+            "api-ms-win-crt-time-l1-1-0.dll",
+            "api-ms-win-crt-math-l1-1-0.dll",
+            "api-ms-win-crt-utility-l1-1-0.dll",
+            "zlib1.dll"
+          ],
+          "delayRva": 0,
+          "delaySize": 0
+        },
+        {
+          "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared.dll",
+          "imports": [
+            "libleanshared_1.dll",
+            "libInit_shared.dll",
+            "ucrtbase.dll",
+            "KERNEL32.dll"
+          ],
+          "delayRva": 0,
+          "delaySize": 0
+        },
+        {
+          "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+          "imports": [
+            "ADVAPI32.dll",
+            "WS2_32.dll",
+            "ucrtbase.dll",
+            "icu.dll",
+            "bcrypt.dll",
+            "KERNEL32.dll",
+            "IPHLPAPI.DLL",
+            "USERENV.dll",
+            "USER32.dll",
+            "SHELL32.dll",
+            "ole32.dll",
+            "dbghelp.dll"
+          ],
+          "delayRva": 0,
+          "delaySize": 0
+        },
+        {
+          "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+          "imports": [
+            "VERSION.dll",
+            "libLLVM-19.dll",
+            "KERNEL32.dll",
+            "libc++.dll",
+            "api-ms-win-crt-stdio-l1-1-0.dll",
+            "api-ms-win-crt-runtime-l1-1-0.dll",
+            "api-ms-win-crt-string-l1-1-0.dll",
+            "api-ms-win-crt-time-l1-1-0.dll",
+            "api-ms-win-crt-heap-l1-1-0.dll",
+            "api-ms-win-crt-math-l1-1-0.dll",
+            "api-ms-win-crt-environment-l1-1-0.dll",
+            "api-ms-win-crt-private-l1-1-0.dll",
+            "api-ms-win-crt-utility-l1-1-0.dll",
+            "api-ms-win-crt-convert-l1-1-0.dll"
+          ],
+          "delayRva": 0,
+          "delaySize": 0
+        },
+        {
+          "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "imports": [
+            "SHELL32.dll",
+            "ole32.dll",
+            "ADVAPI32.dll",
+            "WS2_32.dll",
+            "ntdll.dll",
+            "zlib1.dll",
+            "KERNEL32.dll",
+            "libc++.dll",
+            "api-ms-win-crt-stdio-l1-1-0.dll",
+            "api-ms-win-crt-runtime-l1-1-0.dll",
+            "api-ms-win-crt-heap-l1-1-0.dll",
+            "api-ms-win-crt-string-l1-1-0.dll",
+            "api-ms-win-crt-private-l1-1-0.dll",
+            "api-ms-win-crt-time-l1-1-0.dll",
+            "api-ms-win-crt-math-l1-1-0.dll",
+            "api-ms-win-crt-convert-l1-1-0.dll",
+            "api-ms-win-crt-environment-l1-1-0.dll",
+            "api-ms-win-crt-utility-l1-1-0.dll",
+            "api-ms-win-crt-filesystem-l1-1-0.dll"
+          ],
+          "delayRva": 0,
+          "delaySize": 0
+        },
+        {
+          "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+          "imports": [
+            "KERNEL32.dll",
+            "api-ms-win-crt-locale-l1-1-0.dll",
+            "api-ms-win-crt-stdio-l1-1-0.dll",
+            "api-ms-win-crt-runtime-l1-1-0.dll",
+            "api-ms-win-crt-heap-l1-1-0.dll",
+            "api-ms-win-crt-string-l1-1-0.dll",
+            "api-ms-win-crt-multibyte-l1-1-0.dll",
+            "api-ms-win-crt-time-l1-1-0.dll",
+            "api-ms-win-crt-convert-l1-1-0.dll",
+            "api-ms-win-crt-utility-l1-1-0.dll",
+            "api-ms-win-crt-environment-l1-1-0.dll",
+            "api-ms-win-crt-math-l1-1-0.dll",
+            "api-ms-win-crt-private-l1-1-0.dll",
+            "api-ms-win-crt-filesystem-l1-1-0.dll"
+          ],
+          "delayRva": 0,
+          "delaySize": 0
+        },
+        {
+          "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+          "imports": [
+            "api-ms-win-crt-convert-l1-1-0.dll",
+            "api-ms-win-crt-heap-l1-1-0.dll",
+            "api-ms-win-crt-private-l1-1-0.dll",
+            "api-ms-win-crt-runtime-l1-1-0.dll",
+            "api-ms-win-crt-stdio-l1-1-0.dll",
+            "api-ms-win-crt-string-l1-1-0.dll",
+            "KERNEL32.dll",
+            "api-ms-win-crt-utility-l1-1-0.dll",
+            "api-ms-win-crt-environment-l1-1-0.dll",
+            "api-ms-win-crt-time-l1-1-0.dll"
+          ],
+          "delayRva": 0,
+          "delaySize": 0
+        },
+        {
+          "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared_1.dll",
+          "imports": [
+            "libInit_shared.dll",
+            "ucrtbase.dll",
+            "KERNEL32.dll"
+          ],
+          "delayRva": 0,
+          "delaySize": 0
+        }
+      ],
+      "external": [
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+          "name": "ucrtbase.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+          "name": "KERNEL32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\leanc.exe",
+          "name": "ucrtbase.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\leanc.exe",
+          "name": "KERNEL32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+          "name": "KERNEL32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+          "name": "api-ms-win-crt-stdio-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+          "name": "api-ms-win-crt-runtime-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+          "name": "api-ms-win-crt-heap-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+          "name": "api-ms-win-crt-environment-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+          "name": "api-ms-win-crt-private-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+          "name": "api-ms-win-crt-string-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+          "name": "api-ms-win-crt-math-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+          "name": "KERNEL32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+          "name": "api-ms-win-crt-stdio-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+          "name": "api-ms-win-crt-runtime-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+          "name": "api-ms-win-crt-heap-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+          "name": "api-ms-win-crt-environment-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+          "name": "api-ms-win-crt-private-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+          "name": "api-ms-win-crt-string-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+          "name": "api-ms-win-crt-time-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+          "name": "api-ms-win-crt-math-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+          "name": "api-ms-win-crt-utility-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared.dll",
+          "name": "ucrtbase.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared.dll",
+          "name": "KERNEL32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+          "name": "ADVAPI32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+          "name": "WS2_32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+          "name": "ucrtbase.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+          "name": "icu.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+          "name": "bcrypt.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+          "name": "KERNEL32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+          "name": "IPHLPAPI.DLL",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+          "name": "USERENV.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+          "name": "USER32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+          "name": "SHELL32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+          "name": "ole32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+          "name": "dbghelp.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+          "name": "VERSION.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+          "name": "KERNEL32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+          "name": "api-ms-win-crt-stdio-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+          "name": "api-ms-win-crt-runtime-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+          "name": "api-ms-win-crt-string-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+          "name": "api-ms-win-crt-time-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+          "name": "api-ms-win-crt-heap-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+          "name": "api-ms-win-crt-math-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+          "name": "api-ms-win-crt-environment-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+          "name": "api-ms-win-crt-private-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+          "name": "api-ms-win-crt-utility-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+          "name": "api-ms-win-crt-convert-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "SHELL32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "ole32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "ADVAPI32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "WS2_32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "ntdll.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "KERNEL32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "api-ms-win-crt-stdio-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "api-ms-win-crt-runtime-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "api-ms-win-crt-heap-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "api-ms-win-crt-string-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "api-ms-win-crt-private-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "api-ms-win-crt-time-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "api-ms-win-crt-math-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "api-ms-win-crt-convert-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "api-ms-win-crt-environment-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "api-ms-win-crt-utility-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+          "name": "api-ms-win-crt-filesystem-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+          "name": "KERNEL32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+          "name": "api-ms-win-crt-locale-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+          "name": "api-ms-win-crt-stdio-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+          "name": "api-ms-win-crt-runtime-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+          "name": "api-ms-win-crt-heap-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+          "name": "api-ms-win-crt-string-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+          "name": "api-ms-win-crt-multibyte-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+          "name": "api-ms-win-crt-time-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+          "name": "api-ms-win-crt-convert-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+          "name": "api-ms-win-crt-utility-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+          "name": "api-ms-win-crt-environment-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+          "name": "api-ms-win-crt-math-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+          "name": "api-ms-win-crt-private-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+          "name": "api-ms-win-crt-filesystem-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+          "name": "api-ms-win-crt-convert-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+          "name": "api-ms-win-crt-heap-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+          "name": "api-ms-win-crt-private-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+          "name": "api-ms-win-crt-runtime-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+          "name": "api-ms-win-crt-stdio-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+          "name": "api-ms-win-crt-string-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+          "name": "KERNEL32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+          "name": "api-ms-win-crt-utility-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+          "name": "api-ms-win-crt-environment-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+          "name": "api-ms-win-crt-time-l1-1-0.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared_1.dll",
+          "name": "ucrtbase.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        },
+        {
+          "from": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared_1.dll",
+          "name": "KERNEL32.dll",
+          "boundary": "OS system library/API-set resolution, not pinned"
+        }
+      ],
+      "boundary": "Normal imports resolved beside each binary then Lean bin; nonzero delay imports reject. OS/API sets, runtime LoadLibrary/plugin/configuration behavior, Windows search/forwarder semantics, PowerShell/.NET and compiler correctness are external assumptions, not universally verified."
+    },
+    "linkMap": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\link.map",
+      "bytes": 4381803,
+      "sha256": "BFA437DB4A9B78DE712BDD56344CFF3607D5C26E815C3750505530C4BC04D820"
+    }
+  },
+  "focused": {
+    "receipt": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\focused-efc3097b85614680a5abe5244327e80d\\RECEIPT.json",
+      "bytes": 2486,
+      "sha256": "188AC9C567F67D75FF7F5D40FF2EBC0A4F3A75DC65F0AF95B0BF69D00D5D71E2"
+    },
+    "summary": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\d741ab8a816040f6b42088b1648d74cc\\SUMMARY.json",
+      "bytes": 117090,
+      "sha256": "5E79A3E6C0E895886064843690FC0C6AB821871A0E4D2B47960DCF134BD66312"
+    },
+    "seconds": 386.932,
+    "selected": [
+      "pop-unique"
+    ],
+    "stageNames": [
+      "lean-version",
+      "clang-version",
+      "compile",
+      "startup",
+      "native-list",
+      "fatal-runtime-handler",
+      "pop-unique"
+    ],
+    "integrity": {
+      "attempted": true,
+      "success": true,
+      "checkedPins": 191,
+      "treeChecked": true,
+      "errors": [],
+      "restorationWrites": 0
+    }
+  },
+  "integrityControls": {
+    "receipt": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\integrity-95a149cea1a045d3a9b4c72fb6237b8c\\RECEIPT.json",
+      "bytes": 2198,
+      "sha256": "3E55A634609647B3D315D0030539F04E905606EECF6EC9029BD44D8AA20384A4"
+    },
+    "results": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\RESULTS.json",
+      "bytes": 42543,
+      "sha256": "9DBE9DA17540D69867498FBDCE65BD4F10811B88F17B832E2EA3519BD44E3640"
+    },
+    "seconds": 467.01,
+    "controls": [
+      {
+        "id": "intact-success",
+        "actualExit": 0,
+        "seconds": 17.754,
+        "expectedStageError": null,
+        "expectedIntegrity": true,
+        "stageFailure": null,
+        "integrity": {
+          "attempted": true,
+          "success": true,
+          "checkedPins": 17,
+          "treeChecked": true,
+          "errors": [],
+          "restorationWrites": 0
+        },
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\intact-success\\.lake\\lifecycle-native-p0\\runs\\caab5adc09c149c9bb06a907f2dbab4e\\SUMMARY.json",
+          "bytes": 10367,
+          "sha256": "73B22FE31F89A3CBBDE2703999789F6818D7372ED1CAC347A959D45F5F6D261F"
+        }
+      },
+      {
+        "id": "intact-stage-error",
+        "actualExit": 1,
+        "seconds": 17.477,
+        "expectedStageError": "PROCESS:",
+        "expectedIntegrity": true,
+        "stageFailure": "PROCESS: fixture-stage actual child or launcher exit differs from 0",
+        "integrity": {
+          "attempted": true,
+          "success": true,
+          "checkedPins": 17,
+          "treeChecked": true,
+          "errors": [],
+          "restorationWrites": 0
+        },
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\intact-stage-error\\.lake\\lifecycle-native-p0\\runs\\1dda68f2ac5d40ec9e190d3882b3a40b\\SUMMARY.json",
+          "bytes": 10544,
+          "sha256": "2DFFCA6E667095A20D868BE2931C1E5AFBD9B6F9E51A9C398A13ED4E1097D178"
+        }
+      },
+      {
+        "id": "malformed-stdout-intact",
+        "actualExit": 1,
+        "seconds": 18.456,
+        "expectedStageError": "DIAGNOSTIC:",
+        "expectedIntegrity": true,
+        "stageFailure": "DIAGNOSTIC: invalid raw stage evidence for fixture-stage; Exception calling \"ReadAllText\" with \"2\" argument(s): \"Unable to translate bytes [FF] at index 0 from specified code page to Unicode.\"",
+        "integrity": {
+          "attempted": true,
+          "success": true,
+          "checkedPins": 14,
+          "treeChecked": true,
+          "errors": [],
+          "restorationWrites": 0
+        },
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\malformed-stdout-intact\\.lake\\lifecycle-native-p0\\runs\\f052295de9e04532bc764a6d68374270\\SUMMARY.json",
+          "bytes": 7791,
+          "sha256": "CF533EC96313FFEB2E353AD754FE039B8815E400C556DCE934893999A8B49A23"
+        }
+      },
+      {
+        "id": "stage-error-and-pin-change",
+        "actualExit": 1,
+        "seconds": 18.042,
+        "expectedStageError": "PROCESS:",
+        "expectedIntegrity": false,
+        "stageFailure": "PROCESS: fixture-stage actual child or launcher exit differs from 0",
+        "integrity": {
+          "attempted": true,
+          "success": false,
+          "checkedPins": 17,
+          "treeChecked": true,
+          "errors": [
+            "INTEGRITY: changed captured pin: C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\stage-error-and-pin-change\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c",
+            "INTEGRITY: live tracked/index/untracked baseline changed"
+          ],
+          "restorationWrites": 0
+        },
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\stage-error-and-pin-change\\.lake\\lifecycle-native-p0\\runs\\a7bd4877e3a141deaaf7d85257fd8623\\SUMMARY.json",
+          "bytes": 11073,
+          "sha256": "5E22B065B4488BEA7004A05D698F210BA609EB1F9DC0D9E0E01808A24288EB9E"
+        }
+      },
+      {
+        "id": "stage-error-and-capture-error",
+        "actualExit": 1,
+        "seconds": 18.747,
+        "expectedStageError": "PROCESS:",
+        "expectedIntegrity": false,
+        "stageFailure": "PROCESS: fixture-stage actual child or launcher exit differs from 0",
+        "integrity": {
+          "attempted": true,
+          "success": false,
+          "checkedPins": 17,
+          "treeChecked": true,
+          "errors": [
+            "INTEGRITY: artifact capture failed: C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\stage-error-and-capture-error\\.lake\\lifecycle-native-p0\\runs\\5b2a1404f38d46b28083fe971c028c04\\link.map; The process cannot access the file 'C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\stage-error-and-capture-error\\.lake\\lifecycle-native-p0\\runs\\5b2a1404f38d46b28083fe971c028c04\\link.map' because it is being used by another process."
+          ],
+          "restorationWrites": 0
+        },
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\stage-error-and-capture-error\\.lake\\lifecycle-native-p0\\runs\\5b2a1404f38d46b28083fe971c028c04\\SUMMARY.json",
+          "bytes": 11420,
+          "sha256": "B2D6A8FE820E7108FFFA57408C51ADE86D8652DC0337E6C565AA3C1EF393F9E9"
+        }
+      },
+      {
+        "id": "success-and-pin-change",
+        "actualExit": 1,
+        "seconds": 19.223,
+        "expectedStageError": null,
+        "expectedIntegrity": false,
+        "stageFailure": null,
+        "integrity": {
+          "attempted": true,
+          "success": false,
+          "checkedPins": 17,
+          "treeChecked": true,
+          "errors": [
+            "INTEGRITY: changed captured pin: C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\success-and-pin-change\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c",
+            "INTEGRITY: live tracked/index/untracked baseline changed"
+          ],
+          "restorationWrites": 0
+        },
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\success-and-pin-change\\.lake\\lifecycle-native-p0\\runs\\7ca262f16de24ec1bc079756f32b6bb0\\SUMMARY.json",
+          "bytes": 10893,
+          "sha256": "4019EE727FE34372D43512315FBC2647E2BEEB6A14C31CCA150C9FC127CF5B29"
+        }
+      },
+      {
+        "id": "mixed-diagnostic-and-pin-change",
+        "actualExit": 1,
+        "seconds": 18.136,
+        "expectedStageError": "DIAGNOSTIC:",
+        "expectedIntegrity": false,
+        "stageFailure": "DIAGNOSTIC: unexpected or mixed stderr for fixture-stage",
+        "integrity": {
+          "attempted": true,
+          "success": false,
+          "checkedPins": 17,
+          "treeChecked": true,
+          "errors": [
+            "INTEGRITY: changed captured pin: C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\mixed-diagnostic-and-pin-change\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c",
+            "INTEGRITY: live tracked/index/untracked baseline changed"
+          ],
+          "restorationWrites": 0
+        },
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\mixed-diagnostic-and-pin-change\\.lake\\lifecycle-native-p0\\runs\\bd822ad22d1a476392a24eb2e09b07ed\\SUMMARY.json",
+          "bytes": 11209,
+          "sha256": "C8C1AB484ECA421F9D03858C420B370676FFFD0D29E45C3170DD77C2FC3ECB2D"
+        }
+      },
+      {
+        "id": "timeout-and-pin-change",
+        "actualExit": 1,
+        "seconds": 23.189,
+        "expectedStageError": "PROCESS:",
+        "expectedIntegrity": false,
+        "stageFailure": "PROCESS: fixture-stage was not a completed bounded process; see retained logs",
+        "integrity": {
+          "attempted": true,
+          "success": false,
+          "checkedPins": 15,
+          "treeChecked": true,
+          "errors": [
+            "INTEGRITY: changed captured pin: C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\timeout-and-pin-change\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c",
+            "INTEGRITY: live tracked/index/untracked baseline changed"
+          ],
+          "restorationWrites": 0
+        },
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\timeout-and-pin-change\\.lake\\lifecycle-native-p0\\runs\\90ca7358e18e4398bd809386d11cf990\\SUMMARY.json",
+          "bytes": 10209,
+          "sha256": "0ACAB972E6202EFFC841C0B11AFD88A3FB9C3D7D69DCE5992AF6178DC7FCDB36"
+        }
+      },
+      {
+        "id": "success-and-tracked-change",
+        "actualExit": 1,
+        "seconds": 19.446,
+        "expectedStageError": null,
+        "expectedIntegrity": false,
+        "stageFailure": null,
+        "integrity": {
+          "attempted": true,
+          "success": false,
+          "checkedPins": 17,
+          "treeChecked": true,
+          "errors": [
+            "INTEGRITY: live tracked/index/untracked baseline changed"
+          ],
+          "restorationWrites": 0
+        },
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\success-and-tracked-change\\.lake\\lifecycle-native-p0\\runs\\da9a61a9a58248708d3147f9893ec905\\SUMMARY.json",
+          "bytes": 10776,
+          "sha256": "BBB5C5EC0AE763E051C6B37BFA2D4343B09BA8FED60093366E0048185672AE1F"
+        }
+      },
+      {
+        "id": "success-and-index-change",
+        "actualExit": 1,
+        "seconds": 18.911,
+        "expectedStageError": null,
+        "expectedIntegrity": false,
+        "stageFailure": null,
+        "integrity": {
+          "attempted": true,
+          "success": false,
+          "checkedPins": 17,
+          "treeChecked": true,
+          "errors": [
+            "INTEGRITY: live tracked/index/untracked baseline changed"
+          ],
+          "restorationWrites": 0
+        },
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\success-and-index-change\\.lake\\lifecycle-native-p0\\runs\\6a93c677fdc24287b54949da22840861\\SUMMARY.json",
+          "bytes": 10721,
+          "sha256": "092EEA253AE09B6BB25C755A4D099961CCD69FAC7A94CE98EBF8112AE88B1336"
+        }
+      },
+      {
+        "id": "success-and-untracked-addition",
+        "actualExit": 1,
+        "seconds": 21.003,
+        "expectedStageError": null,
+        "expectedIntegrity": false,
+        "stageFailure": null,
+        "integrity": {
+          "attempted": true,
+          "success": false,
+          "checkedPins": 17,
+          "treeChecked": true,
+          "errors": [
+            "INTEGRITY: live tracked/index/untracked baseline changed"
+          ],
+          "restorationWrites": 0
+        },
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\success-and-untracked-addition\\.lake\\lifecycle-native-p0\\runs\\d61c88710a9a4a61adf1162d02b88173\\SUMMARY.json",
+          "bytes": 10889,
+          "sha256": "CCC9CEF81A5BBEEC4B1F6063BDDF1572CD5590D79A3BF3615A86CACDC7365D03"
+        }
+      },
+      {
+        "id": "success-and-untracked-byte-change",
+        "actualExit": 1,
+        "seconds": 20.734,
+        "expectedStageError": null,
+        "expectedIntegrity": false,
+        "stageFailure": null,
+        "integrity": {
+          "attempted": true,
+          "success": false,
+          "checkedPins": 17,
+          "treeChecked": true,
+          "errors": [
+            "INTEGRITY: live tracked/index/untracked baseline changed"
+          ],
+          "restorationWrites": 0
+        },
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\success-and-untracked-byte-change\\.lake\\lifecycle-native-p0\\runs\\a4449de68d484e9fbd9b3596d4f6d24c\\SUMMARY.json",
+          "bytes": 10973,
+          "sha256": "550068EC7F5AECCBE19C543E3C427B246152AF25374C81F2B18C21B57ED2E457"
+        }
+      },
+      {
+        "id": "success-and-link-map-change",
+        "actualExit": 1,
+        "seconds": 16.477,
+        "expectedStageError": null,
+        "expectedIntegrity": false,
+        "stageFailure": null,
+        "integrity": {
+          "attempted": true,
+          "success": false,
+          "checkedPins": 18,
+          "treeChecked": true,
+          "errors": [
+            "INTEGRITY: changed captured pin: C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\success-and-link-map-change\\.lake\\lifecycle-native-p0\\runs\\5f661d4620ec463faf7f12d1d00d400f\\link.map"
+          ],
+          "restorationWrites": 0
+        },
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\success-and-link-map-change\\.lake\\lifecycle-native-p0\\runs\\5f661d4620ec463faf7f12d1d00d400f\\SUMMARY.json",
+          "bytes": 11343,
+          "sha256": "ECBEF2C2331322B8E7C5AF33D218D51527D2CE5FE41235245130F5ABA604E021"
+        }
+      },
+      {
+        "id": "partial-identity-and-pin-change",
+        "actualExit": 1,
+        "seconds": 16.872,
+        "expectedStageError": "IDENTITY:",
+        "expectedIntegrity": false,
+        "stageFailure": "IDENTITY: missing file C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\partial-identity-and-pin-change\\missing-tool.exe",
+        "integrity": {
+          "attempted": true,
+          "success": false,
+          "checkedPins": 18,
+          "treeChecked": true,
+          "errors": [
+            "INTEGRITY: changed captured pin: C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\partial-identity-and-pin-change\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c",
+            "INTEGRITY: live tracked/index/untracked baseline changed"
+          ],
+          "restorationWrites": 0
+        },
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\partial-identity-and-pin-change\\.lake\\lifecycle-native-p0\\runs\\cde54efee3bf4870a70f8cbfd2efeb09\\SUMMARY.json",
+          "bytes": 11664,
+          "sha256": "30E3A8A18535B87363AB91EE7CFEA06DD4F0598B2B37631479B4347056D3664D"
+        }
+      },
+      {
+        "id": "missing-baseline",
+        "actualExit": 1,
+        "seconds": 16.07,
+        "expectedStageError": null,
+        "expectedIntegrity": false,
+        "stageFailure": null,
+        "integrity": {
+          "attempted": true,
+          "success": false,
+          "checkedPins": 17,
+          "treeChecked": false,
+          "errors": [
+            "INTEGRITY: UNCOVERED; initial tree inventory unavailable"
+          ],
+          "restorationWrites": 0
+        },
+        "summary": {
+          "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\controls-0547a391cd1841ad8b4045ba90095392\\missing-baseline\\.lake\\lifecycle-native-p0\\runs\\68e2e1c649374cdbbef7938cb6396074\\SUMMARY.json",
+          "bytes": 10498,
+          "sha256": "97FD6EE98668113D1CB85F140D344D96A9E5BA347F4302AB648A763597A3D0F8"
+        }
+      }
+    ]
+  },
+  "dependencyControls": {
+    "receipt": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\dependencies-da8c6b99a34b41ee9864e75b6fa91aa1\\RECEIPT.json",
+      "bytes": 2220,
+      "sha256": "0B657FF8AD8B7D3172CECD9B1160097BDA18F989789A8D0284ACB42056196B10"
+    },
+    "results": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\dependencies-38e1167c78a5420fa8e28c59908e5c52\\RESULTS.json",
+      "bytes": 37270,
+      "sha256": "0A22821BD52325C0CB063602C4F49DD9D3E10909677E87DD3A7D79B867D220CF"
+    },
+    "seconds": 49.154,
+    "missingOld": [
+      "libc++.dll",
+      "libclang-cpp.dll",
+      "libLLVM-19.dll",
+      "zlib1.dll"
+    ],
+    "controls": [
+      {
+        "outcome": "accept",
+        "id": "complete-inventory",
+        "nodes": 11
+      },
+      {
+        "outcome": "reject",
+        "id": "bea5ce75-incomplete",
+        "surface": "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll; C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll; C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll; C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll"
+      },
+      {
+        "outcome": "reject",
+        "id": "omit-lean.exe",
+        "surface": "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe"
+      },
+      {
+        "outcome": "reject",
+        "id": "omit-leanc.exe",
+        "surface": "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\leanc.exe"
+      },
+      {
+        "outcome": "reject",
+        "id": "omit-clang.exe",
+        "surface": "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe"
+      },
+      {
+        "outcome": "reject",
+        "id": "omit-ld.lld.exe",
+        "surface": "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe"
+      },
+      {
+        "outcome": "reject",
+        "id": "omit-libleanshared.dll",
+        "surface": "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared.dll"
+      },
+      {
+        "outcome": "reject",
+        "id": "omit-libInit_shared.dll",
+        "surface": "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll"
+      },
+      {
+        "outcome": "reject",
+        "id": "omit-libclang-cpp.dll",
+        "surface": "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll"
+      },
+      {
+        "outcome": "reject",
+        "id": "omit-libLLVM-19.dll",
+        "surface": "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll"
+      },
+      {
+        "outcome": "reject",
+        "id": "omit-libc++.dll",
+        "surface": "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll"
+      },
+      {
+        "outcome": "reject",
+        "id": "omit-zlib1.dll",
+        "surface": "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll"
+      },
+      {
+        "outcome": "reject",
+        "id": "omit-libleanshared_1.dll",
+        "surface": "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared_1.dll"
+      },
+      {
+        "outcome": "reject",
+        "id": "same-name-wrong-path",
+        "surface": "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe"
+      },
+      {
+        "integrity": {
+          "attempted": true,
+          "success": true,
+          "checkedPins": 2,
+          "treeChecked": true,
+          "errors": [],
+          "restorationWrites": 0
+        },
+        "outcome": "accept",
+        "id": "complete-unchanged-finalizer"
+      },
+      {
+        "integrity": {
+          "attempted": true,
+          "success": false,
+          "checkedPins": 2,
+          "treeChecked": true,
+          "errors": [
+            "INTEGRITY: changed captured pin: C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\dependencies-38e1167c78a5420fa8e28c59908e5c52\\fixture\\zlib1.dll",
+            "INTEGRITY: live tracked/index/untracked baseline changed"
+          ],
+          "restorationWrites": 0
+        },
+        "outcome": "reject",
+        "id": "tamper-zlib1.dll"
+      },
+      {
+        "integrity": {
+          "attempted": true,
+          "success": false,
+          "checkedPins": 2,
+          "treeChecked": true,
+          "errors": [
+            "INTEGRITY: changed captured pin: C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\dependencies-38e1167c78a5420fa8e28c59908e5c52\\fixture\\link.map",
+            "INTEGRITY: live tracked/index/untracked baseline changed"
+          ],
+          "restorationWrites": 0
+        },
+        "outcome": "reject",
+        "id": "tamper-link.map"
+      },
+      {
+        "integrity": {
+          "attempted": true,
+          "success": false,
+          "checkedPins": 2,
+          "treeChecked": true,
+          "errors": [
+            "INTEGRITY: changed captured pin: C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\dependencies-38e1167c78a5420fa8e28c59908e5c52\\fixture\\zlib1.dll"
+          ],
+          "restorationWrites": 0
+        },
+        "outcome": "reject",
+        "id": "tamper-manifest-hash"
+      },
+      {
+        "integrity": {
+          "attempted": true,
+          "success": true,
+          "checkedPins": 2,
+          "treeChecked": true,
+          "errors": [],
+          "restorationWrites": 0
+        },
+        "outcome": "accept",
+        "id": "restored-finalizer"
+      }
+    ]
+  },
+  "sourceChecks": {
+    "receipt": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\checks-81e725f3bc734cca9615cf637e4e7eba\\RECEIPT.json",
+      "bytes": 2167,
+      "sha256": "31A235A40B9F80F5361A5EE05B42C42DFB76B49E5C802D36740954438BA32B43"
+    },
+    "results": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\final-checks-035ab358ce0640c7b4404577a838a121\\RESULTS.json",
+      "bytes": 6485,
+      "sha256": "9302063F542BC0422D454625F20CB8419F2235142D575647F2A860554F8E1701"
+    },
+    "seconds": 20.417
+  },
+  "sourcePins": [
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+      "bytes": 43878,
+      "sha256": "C853A0BA7A8410A3A93C337105B97DE272CEC6920F74F9C5444B2196922C25F3"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\scripts\\packed_native_lifecycle_integrity_check.ps1",
+      "bytes": 7713,
+      "sha256": "F5D607EBD5693B8D4EB9D16B4C3292805476F146CD3E35414F2249CBAA95A696"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c",
+      "bytes": 14720,
+      "sha256": "5F32F4A91B21697F86B4F2FEA855CD050E59E330CE6C6FFDA28898353B66D7B1"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\docs\\internal\\extensions\\lifecycle-native-p0\\REGISTRY.json",
+      "bytes": 5899,
+      "sha256": "6CD97F40E7C39D2212A8C8705D264D4832DCF2542815B72CD927906A01DC8B20"
+    }
+  ],
+  "originalControlIdentityMatch": true,
+  "originalMappingPreserved": true,
+  "probeDependencyInspection": {
+    "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\repair-r1\\PROBE_DEPENDENCIES.json",
+    "bytes": 4352,
+    "sha256": "57EB387713ED09AB3C12834D4AE9E1726869DE0825F71CA9BFBEC20C91F81892"
+  },
+  "binary": {
+    "path": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ\\.lake\\lifecycle-native-p0\\runs\\cf28effe9b7643e9a412747cb66eb0eb\\lifecycle_storage_probe.exe",
+    "bytes": 7091712,
+    "sha256": "00C52C22FCF1B426BE64C6A0FD47F3C4CC31A7AD17689D221ECE59CF1033F8B7"
+  }
+}

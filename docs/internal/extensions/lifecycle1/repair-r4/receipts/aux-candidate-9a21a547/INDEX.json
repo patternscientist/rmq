@@ -1,0 +1,42 @@
+{
+  "schema": "life1-r4-receipt-index-v1",
+  "receipt": "aux-candidate-9a21a547",
+  "files": [
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\r4-aux-candidate-2\\RESULT.json",
+      "sourceBytes": 3437,
+      "sourceSha256": "07c81be09e6de91aa920b6362f151772aa9cdae2b11200f0bc84d09bfeff4717",
+      "committed": "heavy-RESULT.json",
+      "committedBytes": 3349,
+      "committedSha256": "dab8a40e3068e8eebf288c827d6032388af350facc61a142390c4fd3ed916fda",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\r4-aux-candidate-2\\stdout.returned-lines.txt",
+      "sourceBytes": 641,
+      "sourceSha256": "8c7376b0a48bebef8e91cb7483c2f0326e1138ed80508e87a53dbd2e222f9307",
+      "committed": "heavy-stdout.returned-lines.txt",
+      "committedBytes": 641,
+      "committedSha256": "8c7376b0a48bebef8e91cb7483c2f0326e1138ed80508e87a53dbd2e222f9307",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\r4-aux-candidate-2\\stderr.returned-lines.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "heavy-stderr.returned-lines.txt",
+      "committedBytes": 0,
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\aux\\r4-aux-candidate-2\\RESULT.json",
+      "sourceBytes": 11659,
+      "sourceSha256": "f6a8e48ea19e00d74043f392038e6125faf1c61441d22d47948e8a2326b0ffa7",
+      "committed": "RESULT.json",
+      "committedBytes": 11331,
+      "committedSha256": "7f58fb89b8b5839bcd9bbc41383fe2e0427cdc6073520ab48a66f8224c14a553",
+      "normalized": true
+    }
+  ]
+}

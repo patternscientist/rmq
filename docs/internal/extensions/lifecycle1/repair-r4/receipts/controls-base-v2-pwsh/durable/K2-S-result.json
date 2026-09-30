@@ -1,0 +1,102 @@
+{
+  "spec": {
+    "name": "r3-control",
+    "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+    "arguments": [
+      "-NoLogo",
+      "-NoProfile",
+      "-File",
+      "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\K2-S\\root\\r3-stage.ps1"
+    ],
+    "mutex": false,
+    "deadline": 60
+  },
+  "entrySources": {},
+  "absentSources": [],
+  "entryInvocation": null,
+  "shell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+  "version": "7.6.5",
+  "dotnet": "10.0.11",
+  "result": null,
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "fail",
+    "stageError": "The term 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\K2-S\\root\\scripts\\owned_process_tree.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.\r\nCheck the spelling of the name, or if a path was included, verify that the path is correct and try again.",
+    "childFailure": null,
+    "integrityErrors": [],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "scripts/lifecycle_validator.ps1",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "scripts/lifecycle_validator_environment.ps1",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "scripts/lifecycle_dependency_replay.ps1",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "scripts/owned_process_tree.ps1",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "scripts/lifecycle_dependency_cases.json",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "RMQ/Validation/PackedLifecycle.lean",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "RMQ/Validation/LifecycleContract.lean",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "scripts/lifecycle_provenance_contract.lean",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "lean-toolchain",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "lakefile.toml",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": ".lake/build/bin/rmq_lifecycle_validate.exe",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      }
+    ],
+    "entryPinCount": 0,
+    "verifiedPinCount": 0,
+    "exitCode": 1,
+    "exitSemantics": "child exit when the stage completed and integrity is intact; 2 timeout/output limit; 3 integrity or cleanup failure; 1 harness stage exception"
+  },
+  "streamRepresentation": "unchanged helper returned nonempty lines"
+}

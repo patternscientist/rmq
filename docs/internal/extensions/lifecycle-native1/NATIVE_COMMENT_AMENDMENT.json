@@ -1,0 +1,73 @@
+{
+  "schema": "lifecycle-native1-reviewed-comment-amendment-v1",
+  "status": "REVERSE_BYTES_VERIFIED_NATIVE_REFRESH_REQUIRED",
+  "authority": "Root delegated this exact comment-only review and evidence record; this is not another protected-source exception or a contract change.",
+  "historicalClientBuild": {
+    "path": ".lake/lifecycle-native1/runs/build-20260927T044516107/RESULT.json",
+    "sha256": "9495AF5ED6DE8F4B0809F22AF5EC3B54457291CF7328B62B05E165B9B3A5437C"
+  },
+  "files": [
+    {
+      "path": "native/packed-rmq/include/packed_rmq_lifecycle.h",
+      "old": { "bytes": 11387, "sha256": "C456D4C8082CBF27A8C59D4FE33FBAAD2CCD7AD11A117D35078837A56F61D392", "lfCount": 219, "crlfCount": 0 },
+      "current": { "bytes": 11394, "sha256": "791910DE0CDE090ADD04B2D144E5A2E12081CF4CAED81E8AB98FEBC7E76C499F", "lfCount": 219, "crlfCount": 0 },
+      "reverseReplacements": [
+        {
+          "line": 20,
+          "current": "   pointers, only live handles returned by this ABI, and exclusive mutable access.",
+          "historical": "   pointers, exclusive access to mutable handles and no forged/aliased owners."
+        },
+        {
+          "line": 75,
+          "current": "   all outputs empty. Lean runtime allocation failure is not recoverable here;",
+          "historical": "   all outputs empty. Lean runtime allocation failure may terminate the process;"
+        },
+        {
+          "line": 76,
+          "current": "   it may terminate the process. ALLOCATION covers checked native malloc failures. */",
+          "historical": "   PACKED_LIFECYCLE_ALLOCATION only describes checked native malloc failures. */"
+        }
+      ],
+      "sourceReview": "All substitutions are within existing C block comments. ABI declarations, preprocessor directives, code tokens, and line counts are unchanged."
+    },
+    {
+      "path": "native/packed-rmq/src/lifecycle.rs",
+      "old": { "bytes": 18467, "sha256": "9FC3031B647EB13EE31C15B72DD0A071968B3E3D0B8F742E20700558668510DB", "lfCount": 403, "crlfCount": 0 },
+      "current": { "bytes": 18498, "sha256": "19EF29EF8A6A4DC49276F1E0587819CC9317CB1AA778AED194BD13006F0AD2E1", "lfCount": 403, "crlfCount": 0 },
+      "reverseReplacements": [
+        {
+          "line": 168,
+          "current": "/// it, including initialization failure. The Lean runtime lives until exit, separate from model resources.",
+          "historical": "/// it, including initialization failure. The Lean runtime lives until exit."
+        }
+      ],
+      "sourceReview": "Only the doc comment attached to LifecycleRuntime changes. There is no derive/procedural macro on this struct; fields, methods, runtime code, and line counts are unchanged. Rust documentation metadata and raw source identity may change."
+    }
+  ],
+  "reverseVerification": {
+    "performedBy": "native_controls independent read-only review, after root review",
+    "method": "Decode current bytes as strict UTF-8; require exactly one occurrence of each current string; replace it in memory with historical text; encode UTF-8 without BOM; compare exact byte length and SHA-256 with the historical client's sourcePins. No source file is written.",
+    "exactOccurrences": true,
+    "historicalByteLengthsAndHashesMatch": true,
+    "lineCountsPreserved": true
+  },
+  "focusedClaimCheck": {
+    "path": ".lake/lifecycle-native1/final-component-development/focused-20260927T060601088/RESULT.json",
+    "sha256": "60D5C6B0BFA1F93331AD447E49571D2AF7DC8F983CB09FBEB6AB293A2FA6BE94",
+    "success": true,
+    "actualOrdinaryExit": 0,
+    "selectedPaths": 2,
+    "hits": 4,
+    "reviewRecords": 2,
+    "strictFailures": 0,
+    "unchangedPolicySHA256": "4096C7A708DF686F0AC7B62D935B22C13C1F1212494A3B39FD2ADD127AD43CD9",
+    "boundary": "This focused check does not replace the final unchanged-policy scan over the complete changed-path roster."
+  },
+  "effect": {
+    "nativeSourceRecipeInvalidated": true,
+    "historicalNativeEvidence": "Historical evidence and expectation basis only; it does not certify the current raw source recipe.",
+    "requiredAction": "Fresh DLL and client producers after final Lean consumer freeze, then fresh startup, fixtures, ABI, clients and native-control replay. Root separately refreshes Rust diagnostics.",
+    "binaryIdentityAssumed": false,
+    "semanticBridge": "Review fresh generated closure, symbols, program/global measurements and unchanged exact control projections. A source-comment argument alone does not establish fresh PE bit identity or current-run acceptance."
+  }
+}

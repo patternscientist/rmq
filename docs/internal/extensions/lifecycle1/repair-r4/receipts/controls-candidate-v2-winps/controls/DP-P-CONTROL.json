@@ -1,0 +1,98 @@
+{
+  "id": "DP-P",
+  "harness": "DP",
+  "shape": "P",
+  "fault": "intact",
+  "mode": "candidate",
+  "profile": "winps",
+  "deadlineSeconds": 300,
+  "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-winps\\controls\\DP-P\\root",
+  "setupError": null,
+  "launchError": null,
+  "process": {
+    "Stage": "DP-P",
+    "ExitCode": 0,
+    "Output": [
+      "DEPENDENCY CONTROLS PASS evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-winps\\controls\\DP-P\\root/.lake/r3-out"
+    ],
+    "StandardOutput": [
+      "DEPENDENCY CONTROLS PASS evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-winps\\controls\\DP-P\\root/.lake/r3-out"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 13.467,
+    "DeadlineSeconds": 300,
+    "Ownership": "kill-on-close-job"
+  },
+  "durable": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-winps\\controls\\DP-P\\root\\.lake\\r3-out\\RESULTS.json",
+    "ambiguous": false,
+    "parseError": null,
+    "sha256": "97aefec00ab40a9ffdf0142cb9304a19c47d924661d3d520d1bb762bd507fd85"
+  },
+  "core": {
+    "launchCompleted": true,
+    "exitClass": true,
+    "durablePresent": true,
+    "durableAsExpected": true,
+    "stageRecorded": true,
+    "integrityRecorded": true,
+    "cleanupRecorded": true,
+    "verdictAsExpected": true,
+    "values": null,
+    "labels": null,
+    "stderrAsExpected": true,
+    "absentFiles": true,
+    "stdoutWithoutSuccess": true
+  },
+  "structural": {
+    "applicable": true,
+    "finalizationPresent": true,
+    "verdictMatches": true,
+    "stageFieldMatches": true,
+    "integrityFieldMatches": true,
+    "cleanupEmpty": true,
+    "pinsVerified": true,
+    "pinCoverage": "captured 13 of 13 rows, all re-verified"
+  },
+  "restoration": {
+    "restored": [],
+    "removed": [],
+    "errors": [],
+    "verified": true,
+    "gitClean": true,
+    "gitState": "032605071bf517014abf61107231715f8803e8a5\n--"
+  },
+  "verdict": "PASS",
+  "expected": "accept-all-predicates",
+  "lockWaitSeconds": 0.0,
+  "manifest": {
+    "docs/internal/extensions/lifecycle-native-p0/repair-r1/dependency_controls.ps1": "28b2bd333c138d85bfe98184959c14fb5a79a6445172504598847841ff21a9c7",
+    "scripts/owned_process_tree.ps1": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+    "scripts/packed_native_lifecycle_integrity_check.ps1": "1366d79db192261e64a444887b634d32a52dd439ce2ca53d362dd9a4da7de720",
+    "docs/internal/extensions/lifecycle-native-p0/RESULTS.json": "6440a963be7a0e65222f86afe3cfb89e4bee1b6bdcd0226dc0d5cda88d296fdd",
+    ".gitignore": "fde850d24186b6e99c8c0debd641fb3ab85198b109eb66f71a1fea02bd6ea1b3"
+  },
+  "harnessSha256": "28b2bd333c138d85bfe98184959c14fb5a79a6445172504598847841ff21a9c7",
+  "arguments": [
+    "-NoLogo",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-winps\\controls\\DP-P\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1\\dependency_controls.ps1",
+    "-OutputRoot",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-winps\\controls\\DP-P\\root/.lake/r3-out"
+  ],
+  "environment": {
+    "R3_FAULT_SCOPE": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-winps\\controls\\DP-P\\root",
+    "R3_FAULT_MARKER": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-winps\\controls\\DP-P\\fault.marker",
+    "R3_FAULT_MODE": "intact",
+    "R3_FAULT_TARGET": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-winps\\controls\\DP-P\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\RESULTS.json"
+  },
+  "coreAll": true,
+  "structuralAll": true,
+  "predicateOutcome": true
+}

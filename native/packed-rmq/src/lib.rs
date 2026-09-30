@@ -3,6 +3,8 @@
 //! The older textual route remains available for its recorded experiment.
 //! Compilation/runtime/FFI remain explicit assumptions. One initializing thread.
 pub mod native;
+/// Construction, retirement and repeated queries through the lifecycle ABI.
+pub mod lifecycle;
 use std::ffi::{CStr, CString};
 use std::marker::PhantomData;
 use std::os::raw::{c_char, c_void};

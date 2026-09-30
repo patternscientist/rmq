@@ -1,0 +1,17 @@
+{
+  "url": "https://raw.githubusercontent.com/leanprover/lean4/ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05/src/runtime/object.cpp",
+  "runtimeCommit": "ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05",
+  "localPath": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\lean-4.22-object.cpp",
+  "sha256": "44C1430D9C6DA2FE9FDE073D407F9FD58860D869D09B8C7EA0BC0E27D85916FB",
+  "bytes": 88248,
+  "provenance": "Public exact-commit source retrieved for review; runtime binaries remain installed release artifacts, not rebuilt from this source.",
+  "review": [
+    "90: out-of-memory handler invokes internal panic; 84-87 print diagnostic and exit1 unless abort policy overrides.",
+    "213-221: dealloc dispatches by runtime allocator build configuration; no RSS guarantee.",
+    "293-310: lean_alloc_object uses runtime allocator and routes null allocation to fatal handler.",
+    "332-337: array destruction decrements only initialized logical entries and deallocates using capacity-based byte size.",
+    "365-367: external destruction invokes test finalizer then frees external object.",
+    "2525-2545: copy_expand_array(false) preserves original capacity; shared branch increments every initialized element then drops one old owner.",
+    "2548-2565: push uses existing capacity if exclusive and space remains; replacement capacity m filled at most m therefore never expands."
+  ]
+}

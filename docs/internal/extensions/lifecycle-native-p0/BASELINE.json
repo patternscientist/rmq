@@ -1,0 +1,128 @@
+{
+  "role": "one required baseline regression; reused after final C/docs changes because all Lean/Lake/toolchain sources remain unchanged",
+  "outcome": {
+    "status": "PASS",
+    "base": "bf31f983205175481fcb659caa4dfb70ef43e361",
+    "repo": "C:/Users/poin/.codex/worktrees/af4b/RMQ",
+    "command": [
+      "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lake.exe",
+      "build"
+    ],
+    "environment": {
+      "LEAN_NUM_THREADS": "1",
+      "PATHPrefix": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin"
+    },
+    "deadlineSeconds": 7200,
+    "outputLimitBytes": 16777216,
+    "mutexName": "Local\\RMQLifecycleImplementationHeavy20260920",
+    "mutexWaitStartedUtc": "2026-09-20T23:45:28.7954012Z",
+    "cacheSource": "C:/Users/poin/Documents/RMQ/.claude/worktrees/wf1-whole-project-audit/.lake/cold",
+    "cacheHead": "7b227c49ef2ec044b702126cc41c9add847eed01",
+    "mutexAcquiredUtc": "2026-09-20T23:45:28.8349857Z",
+    "mutexAbandoned": false,
+    "cacheArtifactCount": 4208,
+    "compilerIdentities": [
+      {
+        "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+        "bytes": 82432,
+        "sha256": "9B5AF669D8DC9B5826A1F5427584915EECA659E9BF34C7EE72667B93C0BFDCB0"
+      },
+      {
+        "path": "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lake.exe",
+        "bytes": 85504,
+        "sha256": "AED396C5F1948B673416C8B509FA2CA31F3E2BB9596CC2D75485963F3E17BDD7"
+      }
+    ],
+    "toolchainText": "leanprover/lean4:v4.22.0\r\n\r\n",
+    "ownedHelperSha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+    "startedUtc": "2026-09-20T23:47:23.97532Z",
+    "finishedUtc": "2026-09-20T23:47:27.560179Z",
+    "exitCode": 0,
+    "durationSeconds": 2.931,
+    "timedOut": false,
+    "outputLimitExceeded": false,
+    "ownership": "kill-on-close-job",
+    "terminatedIds": [],
+    "actualLakeExit": 0,
+    "logFiles": [
+      {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-baseline\\lake.stdout.log",
+        "bytes": 108128,
+        "sha256": "71EDA76B38D67DE94ACB8A0C29AD261CC78F51FE68C189E7F28C9E64482E75CB"
+      },
+      {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-baseline\\lake.stderr.log",
+        "bytes": 0,
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+      }
+    ],
+    "sourceRechecked": true,
+    "mutexReleasedUtc": "2026-09-20T23:47:31.7432237Z"
+  },
+  "sourceFileCount": 1125,
+  "diagnostics": {
+    "completeWarningBlocks": 188,
+    "exactWarningBlockMultisetEqual": true,
+    "stderrEmpty": true,
+    "orderingNote": "Lake replay task order/progress indices differ; complete warning blocks compare exactly after sorting. All nonblank non-progress non-completion lines belong to the compared blocks.",
+    "priorLog": "C:/Users/poin/Documents/RMQ/lifecycle-experiments-20260920/baseline-build.stdout.txt",
+    "priorSha256": "A0B3F115D496AC0A7A1C34BD61B233948AB07370B276BCE6467006358BBC5396"
+  },
+  "files": [
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-baseline\\build-receipt.json",
+      "bytes": 3071,
+      "sha256": "5FE8D12507A3C9A532A8F2A4AD13F664358A730951345AB14FBF95C3FA80DC9A"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-baseline\\source-provenance.json",
+      "bytes": 385496,
+      "sha256": "9B9DB21354DF51B6E0DDBA87EB3BFF18C9E3D163DC824C2B1A62385CED4EC88B"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-baseline\\cache-provenance.json",
+      "bytes": 1261753,
+      "sha256": "D42E99CC8B900909C164170F909234EF7AE0FADA1FAA1817D85890FF2E5F3682"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-baseline\\diagnostic-comparison.json",
+      "bytes": 1239,
+      "sha256": "1BFA1B4B1A98BA5BC21BEF7363C80888D12269663B9AC9727A878BC8F6162AC6"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-baseline\\lake.stdout.log",
+      "bytes": 108128,
+      "sha256": "71EDA76B38D67DE94ACB8A0C29AD261CC78F51FE68C189E7F28C9E64482E75CB"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-baseline\\lake.stderr.log",
+      "bytes": 0,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-baseline\\lake-exit.json",
+      "bytes": 313,
+      "sha256": "9F11637C6927DF39380A5F7EC722A0BB1F15B8532E72EAC7F3BB4AA319B34E5A"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-baseline\\owned-process-result.json",
+      "bytes": 432,
+      "sha256": "F58657319ECF6762698CA9DE2BA63EDCEB231554AC0AB058160E313EF9A1A566"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-baseline\\run-baseline.ps1",
+      "bytes": 7934,
+      "sha256": "8C5539CE6D510E593A224BBF8EB5C016FE7DEDC5D345BFC6B72BA65E7D845399"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-baseline\\build-child.ps1",
+      "bytes": 1218,
+      "sha256": "63AC15DBFF6BB3EC339EB1496FA29E4BEABADD1EE6692F6925CC78A33312D3F9"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-baseline\\verify-diagnostics.ps1",
+      "bytes": 2220,
+      "sha256": "1EC8413D681B82885550A3355A54C445FBBF440E4E2B2A443D9539504F07924C"
+    }
+  ]
+}

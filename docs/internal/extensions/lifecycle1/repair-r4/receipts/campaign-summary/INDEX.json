@@ -1,0 +1,33 @@
+{
+  "schema": "life1-r4-receipt-index-v1",
+  "receipt": "campaign-summary",
+  "files": [
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\CAMPAIGN_SUMMARY.json",
+      "sourceBytes": 19133,
+      "sourceSha256": "dd1e5bebd874643e3efed40434fa187cac05f440d2cb39f050a4bae7d9e4d456",
+      "committed": "CAMPAIGN_SUMMARY.json",
+      "committedBytes": 19133,
+      "committedSha256": "dd1e5bebd874643e3efed40434fa187cac05f440d2cb39f050a4bae7d9e4d456",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\materialization\\MATERIALIZATION.json",
+      "sourceBytes": 1966,
+      "sourceSha256": "41f83f2853e8279d341d92eff0669d1611720e4c9271af3c80796efadedf0f7d",
+      "committed": "MATERIALIZATION.json",
+      "committedBytes": 1966,
+      "committedSha256": "41f83f2853e8279d341d92eff0669d1611720e4c9271af3c80796efadedf0f7d",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\materialization\\RESTORE.json",
+      "sourceBytes": 763,
+      "sourceSha256": "a00629435e76ca3af147d7b2ee468f2771a04cf69d4f793eb8577557fea36e51",
+      "committed": "RESTORE.json",
+      "committedBytes": 763,
+      "committedSha256": "a00629435e76ca3af147d7b2ee468f2771a04cf69d4f793eb8577557fea36e51",
+      "normalized": false
+    }
+  ]
+}

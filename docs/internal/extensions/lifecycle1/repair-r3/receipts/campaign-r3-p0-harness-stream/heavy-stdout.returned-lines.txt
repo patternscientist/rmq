@@ -1,0 +1,1 @@
+r3-p0-harness-stream exit=0 seconds=118.427 timeout=False evidence=C:\Users\poin\Documents\RMQ\.claude\worktrees\life1-r3-finally-integrity\.lake\repair-r2\checks\r3-p0-harness-stream

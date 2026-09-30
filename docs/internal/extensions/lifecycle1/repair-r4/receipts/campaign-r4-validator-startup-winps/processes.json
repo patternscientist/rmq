@@ -1,0 +1,108 @@
+[
+    {
+        "name":  "registry",
+        "exitCode":  0,
+        "expectedExit":  0,
+        "durationSeconds":  1.311,
+        "timedOut":  false,
+        "outputLimitExceeded":  false,
+        "ownership":  "kill-on-close-job",
+        "terminatedIds":  [
+
+                          ],
+        "expectedCases":  [
+
+                          ],
+        "selectorPresent":  false,
+        "selector":  null,
+        "result":  {
+                       "Stage":  "registry",
+                       "ExitCode":  0,
+                       "Output":  [
+                                      "LIFE1-REGISTRY|L01-W-EMPTY|word|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L02-C-EMPTY|comparison|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L03-W-SINGLE|word|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L04-C-SINGLE|comparison|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L05-W-REPEAT|word|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L06-C-REPEAT|comparison|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L07-W-TIE|word|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L08-C-TIE|comparison|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L09-W-INVALID|word|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L10-C-INVALID|comparison|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L11-W-DIRTY|word|dirty-entry|PASS",
+                                      "LIFE1-REGISTRY|L12-C-DIRTY|comparison|dirty-entry|PASS",
+                                      "LIFE1-REGISTRY|L13-W-N24|word|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L14-C-N24|comparison|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L15-W-N83|word|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L16-C-N83|comparison|lifecycle|PASS"
+                                  ],
+                       "StandardOutput":  [
+                                              "LIFE1-REGISTRY|L01-W-EMPTY|word|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L02-C-EMPTY|comparison|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L03-W-SINGLE|word|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L04-C-SINGLE|comparison|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L05-W-REPEAT|word|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L06-C-REPEAT|comparison|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L07-W-TIE|word|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L08-C-TIE|comparison|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L09-W-INVALID|word|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L10-C-INVALID|comparison|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L11-W-DIRTY|word|dirty-entry|PASS",
+                                              "LIFE1-REGISTRY|L12-C-DIRTY|comparison|dirty-entry|PASS",
+                                              "LIFE1-REGISTRY|L13-W-N24|word|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L14-C-N24|comparison|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L15-W-N83|word|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L16-C-N83|comparison|lifecycle|PASS"
+                                          ],
+                       "StandardError":  [
+
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  1.311,
+                       "DeadlineSeconds":  30,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "name":  "startup",
+        "exitCode":  0,
+        "expectedExit":  0,
+        "durationSeconds":  1.275,
+        "timedOut":  false,
+        "outputLimitExceeded":  false,
+        "ownership":  "kill-on-close-job",
+        "terminatedIds":  [
+
+                          ],
+        "expectedCases":  [
+
+                          ],
+        "selectorPresent":  false,
+        "selector":  null,
+        "result":  {
+                       "Stage":  "startup",
+                       "ExitCode":  0,
+                       "Output":  [
+                                      "LIFE1-STARTUP|PASS|cases=16"
+                                  ],
+                       "StandardOutput":  [
+                                              "LIFE1-STARTUP|PASS|cases=16"
+                                          ],
+                       "StandardError":  [
+
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  1.275,
+                       "DeadlineSeconds":  30,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    }
+]

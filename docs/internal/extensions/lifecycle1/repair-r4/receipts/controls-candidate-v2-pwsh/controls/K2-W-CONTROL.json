@@ -1,0 +1,110 @@
+{
+  "id": "K2-W",
+  "harness": "K2",
+  "shape": "W",
+  "fault": "block-durable",
+  "mode": "candidate",
+  "profile": "pwsh",
+  "deadlineSeconds": 180,
+  "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\K2-W\\root",
+  "setupError": null,
+  "launchError": null,
+  "process": {
+    "Stage": "K2-W",
+    "ExitCode": 1,
+    "Output": [
+      "r3-control exit=0 seconds=0.964 timeout=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\K2-W\\root\\.lake\\repair-r2\\checks\\r3-control",
+      "R2-CHECK: durable result write failed: Exception calling \"WriteAllText\" with \"3\" argument(s): \"Access to the path 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\K2-W\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json' is denied.\""
+    ],
+    "StandardOutput": [
+      "r3-control exit=0 seconds=0.964 timeout=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\K2-W\\root\\.lake\\repair-r2\\checks\\r3-control"
+    ],
+    "StandardError": [
+      "R2-CHECK: durable result write failed: Exception calling \"WriteAllText\" with \"3\" argument(s): \"Access to the path 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\K2-W\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json' is denied.\""
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 4.318,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  },
+  "durable": {
+    "path": null,
+    "ambiguous": false,
+    "parseError": null,
+    "sha256": null
+  },
+  "core": {
+    "launchCompleted": true,
+    "exitClass": true,
+    "durablePresent": false,
+    "durableAsExpected": true,
+    "stageRecorded": true,
+    "integrityRecorded": true,
+    "cleanupRecorded": true,
+    "verdictAsExpected": true,
+    "values": null,
+    "labels": null,
+    "stderrAsExpected": true,
+    "absentFiles": true,
+    "stdoutWithoutSuccess": true
+  },
+  "structural": {
+    "applicable": false,
+    "reason": "no durable result by construction (durable-write failure)",
+    "finalizationPresent": true,
+    "verdictMatches": true,
+    "stageFieldMatches": true,
+    "integrityFieldMatches": true,
+    "cleanupEmpty": true,
+    "pinsVerified": true
+  },
+  "restoration": {
+    "restored": [],
+    "removed": [],
+    "errors": [],
+    "verified": true,
+    "gitClean": true,
+    "gitState": "2c46e4beaf7847ce6b584d53402dc08f2d59ff66\n--"
+  },
+  "verdict": "PASS",
+  "expected": "accept-all-predicates",
+  "lockWaitSeconds": 0.0,
+  "manifest": {
+    "docs/internal/extensions/lifecycle1/repair-r2/run_check.ps1": "f3ae2e4aea800c2f6cb094a3a74ca4fb380b9bf3aa8f61f8e79ae2717b0184cc",
+    "scripts/owned_process_tree.ps1": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+    "scripts/lifecycle_validator.ps1": "8135040dfb712cb81dd083db8f4b58d42e333bc196db3770f2b5c28e228f0cb3",
+    "scripts/lifecycle_validator_environment.ps1": "2fb2c4d95eaf3f6633ffaa60413d3d798b26e5bf8b4e712e6a254e293e4f9f19",
+    "scripts/lifecycle_dependency_replay.ps1": "4bf287cf5e0715dbe2413de0e842e21781a38d51a94da5873e1cf8a8972003fb",
+    "scripts/lifecycle_dependency_cases.json": "003343871e23c93df874a960a8af60ae7a8a2e615adb05b6e581dc4407a1c84b",
+    "RMQ/Validation/PackedLifecycle.lean": "624236001fc72817441cc3dc536da9c299ccb1dc9c050687b09896b7f1679c14",
+    "RMQ/Validation/LifecycleContract.lean": "f7022ac916813779745b9847b43d9091a90f4f2356615bdbf3b560f2861ad9ec",
+    "scripts/lifecycle_provenance_contract.lean": "767743a4dd79b34377f5f5550bab88693df4a966826b02de7aedda78043fd020",
+    "lean-toolchain": "ad3e6363c78908c80953282baf57162702f1134173a5247aad3dbfea108a525f",
+    "lakefile.toml": "b47c7abe3955d1a2e9ba51a4c71fc2e7961423d2bf5f3856f79a24bebc8bdd50",
+    "r3-stage.ps1": "1f27eb1d8641502fc362893877699b85fda753a1975e6e6fb6815cf1ed768b10",
+    "r3-spec.json": "2584bfd6dce8837fe6b35ec6a3e930287e79b793d02ef7ed318dc8483d908e95",
+    ".gitignore": "fde850d24186b6e99c8c0debd641fb3ab85198b109eb66f71a1fea02bd6ea1b3"
+  },
+  "harnessSha256": "f3ae2e4aea800c2f6cb094a3a74ca4fb380b9bf3aa8f61f8e79ae2717b0184cc",
+  "arguments": [
+    "-NoLogo",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\K2-W\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r2\\run_check.ps1",
+    "-SpecPath",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\K2-W\\root/r3-spec.json"
+  ],
+  "environment": {
+    "R3_FAULT_TARGET": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\K2-W\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+    "R3_FAULT_MARKER": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\K2-W\\fault.marker",
+    "R3_FAULT_MODE": "block-durable",
+    "R3_FAULT_SCOPE": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\K2-W\\root"
+  },
+  "coreAll": true,
+  "structuralAll": true,
+  "predicateOutcome": true
+}

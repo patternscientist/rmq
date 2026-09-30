@@ -3668,3 +3668,61 @@ emitted list; no relocated in-place query execution is claimed. The executable
 bounds. This is candidate status only: the aggregate gate, a fresh blind audit
 and coordinator acceptance are still required, and the paper and headline
 identities are unchanged.
+
+### LIFE-1 continuous lifecycle candidate (2026-09-20)
+
+`RMQ.SuccinctFinal.PackedLifecycle.continuousConstructionQuery_holds` in
+`RMQ/Core/WordRAM/Lifecycle/Capstone.lean` joins the live builder body,
+metadata/request transfer, forward overlapping copy, scalar retirement and
+first query in one fixed program per input model. Its counted retained owner
+contains the same canonical memory used by every query, fixed code, 8273
+numeric registers and eight control words. The complete numeric capacity is
+at most `2*n + retainedRho n` bits with a checked `LittleOLinear retainedRho`.
+Comparison input cells and key registers have zero owned extents and empty
+executable containers at the retained boundary.
+
+Construction through query entry takes at most `1100000000*(n+1)` primitive
+transitions and owns at most `5000000*(n+1)` numeric arena cells at every
+prefix. The first service takes at most 160253 further transitions; each
+subsequent request costs at most 160257, including four charged external
+admission/control events and full finite-bank initialization. These are
+uniform upper bounds, not tightness or elapsed-time claims.
+
+Word inputs require `InputFits (wordWidth n) xs`; the separately named
+comparison theorem covers every `List Int` with explicit comparison resources.
+Both cover represented valid and invalid half-open requests, with leftmost
+ties. One query-independent logarithmic width bounds the actual states,
+physical addresses and dormant encoded fields. The array runner refines the
+same execution; its logical sizes do not prove native backing capacity or
+external alias freedom. Input materialization precedes the modeled run.
+The additive `RMQ/Headlines/Lifecycle.lean` import exposes this candidate.
+The broad `RMQ.Headlines` barrel also exposes that existing headline so
+documentary identifiers resolve through the repository import contract.
+This private candidate addition leaves the narrow `RMQPaper` surface unchanged.
+Native ownership review, aggregate certification, a fresh blind audit and
+coordinator acceptance remain campaign requirements.
+
+### Candidate consuming native lifecycle adapter
+
+`RMQ.Core.WordRAM.Native.Lifecycle` connects the actual construction, retirement
+and query owner to an additive C ABI and safe Rust facade. Its export contract
+derives the halted answer, canonical produced memory, empty key banks, fixed
+numeric bank and inherited retained-capacity bound from the lifecycle theorem.
+The independent `RMQ.Validation.LifecycleNativeContract` consumer fixes those
+propositions at the same objects. Admission codecs preserve arbitrary-width
+signed values and represented endpoints; native resource ceilings remain
+separate from the all-size Lean statements.
+
+The compiled route uses fixed cached program arrays and consuming loops proved
+equal to the original runner for every program, fuel and owner. Optional
+observations have an exact final-owner and counter/read-fold connection and
+their own lifetime. Value-preserving repacking transports READY and later-query
+facts across publication; it does not kernel-verify C reference counts, pointer
+validity, physical capacity or allocation behavior.
+
+The local native candidate's checked source statements, exact replay campaigns
+and finite compiled measurements are indexed in
+`docs/internal/extensions/lifecycle-native1/ACCEPTANCE_MATRIX.md`; the worked
+interface is in `GUIDE.md` beside it. Modeled retained bits, native requested
+storage, shared code, diagnostics and elapsed time remain distinct. This adapter
+does not establish a native heap asymptotic or a portable runtime-speed theorem.

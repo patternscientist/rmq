@@ -1,0 +1,42 @@
+{
+  "schema": "life1-r4-receipt-index-v1",
+  "receipt": "selector-v2",
+  "files": [
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\r4-selector-v2\\RESULT.json",
+      "sourceBytes": 3628,
+      "sourceSha256": "c0f8d1915420bfef0da1e4398e8a6ad09e7a11f15dd8dd2c71b4cba61a4122f7",
+      "committed": "heavy-RESULT.json",
+      "committedBytes": 3546,
+      "committedSha256": "c90b655a5f84397a3d57aae40b3446a5a3ff5635333b83474c129a36ad14f9e4",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\r4-selector-v2\\stdout.returned-lines.txt",
+      "sourceBytes": 801,
+      "sourceSha256": "37410b7091c0cdcddf0c7fb735c111f96ff7e0e5944fb01fb75b8de918852e6b",
+      "committed": "heavy-stdout.returned-lines.txt",
+      "committedBytes": 801,
+      "committedSha256": "37410b7091c0cdcddf0c7fb735c111f96ff7e0e5944fb01fb75b8de918852e6b",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\r4-selector-v2\\stderr.returned-lines.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "heavy-stderr.returned-lines.txt",
+      "committedBytes": 0,
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\selector\\v2\\RESULT.json",
+      "sourceBytes": 15988,
+      "sourceSha256": "5cee64498e14bb8cbeb5bdaba298deda02f07a0c2f80c808273f46b716f5e07d",
+      "committed": "RESULT.json",
+      "committedBytes": 15546,
+      "committedSha256": "a7f862a0a20f49195b4bfc6fae064209c29b32967b3f99bb5ea14ab2012543c2",
+      "normalized": true
+    }
+  ]
+}

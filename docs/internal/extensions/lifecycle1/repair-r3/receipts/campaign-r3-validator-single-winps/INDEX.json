@@ -1,0 +1,69 @@
+{
+  "receipt": "campaign-r3-validator-single-winps",
+  "heavy": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\heavy\\campaign-r3-validator-single-winps",
+  "files": [
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\heavy\\campaign-r3-validator-single-winps\\RESULT.json",
+      "sourceBytes": 2169,
+      "sourceSha256": "c626181e2d78a784fafe430ebd0afc5367027f87b6eceb2bbeaa9617e10b57f1",
+      "committed": "heavy-RESULT.json",
+      "committedSha256": "594323b75f51947933acc61747d292458991beadd5358dfffb3b35140e36bdc9"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\heavy\\campaign-r3-validator-single-winps\\stdout.returned-lines.txt",
+      "sourceBytes": 191,
+      "sourceSha256": "a79d54af866befb37ff5c7cbbc1eefcfc0100d6dc24f11fca86c3860fa3b7d39",
+      "committed": "heavy-stdout.returned-lines.txt",
+      "committedSha256": "a79d54af866befb37ff5c7cbbc1eefcfc0100d6dc24f11fca86c3860fa3b7d39"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\heavy\\campaign-r3-validator-single-winps\\stderr.returned-lines.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "heavy-stderr.returned-lines.txt",
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r2\\checks\\r3-validator-single-winps\\result.json",
+      "sourceBytes": 9048,
+      "sourceSha256": "49fdb8d6ab5d554d6a8b9adf01e1d0ec2a11f6eff0c42dec670bf0b358256c73",
+      "committed": "result.json",
+      "committedSha256": "ccf9ea6ae6ee824be326a3e09806d5caec07d89e65e4bb91230553016aac7b3c"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r2\\checks\\r3-validator-single-winps\\stdout.txt",
+      "sourceBytes": 182,
+      "sourceSha256": "c91de18b1b0207b8ad46cfc735daa6c2083cc350c4aae5e85c20a43719cab29f",
+      "committed": "stdout.txt",
+      "committedSha256": "c91de18b1b0207b8ad46cfc735daa6c2083cc350c4aae5e85c20a43719cab29f"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r2\\checks\\r3-validator-single-winps\\stderr.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "stderr.txt",
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\lifecycle-validator\\5cebfd65a9d1403c9ccfd0ea36e10362\\RESULT.json",
+      "sourceBytes": 7163,
+      "sourceSha256": "71eca097de5246049c419f95731464caf512b685a5af6d5602bcebde123e5b49",
+      "committed": "1-RESULT.json",
+      "committedSha256": "aaf62092acdf4717f58e1018af8e3c4f49452e2a7eb264b709e7910e2d663143"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\lifecycle-validator\\5cebfd65a9d1403c9ccfd0ea36e10362\\PASS.json",
+      "sourceBytes": 884,
+      "sourceSha256": "04623161a78184bae98d226100dc1fa53cf8638e9aeb404b2b1b996eddd4bcac",
+      "committed": "PASS.json",
+      "committedSha256": "258e7f4b3f79187b320ac13d6b4393a3d5c6754a6097b47ed247ea3463dcf7b7"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\lifecycle-validator\\5cebfd65a9d1403c9ccfd0ea36e10362\\processes.json",
+      "sourceBytes": 7212,
+      "sourceSha256": "d2860c2798fd2c96c489e9efba7bf3a55fae51b0abbd067941ffe081fa7ef113",
+      "committed": "processes.json",
+      "committedSha256": "5ac501acd17dbde39c62e15b09d48c4145727ccf018f185066c53e85821b4dc5"
+    }
+  ]
+}

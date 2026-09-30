@@ -1,0 +1,75 @@
+{
+  "deadline": 1200,
+  "outer": {
+    "Stage": "dependencies",
+    "ExitCode": 0,
+    "Output": [],
+    "StandardOutput": [],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 17.934,
+    "DeadlineSeconds": 1200,
+    "Ownership": "kill-on-close-job",
+    "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-pwsh\\launcher\\retained.stdout",
+    "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-pwsh\\launcher\\retained.stderr",
+    "RetentionErrors": []
+  },
+  "streamValidation": {
+    "expectedStdout": "DEPENDENCY CONTROLS PASS evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\dependencies-55f9793aeb9942daa8873d0856d1651c\r\n",
+    "expectedStderr": "",
+    "expectedExit": 0,
+    "profile": "dependencies",
+    "validated": true
+  },
+  "kind": "dependencies",
+  "actual": {
+    "pid": 22216,
+    "exitCode": 0,
+    "durationSeconds": 17.1662902
+  },
+  "raw": [
+    {
+      "sha256": "713984AF2468F5848E8DBB2413F22276931697FA519D38DA800CD6CBAC6F58E2",
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-pwsh\\stdout.log",
+      "bytes": 170
+    },
+    {
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-pwsh\\stderr.log",
+      "bytes": 0
+    },
+    {
+      "sha256": "A30E21366E8862F5C0D2DDE7BDC06ABD6257E5A6FEF4E0B5D2BC39F82D0E8D41",
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-pwsh\\exit.json",
+      "bytes": 55
+    },
+    {
+      "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00",
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-pwsh\\child.ps1",
+      "bytes": 3023
+    },
+    {
+      "sha256": "D5D6E28AF7D7749AA95398BB98B17AE48BF0B465DDFE424F2C8EA7C9AFE20B84",
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-pwsh\\inner.ps1",
+      "bytes": 614
+    },
+    {
+      "sha256": "BAF19825812FC7C0EA961DEDBDEDF6529300799731A82A827C26360BA423DAE9",
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-pwsh\\spec.json",
+      "bytes": 1410
+    },
+    {
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-pwsh\\launcher\\retained.stdout",
+      "bytes": 0
+    },
+    {
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-pwsh\\launcher\\retained.stderr",
+      "bytes": 0
+    }
+  ],
+  "command": "$mutex=[Threading.Mutex]::new($false,'Local\\RMQLifecycleImplementationHeavy20260920')\n$held=$false\ntry {\n  try{$held=$mutex.WaitOne(600000)}catch [Threading.AbandonedMutexException]{$held=$true}\n  if(-not $held){throw 'host mutex unavailable'}\n  & 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1/dependency_controls.ps1'; exit $LASTEXITCODE\n} finally {if($held){$mutex.ReleaseMutex()};$mutex.Dispose()}"
+}

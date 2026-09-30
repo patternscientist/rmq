@@ -1,0 +1,42 @@
+{
+  "success": true,
+  "exactInsertions": 5,
+  "checked": [
+    {
+      "originalRawSHA256": "25a067e1c7e41c525680e44bb0767868eeeace8d09825f232cb957ee000996b1",
+      "source": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\RMQ\\Core\\SuccinctClose\\EndpointFringe\\InteriorCandidate\\InteriorDirectory\\SparseLevelWidth.lean",
+        "bytes": 98312,
+        "sha256": "9902C625271049BC410B6CDE11CE8212A7451CD483133D90B199E87225F87875"
+      },
+      "generated": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\SuccinctClose\\EndpointFringe\\InteriorCandidate\\InteriorDirectory\\SparseLevelWidth.c",
+        "bytes": 56072,
+        "sha256": "B31155C75D4E9B50AB6ACE07AC23D8A3C115C41311442F6D08D3932C15639ACA"
+      },
+      "erasedDefinitions": [
+        "def canonicalRelativeRmmInteriorCost33WitnessShape",
+        "def canonicalRelativeRmmInteriorCost33WitnessInput"
+      ]
+    },
+    {
+      "originalRawSHA256": "0e0fe1e5f7e56104eb8007bff55b844b1ec9627f88f5cb519b0a8db625297a18",
+      "source": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\RMQ\\Core\\SuccinctFinal\\RAM\\ReviewerReachabilitySmall.lean",
+        "bytes": 181933,
+        "sha256": "E025FBCDDA65DF5DBEB9FE83F06F4E482F42207ED938C64F83FD1A9E12827C2E"
+      },
+      "generated": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\build\\ir\\RMQ\\Core\\SuccinctFinal\\RAM\\ReviewerReachabilitySmall.c",
+        "bytes": 52953,
+        "sha256": "5D8DDB23BE58ED71F1C527D3FB1EC41C492D6E2A494384FC6526D424C7762AAE"
+      },
+      "erasedDefinitions": [
+        "private def reviewerSingletonBeforeLCAState",
+        "private def reviewerSingletonBeforeRankState",
+        "private def reviewerIncreasingSixteenBeforeLCAState"
+      ]
+    }
+  ],
+  "boundary": "Absence of these five proof-witness definitions in fresh emitted C; full startup and fixed-code measurements are separate required checks."
+}

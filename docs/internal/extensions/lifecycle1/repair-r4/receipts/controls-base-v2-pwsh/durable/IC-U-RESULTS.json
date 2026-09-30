@@ -1,0 +1,81 @@
+{
+  "helper": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\IC-U\\root\\scripts\\packed_native_lifecycle_integrity_check.ps1",
+    "bytes": 7857,
+    "sha256": "4DBDE3FF1B030829C89DE70EFFD12D959404181A545117ADD11AC869BE0E426A"
+  },
+  "stageSplice": {
+    "start": 36355,
+    "preserved": "entire prefix and suffix, including production catch/finally/final verdict; only stage body replaced",
+    "stop": 43236
+  },
+  "candidateUnchanged": true,
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "fail",
+    "stageError": "fixture outer deadline/output failure",
+    "integrityErrors": [],
+    "cleanupErrors": [
+      "intact-success: untracked restoration: Exception calling \"WriteAllText\" with \"3\" argument(s): \"The process cannot access the file 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\IC-U\\root\\.lake\\r3-out\\intact-success\\existing-untracked.txt' because it is being used by another process.\"",
+      "intact-success: owned fixture snapshot: The process cannot access the file 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\IC-U\\root\\.lake\\r3-out\\intact-success\\existing-untracked.txt' because it is being used by another process."
+    ],
+    "pinChecks": [
+      {
+        "path": "scripts/packed_native_lifecycle_storage_replay.ps1",
+        "entrySha256": "C35BB6D38EB54562CB1E650D437D0914DE72852594DFDB865DB04E24104AD345",
+        "finalSha256": "C35BB6D38EB54562CB1E650D437D0914DE72852594DFDB865DB04E24104AD345",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/packed_native_lifecycle_integrity_check.ps1",
+        "entrySha256": "4DBDE3FF1B030829C89DE70EFFD12D959404181A545117ADD11AC869BE0E426A",
+        "finalSha256": "4DBDE3FF1B030829C89DE70EFFD12D959404181A545117ADD11AC869BE0E426A",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/owned_process_tree.ps1",
+        "entrySha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+        "finalSha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/packed_native_lifecycle_stream_check.ps1",
+        "entrySha256": "3F597A2B032AB45847EB18042BC92D5982BC33A44D1CC43347CB56A71F1CAC40",
+        "finalSha256": "3F597A2B032AB45847EB18042BC92D5982BC33A44D1CC43347CB56A71F1CAC40",
+        "status": "verified"
+      },
+      {
+        "path": "native/packed-rmq/tests/lifecycle_storage_probe.c",
+        "entrySha256": "5F32F4A91B21697F86B4F2FEA855CD050E59E330CE6C6FFDA28898353B66D7B1",
+        "finalSha256": "5F32F4A91B21697F86B4F2FEA855CD050E59E330CE6C6FFDA28898353B66D7B1",
+        "status": "verified"
+      },
+      {
+        "path": "lean-toolchain",
+        "entrySha256": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F",
+        "finalSha256": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F",
+        "status": "verified"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle-native-p0/REGISTRY.json",
+        "entrySha256": "6CD97F40E7C39D2212A8C8705D264D4832DCF2542815B72CD927906A01DC8B20",
+        "finalSha256": "6CD97F40E7C39D2212A8C8705D264D4832DCF2542815B72CD927906A01DC8B20",
+        "status": "verified"
+      }
+    ],
+    "treeCheck": {
+      "attempted": true,
+      "equal": true,
+      "error": null
+    },
+    "entryPinCount": 7,
+    "verifiedPinCount": 7
+  },
+  "source": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\IC-U\\root\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+    "bytes": 44594,
+    "sha256": "C35BB6D38EB54562CB1E650D437D0914DE72852594DFDB865DB04E24104AD345"
+  },
+  "controls": [],
+  "fixtureRestoration": false
+}

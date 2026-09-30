@@ -1,0 +1,22 @@
+{
+  "handle": "LIFE-1",
+  "title": "(LIFE-1) Implement continuous succinct construction and queries",
+  "task_id": "01a0c12b-15fd-7cf1-898e-635805e1e0c7",
+  "coordinator_task_id": "01a0830e-2777-7e50-a800-02929dc6d724",
+  "mode": "WRITE_LOCAL_UNPUBLISHED_CANDIDATE",
+  "worktree": "C:/Users/poin/.codex/worktrees/8941/RMQ",
+  "initial_head": "7b227c49ef2ec044b702126cc41c9add847eed01",
+  "base": "bf31f983205175481fcb659caa4dfb70ef43e361",
+  "branch": "codex/life-1-continuous-packed-lifecycle",
+  "governance_ref": "7b227c49ef2ec044b702126cc41c9add847eed01",
+  "runtime_project_skills": ["rmq-audit-prompt", "rmq-coordinator", "rmq-proof-sprint"],
+  "required_skills": ["rmq-proof-sprint"],
+  "preflight": "PASS at initial checkout and exact base",
+  "clean_before_editing": true,
+  "isolation": "App-allocated fresh worktree; differs from C:/Users/poin/Documents/RMQ and lifecycle-experiments-20260920/source",
+  "target": "RMQ.SuccinctFinal.PackedLifecycle.continuousConstructionQuery_holds",
+  "downstream_consumer": "RMQ/Validation/LifecycleContract.lean; subsequent coordinator source review and native adapter contract",
+  "scope": ["RMQ/Core/WordRAM/Lifecycle/ (new modules)", "RMQ/Headlines/Lifecycle.lean", "RMQ/Validation/LifecycleContract.lean", "RMQ/Validation/PackedLifecycle.lean", "scripts/lifecycle_*", "lakefile.toml (lifecycle targets only)", "docs/internal/extensions/lifecycle1/", "docs/digests/LIFECYCLE_PROOF_GUIDE.md", "docs/FAMILY_SUMMARY.md (narrow candidate section)", "docs/DIGESTION_LOG.md (append)", "docs/internal/DESIGN_DECISIONS.md (append)", "docs/internal/WORKFLOW_DESIGN_DECISIONS.md (append)"],
+  "authority": "Private commits authorized; pushes, published integration, destructive retirement and acceptance claims excluded",
+  "heavy_mutex": "Local\\RMQLifecycleImplementationHeavy20260920"
+}

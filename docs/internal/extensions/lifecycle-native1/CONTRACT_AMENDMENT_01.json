@@ -1,0 +1,20 @@
+{
+  "schema": "life-native1-authorized-amendment-v1",
+  "utc": "2026-09-23T02:19:24.1880842Z",
+  "authority": "explicit user response in current task",
+  "questionId": "call_KFuZaVwU6wJ10ZeU2vhlwkCZ/0",
+  "exactAnswer": "Approve this exact scope exception",
+  "proposal": "docs/internal/extensions/lifecycle-native1/STARTUP_AMENDMENT.patch",
+  "proposalSHA256": "3A4600648173001ECF52CBE18A63454E8B1F99E09FCB3C2C39A210BEB6C6142F",
+  "exception": "Add exactly five macro_inline annotations to the two protected proof-witness modules. Names/types/bodies/propositions unchanged. N1-23 and CHK-SCOPE prior source-byte preservation except these exact five authorized insertions. No other predecessor changes authorized.",
+  "paths": [
+    "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/SparseLevelWidth.lean",
+    "RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean"
+  ],
+  "frozenRequirementsRemainUnchanged": true,
+  "status": "AMENDED_MODULES_COMPILED_FIVE_WITNESSES_ABSENT_FROM_FRESH_C_BOUNDED_STARTUP_PASSED",
+  "startupReceipt": ".lake/lifecycle-native1/replay/20260923T092251667-1857c5c9/RESULT.json",
+  "startupOrdinaryExit": 0,
+  "startupDurationSeconds": 2.965348,
+  "remainingBoundary": "This development startup does not certify the complete native consumer or its final producing source. The exact five-insertion authorization remains unchanged."
+}

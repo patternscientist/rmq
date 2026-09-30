@@ -1,0 +1,67 @@
+{
+  "schema": "life1-r3-heavy-v1",
+  "name": "r4-probe-candidate",
+  "spec": {
+    "name": "r4-probe-candidate",
+    "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+    "arguments": [
+      "-NoLogo",
+      "-NoProfile",
+      "-File",
+      "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/docs/internal/extensions/lifecycle1/repair-r4/base_probe.ps1",
+      "-HarnessRef",
+      "d9411a7dae909462218fb32e3bb84e555cfa042c",
+      "-Expect",
+      "repaired",
+      "-OutputRoot",
+      "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/life1-r4/probe/candidate-repaired"
+    ],
+    "cwd": "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict",
+    "deadline": 900,
+    "mutexes": [
+      "global"
+    ],
+    "mutexWaitMilliseconds": 21600000,
+    "environment": {},
+    "out": "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/life1-r4/heavy/r4-probe-candidate"
+  },
+  "host": "POINPAD",
+  "shell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+  "psVersion": "7.6.5",
+  "startedUtc": "2026-09-30T10:40:58.2169558Z",
+  "finishedUtc": "2026-09-30T10:41:33.9414737Z",
+  "mutexWaitSeconds": {
+    "global": 0.004
+  },
+  "stageError": null,
+  "cleanupErrors": [],
+  "result": {
+    "Stage": "r4-probe-candidate",
+    "ExitCode": 0,
+    "Output": [
+      "R4 PROBE P21-K1-EXIT defectPresent=False repairedShape=True PASS",
+      "R4 PROBE P21-K2-EXIT defectPresent=False repairedShape=True PASS",
+      "R4 PROBE P21-K1-TIMEOUT defectPresent=False repairedShape=True PASS",
+      "R4 PROBE P21-K2-TIMEOUT defectPresent=False repairedShape=True PASS",
+      "R4 PROBE P31-K2-WRITE defectPresent=False repairedShape=True PASS",
+      "R4 PROBE P33-LV-EXE defectPresent=False repairedShape=True PASS",
+      "R4 PROBE PASS expect=repaired ref=d9411a7dae909462218fb32e3bb84e555cfa042c executed=6 expected=6 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired"
+    ],
+    "StandardOutput": [
+      "R4 PROBE P21-K1-EXIT defectPresent=False repairedShape=True PASS",
+      "R4 PROBE P21-K2-EXIT defectPresent=False repairedShape=True PASS",
+      "R4 PROBE P21-K1-TIMEOUT defectPresent=False repairedShape=True PASS",
+      "R4 PROBE P21-K2-TIMEOUT defectPresent=False repairedShape=True PASS",
+      "R4 PROBE P31-K2-WRITE defectPresent=False repairedShape=True PASS",
+      "R4 PROBE P33-LV-EXE defectPresent=False repairedShape=True PASS",
+      "R4 PROBE PASS expect=repaired ref=d9411a7dae909462218fb32e3bb84e555cfa042c executed=6 expected=6 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 35.346,
+    "DeadlineSeconds": 900,
+    "Ownership": "kill-on-close-job"
+  }
+}

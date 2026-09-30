@@ -1,0 +1,26 @@
+{
+  "stage": "single",
+  "case": "L01-W-EMPTY",
+  "cases": [
+    "L01-W-EMPTY",
+    "L02-C-EMPTY",
+    "L03-W-SINGLE",
+    "L04-C-SINGLE",
+    "L05-W-REPEAT",
+    "L06-C-REPEAT",
+    "L07-W-TIE",
+    "L08-C-TIE",
+    "L09-W-INVALID",
+    "L10-C-INVALID",
+    "L11-W-DIRTY",
+    "L12-C-DIRTY",
+    "L13-W-N24",
+    "L14-C-N24",
+    "L15-W-N83",
+    "L16-C-N83"
+  ],
+  "expectedVerdict": "PASS",
+  "identityPreserved": true,
+  "processCount": 3,
+  "logRoot": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\LV-W\\root\\.lake\\lifecycle-validator\\de19c05879fa47fb87db06d826dc7dbb"
+}

@@ -1,0 +1,27 @@
+{
+  "receipt": "candidate-winps-attempt1-incomplete",
+  "heavy": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\heavy\\candidate-winps",
+  "files": [
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\heavy\\candidate-winps\\RESULT.json",
+      "sourceBytes": 8666,
+      "sourceSha256": "b54f8a3bd48f3981d3ce4eb33b19ae647e15c989fb99f02cc03d507ea55ad945",
+      "committed": "heavy-RESULT.json",
+      "committedSha256": "13a1b1602e13c084072c2a956f0eea9fa87a1b47899dc35fa639e024d220f99a"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\heavy\\candidate-winps\\stdout.returned-lines.txt",
+      "sourceBytes": 3041,
+      "sourceSha256": "b2b3d274e2bcae1b1212236e04f6000cc8065bdf06719955bc7397b037eff932",
+      "committed": "heavy-stdout.returned-lines.txt",
+      "committedSha256": "b2b3d274e2bcae1b1212236e04f6000cc8065bdf06719955bc7397b037eff932"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\heavy\\candidate-winps\\stderr.returned-lines.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "heavy-stderr.returned-lines.txt",
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

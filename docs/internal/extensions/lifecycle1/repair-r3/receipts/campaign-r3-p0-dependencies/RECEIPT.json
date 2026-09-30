@@ -1,0 +1,75 @@
+{
+  "streamValidation": {
+    "expectedExit": 0,
+    "profile": "dependencies",
+    "validated": true,
+    "expectedStdout": "DEPENDENCY CONTROLS PASS evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\dependencies-48817a52b7b74f4e9fb6e4be349d612e\r\n",
+    "expectedStderr": ""
+  },
+  "command": "$mutex=[Threading.Mutex]::new($false,'Local\\RMQLifecycleImplementationHeavy20260920')\n$held=$false\ntry {\n  try{$held=$mutex.WaitOne(600000)}catch [Threading.AbandonedMutexException]{$held=$true}\n  if(-not $held){throw 'host mutex unavailable'}\n  & 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1/dependency_controls.ps1'; exit $LASTEXITCODE\n} finally {if($held){$mutex.ReleaseMutex()};$mutex.Dispose()}",
+  "kind": "dependencies",
+  "outer": {
+    "Stage": "dependencies",
+    "ExitCode": 0,
+    "Output": [],
+    "StandardOutput": [],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 20.427,
+    "DeadlineSeconds": 1200,
+    "Ownership": "kill-on-close-job",
+    "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-dependencies\\launcher\\retained.stdout",
+    "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-dependencies\\launcher\\retained.stderr",
+    "RetentionErrors": []
+  },
+  "actual": {
+    "pid": 23764,
+    "exitCode": 0,
+    "durationSeconds": 19.7314069
+  },
+  "raw": [
+    {
+      "bytes": 170,
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-dependencies\\stdout.log",
+      "sha256": "1E3AD8500C26132D2D256695E625A118F98ABBA78591E0357F505E635A5664AC"
+    },
+    {
+      "bytes": 0,
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-dependencies\\stderr.log",
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    {
+      "bytes": 55,
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-dependencies\\exit.json",
+      "sha256": "251AA53230F08C19BA40AFE324FB4931C1EFDBDD93E2229A04042A525E81FEAC"
+    },
+    {
+      "bytes": 3023,
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-dependencies\\child.ps1",
+      "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+    },
+    {
+      "bytes": 614,
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-dependencies\\inner.ps1",
+      "sha256": "7BB45DB61EBBAE9351A12762D8B9B29519294C0B18BE50652AC838349273AC8B"
+    },
+    {
+      "bytes": 1375,
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-dependencies\\spec.json",
+      "sha256": "BDADA459FEB39FEEC3C8DE7B6B1A2D2D63F9D8475DF3235C24B5A615DC8E35D6"
+    },
+    {
+      "bytes": 0,
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-dependencies\\launcher\\retained.stdout",
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    {
+      "bytes": 0,
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-dependencies\\launcher\\retained.stderr",
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    }
+  ],
+  "deadline": 1200
+}

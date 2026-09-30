@@ -1,0 +1,117 @@
+{
+  "id": "HS-R",
+  "harness": "HS",
+  "shape": "R",
+  "fault": "carrier-fail",
+  "mode": "base",
+  "profile": "pwsh",
+  "deadlineSeconds": 900,
+  "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\HS-R\\root",
+  "setupError": null,
+  "launchError": null,
+  "process": {
+    "Stage": "HS-R",
+    "ExitCode": 1,
+    "Output": [
+      "STREAM-INTEGRITY: owned fixture/carrier restoration differs: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\HS-R\\root\\.lake\\r3-out\\success-positive\\source",
+      "Exception: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\HS-R\\root\\scripts\\packed_native_lifecycle_stream_check.ps1:39",
+      "Line |",
+      "  39 |      throw ('STREAM: '+$Profile+' incomplete bounded capture')",
+      "     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | STREAM: control-success-positive incomplete bounded capture"
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "STREAM-INTEGRITY: owned fixture/carrier restoration differs: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\HS-R\\root\\.lake\\r3-out\\success-positive\\source",
+      "Exception: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\HS-R\\root\\scripts\\packed_native_lifecycle_stream_check.ps1:39",
+      "Line |",
+      "  39 |      throw ('STREAM: '+$Profile+' incomplete bounded capture')",
+      "     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | STREAM: control-success-positive incomplete bounded capture"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 20.274,
+    "DeadlineSeconds": 900,
+    "Ownership": "kill-on-close-job"
+  },
+  "durable": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\HS-R\\root\\.lake\\r3-out\\RESULTS.json",
+    "ambiguous": false,
+    "parseError": null,
+    "sha256": "643c631628ab9d3adc0c05e589004771f95a335ed73e5f25a1d4e12f7b3fde81"
+  },
+  "core": {
+    "launchCompleted": true,
+    "exitClass": true,
+    "durablePresent": true,
+    "durableAsExpected": true,
+    "stageRecorded": true,
+    "integrityRecorded": true,
+    "cleanupRecorded": true,
+    "verdictAsExpected": true,
+    "values": null,
+    "labels": null,
+    "stderrAsExpected": true,
+    "absentFiles": true,
+    "stdoutWithoutSuccess": true
+  },
+  "structural": {
+    "applicable": false,
+    "finalizationPresent": true,
+    "verdictMatches": true,
+    "stageFieldMatches": true,
+    "integrityFieldMatches": true,
+    "cleanupEmpty": true,
+    "pinsVerified": true,
+    "pinCoverage": "captured 9 of 9 rows, all re-verified"
+  },
+  "restoration": {
+    "restored": [],
+    "removed": [],
+    "errors": [],
+    "verified": true,
+    "gitClean": true,
+    "gitState": "5074f26e9aec6b974f4b78a245e1b19d668bd047\n--"
+  },
+  "verdict": "PASS",
+  "expected": "accept",
+  "lockWaitSeconds": null,
+  "manifest": {
+    "docs/internal/extensions/lifecycle-native-p0/repair-r2/harness_stream_controls.ps1": "0892bf9449b6bb51129da70abc003d1404cc4d2cda7a7690d338eeee7219daf6",
+    "docs/internal/extensions/lifecycle-native-p0/repair-r2/HARNESS_STREAM_REGISTRY.json": "227be213e795a6ff037abb1f67bef328992d6284c56e0e427243ede63c41428b",
+    "docs/internal/extensions/lifecycle-native-p0/repair-r1/integrity_controls.ps1": "fa4cd69cfbc5236d64d0a83236839ed50b7a265c913542bf33aa6e95da88a80c",
+    "scripts/packed_native_lifecycle_storage_replay.ps1": "c35bb6d38eb54562cb1e650d437d0914de72852594dfdb865db04e24104ad345",
+    "scripts/packed_native_lifecycle_integrity_check.ps1": "4dbde3ff1b030829c89de70effd12d959404181a545117add11ac869be0e426a",
+    "scripts/owned_process_tree.ps1": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+    "scripts/packed_native_lifecycle_stream_check.ps1": "3f597a2b032ab45847eb18042bc92d5982bc33a44d1cc43347cb56a71f1cac40",
+    "native/packed-rmq/tests/lifecycle_storage_probe.c": "5f32f4a91b21697f86b4f2fea855cd050e59e330ce6c6ffda28898353b66d7b1",
+    "lean-toolchain": "ad3e6363c78908c80953282baf57162702f1134173a5247aad3dbfea108a525f",
+    "docs/internal/extensions/lifecycle-native-p0/REGISTRY.json": "6cd97f40e7c39d2212a8c8705d264d4832dcf2542815b72cd927906a01dc8b20",
+    ".gitignore": "fde850d24186b6e99c8c0debd641fb3ab85198b109eb66f71a1fea02bd6ea1b3"
+  },
+  "harnessSha256": "0892bf9449b6bb51129da70abc003d1404cc4d2cda7a7690d338eeee7219daf6",
+  "arguments": [
+    "-NoLogo",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\HS-R\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r2\\harness_stream_controls.ps1",
+    "-OutputRoot",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\HS-R\\root/.lake/r3-out",
+    "-ControlIds",
+    "success-positive"
+  ],
+  "environment": {
+    "R3_FAULT_TARGET": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\HS-R\\root\\lean-toolchain",
+    "R3_FAULT_MARKER": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\HS-R\\fault.marker",
+    "R3_FAULT_SCOPE": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\HS-R\\root",
+    "R3_FAULT_MODE": "carrier-fail"
+  },
+  "coreAll": true,
+  "structuralAll": true,
+  "pairing": "P passed",
+  "predicateOutcome": true
+}

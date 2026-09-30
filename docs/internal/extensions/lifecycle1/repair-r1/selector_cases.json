@@ -1,0 +1,696 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "S01_ABSENT_REGISTRY",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [
+        "--registry"
+      ],
+      "selector": {
+        "present": false,
+        "value": null
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 0,
+        "mode": "registry",
+        "error": null
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S02_ABSENT_STARTUP",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [
+        "--startup"
+      ],
+      "selector": {
+        "present": false,
+        "value": null
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 0,
+        "mode": "startup",
+        "error": null
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S03_ARGUMENT_SINGLE",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [
+        "L01-W-EMPTY"
+      ],
+      "selector": {
+        "present": false,
+        "value": null
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 0,
+        "mode": "single",
+        "error": null
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S04_PRESENT_EMPTY_REGISTRY",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [
+        "--registry"
+      ],
+      "selector": {
+        "present": true,
+        "value": ""
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "mode": "registry",
+        "error": "LIFE1-FAIL|duplicate-selector-channel"
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate.",
+      "legacyExpected": {
+        "exit": 0,
+        "mode": "registry",
+        "error": null
+      }
+    },
+    {
+      "id": "S05_EXPLICIT_ID_EMPTY",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [],
+      "selector": {
+        "present": true,
+        "value": "id:"
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "mode": "registry",
+        "error": "LIFE1-FAIL|empty-selector"
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S06_ENV_WHITESPACE",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [],
+      "selector": {
+        "present": true,
+        "value": "id: "
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "mode": "registry",
+        "error": "LIFE1-FAIL|whitespace-selector"
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S07_ENV_VALID",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [],
+      "selector": {
+        "present": true,
+        "value": "id:L01-W-EMPTY"
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 0,
+        "mode": "single",
+        "error": null
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S08_ENV_UNKNOWN",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [],
+      "selector": {
+        "present": true,
+        "value": "id:UNKNOWN"
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "mode": "registry",
+        "error": "LIFE1-FAIL|unknown-selector"
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S09_ENV_MALFORMED",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [],
+      "selector": {
+        "present": true,
+        "value": "L01-W-EMPTY"
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "mode": "registry",
+        "error": "LIFE1-FAIL|selector-environment-prefix"
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S10_ARGUMENT_UNKNOWN",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [
+        "UNKNOWN"
+      ],
+      "selector": {
+        "present": false,
+        "value": null
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "mode": "registry",
+        "error": "LIFE1-FAIL|unknown-selector"
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S11_DUPLICATE_ARGUMENT",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [
+        "L01-W-EMPTY",
+        "L01-W-EMPTY"
+      ],
+      "selector": {
+        "present": false,
+        "value": null
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "mode": "registry",
+        "error": "LIFE1-FAIL|duplicate-selector"
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S12_DUPLICATE_CHANNEL",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [
+        "L01-W-EMPTY"
+      ],
+      "selector": {
+        "present": true,
+        "value": "id:L01-W-EMPTY"
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "mode": "registry",
+        "error": "LIFE1-FAIL|duplicate-selector-channel"
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S13_AMBIENT_VALID_OMITTED",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [
+        "--registry"
+      ],
+      "selector": {
+        "present": false,
+        "value": null
+      },
+      "ambient": {
+        "present": true,
+        "value": "id:L01-W-EMPTY"
+      },
+      "expected": {
+        "exit": 0,
+        "mode": "registry",
+        "error": null
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S14_AMBIENT_MALFORMED_OMITTED",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [
+        "--startup"
+      ],
+      "selector": {
+        "present": false,
+        "value": null
+      },
+      "ambient": {
+        "present": true,
+        "value": "malformed"
+      },
+      "expected": {
+        "exit": 0,
+        "mode": "startup",
+        "error": null
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S15_AMBIENT_EMPTY_OMITTED",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [
+        "--registry"
+      ],
+      "selector": {
+        "present": false,
+        "value": null
+      },
+      "ambient": {
+        "present": true,
+        "value": ""
+      },
+      "expected": {
+        "exit": 0,
+        "mode": "registry",
+        "error": null
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S16_AMBIENT_ID_EMPTY_ARGUMENT",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [
+        "L01-W-EMPTY"
+      ],
+      "selector": {
+        "present": false,
+        "value": null
+      },
+      "ambient": {
+        "present": true,
+        "value": "id:"
+      },
+      "expected": {
+        "exit": 0,
+        "mode": "single",
+        "error": null
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S17_AMBIENT_REPLACED_ENV",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [],
+      "selector": {
+        "present": true,
+        "value": "id:L01-W-EMPTY"
+      },
+      "ambient": {
+        "present": true,
+        "value": "id:UNKNOWN"
+      },
+      "expected": {
+        "exit": 0,
+        "mode": "single",
+        "error": null
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S18_FAILURE_RESTORES_AMBIENT",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [],
+      "selector": {
+        "present": true,
+        "value": "id:"
+      },
+      "ambient": {
+        "present": true,
+        "value": "id:L01-W-EMPTY"
+      },
+      "expected": {
+        "exit": 1,
+        "mode": "registry",
+        "error": "LIFE1-FAIL|empty-selector"
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S19_FAILURE_RESTORES_EMPTY",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [],
+      "selector": {
+        "present": true,
+        "value": "id: "
+      },
+      "ambient": {
+        "present": true,
+        "value": ""
+      },
+      "expected": {
+        "exit": 1,
+        "mode": "registry",
+        "error": "LIFE1-FAIL|whitespace-selector"
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S20_FAILURE_RESTORES_ABSENCE",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [],
+      "selector": {
+        "present": true,
+        "value": "bad-prefix"
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "mode": "registry",
+        "error": "LIFE1-FAIL|selector-environment-prefix"
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S21_ARGUMENT_WHITESPACE",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [
+        " "
+      ],
+      "selector": {
+        "present": false,
+        "value": null
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "mode": "registry",
+        "error": "LIFE1-FAIL|whitespace-selector"
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S22_ENV_LEADING_SPACE",
+      "kind": "native",
+      "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+      "arguments": [],
+      "selector": {
+        "present": true,
+        "value": "id: L01-W-EMPTY"
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "mode": "registry",
+        "error": "LIFE1-FAIL|whitespace-selector"
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "S23_LAUNCH_FAILURE",
+      "kind": "native",
+      "production": "Production adapter -> unchanged owned helper -> owned shell child exit7; exact empty streams and restored ambient after failure.",
+      "arguments": [],
+      "selector": {
+        "present": false,
+        "value": null
+      },
+      "ambient": {
+        "present": true,
+        "value": "id:L01-W-EMPTY"
+      },
+      "expected": {
+        "exit": 7,
+        "mode": "child-exit-failure",
+        "error": null
+      },
+      "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+      "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+    },
+    {
+      "id": "W01_STARTUP_AMBIENT",
+      "kind": "wrapper",
+      "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+      "parameters": {
+        "Stage": "startup"
+      },
+      "ambient": {
+        "present": true,
+        "value": "id:UNKNOWN"
+      },
+      "expected": {
+        "exit": 0,
+        "error": null,
+        "pattern": "^LIFE1-VALIDATOR PASS stage=startup processes=2 logs="
+      },
+      "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+      "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+    },
+    {
+      "id": "W02_SINGLE_AMBIENT",
+      "kind": "wrapper",
+      "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+      "parameters": {
+        "Stage": "single",
+        "Case": "L01-W-EMPTY"
+      },
+      "ambient": {
+        "present": true,
+        "value": "id:"
+      },
+      "expected": {
+        "exit": 0,
+        "error": null,
+        "pattern": "^LIFE1-VALIDATOR PASS stage=single processes=3 logs="
+      },
+      "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+      "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+    },
+    {
+      "id": "W03_BOUND_EMPTY",
+      "kind": "wrapper",
+      "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+      "parameters": {
+        "Stage": "single",
+        "Case": ""
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "error": "Empty or whitespace Case selector",
+        "pattern": null
+      },
+      "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+      "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+    },
+    {
+      "id": "W04_BOUND_SPACE",
+      "kind": "wrapper",
+      "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+      "parameters": {
+        "Stage": "single",
+        "Case": " "
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "error": "Empty or whitespace Case selector",
+        "pattern": null
+      },
+      "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+      "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+    },
+    {
+      "id": "W05_UNKNOWN",
+      "kind": "wrapper",
+      "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+      "parameters": {
+        "Stage": "single",
+        "Case": "UNKNOWN"
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "error": "Unknown exact Case selector",
+        "pattern": null
+      },
+      "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+      "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+    },
+    {
+      "id": "W06_MISSING",
+      "kind": "wrapper",
+      "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+      "parameters": {
+        "Stage": "single"
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "error": "Missing exact Case selector",
+        "pattern": null
+      },
+      "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+      "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+    },
+    {
+      "id": "W07_WRONG_STAGE",
+      "kind": "wrapper",
+      "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+      "parameters": {
+        "Stage": "startup",
+        "Case": "L01-W-EMPTY"
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "error": "Case selector requires Stage single",
+        "pattern": null
+      },
+      "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+      "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+    },
+    {
+      "id": "W08_FULL_BOUND_EMPTY",
+      "kind": "wrapper",
+      "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+      "parameters": {
+        "Stage": "full",
+        "Case": ""
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "error": "Case selector requires Stage single",
+        "pattern": null
+      },
+      "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+      "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+    },
+    {
+      "id": "W09_DUPLICATE_CASE",
+      "kind": "wrapper",
+      "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+      "parameters": {
+        "Stage": "single",
+        "Case": "L01-W-EMPTY"
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "expected": {
+        "exit": 1,
+        "error": "PARAMETER_ALREADY_BOUND",
+        "pattern": null
+      },
+      "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+      "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+    }
+  ]
+}

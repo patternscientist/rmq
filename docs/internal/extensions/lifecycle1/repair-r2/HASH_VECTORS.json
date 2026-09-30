@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "oracle": "Python hashlib.sha256 of exact bytes.fromhex; UTF-8 vector encodes U+00E9 U+03A9 U+6F22 U+1F642 without BOM",
+  "vectors": [
+    {
+      "id": "empty",
+      "hex": "",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "zero",
+      "hex": "00",
+      "bytes": 1,
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "id": "ff",
+      "hex": "ff",
+      "bytes": 1,
+      "sha256": "a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89"
+    },
+    {
+      "id": "binary",
+      "hex": "000102030405060708090a0b0c0d0e0f",
+      "bytes": 16,
+      "sha256": "be45cb2605bf36bebde684841a28f0fd43c69850a3dce5fedba69928ee3a8991"
+    },
+    {
+      "id": "unicode-utf8",
+      "hex": "c3a9cea9e6bca2f09f9982",
+      "bytes": 11,
+      "sha256": "b23ca22d400fd6405c8295041ff8bf822b0b13b28e87a06e5de9459fb692fd0b"
+    },
+    {
+      "id": "unicode-one-byte",
+      "hex": "c3a9cea9e6bca2f09f9983",
+      "bytes": 11,
+      "sha256": "cb2c6daf1abb274e72a2c60b51cf1f0a37a2bbb7b9fe0505b28aca2945d7e28b"
+    },
+    {
+      "id": "lf",
+      "hex": "526d7120636f6e74726163740a",
+      "bytes": 13,
+      "sha256": "3d15e24d3f77859d4501f9feffb5acc8dab40217d6bcb983a4546753ce33b44d"
+    },
+    {
+      "id": "crlf",
+      "hex": "526d7120636f6e74726163740d0a",
+      "bytes": 14,
+      "sha256": "ce571d661c4bd916d2fe1119d97c8cb1c75672a606b4cceb83140da3ae93c262"
+    }
+  ],
+  "unequalPairs": [
+    [
+      "unicode-utf8",
+      "unicode-one-byte"
+    ],
+    [
+      "lf",
+      "crlf"
+    ],
+    [
+      "zero",
+      "ff"
+    ]
+  ]
+}

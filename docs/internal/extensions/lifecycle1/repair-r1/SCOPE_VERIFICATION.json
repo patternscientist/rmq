@@ -1,0 +1,909 @@
+{
+  "schema": "life1-r1-raw-scope-verification-v1",
+  "base": "12bd7f0fc2c87f2c9bdef3825bd92477e48e3433",
+  "governance": "7b227c49ef2ec044b702126cc41c9add847eed01",
+  "repositoryRoot": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ",
+  "startedUtc": "2026-09-21T06:16:13.672759+00:00",
+  "gitCommands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "deadlineSeconds": 30,
+      "timedOut": false,
+      "exitCode": 0,
+      "elapsedSeconds": 0.075272,
+      "stdout": {
+        "bytes": 41,
+        "sha256": "01c34c0ce4a8dd707b842c97a1c469bafb5dd44204592354d31268fb5d224847"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderrText": ""
+    },
+    {
+      "command": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "deadlineSeconds": 30,
+      "timedOut": false,
+      "exitCode": 0,
+      "elapsedSeconds": 0.044549,
+      "stdout": {
+        "bytes": 38,
+        "sha256": "c5cb110513b77bd2b0472980fa6aa154db4ca625888038e83536aa209476a254"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderrText": ""
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "12bd7f0fc2c87f2c9bdef3825bd92477e48e3433",
+        "HEAD"
+      ],
+      "deadlineSeconds": 30,
+      "timedOut": false,
+      "exitCode": 0,
+      "elapsedSeconds": 0.04342,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderrText": ""
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "7b227c49ef2ec044b702126cc41c9add847eed01",
+        "HEAD"
+      ],
+      "deadlineSeconds": 30,
+      "timedOut": false,
+      "exitCode": 0,
+      "elapsedSeconds": 0.043978,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderrText": ""
+    },
+    {
+      "command": [
+        "git",
+        "ls-tree",
+        "-r",
+        "-z",
+        "--full-tree",
+        "12bd7f0fc2c87f2c9bdef3825bd92477e48e3433"
+      ],
+      "deadlineSeconds": 30,
+      "timedOut": false,
+      "exitCode": 0,
+      "elapsedSeconds": 0.055973,
+      "stdout": {
+        "bytes": 473188,
+        "sha256": "b91621db9556049a5dfbf6033bf2e4fafe6f5dd6faf86934a4421443f0678551"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderrText": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--name-status",
+        "-z",
+        "--no-renames",
+        "--no-ext-diff",
+        "--no-textconv",
+        "12bd7f0fc2c87f2c9bdef3825bd92477e48e3433",
+        "--"
+      ],
+      "deadlineSeconds": 30,
+      "timedOut": false,
+      "exitCode": 0,
+      "elapsedSeconds": 0.067868,
+      "stdout": {
+        "bytes": 2444,
+        "sha256": "bf135ee28899c02bd97d53a2b8811a40e362b8f81e086700478e948f1e5e10f0"
+      },
+      "stderr": {
+        "bytes": 215,
+        "sha256": "d27b0349e8e83f347dfead4e1ee36e2e4bcd44b6775e3705b3dc23cbc6ae589a"
+      },
+      "stderrText": "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied\nwarning: in the working copy of 'docs/internal/WORKFLOW_DESIGN_DECISIONS.md', LF will be replaced by CRLF the next time Git touches it\n"
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard",
+        "-z"
+      ],
+      "deadlineSeconds": 30,
+      "timedOut": false,
+      "exitCode": 0,
+      "elapsedSeconds": 0.060886,
+      "stdout": {
+        "bytes": 651,
+        "sha256": "0626c7df6b043fe1bf1810630cc9700c577bb1b8ed561d8e684e011869875f90"
+      },
+      "stderr": {
+        "bytes": 80,
+        "sha256": "2288c5f18f555fa3ffe643d2147254e25f23b07b9f1727e2c6f704cf86ba59b0"
+      },
+      "stderrText": "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied\n"
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "12bd7f0fc2c87f2c9bdef3825bd92477e48e3433:docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.frozen.md"
+      ],
+      "deadlineSeconds": 30,
+      "timedOut": false,
+      "exitCode": 0,
+      "elapsedSeconds": 0.053272,
+      "stdout": {
+        "bytes": 43437,
+        "sha256": "8b08e2d7c7f284634d88bfa4262ee447f79a401c78b27dc346ea34d76ccba4a7"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderrText": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "12bd7f0fc2c87f2c9bdef3825bd92477e48e3433:docs/internal/extensions/lifecycle1/CONTRACT_REQUIREMENTS.json"
+      ],
+      "deadlineSeconds": 30,
+      "timedOut": false,
+      "exitCode": 0,
+      "elapsedSeconds": 0.064533,
+      "stdout": {
+        "bytes": 53962,
+        "sha256": "5bd95d24b6cffaf9fb39abb2aa04cca9743aed7884b3f87d03d7428e6b9cd8eb"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderrText": ""
+    },
+    {
+      "command": [
+        "git",
+        "cat-file",
+        "blob",
+        "12bd7f0fc2c87f2c9bdef3825bd92477e48e3433:docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.md"
+      ],
+      "deadlineSeconds": 30,
+      "timedOut": false,
+      "exitCode": 0,
+      "elapsedSeconds": 0.045145,
+      "stdout": {
+        "bytes": 72806,
+        "sha256": "18bdb89a0d4873636d434effb9a8e6d4f8c1b13997deb3167159eb1da167ef8e"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderrText": ""
+    }
+  ],
+  "manifest": {
+    "path": "docs/internal/extensions/lifecycle1/repair-r1/INITIAL_WORKING_FILES.json",
+    "bytes": 692757,
+    "sha256": "7568f90a8e594b79e707d0df575bb998feb5843e544c756b353764710decf806",
+    "initialTrackedCount": 3708,
+    "initialRawBytes": 151311227
+  },
+  "head": "7c406b15bdc12333d323c92641ab6c6dad6af7a2",
+  "branch": "codex/life-1-r1-validator-portability",
+  "manifestExactBaseInventory": {
+    "equal": true,
+    "baseCount": 3708,
+    "missingManifestPaths": [],
+    "unknownManifestPaths": [],
+    "baseTreeEnumeration": {
+      "bytes": 473188,
+      "sha256": "b91621db9556049a5dfbf6033bf2e4fafe6f5dd6faf86934a4421443f0678551"
+    }
+  },
+  "rawProtectedWorkingFiles": {
+    "status": "PASS",
+    "count": 3704,
+    "equalCount": 3704,
+    "initialBytes": 150370073,
+    "currentBytes": 150370073,
+    "initialIdentityMap": {
+      "bytes": 621755,
+      "sha256": "617efa3042c1def3034a8024392a812ad835ff485f2888862a79f8c13dadf0e8"
+    },
+    "currentIdentityMap": {
+      "bytes": 621755,
+      "sha256": "617efa3042c1def3034a8024392a812ad835ff485f2888862a79f8c13dadf0e8"
+    },
+    "changedPaths": [],
+    "inaccessible": []
+  },
+  "rawInitiallyTrackedChangedPaths": [
+    "docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+    "docs/internal/extensions/lifecycle1/VERIFICATION_PLAN.md",
+    "scripts/lifecycle_dependency_replay.ps1",
+    "scripts/lifecycle_validator.ps1"
+  ],
+  "allowedProductionEdits": [
+    {
+      "path": "scripts/lifecycle_dependency_replay.ps1",
+      "initial": {
+        "bytes": 20540,
+        "sha256": "1c9861d0b9c62ee4be77bf3df71d480cb97d93edb4cd464f97b08a4ca7be000f"
+      },
+      "current": {
+        "bytes": 20877,
+        "sha256": "e2df09b1920691127c29eefc293700b7d046a7ddec7f78db18ea68a6b6c42b47"
+      },
+      "exists": true,
+      "changed": true
+    },
+    {
+      "path": "scripts/lifecycle_validator.ps1",
+      "initial": {
+        "bytes": 7898,
+        "sha256": "3215e244fd8af734a2325bdb7b2a321e75906b58f78a4132ecee33c23f0e53d8"
+      },
+      "current": {
+        "bytes": 8062,
+        "sha256": "94dd5022a8161dbdff69bc8d0fa2d9140c874b3a4d8e8fa03662f71b38db5cb3"
+      },
+      "exists": true,
+      "changed": true
+    }
+  ],
+  "appendOnlyDocuments": [
+    {
+      "path": "docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+      "initial": {
+        "bytes": 895113,
+        "sha256": "c427b054bb3fab4919a9adb2dcc3adf3793d9266cb76ff33cf93890f8edc01a1"
+      },
+      "current": {
+        "bytes": 905553,
+        "sha256": "6185e7907f116ea5b8d5895e661c8c99615b97ada9f20378c87e3021baf74768"
+      },
+      "originalPrefix": {
+        "bytes": 895113,
+        "sha256": "c427b054bb3fab4919a9adb2dcc3adf3793d9266cb76ff33cf93890f8edc01a1"
+      },
+      "prefixEqual": true,
+      "appended": {
+        "bytes": 10440,
+        "sha256": "b7938637d853eb3cd8aa4705ad6853fc1260c5a0603c8c527044b70a1d9a06c6"
+      }
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/VERIFICATION_PLAN.md",
+      "initial": {
+        "bytes": 17603,
+        "sha256": "c9ccaef0019ab9ac08bd9e5d94e1ecb5647b2bdde64404b17ddc0b67de41bbda"
+      },
+      "current": {
+        "bytes": 17841,
+        "sha256": "60a70ba7eafa7a11584f23809a726d137a4a7538a18c823683b6e5d245a29a5d"
+      },
+      "originalPrefix": {
+        "bytes": 17603,
+        "sha256": "c9ccaef0019ab9ac08bd9e5d94e1ecb5647b2bdde64404b17ddc0b67de41bbda"
+      },
+      "prefixEqual": true,
+      "appended": {
+        "bytes": 238,
+        "sha256": "a5c2e831b4a46bda56c11e2826b6ac720b191538d4b6ff8b7dc41da65c0cc16a"
+      },
+      "appendedText": "\r\nLIFE-1-R1 successor verification is recorded in [repair-r1/VERIFICATION_PLAN.md](repair-r1/VERIFICATION_PLAN.md) and [repair-r1/REPORT.md](repair-r1/REPORT.md); original evidence and requirements above remain historical and unchanged.\r\n"
+    }
+  ],
+  "gitBaseToWorking": {
+    "status": "PASS",
+    "comparison": "Git base-to-index/worktree diff; attributes remain in effect; no script byte normalization",
+    "trackedChanges": [
+      {
+        "path": "docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+        "status": "M",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/VERIFICATION_PLAN.md",
+        "status": "M",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/ACCEPTANCE_MATRIX.frozen.md",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/ACCEPTANCE_MATRIX.md",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/CACHE_PROVENANCE.json",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/CONTRACT.json",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.frozen.json",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.json",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/INITIAL_WORKING_FILES.json",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/PROMPT.md",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/START.json",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/VERIFICATION_PLAN.md",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/contract_verification.json",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/deadline_control.ps1",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/dependency_boundary_cases.json",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/dependency_child.ps1",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/finalizer_cases.json",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/finalizer_control.ps1",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/freeze_controls.py",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/initialize_contract.py",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/make_dependency_registry.py",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/make_selector_registry.py",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/old_environment_control.ps1",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/preflight.txt",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/prepare_cache.py",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/prepare_old_root.py",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/registry_control_cases.json",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/registry_controls.ps1",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/run_check.ps1",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/run_controls.ps1",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/runtime_profile.ps1",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/selector_cases.json",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/selector_child.ps1",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/verify_contract.py",
+        "status": "A",
+        "allowed": true
+      },
+      {
+        "path": "scripts/lifecycle_dependency_replay.ps1",
+        "status": "M",
+        "allowed": true
+      },
+      {
+        "path": "scripts/lifecycle_validator.ps1",
+        "status": "M",
+        "allowed": true
+      },
+      {
+        "path": "scripts/lifecycle_validator_environment.ps1",
+        "status": "A",
+        "allowed": true
+      }
+    ],
+    "protectedEqualCount": 3704,
+    "protectedChangedPaths": [],
+    "newPaths": [
+      "docs/internal/extensions/lifecycle1/repair-r1/ACCEPTANCE_MATRIX.frozen.md",
+      "docs/internal/extensions/lifecycle1/repair-r1/ACCEPTANCE_MATRIX.md",
+      "docs/internal/extensions/lifecycle1/repair-r1/CACHE_PROVENANCE.json",
+      "docs/internal/extensions/lifecycle1/repair-r1/CONTRACT.json",
+      "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.frozen.json",
+      "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.json",
+      "docs/internal/extensions/lifecycle1/repair-r1/EVIDENCE_INDEX.json",
+      "docs/internal/extensions/lifecycle1/repair-r1/INITIAL_WORKING_FILES.json",
+      "docs/internal/extensions/lifecycle1/repair-r1/PROMPT.md",
+      "docs/internal/extensions/lifecycle1/repair-r1/REPORT.md",
+      "docs/internal/extensions/lifecycle1/repair-r1/ROW_DISPOSITIONS.md",
+      "docs/internal/extensions/lifecycle1/repair-r1/SCOPE_VERIFICATION.json",
+      "docs/internal/extensions/lifecycle1/repair-r1/SOURCE_FREEZE.json",
+      "docs/internal/extensions/lifecycle1/repair-r1/START.json",
+      "docs/internal/extensions/lifecycle1/repair-r1/VERIFICATION_PLAN.md",
+      "docs/internal/extensions/lifecycle1/repair-r1/build_row_dispositions.py",
+      "docs/internal/extensions/lifecycle1/repair-r1/collect_evidence.py",
+      "docs/internal/extensions/lifecycle1/repair-r1/contract_verification.json",
+      "docs/internal/extensions/lifecycle1/repair-r1/deadline_control.ps1",
+      "docs/internal/extensions/lifecycle1/repair-r1/dependency_boundary_cases.json",
+      "docs/internal/extensions/lifecycle1/repair-r1/dependency_child.ps1",
+      "docs/internal/extensions/lifecycle1/repair-r1/finalizer_cases.json",
+      "docs/internal/extensions/lifecycle1/repair-r1/finalizer_control.ps1",
+      "docs/internal/extensions/lifecycle1/repair-r1/finish_report.py",
+      "docs/internal/extensions/lifecycle1/repair-r1/freeze_controls.py",
+      "docs/internal/extensions/lifecycle1/repair-r1/initialize_contract.py",
+      "docs/internal/extensions/lifecycle1/repair-r1/make_dependency_registry.py",
+      "docs/internal/extensions/lifecycle1/repair-r1/make_selector_registry.py",
+      "docs/internal/extensions/lifecycle1/repair-r1/old_environment_control.ps1",
+      "docs/internal/extensions/lifecycle1/repair-r1/preflight.txt",
+      "docs/internal/extensions/lifecycle1/repair-r1/prepare_cache.py",
+      "docs/internal/extensions/lifecycle1/repair-r1/prepare_old_root.py",
+      "docs/internal/extensions/lifecycle1/repair-r1/registry_control_cases.json",
+      "docs/internal/extensions/lifecycle1/repair-r1/registry_controls.ps1",
+      "docs/internal/extensions/lifecycle1/repair-r1/run_check.ps1",
+      "docs/internal/extensions/lifecycle1/repair-r1/run_controls.ps1",
+      "docs/internal/extensions/lifecycle1/repair-r1/runtime_profile.ps1",
+      "docs/internal/extensions/lifecycle1/repair-r1/selector_cases.json",
+      "docs/internal/extensions/lifecycle1/repair-r1/selector_child.ps1",
+      "docs/internal/extensions/lifecycle1/repair-r1/source_manifest.py",
+      "docs/internal/extensions/lifecycle1/repair-r1/verify_contract.py",
+      "docs/internal/extensions/lifecycle1/repair-r1/verify_scope.py",
+      "scripts/lifecycle_validator_environment.ps1"
+    ],
+    "illegalChanges": [],
+    "illegalNewPaths": [],
+    "ignoredFiles": "Generated ignored build/cache/evidence files are excluded from trackable source scope."
+  },
+  "selfReceipt": {
+    "path": "docs/internal/extensions/lifecycle1/repair-r1/SCOPE_VERIFICATION.json",
+    "existedAtScan": true,
+    "newPathAllowed": true,
+    "identity": "This receipt is written after scanning and cannot contain its own final hash."
+  },
+  "exactChangedFileListIncludingReceipt": [
+    "docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+    "docs/internal/extensions/lifecycle1/VERIFICATION_PLAN.md",
+    "docs/internal/extensions/lifecycle1/repair-r1/ACCEPTANCE_MATRIX.frozen.md",
+    "docs/internal/extensions/lifecycle1/repair-r1/ACCEPTANCE_MATRIX.md",
+    "docs/internal/extensions/lifecycle1/repair-r1/CACHE_PROVENANCE.json",
+    "docs/internal/extensions/lifecycle1/repair-r1/CONTRACT.json",
+    "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.frozen.json",
+    "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.json",
+    "docs/internal/extensions/lifecycle1/repair-r1/EVIDENCE_INDEX.json",
+    "docs/internal/extensions/lifecycle1/repair-r1/INITIAL_WORKING_FILES.json",
+    "docs/internal/extensions/lifecycle1/repair-r1/PROMPT.md",
+    "docs/internal/extensions/lifecycle1/repair-r1/REPORT.md",
+    "docs/internal/extensions/lifecycle1/repair-r1/ROW_DISPOSITIONS.md",
+    "docs/internal/extensions/lifecycle1/repair-r1/SCOPE_VERIFICATION.json",
+    "docs/internal/extensions/lifecycle1/repair-r1/SOURCE_FREEZE.json",
+    "docs/internal/extensions/lifecycle1/repair-r1/START.json",
+    "docs/internal/extensions/lifecycle1/repair-r1/VERIFICATION_PLAN.md",
+    "docs/internal/extensions/lifecycle1/repair-r1/build_row_dispositions.py",
+    "docs/internal/extensions/lifecycle1/repair-r1/collect_evidence.py",
+    "docs/internal/extensions/lifecycle1/repair-r1/contract_verification.json",
+    "docs/internal/extensions/lifecycle1/repair-r1/deadline_control.ps1",
+    "docs/internal/extensions/lifecycle1/repair-r1/dependency_boundary_cases.json",
+    "docs/internal/extensions/lifecycle1/repair-r1/dependency_child.ps1",
+    "docs/internal/extensions/lifecycle1/repair-r1/finalizer_cases.json",
+    "docs/internal/extensions/lifecycle1/repair-r1/finalizer_control.ps1",
+    "docs/internal/extensions/lifecycle1/repair-r1/finish_report.py",
+    "docs/internal/extensions/lifecycle1/repair-r1/freeze_controls.py",
+    "docs/internal/extensions/lifecycle1/repair-r1/initialize_contract.py",
+    "docs/internal/extensions/lifecycle1/repair-r1/make_dependency_registry.py",
+    "docs/internal/extensions/lifecycle1/repair-r1/make_selector_registry.py",
+    "docs/internal/extensions/lifecycle1/repair-r1/old_environment_control.ps1",
+    "docs/internal/extensions/lifecycle1/repair-r1/preflight.txt",
+    "docs/internal/extensions/lifecycle1/repair-r1/prepare_cache.py",
+    "docs/internal/extensions/lifecycle1/repair-r1/prepare_old_root.py",
+    "docs/internal/extensions/lifecycle1/repair-r1/registry_control_cases.json",
+    "docs/internal/extensions/lifecycle1/repair-r1/registry_controls.ps1",
+    "docs/internal/extensions/lifecycle1/repair-r1/run_check.ps1",
+    "docs/internal/extensions/lifecycle1/repair-r1/run_controls.ps1",
+    "docs/internal/extensions/lifecycle1/repair-r1/runtime_profile.ps1",
+    "docs/internal/extensions/lifecycle1/repair-r1/selector_cases.json",
+    "docs/internal/extensions/lifecycle1/repair-r1/selector_child.ps1",
+    "docs/internal/extensions/lifecycle1/repair-r1/source_manifest.py",
+    "docs/internal/extensions/lifecycle1/repair-r1/verify_contract.py",
+    "docs/internal/extensions/lifecycle1/repair-r1/verify_scope.py",
+    "scripts/lifecycle_dependency_replay.ps1",
+    "scripts/lifecycle_validator.ps1",
+    "scripts/lifecycle_validator_environment.ps1"
+  ],
+  "protectedCategoriesMayOverlap": {
+    "canonicalProjectSkills": {
+      "count": 7,
+      "equalCount": 7,
+      "initialBytes": 107059,
+      "initialIdentityMap": {
+        "bytes": 1005,
+        "sha256": "eed448e70537f70f19e573134a54a9679b0cba9e6c92bf831cce4d829137ec9b"
+      },
+      "currentIdentityMap": {
+        "bytes": 1005,
+        "sha256": "eed448e70537f70f19e573134a54a9679b0cba9e6c92bf831cce4d829137ec9b"
+      }
+    },
+    "allLeanSource": {
+      "count": 1160,
+      "equalCount": 1160,
+      "initialBytes": 24797643,
+      "initialIdentityMap": {
+        "bytes": 193688,
+        "sha256": "3c398751a159207c53834eb2374198c075f20631645b660d315ea489035d8fbf"
+      },
+      "currentIdentityMap": {
+        "bytes": 193688,
+        "sha256": "3c398751a159207c53834eb2374198c075f20631645b660d315ea489035d8fbf"
+      }
+    },
+    "originalLifecycleEvidence": {
+      "count": 15,
+      "equalCount": 15,
+      "initialBytes": 447334,
+      "initialIdentityMap": {
+        "bytes": 2262,
+        "sha256": "c7f6cf860c05013e4c989ff22195fa461efb8c51cadde38db2db8ccd3eb2dd07"
+      },
+      "currentIdentityMap": {
+        "bytes": 2262,
+        "sha256": "c7f6cf860c05013e4c989ff22195fa461efb8c51cadde38db2db8ccd3eb2dd07"
+      }
+    },
+    "originalJsonRegistriesAndCases": {
+      "count": 22,
+      "equalCount": 22,
+      "initialBytes": 462633,
+      "initialIdentityMap": {
+        "bytes": 3384,
+        "sha256": "5653ce8c654657ca40e9c0e8d68955ffa6c6803fb29d2504388065215c118a01"
+      },
+      "currentIdentityMap": {
+        "bytes": 3384,
+        "sha256": "5653ce8c654657ca40e9c0e8d68955ffa6c6803fb29d2504388065215c118a01"
+      }
+    },
+    "protectedScriptsPoliciesAndGates": {
+      "count": 101,
+      "equalCount": 101,
+      "initialBytes": 2270022,
+      "initialIdentityMap": {
+        "bytes": 13273,
+        "sha256": "e3f22376af410f3cca773b28db58bf31005a7bc4d91a2505979f800637f89d43"
+      },
+      "currentIdentityMap": {
+        "bytes": 13273,
+        "sha256": "e3f22376af410f3cca773b28db58bf31005a7bc4d91a2505979f800637f89d43"
+      }
+    },
+    "nativeSources": {
+      "count": 43,
+      "equalCount": 43,
+      "initialBytes": 1171571,
+      "initialIdentityMap": {
+        "bytes": 5804,
+        "sha256": "0a89dabddef2c2fd197b5f6af28cf85916d7ee1ce34fcc87e5ff2b76e500d833"
+      },
+      "currentIdentityMap": {
+        "bytes": 5804,
+        "sha256": "0a89dabddef2c2fd197b5f6af28cf85916d7ee1ce34fcc87e5ff2b76e500d833"
+      }
+    },
+    "buildToolchain": {
+      "count": 3,
+      "equalCount": 3,
+      "initialBytes": 1318,
+      "initialIdentityMap": {
+        "bytes": 325,
+        "sha256": "95400b0321d33f10786a2798cf2efb42a1a5c2f0bdd5f5d955aebc8bd1c62a9a"
+      },
+      "currentIdentityMap": {
+        "bytes": 325,
+        "sha256": "95400b0321d33f10786a2798cf2efb42a1a5c2f0bdd5f5d955aebc8bd1c62a9a"
+      }
+    },
+    "ownedProcessHelper": {
+      "count": 1,
+      "equalCount": 1,
+      "initialBytes": 47060,
+      "initialIdentityMap": {
+        "bytes": 126,
+        "sha256": "cc2ee737b78562e5481c10b2ac9476a279af0688a9636d7e73b78957f936647f"
+      },
+      "currentIdentityMap": {
+        "bytes": 126,
+        "sha256": "cc2ee737b78562e5481c10b2ac9476a279af0688a9636d7e73b78957f936647f"
+      }
+    }
+  },
+  "canonicalSkillSet": {
+    "names": [
+      "rmq-audit-prompt",
+      "rmq-coordinator",
+      "rmq-proof-sprint"
+    ],
+    "allPresentAndRawUnchanged": true
+  },
+  "ownedHelper": {
+    "path": "scripts/owned_process_tree.ps1",
+    "requiredSha256": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+    "current": {
+      "bytes": 47060,
+      "sha256": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e"
+    },
+    "equal": true
+  },
+  "runtimeAndExecutableRawPins": [
+    {
+      "path": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+      "expected": {
+        "bytes": 301368,
+        "sha256": "362a356ce7f0940ec74f73a8fc2c990a2cc24a38a11c90bbd8eca947110ad139"
+      },
+      "current": {
+        "bytes": 301368,
+        "sha256": "362a356ce7f0940ec74f73a8fc2c990a2cc24a38a11c90bbd8eca947110ad139"
+      },
+      "equal": true
+    },
+    {
+      "path": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+      "expected": {
+        "bytes": 495616,
+        "sha256": "8bb6fa8c283b4d92120b1ef249a9b311b0f804d4cabbe9981159976c8be76a5e"
+      },
+      "current": {
+        "bytes": 495616,
+        "sha256": "8bb6fa8c283b4d92120b1ef249a9b311b0f804d4cabbe9981159976c8be76a5e"
+      },
+      "equal": true
+    },
+    {
+      "path": ".lake/build/bin/rmq_lifecycle_validate.exe",
+      "requiredSha256": "4752591ec5a7d962e09440391aa38d0e2fc534b2f04775aab9c0c735e43ba99c",
+      "current": {
+        "bytes": 25018368,
+        "sha256": "4752591ec5a7d962e09440391aa38d0e2fc534b2f04775aab9c0c735e43ba99c"
+      },
+      "equal": true
+    }
+  ],
+  "originalContractSerialization": {
+    "status": "FAIL",
+    "files": [
+      {
+        "path": "docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.frozen.md",
+        "initialWorking": {
+          "bytes": 43514,
+          "sha256": "bc596cd8a4866cf8db7bd06360d1c2e797e389c92237c9ac3a0b5e4145cd22ab"
+        },
+        "currentWorking": {
+          "bytes": 43514,
+          "sha256": "bc596cd8a4866cf8db7bd06360d1c2e797e389c92237c9ac3a0b5e4145cd22ab"
+        },
+        "rawInitialEqual": true,
+        "baseGitBlob": {
+          "bytes": 43437,
+          "sha256": "8b08e2d7c7f284634d88bfa4262ee447f79a401c78b27dc346ea34d76ccba4a7"
+        },
+        "rawWorkingEqualsBaseGitBlob": false,
+        "workingNewlines": {
+          "crlf": 77,
+          "lf": 77,
+          "bareCr": 0
+        },
+        "baseGitNewlines": {
+          "crlf": 0,
+          "lf": 77,
+          "bareCr": 0
+        },
+        "requiredOriginalRawSha256": "8b08e2d7c7f284634d88bfa4262ee447f79a401c78b27dc346ea34d76ccba4a7",
+        "requiredRawPinSatisfied": false
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/CONTRACT_REQUIREMENTS.json",
+        "initialWorking": {
+          "bytes": 54250,
+          "sha256": "e47ab45acad51fe508ce9b8be9983a136f8c9267d4d8fdd7888195bd0419e488"
+        },
+        "currentWorking": {
+          "bytes": 54250,
+          "sha256": "e47ab45acad51fe508ce9b8be9983a136f8c9267d4d8fdd7888195bd0419e488"
+        },
+        "rawInitialEqual": true,
+        "baseGitBlob": {
+          "bytes": 53962,
+          "sha256": "5bd95d24b6cffaf9fb39abb2aa04cca9743aed7884b3f87d03d7428e6b9cd8eb"
+        },
+        "rawWorkingEqualsBaseGitBlob": false,
+        "workingNewlines": {
+          "crlf": 288,
+          "lf": 288,
+          "bareCr": 0
+        },
+        "baseGitNewlines": {
+          "crlf": 0,
+          "lf": 288,
+          "bareCr": 0
+        },
+        "requiredOriginalRawSha256": "5bd95d24b6cffaf9fb39abb2aa04cca9743aed7884b3f87d03d7428e6b9cd8eb",
+        "requiredRawPinSatisfied": false
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.md",
+        "initialWorking": {
+          "bytes": 73177,
+          "sha256": "63b7eb6b7c01fcf9ca109be9cdcbf67141bb83c3927c2d7f707b06e2dc482cf1"
+        },
+        "currentWorking": {
+          "bytes": 73177,
+          "sha256": "63b7eb6b7c01fcf9ca109be9cdcbf67141bb83c3927c2d7f707b06e2dc482cf1"
+        },
+        "rawInitialEqual": true,
+        "baseGitBlob": {
+          "bytes": 72806,
+          "sha256": "18bdb89a0d4873636d434effb9a8e6d4f8c1b13997deb3167159eb1da167ef8e"
+        },
+        "rawWorkingEqualsBaseGitBlob": false,
+        "workingNewlines": {
+          "crlf": 371,
+          "lf": 371,
+          "bareCr": 0
+        },
+        "baseGitNewlines": {
+          "crlf": 0,
+          "lf": 371,
+          "bareCr": 0
+        },
+        "requiredOriginalRawSha256": null,
+        "requiredRawPinSatisfied": null
+      }
+    ],
+    "disposition": "Original working files remain equal to launch bytes, but inherited CRLF serialization differs from required original raw pins/Git blobs. No normalization or restoration was performed; coordinator direction is still required."
+  },
+  "scopeStatus": "PASS",
+  "status": "INCOMPLETE_ORIGINAL_CONTRACT_SERIALIZATION",
+  "limitations": [
+    "Raw source preservation and path scope do not certify semantics of the two allowed script edits or new repair files.",
+    "Append-only checks establish exact initial prefix preservation; review of appended content remains separate.",
+    "Git source comparison is not a claim of raw Git-blob equality for CRLF working files.",
+    "Shell/executable hashes establish file identity, not fresh compilation, runtime execution, or compiler provenance.",
+    "This snapshot neither locks the worktree nor covers later edits; rerun on final submitted content.",
+    "No source or installed tool was normalized, restored, overwritten, or deleted by this verifier."
+  ],
+  "elapsedSeconds": 1.00933,
+  "verifier": {
+    "path": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\verify_scope.py",
+    "bytes": 20433,
+    "sha256": "e5302f9a17c201b27d0f06c033d43445e52f635e5dbeb90bd7ec81e56336a044"
+  },
+  "python": {
+    "path": "C:\\Python314\\python.exe",
+    "version": "3.14.4 (tags/v3.14.4:23116f9, Apr  7 2026, 14:10:54) [MSC v.1944 64 bit (AMD64)]",
+    "bytes": 106328,
+    "sha256": "7ca24f26d6e3f463419ee4f537ddd3acd312c38fe45e678cce08572f26a8bd1a"
+  }
+}

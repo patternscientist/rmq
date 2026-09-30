@@ -1,0 +1,34 @@
+{
+  "handle": "LIFE-NATIVE-P0-R3",
+  "title": "(LIFE-NATIVE-P0-R3) Make stream equality literal",
+  "worktree": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ",
+  "base": "9519b2c1af5e2cf59536b311db5e8dc81376a32f",
+  "head": "9519b2c1af5e2cf59536b311db5e8dc81376a32f",
+  "branch": "codex/life-native-p0-r3-literal-streams",
+  "initialClean": true,
+  "initialStatus": "",
+  "governance": "7b227c49ef2ec044b702126cc41c9add847eed01",
+  "runtimeProjectSkills": [
+    "rmq-audit-prompt",
+    "rmq-coordinator",
+    "rmq-proof-sprint"
+  ],
+  "requiredSkills": [
+    "rmq-proof-sprint"
+  ],
+  "preflightExit": 0,
+  "preflightOutput": [
+    "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+    "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+    "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied",
+    "SKILL-PREFLIGHT: governance=7b227c49ef2ec044b702126cc41c9add847eed01",
+    "SKILL-PREFLIGHT: checkout=9519b2c1af5e2cf59536b311db5e8dc81376a32f",
+    "SKILL-PREFLIGHT: expected=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint",
+    "SKILL-PREFLIGHT: checkout_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint",
+    "SKILL-PREFLIGHT: working_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint",
+    "SKILL-PREFLIGHT: runtime_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint",
+    "SKILL-PREFLIGHT: required=rmq-proof-sprint",
+    "SKILL-PREFLIGHT: required_mode=role-skills",
+    "SKILL-PREFLIGHT: PASS"
+  ]
+}

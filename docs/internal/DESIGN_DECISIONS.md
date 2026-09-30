@@ -13213,3 +13213,213 @@ Decision: set package `moreLeanArgs = ["-s", "65536"]` in lakefile.toml. The pin
 Alternatives: increasing the OS stack again does not set Lean's explicit worker stack; rewriting the literal program proofs would change proof source before testing the compiler's resource setting. The worker-stack setting is a candidate repair until the required Linux checks pass; this entry does not claim those pending results.
 
 Consequences: reproducible resource configuration applies to local and hosted Lake builds. The existing OS stack setup remains needed for interpreter execution. Both required protected-main checks must pass on the final candidate before promotion; lifecycle work is excluded.
+
+## DD-20260920-LIFE-001: extend scalar execution with owned-bank retirement and charged request entry
+
+Context: the existing builder produces the packed allocation behind its input and temporary arena. Its standalone run halts, and the accepted compact query begins from a separately initialized immutable memory. A continuous lifecycle must instead execute the live builder body at its real program offset, transfer its produced output base and request through instructions, compact the produced cells, retire temporary banks, and enter the query on that same memory. The frozen LIFE-1 contract commissions this additive candidate; it does not authorize predecessor changes or claim campaign acceptance.
+
+Decision: `PackedLifecycle.State` contains the unchanged construction `State` plus explicit owned extents for comparison input cells and key registers. Old instruction evaluation delegates definitionally to `PackedConstruction.execPrim`. Three new instructions revoke exactly one numeric, key-input, or key-register tail cell, decrease the corresponding extent, and fault at zero extent. Extents supplement pointwise absence: the executable refinement must finish with empty containers, while native backing capacity remains a separately assigned obligation. Ordered transitions keep complete producing states and actions; the retained machine state has no observation history.
+
+Sequential query entry uses four separately charged external transitions from a halted state: write the current left request word, write the current right request word, set the entry PC, and activate running status. The old stopped-state rule stays intact. Registers 300 and 301 are the bounded admission slots within the accounted finite numeric bank; no future-request tape is retained. The entry program transfers the request and metadata-derived size to the query ABI, clears the complete finite query bank, then executes its jump to the compact prefix. The accepted query proves a zero tail from register 8273, so general re-entry uses that bank rather than assuming the builder-only zero tail from 400.
+
+Alternatives rejected: resuming a halted builder or query with an uncharged record update; replacing scalar retirement with a whole-array semantic clear; inferring empty storage from absent lookups; reusing the first-query 400-register frame after query scratch is dirtied; counting a separate canonical memory while executing another arena. The old builder/layout/query are reused through proved adapters, avoiding a new RMQ layout or a broad machine unification.
+
+Consequences and evidence: `Lifecycle/Machine.lean` and `Lifecycle/Calculus.lean` provide the conservative projection, ordered old-prefix simulation and exact four-event admission protocol. `Lifecycle/QueryBridge.lean` preserves every compact transition and attempted read/reply; `Lifecycle/QueryEntry.lean` derives the ABI through 8271 charged setup steps. `Continuous.lean`, `Ownership.lean` and `Capstone.lean` derive their entry premises, actual completed trace, finite-container projection and retained capacity from the represented input domain. Array logical size and model ticks imply neither native allocator capacity nor measured runtime complexity.
+
+The fixed layout places the compact query at zero, the four-instruction preparation at 212964, full-bank setup immediately after it, the builder body at 221239, the eleven-instruction descriptor at 223345, the fourteen-instruction finalizer at 223356, and optional eight-instruction key retirement at 223370. The final charged jump targets preparation. The word/comparison programs contain 223371/223379 instructions; their actual encoded words are bounded by 1116895. Exact numeric offsets avoid kernel normalization of the large query prefix, while checked length and hosted-fragment equalities justify every offset. The service bound is 4+8271+151978=160253; adding boundary events gives 160257. Construction/finalization work is bounded by 1100000000*(n+1), and every prefix arena extent by 5000000*(n+1). All constants are deliberately coarse and fixed outside certificates.
+
+`Physical.lean` gives disjoint consecutive code/register/control/arena regions in one evolving finite numeric view. `CodeFetch.lean` translates actual instruction PCs to encoded-word offsets. A failed extent guard retains the represented logical address, faults, and performs no physical fetch; an actual safe load derives its physical address bound from the same prefix extent bound. This avoids falsely claiming that adding a region offset to every arbitrary W-bit invalid address still fits W. Scalar store/reserve/release and boundary equations bind the view to actual state changes. Uninitialized arena cells use the existing optional-value semantics; canonical initialization proves a plain Nat word view at READY without charging a fictional bitmap. Arbitrary Int keys remain outside that numeric view, with their extents recorded in control words.
+
+The public interface has seven connected groups: actual construction/suffix, retained semantic result/work, state safety/resources, physical execution, finite owner/capacity, reusable owner protocol, and uniform width/rho/code bounds. It does not accept an answer or final-memory equality as an input. The independent client expands the shared data/ownership/profile predicates and pins their exact propositions and objects. Alternative designs rejected include a checklist-sized certificate with unused facts and a same-sized sibling payload substituted for the executed allocation.
+
+## DD-20260920-LIFE-NATIVE-P0-001: measured replacement ownership before a production consuming interface
+
+Context: LIFE-NATIVE-P0 is the native prerequisite for the commissioned continuous construction/finalization/query lifecycle. PRE's executable arrays and logical extents preserve inputs; existing native image handles retain immutable query images. Neither establishes retained allocation size or exclusive transfer. The pinned Lean 4.22 header exposes array capacity independently of size and decrements removed references in pop without reducing capacity.
+
+Decision: add an isolated C runtime probe inside the existing authorized native package. External test objects have destructor counters; snapshots copy only numeric projections from live registered roots and never retain Lean objects. Record logical size, actual capacity, requested outer-container bytes, actual element reference counts, finalizer counts, root aliasing and old-allocation reachability through registered roots. Exercise replacement allocated at capacity m, acquired references for the selected source interval, then consuming release. Controlled failure consumes and cleans every initialized destination and source reference. Preserve alias-aware observations separately from strict exclusive-transfer acceptance. No production ABI or Lean proof surface changes.
+
+Alternatives rejected: shrinking logical size and calling it reclamation; reading freed tails/objects to inspect capacity; interpreting destructor counts as allocator/RSS measurements; treating one dropped owner as exclusive consumption; reusing result-derived expected values; assuming allocation failure returns a recoverable Lean error; or freezing a BuilderOwner-to-QueryOwner ABI before LIFE-1's reviewed formal interface. A fresh destination avoids overwrite hazards but incurs a separately measured transient source-plus-destination peak.
+
+Consequences and evidence: lifecycle_storage_probe.c uses the actual pinned inline array operations and runtime RC paths; its operational capacity, alias, cleanup and value mutations call the same predicates as their strict positive controls. BOUNDARY.md maps all four ExecState arrays and ArrayRun observations to StorageImage's nested limb arrays and the existing C/Rust owners. The generic object-array experiment does not bound the full nested production image, arbitrary foreign aliases, allocator usable bytes or process RSS, and does not count C loops as atomic model instructions. Exact replay and identity receipts are recorded in docs/internal/extensions/lifecycle-native-p0/REPORT.md. The next production adapter must consume the reviewed formal output, discharge every old-root retirement obligation and account for its actual nested allocation representation.
+
+Measured-runtime refinement for DD-20260920-LIFE-NATIVE-P0-001: exact upstream object.cpp at installed Lean commit ba2cbbf09d4978f416e0ebd1fceeebc2c4138c05 confirms shared copy with expansion disabled preserves capacity, and array destruction visits initialized logical elements before capacity-sized allocator deallocation. Both independent shrink predicates therefore check capacity 32 for unique and shared cases. The source's allocator dispatch and fatal panic path are explicitly distinct from requested bytes and controlled-error cleanup. RUNTIME_SOURCE.json binds the reviewed source bytes; installed release binaries are separately pinned, with no reproducible-runtime-build claim.
+
+
+## DD-LIFE-NATIVE1-01 - Consume the continuous owner through one native transfer boundary
+
+Date: 2026-09-23. Status: implementation decision; candidate evidence pending.
+
+The LIFE-NATIVE-1 local rung consumes reviewed formal parent
+7d247703a7009aa0f5faa1a9a67abf5f2ce526b6 and native prerequisite parent
+8a74ad3af84feaf0ccea7185813ce8b55c50d96a through private base
+3dbdebedcc6ba6b2a864df0d46dcc09ccaaa7536. Its first operation is explicitly
+build-and-first-query on the caller's endpoints. Publication waits for the
+actual halted owner and native repacking. Subsequent requests consume the
+produced owner through the existing four request/control events and finite
+service setup. READY remains a status-independent mathematical predicate.
+
+The export adapter uses the existing runOwner, initialOwner and queryOwner
+semantics, with fixed program arrays and equality proofs. It does not obtain
+answers from Native.LimbMachine or from a reference query. The array-copy
+interface relates contents and extents; native pointer identity and backing
+capacity remain separate observations. Exact-capacity native replacement is
+required for all four operational arrays before publication. Fixed code,
+boxed values, logical capacity, requested outer bytes, modeled ticks and
+runtime costs receive separate accounts. The safe Rust facade will retain a
+unique opaque handle and use the existing sticky process runtime claim.
+
+Input admission uses signed little-endian magnitude bytes and the actual
+lifecycle bias encoding for the word model; comparison input preserves Int.
+Host format/resource ceilings are an executable profile, separate from the
+all-size Lean theorems. Ordinary represented invalid ranges are not malformed
+requests. Native validation precedes irrevocable owner transfer; post-take
+failure releases initialized resources and leaves an explicit empty slot.
+These decisions reject a hidden dummy query, a fresh canonical rebuild per
+request, a borrowed extra owner root, or a logical-pop-only capacity argument.
+
+The generated initialization inventory exposed five proof-witness values in
+protected imports. The user approved exactly five macro_inline annotations in
+SparseLevelWidth.lean and ReviewerReachabilitySmall.lean (the exact patch and
+authorization are under docs/internal/extensions/lifecycle-native1/). Their
+names, types, bodies and propositions are unchanged. The pinned compiler's
+shouldGenerateCode excludes macro_inline definitions, so the intended native
+change is erasure of eager witness initialization. Fresh generated-code checks
+are still required. A custom C-initializer pruning pass was considered and
+rejected because it would add another trusted code transformation. No other
+predecessor source modification follows from this exception.
+
+Evidence/consumer: CONTRACT_REQUIREMENTS.json, ACCEPTANCE_MATRIX.frozen.md,
+STARTUP_AMENDMENT.md, STARTUP_AMENDMENT.patch and CONTRACT_AMENDMENT_01.json;
+the new Native/Lifecycle export and exact-type consumer are the implementation
+consumers. Final correctness, native measurements and all matrix closures
+remain pending until recorded; this decision is not campaign acceptance.
+
+## DD-LIFE-NATIVE1-02 - Measure persistent code roots separately from published owners
+
+Date: 2026-09-23. Status: implementation decision; native evidence pending.
+
+Two cached program arrays do not describe the entire fixed Lean representation:
+generated initialization also retains source-list spines and intermediate global
+fragments. Counting only the arrays would understate fixed storage. The build
+therefore appends a read-only root visitor to each unchanged emitted RMQ C unit
+and an aggregator over the exact Entry import closure. Visitors read initialized
+global object slots without adding references, forcing thunks, or modifying
+initializers. The derivation receipt binds original bytes, appended bytes,
+enumerated globals, objects, compiler identity, link map, and DLL. Parsing rejects
+unsupported global declarations; function-local variables are excluded.
+
+One traversal deduplicates the two program-array graphs, and a separate traversal
+deduplicates all visited RMQ globals. They overlap and their totals must not be
+added. Runtime/standard-library global infrastructure lies outside this RMQ root
+inventory. Per-input owners have their own traversal. Object identity and
+requested array/object/digit storage are measurements of the pinned runtime;
+they do not assert allocator usable size, process RSS, or a native succinct bound.
+Boxed integers require a separate digit-allocation account because their object
+header size excludes the digit block. The pinned non-GMP layout is checked using
+actual positive and negative values above 128 bits before traversal is enabled.
+
+Rejected alternatives were counting only the cached arrays, assuming all boxed
+numbers fit machine integers, and pruning generated initialization. They would
+respectively omit live storage, lose admitted comparison values, or enlarge the
+trusted semantic transformation. The visitor and layout checks instead add a
+reviewable native measurement boundary while leaving the proved evaluator and
+generated original bytes intact. Startup execution and finite controls must
+still validate these implementation choices before they support acceptance rows.
+
+## DD-LIFE-NATIVE1-03 - Bind boxed-integer accounting to the loaded GMP runtime
+
+Date: 2026-09-23. Status: measured layout repair; full native campaign pending.
+
+The non-GMP assumption in DD-LIFE-NATIVE1-02 was an implementation hypothesis,
+not a certified property of the installed runtime. The actual production startup
+rejected it with initialization status 5. The pinned runtime's PE exports identify
+the GMP branch, and an augmented diagnostic DLL using the exact existing compiled
+objects and production shim confirmed positive and negative values of magnitude
+2^130+7 have tag 250, a 24-byte outer object, allocated limb count 3, and signed
+used count +3/-3. Both values serialized back to the exact independently chosen
+17-byte magnitude. The diagnostic DLL had a separate output and supplement;
+it did not replace the production artifact or bypass its failed layout check.
+
+The native measurement implementation will use the matching GMP header layout
+and keep allocated limb storage separate from runtime-reported outer bytes.
+Allocated capacity, rather than the number of used limbs, determines requested
+limb storage. Startup must validate the signs, object size, known limb contents,
+and exact codec roundtrip before graph traversal is enabled. These finite checks
+and pinned runtime/source identities support an explicit representation assumption;
+they are not a universal allocator theorem or a proof of C/runtime correctness.
+
+Rejected alternatives were disabling the layout verifier, continuing with the
+non-GMP mirror, and inferring all requested bytes from serialized magnitude length.
+They would respectively hide an unsupported runtime, read incorrect fields, or
+omit allocated but unused limb capacity. A first standalone diagnostic executable
+also linked a second Lean runtime and was excluded from layout evidence. The
+successful supplement operates within the runtime used by the tested DLL.
+
+Evidence: `.lake/lifecycle-native1/runs/init-probe-20260923T091504228/RESULT.json`
+records the successful bounded probe and 816 unchanged integrity pins. Subsequent
+production startup and complete native execution remain required after the repair.
+
+## DD-LIFE-NATIVE1-04 - Erase temporary transition owners through an exact runner refinement
+
+Date: 2026-09-23. Status: measured motivation; refinement implementation underway.
+
+Frozen N1-02 permits an observation-erasing loop only after emitted-source
+inspection and bounded actual execution justify it. The original compiled
+`runOwner` increments the incoming owner before calling `stepArray`, and
+`stepArray` retains that producing state across the unchanged `executeArray`.
+Although no history remains in the returned owner, this temporary reference
+prevents exclusive mutation during the current step.
+
+The bounded comparison-input probes used the actual initial owner for four
+values, without a healthy full-build baseline. Fuel zero recorded no array copy.
+Fuel 20 recorded 15 calls copying 124095 cells; fuel 100 recorded 69 calls copying
+570837 cells. Each copied array had capacity 8273, and neither probe expanded an
+array. Both returned explicit exhausted-fuel status, no published handles,
+successful cleanup, and no counter overflow. These are counters at the compiled
+generated-code copy sites, not a claim about every runtime-internal allocation.
+Receipts are replay/20260923T093044941-37e95309 and
+replay/20260923T093128262-4dc3924c under `.lake/lifecycle-native1`.
+
+The chosen adapter will preserve status/fetch/fuel behavior and delegate each
+primitive to unchanged `executeArray`, with an unconditional equality theorem
+to `runOwner` for every program, state, and fuel. The optional observed adapter
+will compute scalar/read/category/route diagnostics from the actual producing
+state before consuming it, with unconditional equality to the existing complete
+Stats result. All export facts must consume these equalities; a helper theorem
+without the production composition would not establish the boundary.
+
+Rejected alternatives were increasing full-fixture deadlines without inspecting
+copy behavior, changing a primitive evaluator, and replacing execution with a
+canonical memory or reference-answer computation. The first leaves measured
+avoidable copying unexplained; the others violate the frozen consumer contract.
+This change asserts neither native constant-time query nor a universal speedup.
+Fresh generated-code lifetime inspection, rebuilt clients, and repeated bounded
+copy probes are required before claiming any measured improvement.
+
+
+## DD-LIFE-TOPOLOGY-01 - Expose the existing lifecycle headline through the broad barrel
+
+Date: 2026-09-28. Status: private certification repair, not campaign acceptance.
+
+The exact e13e6631 lifecycle candidate passed source and frozen-row review, but
+the final repository gate failed documentary symbol resolution: the historical
+LIFE-1 report names RMQ.Headlines.succinctRMQContinuousLifecycle while the broad
+RMQ.Headlines barrel omits its existing module. Both positive topology regression
+cases failed for that same reason. The production virtual-removal control passed
+when only that citation was omitted; no historical source was actually edited.
+
+Import RMQ.Headlines.Lifecycle from the broad barrel. The declaration, its type,
+all proofs and native implementations remain byte-identical. Source import review
+finds no cycle; the broad closure grows from 297 to 413 local modules. RMQPaper's
+262-module closure and the native Entry producer's 365-module closure do not
+contain this barrel, so the repair does not broaden the paper theorem or change
+native compilation provenance. The formal LifecycleContract closure likewise
+excludes the barrel. The family summary retains the candidate status and limits.
+
+Rejected alternatives: rewriting the frozen historical report, adding a linter
+exception, weakening documentary resolution, or changing the RMQPaper root.
+Those would conceal the mismatch or alter the paper boundary. The existing
+theorem already supplies the intended declaration; no new proof architecture is
+needed. Build the actual headline target before testing its import, then require
+the unchanged linter and all topology regressions. Aggregate and independent
+blind audit remain acceptance prerequisites. There is no merge or push here.

@@ -1,0 +1,112 @@
+{
+  "id": "K2-G",
+  "harness": "K2",
+  "shape": "G",
+  "fault": "git-hang",
+  "mode": "base",
+  "profile": "pwsh",
+  "deadlineSeconds": 180,
+  "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\K2-G\\root",
+  "setupError": null,
+  "launchError": null,
+  "process": {
+    "Stage": "K2-G",
+    "ExitCode": -1,
+    "Output": [],
+    "StandardOutput": [],
+    "StandardError": [],
+    "TimedOut": true,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [
+      26628,
+      31720,
+      16908
+    ],
+    "DurationSeconds": 180.15,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  },
+  "durable": {
+    "path": null,
+    "ambiguous": false,
+    "parseError": null,
+    "sha256": null
+  },
+  "core": {
+    "launchCompleted": false,
+    "exitClass": false,
+    "durablePresent": false,
+    "durableAsExpected": false,
+    "stageRecorded": true,
+    "integrityRecorded": false,
+    "cleanupRecorded": true,
+    "verdictAsExpected": false,
+    "values": {
+      "ok": false,
+      "reason": "no value timedOut=True"
+    },
+    "labels": null,
+    "stderrAsExpected": true,
+    "absentFiles": true,
+    "stdoutWithoutSuccess": true
+  },
+  "structural": {
+    "applicable": false,
+    "finalizationPresent": false,
+    "verdictMatches": false,
+    "stageFieldMatches": false,
+    "integrityFieldMatches": false,
+    "cleanupEmpty": false,
+    "pinsVerified": false
+  },
+  "restoration": {
+    "restored": [],
+    "removed": [],
+    "errors": [],
+    "verified": true,
+    "gitClean": true,
+    "gitState": "16f45f6ad1fc87b9aafe4093ac4dea94d5d64834\n--"
+  },
+  "verdict": "PASS",
+  "expected": "timeout",
+  "lockWaitSeconds": 0.0,
+  "manifest": {
+    "docs/internal/extensions/lifecycle1/repair-r2/run_check.ps1": "72a0943348cc564753870ad93b9d6c6e151e5eec946d2b2f1fbc50cfe349506c",
+    "scripts/owned_process_tree.ps1": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+    "scripts/lifecycle_validator.ps1": "ed158afff57cb9b81e219ec138f2b5d6221dd048159120452650cb7b386059b3",
+    "scripts/lifecycle_validator_environment.ps1": "2fb2c4d95eaf3f6633ffaa60413d3d798b26e5bf8b4e712e6a254e293e4f9f19",
+    "scripts/lifecycle_dependency_replay.ps1": "4bf287cf5e0715dbe2413de0e842e21781a38d51a94da5873e1cf8a8972003fb",
+    "scripts/lifecycle_dependency_cases.json": "003343871e23c93df874a960a8af60ae7a8a2e615adb05b6e581dc4407a1c84b",
+    "RMQ/Validation/PackedLifecycle.lean": "624236001fc72817441cc3dc536da9c299ccb1dc9c050687b09896b7f1679c14",
+    "RMQ/Validation/LifecycleContract.lean": "f7022ac916813779745b9847b43d9091a90f4f2356615bdbf3b560f2861ad9ec",
+    "scripts/lifecycle_provenance_contract.lean": "767743a4dd79b34377f5f5550bab88693df4a966826b02de7aedda78043fd020",
+    "lean-toolchain": "ad3e6363c78908c80953282baf57162702f1134173a5247aad3dbfea108a525f",
+    "lakefile.toml": "b47c7abe3955d1a2e9ba51a4c71fc2e7961423d2bf5f3856f79a24bebc8bdd50",
+    "r3-stage.ps1": "1f27eb1d8641502fc362893877699b85fda753a1975e6e6fb6815cf1ed768b10",
+    "r3-spec.json": "3f6cf7ccc2b31d3286d5e1e78bf9557638a6cbf085525fd8f1d7dc6428c3782a",
+    ".gitignore": "fde850d24186b6e99c8c0debd641fb3ab85198b109eb66f71a1fea02bd6ea1b3"
+  },
+  "harnessSha256": "72a0943348cc564753870ad93b9d6c6e151e5eec946d2b2f1fbc50cfe349506c",
+  "arguments": [
+    "-NoLogo",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\K2-G\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r2\\run_check.ps1",
+    "-SpecPath",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\K2-G\\root/r3-spec.json"
+  ],
+  "environment": {
+    "R3_FAULT_MODE": "git-hang",
+    "R3_REAL_GIT": "C:\\Program Files\\Git\\cmd\\git.exe",
+    "PATH": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\work\\gitbin;C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell;C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe;C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe;C:\\Python314\\Scripts\\;C:\\Python314\\;C:\\ffmpeg\\bin;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files\\Neovim\\bin;C:\\Program Files\\Git\\cmd;C:\\Users\\poin\\.elan\\bin;C:\\Users\\poin\\AppData\\Local\\Programs\\Python\\Launcher\\;C:\\Users\\poin\\.cargo\\bin;C:\\Users\\poin\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\poin\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;C:\\MinGW\\bin;C:\\Users\\poin\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.0-full_build\\bin;C:\\ghcup\\bin;C:\\Users\\poin\\AppData\\Roaming\\local\\bin;C:\\Program Files\\Emacs\\emacs-30.1\\bin;C:\\Users\\poin\\AppData\\Local\\Programs\\Python\\Python313;C:\\Users\\poin\\AppData\\Local\\Programs\\Python\\Python313\\Scripts;C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\;C:\\Program Files\\nodejs\\;C:\\ProgramData\\chocolatey\\bin;C:\\Program Files\\GitHub CLI\\;C:\\Strawberry\\c\\bin;C:\\Strawberry\\perl\\site\\bin;C:\\Strawberry\\perl\\bin;C:\\Users\\poin\\AppData\\Local\\Programs\\OpenAI\\Codex\\bin;C:\\Users\\poin\\TinyTeX\\bin\\windows;C:\\Users\\poin\\AppData\\Roaming\\TinyTeX\\bin\\windows;C:\\Users\\poin\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64\\;C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin;C:\\Users\\poin\\AppData\\Roaming\\npm;C:\\Users\\poin\\AppData\\Local\\Pandoc\\;C:\\Users\\poin\\AppData\\Local\\Microsoft\\WinGet\\Packages\\BurntSushi.ripgrep.MSVC_Microsoft.Winget.Source_8wekyb3d8bbwe\\ripgrep-15.1.0-x86_64-pc-windows-msvc;C:\\Program Files\\Racket\\;C:\\Program Files\\Racket;C:\\Users\\poin\\AppData\\Local\\Microsoft\\WinGet\\Packages\\jqlang.jq_Microsoft.Winget.Source_8wekyb3d8bbwe;C:\\Users\\poin\\.local\\bin;C:\\Program Files\\nodejs;C:\\Python314;C:\\Program Files\\Git\\mingw64\\bin",
+    "R3_FAULT_MARKER": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\K2-G\\fault.marker",
+    "R3_FAULT_TARGET": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\K2-G\\root\\lakefile.toml",
+    "R3_FAULT_SCOPE": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\K2-G\\root"
+  },
+  "coreAll": false,
+  "structuralAll": false,
+  "pairing": "P passed",
+  "predicateOutcome": true
+}

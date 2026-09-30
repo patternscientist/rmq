@@ -1,0 +1,1835 @@
+{
+  "selected": [
+    "success-positive",
+    "error-positive",
+    "success-extra-stderr",
+    "error-extra-stderr",
+    "success-extra-stdout",
+    "error-extra-stdout",
+    "selector-empty",
+    "selector-unknown",
+    "selector-duplicate",
+    "launcher-blank-stdout",
+    "launcher-blank-stderr"
+  ],
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "pass",
+    "stageError": null,
+    "integrityErrors": [],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "docs/internal/extensions/lifecycle-native-p0/repair-r2/HARNESS_STREAM_REGISTRY.json",
+        "entrySha256": "227BE213E795A6FF037ABB1F67BEF328992D6284C56E0E427243EDE63C41428B",
+        "finalSha256": "227BE213E795A6FF037ABB1F67BEF328992D6284C56E0E427243EDE63C41428B",
+        "status": "verified"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle-native-p0/repair-r1/integrity_controls.ps1",
+        "entrySha256": "2BA6265F32B1BD039F7446F236AB7A4BDD3300CF41DD67D1F01AD8B78E5B9271",
+        "finalSha256": "2BA6265F32B1BD039F7446F236AB7A4BDD3300CF41DD67D1F01AD8B78E5B9271",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/packed_native_lifecycle_storage_replay.ps1",
+        "entrySha256": "C35BB6D38EB54562CB1E650D437D0914DE72852594DFDB865DB04E24104AD345",
+        "finalSha256": "C35BB6D38EB54562CB1E650D437D0914DE72852594DFDB865DB04E24104AD345",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/packed_native_lifecycle_integrity_check.ps1",
+        "entrySha256": "4DBDE3FF1B030829C89DE70EFFD12D959404181A545117ADD11AC869BE0E426A",
+        "finalSha256": "4DBDE3FF1B030829C89DE70EFFD12D959404181A545117ADD11AC869BE0E426A",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/owned_process_tree.ps1",
+        "entrySha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+        "finalSha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/packed_native_lifecycle_stream_check.ps1",
+        "entrySha256": "71084788A6FE3E5662E187E82F74F078C65FC2F9425ECC9A0C23554BB2E641B7",
+        "finalSha256": "71084788A6FE3E5662E187E82F74F078C65FC2F9425ECC9A0C23554BB2E641B7",
+        "status": "verified"
+      },
+      {
+        "path": "native/packed-rmq/tests/lifecycle_storage_probe.c",
+        "entrySha256": "5F32F4A91B21697F86B4F2FEA855CD050E59E330CE6C6FFDA28898353B66D7B1",
+        "finalSha256": "5F32F4A91B21697F86B4F2FEA855CD050E59E330CE6C6FFDA28898353B66D7B1",
+        "status": "verified"
+      },
+      {
+        "path": "lean-toolchain",
+        "entrySha256": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F",
+        "finalSha256": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F",
+        "status": "verified"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle-native-p0/REGISTRY.json",
+        "entrySha256": "6CD97F40E7C39D2212A8C8705D264D4832DCF2542815B72CD927906A01DC8B20",
+        "finalSha256": "6CD97F40E7C39D2212A8C8705D264D4832DCF2542815B72CD927906A01DC8B20",
+        "status": "verified"
+      }
+    ],
+    "ownedRoots": [
+      {
+        "carrier": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source",
+        "fixture": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success"
+      },
+      {
+        "carrier": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source",
+        "fixture": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error"
+      },
+      {
+        "carrier": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source",
+        "fixture": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success"
+      },
+      {
+        "carrier": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source",
+        "fixture": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error"
+      },
+      {
+        "carrier": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source",
+        "fixture": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success"
+      },
+      {
+        "carrier": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source",
+        "fixture": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error"
+      }
+    ],
+    "ownedRootStatus": [
+      {
+        "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdout": [],
+        "stderr": [],
+        "durationSeconds": 0.527,
+        "deadlineSeconds": 60,
+        "status": "verified"
+      },
+      {
+        "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdout": [
+          "?? existing-untracked.txt"
+        ],
+        "stderr": [],
+        "durationSeconds": 0.582,
+        "deadlineSeconds": 60,
+        "status": "verified"
+      },
+      {
+        "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdout": [],
+        "stderr": [],
+        "durationSeconds": 0.573,
+        "deadlineSeconds": 60,
+        "status": "verified"
+      },
+      {
+        "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdout": [
+          "?? existing-untracked.txt"
+        ],
+        "stderr": [],
+        "durationSeconds": 0.61,
+        "deadlineSeconds": 60,
+        "status": "verified"
+      },
+      {
+        "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdout": [],
+        "stderr": [],
+        "durationSeconds": 0.495,
+        "deadlineSeconds": 60,
+        "status": "verified"
+      },
+      {
+        "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdout": [
+          "?? existing-untracked.txt"
+        ],
+        "stderr": [],
+        "durationSeconds": 0.563,
+        "deadlineSeconds": 60,
+        "status": "verified"
+      },
+      {
+        "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdout": [],
+        "stderr": [],
+        "durationSeconds": 0.573,
+        "deadlineSeconds": 60,
+        "status": "verified"
+      },
+      {
+        "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdout": [
+          "?? existing-untracked.txt"
+        ],
+        "stderr": [],
+        "durationSeconds": 0.555,
+        "deadlineSeconds": 60,
+        "status": "verified"
+      },
+      {
+        "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdout": [],
+        "stderr": [],
+        "durationSeconds": 0.525,
+        "deadlineSeconds": 60,
+        "status": "verified"
+      },
+      {
+        "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdout": [
+          "?? existing-untracked.txt"
+        ],
+        "stderr": [],
+        "durationSeconds": 0.58,
+        "deadlineSeconds": 60,
+        "status": "verified"
+      },
+      {
+        "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdout": [],
+        "stderr": [],
+        "durationSeconds": 0.512,
+        "deadlineSeconds": 60,
+        "status": "verified"
+      },
+      {
+        "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdout": [
+          "?? existing-untracked.txt"
+        ],
+        "stderr": [],
+        "durationSeconds": 0.534,
+        "deadlineSeconds": 60,
+        "status": "verified"
+      }
+    ],
+    "entryPinCount": 9,
+    "verifiedPinCount": 9
+  },
+  "entrySource": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1\\integrity_controls.ps1",
+    "bytes": 20739,
+    "sha256": "2BA6265F32B1BD039F7446F236AB7A4BDD3300CF41DD67D1F01AD8B78E5B9271"
+  },
+  "entryValidator": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\scripts\\packed_native_lifecycle_stream_check.ps1",
+    "bytes": 11222,
+    "sha256": "71084788A6FE3E5662E187E82F74F078C65FC2F9425ECC9A0C23554BB2E641B7"
+  },
+  "source": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1\\integrity_controls.ps1",
+    "bytes": 20739,
+    "sha256": "2BA6265F32B1BD039F7446F236AB7A4BDD3300CF41DD67D1F01AD8B78E5B9271"
+  },
+  "registry": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r2\\HARNESS_STREAM_REGISTRY.json",
+    "bytes": 3395,
+    "sha256": "227BE213E795A6FF037ABB1F67BEF328992D6284C56E0E427243EDE63C41428B"
+  },
+  "entryRegistry": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r2\\HARNESS_STREAM_REGISTRY.json",
+    "bytes": 3395,
+    "sha256": "227BE213E795A6FF037ABB1F67BEF328992D6284C56E0E427243EDE63C41428B"
+  },
+  "validator": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\scripts\\packed_native_lifecycle_stream_check.ps1",
+    "bytes": 11222,
+    "sha256": "71084788A6FE3E5662E187E82F74F078C65FC2F9425ECC9A0C23554BB2E641B7"
+  },
+  "controls": [
+    {
+      "id": "success-positive",
+      "surface": "",
+      "fixtureRestored": true,
+      "raw": [
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\driver.ps1",
+          "bytes": 469,
+          "sha256": "E763C0DE2FE9BBB1B477EBE2D0B3BADABEF4E79654A26AFBFD04B802F4D73572"
+        },
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\harness-derived.ps1",
+          "bytes": 20819,
+          "sha256": "316DA1C6654CE1BAAB2F7C4BE3B48D797794C695D9DAC66C92CE8420E9679039"
+        },
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+          "bytes": 38006,
+          "sha256": "F117F58D1171A34517DE38A0D20362EFDEF0193A3CE0947807C81F2094A8C54C"
+        }
+      ],
+      "carrierUnchanged": true,
+      "inner": {
+        "launcher": {
+          "Stage": "intact-success",
+          "ExitCode": 0,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.528,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "actual": {
+          "pid": 22408,
+          "exitCode": 0,
+          "durationSeconds": 6.8950275
+        },
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\outer\\stdout.log",
+            "sha256": "693855C134F3B2F52B1F807E992FD441C0F22C57D1EF8F0966D11411BE8BAC44",
+            "bytes": 312
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\outer\\stderr.log",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "bytes": 0
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\outer\\exit.json",
+            "sha256": "5E117FA5BDC08E05C56DC900E64095113158C15FB2B5E799149ECDA5322C50BF",
+            "bytes": 54
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\outer\\pid",
+            "sha256": "F570DA288A06D359F0E10D48772CC59DD40BE16209DBA9E5777220208AF8395E",
+            "bytes": 5
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\outer\\raw-child.ps1",
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00",
+            "bytes": 3023
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\outer\\spec.json",
+            "sha256": "E4188326298A0BCD432354AA261CCA20992FECBB67960D8BAE1833615E80CE68",
+            "bytes": 2091
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\outer\\launcher\\retained.stdout",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "bytes": 0
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\outer\\launcher\\retained.stderr",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "bytes": 0
+          }
+        ],
+        "spec": {
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success",
+          "outputLimit": 16777216,
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\outer\\stdout.log",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\outer\\exit.json",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\outer\\pid",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\outer\\overflow",
+          "environment": {},
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\outer\\error"
+        }
+      },
+      "capture": {
+        "actual": {
+          "pid": 27152,
+          "exitCode": 0,
+          "durationSeconds": 17.7859351
+        },
+        "launcher": {
+          "Stage": "success-positive",
+          "ExitCode": 0,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 18.466,
+          "DeadlineSeconds": 300,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\capture\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\capture\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "raw": [
+          {
+            "bytes": 218,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\capture\\stdout.log",
+            "sha256": "6F7925F02830AC66F23BE178E20FF62D2FCED199617FA228E85DA561E717951E"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\capture\\stderr.log",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 55,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\capture\\exit.json",
+            "sha256": "3C77ABE06448D4C9C44F73D11A75F1E5C9E66D7130C91C90A25FD4082E3102DD"
+          },
+          {
+            "bytes": 5,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\capture\\pid",
+            "sha256": "D07548DD2EE9CCBB3C68D3B755A38FADC321C644D07EB65CC569733E96C548FD"
+          },
+          {
+            "bytes": 3023,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\capture\\raw-child.ps1",
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "bytes": 1589,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\capture\\spec.json",
+            "sha256": "3BEAABD156EA221A80B20743122BBA2FB50688B6022603407FD499711110A732"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\capture\\launcher\\retained.stdout",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\capture\\launcher\\retained.stderr",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\capture\\overflow",
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\capture\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\driver.ps1"
+          ],
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\capture\\stderr.log",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\capture\\stdout.log",
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\capture\\error",
+          "outputLimit": 16777216,
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\capture\\exit.json",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "environment": {}
+        }
+      },
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-positive\\source\\.lake\\controls\\intact-success\\.lake\\lifecycle-native-p0\\runs\\610f9ad263fc44ad8c777c271d279a2f\\SUMMARY.json",
+        "bytes": 12243,
+        "sha256": "C8D63EC2C886234BD9525ED03259F7E06F1FDA4BEE07C56C6E9C8ABB36DE0DD1"
+      },
+      "outcome": "accept",
+      "predicate": "Assert-LNOuterCapture"
+    },
+    {
+      "id": "error-positive",
+      "surface": "",
+      "fixtureRestored": true,
+      "raw": [
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\driver.ps1",
+          "bytes": 469,
+          "sha256": "BD8C8DB19E8275ABEA167C27E8DA1C1E3C6C080140A3711C45E01E47DCAF458C"
+        },
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\harness-derived.ps1",
+          "bytes": 20817,
+          "sha256": "0EA4F7C8C5BA7687A3D9563C24DA63E3A9CF370E8F8D50D12EE04F0CCA38AADA"
+        },
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+          "bytes": 38006,
+          "sha256": "6C3BC31E0F322801CEC7F06641C0C4089AE4559ACB38D04BF53861B9EA28A667"
+        }
+      ],
+      "carrierUnchanged": true,
+      "inner": {
+        "launcher": {
+          "Stage": "intact-stage-error",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.067,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "spec": {
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\stdout.log",
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\error",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\overflow",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error",
+          "outputLimit": 16777216,
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\exit.json",
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\pid",
+          "environment": {}
+        },
+        "actual": {
+          "pid": 18504,
+          "exitCode": 1,
+          "durationSeconds": 6.428495
+        },
+        "raw": [
+          {
+            "bytes": 268,
+            "sha256": "8830AF762C20D8B4CBC7FDA4EFB8A918FE153BE919E60E84793D87A230A5FE5A",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\stdout.log"
+          },
+          {
+            "bytes": 69,
+            "sha256": "8C81C3B9AFB215DD4D494A7D532DF16AB3BB9181D971C9026143A33824637DFF",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\stderr.log"
+          },
+          {
+            "bytes": 53,
+            "sha256": "4C64A895126E756EE70FF284C56992884EC22E371BA017D69875ABC062C3A1C7",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\exit.json"
+          },
+          {
+            "bytes": 5,
+            "sha256": "242B2436696FC7A2B305099E519FBADD8C55B46C4AE62D6DB5D3E26F167B8C3C",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\pid"
+          },
+          {
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\raw-child.ps1"
+          },
+          {
+            "bytes": 2107,
+            "sha256": "97995991E1E0EEBB37CFA86B7AE71847D1E5EDBC41CE2F7EC74291A54F7C7A18",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\spec.json"
+          },
+          {
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\launcher\\retained.stdout"
+          },
+          {
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\launcher\\retained.stderr"
+          }
+        ]
+      },
+      "capture": {
+        "actual": {
+          "pid": 28524,
+          "exitCode": 0,
+          "durationSeconds": 16.7713342
+        },
+        "launcher": {
+          "Stage": "error-positive",
+          "ExitCode": 0,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 17.285,
+          "DeadlineSeconds": 300,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\capture\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\capture\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "raw": [
+          {
+            "bytes": 220,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\capture\\stdout.log",
+            "sha256": "8E28BB368D2088D55D755D3B94B805E4F019996642C44A95EB7CB88F9DE0A5EB"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\capture\\stderr.log",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 55,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\capture\\exit.json",
+            "sha256": "BA50B537BEAF242304ABF76C18EB384D9EC5BE4E179C947D165D779F698EED71"
+          },
+          {
+            "bytes": 5,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\capture\\pid",
+            "sha256": "2CD6AFA0412183758E326523495518CA8061B4F071AD23B9E55296DDC3025F94"
+          },
+          {
+            "bytes": 3023,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\capture\\raw-child.ps1",
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "bytes": 1575,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\capture\\spec.json",
+            "sha256": "D518312629BF3CDCCE9ADAA7D6F77E7E1DBA664F9C1C978D4BFEA98D81F55A5C"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\capture\\launcher\\retained.stdout",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\capture\\launcher\\retained.stderr",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\capture\\overflow",
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\capture\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\driver.ps1"
+          ],
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\capture\\stderr.log",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\capture\\stdout.log",
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\capture\\error",
+          "outputLimit": 16777216,
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\capture\\exit.json",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "environment": {}
+        }
+      },
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-positive\\source\\.lake\\controls\\intact-stage-error\\.lake\\lifecycle-native-p0\\runs\\4246e337adcc435d89c1d5f91e13f4ce\\SUMMARY.json",
+        "bytes": 12365,
+        "sha256": "49062E32BA91DEC16BCA0D049385B75ADCB38153726235360F839ADBF5A59B50"
+      },
+      "outcome": "accept",
+      "predicate": "Assert-LNOuterCapture"
+    },
+    {
+      "id": "success-extra-stderr",
+      "surface": "STREAM: integrity-intact-success stderr differs",
+      "fixtureRestored": true,
+      "raw": [
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\driver.ps1",
+          "bytes": 477,
+          "sha256": "EA3B5DCCC623DE26345CF398086DD0EC33FD823DDBB0C27C0A173F86EA79E50B"
+        },
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\harness-derived.ps1",
+          "bytes": 20883,
+          "sha256": "0A4B07CAFF62FAE7EC074B41E31A43ED4A01E33232042BC2ABDD35BA5A421F5E"
+        },
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+          "bytes": 38066,
+          "sha256": "4A7031466EA94E5BBD7F44F60D6D934B92DD1FEF0611C65A69EFD14EBB9F4746"
+        }
+      ],
+      "carrierUnchanged": true,
+      "inner": {
+        "launcher": {
+          "Stage": "intact-success",
+          "ExitCode": 0,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.216,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "actual": {
+          "pid": 24632,
+          "exitCode": 0,
+          "durationSeconds": 6.6359643
+        },
+        "raw": [
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\outer\\stdout.log",
+            "sha256": "4063DF4ED03E2A44D65296425534648991674AB97E7CA7C3E321FB1B8A159B8A",
+            "bytes": 316
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\outer\\stderr.log",
+            "sha256": "BFBEB88EE2CB67D87FFAF7AB4FFF8D7132103023B17EB52B494B37A623624986",
+            "bytes": 29
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\outer\\exit.json",
+            "sha256": "2168275A0978FDDCE1B748B34D23DD01E9C076991A35E16D49AC4E586A94FD5F",
+            "bytes": 54
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\outer\\pid",
+            "sha256": "02C5044970366907C8D2E6CB34CED0F863FD61AA62B2D8B12C23CED52629AAB5",
+            "bytes": 5
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\outer\\raw-child.ps1",
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00",
+            "bytes": 3023
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\outer\\spec.json",
+            "sha256": "48CBBFC9E223E25845A88443FD73B3644F905C811AE910E057A4CCEAA406D5FD",
+            "bytes": 2123
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\outer\\launcher\\retained.stdout",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "bytes": 0
+          },
+          {
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\outer\\launcher\\retained.stderr",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "bytes": 0
+          }
+        ],
+        "spec": {
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\outer\\overflow",
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\outer\\pid",
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\outer\\error",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\outer\\exit.json",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\outer\\stdout.log",
+          "environment": {},
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\outer\\stderr.log",
+          "outputLimit": 16777216,
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success"
+        }
+      },
+      "capture": {
+        "actual": {
+          "pid": 30612,
+          "exitCode": 1,
+          "durationSeconds": 16.6018578
+        },
+        "launcher": {
+          "Stage": "success-extra-stderr",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 17.107,
+          "DeadlineSeconds": 300,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\capture\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\capture\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "raw": [
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\capture\\stdout.log",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 49,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\capture\\stderr.log",
+            "sha256": "C7160753BA3F24F9AACBD7DF1C7D81907FE4F1A1394C65C087620F389F18AB2F"
+          },
+          {
+            "bytes": 55,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\capture\\exit.json",
+            "sha256": "C0CD46414CAE576AE6F11A1F8AC65B3D4083E1AE2FE671572C25C426BB4CD6C4"
+          },
+          {
+            "bytes": 5,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\capture\\pid",
+            "sha256": "9DE084D49D781B649B10D48538DABEADA60358EDA3CB718D0A7CED3878D3ECDC"
+          },
+          {
+            "bytes": 3023,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\capture\\raw-child.ps1",
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "bytes": 1617,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\capture\\spec.json",
+            "sha256": "88F9DB07494C11762741343C20F8F7CE9CC53280959BAF81D82D5E61C36376A4"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\capture\\launcher\\retained.stdout",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\capture\\launcher\\retained.stderr",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\capture\\overflow",
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\capture\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\driver.ps1"
+          ],
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\capture\\stderr.log",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\capture\\stdout.log",
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\capture\\error",
+          "outputLimit": 16777216,
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\capture\\exit.json",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "environment": {}
+        }
+      },
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stderr\\source\\.lake\\controls\\intact-success\\.lake\\lifecycle-native-p0\\runs\\50ccddf5741d4bd2b66fefb1b24264a7\\SUMMARY.json",
+        "bytes": 12355,
+        "sha256": "8A9A3DE2C920E09707BEAAA414A8096879791E7781411A2DCC43275B37C3A707"
+      },
+      "outcome": "reject",
+      "predicate": "Assert-LNOuterCapture"
+    },
+    {
+      "id": "error-extra-stderr",
+      "surface": "STREAM: integrity-intact-stage-error stderr differs",
+      "fixtureRestored": true,
+      "raw": [
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\driver.ps1",
+          "bytes": 477,
+          "sha256": "9CF08111682C55777FD21DB9E5D3C6284F80B3E17394F1CD9515668558446C91"
+        },
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\harness-derived.ps1",
+          "bytes": 20881,
+          "sha256": "344B97798EFE3B31484EA6AADFD3A93BE2F33CB9C3D165CD88E588254F41BB4E"
+        },
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+          "bytes": 38066,
+          "sha256": "CF33FA7F0CB4239FCF34D5EE2FD7F0F896AD9CD930628F3EB5A223BD8DB5EAFF"
+        }
+      ],
+      "carrierUnchanged": true,
+      "inner": {
+        "raw": [
+          {
+            "bytes": 272,
+            "sha256": "888050995DB5E5F7726B0C50A01448AAFE2041C133ACC40126B7C1E596F36911",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\stdout.log"
+          },
+          {
+            "bytes": 98,
+            "sha256": "BF212CB385CEA3145B6B2DFD38C7AEBEEA643B50AFD92422055DDD4A60B1DA90",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\stderr.log"
+          },
+          {
+            "bytes": 54,
+            "sha256": "5753F10738C1021B030821BA1395F5AF240DB240A75E77DABABAC98CE516F3AE",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\exit.json"
+          },
+          {
+            "bytes": 5,
+            "sha256": "5C875E8A7D5E64C51FE4087F9A8FCCD0E11166E0148DD7085D08FD0667B908DF",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\pid"
+          },
+          {
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\raw-child.ps1"
+          },
+          {
+            "bytes": 2139,
+            "sha256": "C366F6A26FD8FF57887DE8F30846556161426DF83775FD41264791F9B08195E9",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\spec.json"
+          },
+          {
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\launcher\\retained.stdout"
+          },
+          {
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\launcher\\retained.stderr"
+          }
+        ],
+        "actual": {
+          "pid": 29760,
+          "exitCode": 1,
+          "durationSeconds": 6.5601069
+        },
+        "launcher": {
+          "Stage": "intact-stage-error",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.175,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "spec": {
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\exit.json",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error",
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\pid",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\overflow",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\stderr.log",
+          "environment": {},
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\error",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\stdout.log",
+          "outputLimit": 16777216
+        }
+      },
+      "capture": {
+        "actual": {
+          "pid": 25060,
+          "exitCode": 1,
+          "durationSeconds": 16.485531
+        },
+        "launcher": {
+          "Stage": "error-extra-stderr",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 16.977,
+          "DeadlineSeconds": 300,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\capture\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\capture\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "raw": [
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\capture\\stdout.log",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 53,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\capture\\stderr.log",
+            "sha256": "47764D7DC9D8F23661195A0FC90E88A6464501F47F9D84BF6B82002562ACB4E0"
+          },
+          {
+            "bytes": 54,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\capture\\exit.json",
+            "sha256": "6EECDE78E125453EF119D5A2C4FE9857B703A9562A5951FF9D5096059A382F32"
+          },
+          {
+            "bytes": 5,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\capture\\pid",
+            "sha256": "A1DF479D710EE75C035E837540F1AFF252B7FE05288A8E00FD51B725D9DA6976"
+          },
+          {
+            "bytes": 3023,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\capture\\raw-child.ps1",
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "bytes": 1603,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\capture\\spec.json",
+            "sha256": "F2A650D1307EF419110AA470874C91009417F0960D17C2E61CD81DDA6493F170"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\capture\\launcher\\retained.stdout",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\capture\\launcher\\retained.stderr",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\capture\\overflow",
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\capture\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\driver.ps1"
+          ],
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\capture\\stderr.log",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\capture\\stdout.log",
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\capture\\error",
+          "outputLimit": 16777216,
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\capture\\exit.json",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "environment": {}
+        }
+      },
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stderr\\source\\.lake\\controls\\intact-stage-error\\.lake\\lifecycle-native-p0\\runs\\8f2654fe449e4e0995d376c10464500a\\SUMMARY.json",
+        "bytes": 12477,
+        "sha256": "9BCCD6B19C1936FD636ACDD9B4837538EB1BC73E3EE8C95E0A3B056AD0B048F7"
+      },
+      "outcome": "reject",
+      "predicate": "Assert-LNOuterCapture"
+    },
+    {
+      "id": "success-extra-stdout",
+      "surface": "STREAM: integrity-intact-success stdout differs",
+      "fixtureRestored": true,
+      "raw": [
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\driver.ps1",
+          "bytes": 477,
+          "sha256": "8A442E581F422DD5F7BD41FC59BE8DCA99A836F1FE0EA74D0DF42C7ECC9B408C"
+        },
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\harness-derived.ps1",
+          "bytes": 20881,
+          "sha256": "31CE0EAF9654C7E12D377B8B894715A44030C11D10C7F73A1C2C639F9D43CD68"
+        },
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+          "bytes": 38064,
+          "sha256": "682B27E82176F2C3C640052A522E4B0EAA2B08704971ECE2D5F9B1218C978F60"
+        }
+      ],
+      "carrierUnchanged": true,
+      "inner": {
+        "actual": {
+          "pid": 8284,
+          "exitCode": 0,
+          "durationSeconds": 6.4932702
+        },
+        "launcher": {
+          "Stage": "intact-success",
+          "ExitCode": 0,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.162,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "spec": {
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\outer\\overflow",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\outer\\stdout.log",
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\outer\\pid",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\outer\\exit.json",
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\outer\\error",
+          "environment": {},
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "outputLimit": 16777216
+        },
+        "raw": [
+          {
+            "sha256": "F2680908AC3D5AA7D41B102261E895A09A5609E6DD40CAECAE48503F6433123D",
+            "bytes": 345,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\outer\\stdout.log"
+          },
+          {
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\outer\\stderr.log"
+          },
+          {
+            "sha256": "2DFD4037613F2C0CF1BF4A97C8026D52858218A7B19F46365964F2AB7A3A9F00",
+            "bytes": 53,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\outer\\exit.json"
+          },
+          {
+            "sha256": "BD7997353A3A3C6F6DA0E683DBBDDD6FB0485481FF2B595CC2008A2E1A98F369",
+            "bytes": 4,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\outer\\pid"
+          },
+          {
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00",
+            "bytes": 3023,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\outer\\raw-child.ps1"
+          },
+          {
+            "sha256": "B8E5A006A8821CC90AB7A3105B0A64BEB478ED7C5CDBD4E67D9AC26EB0C1A7F4",
+            "bytes": 2123,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\outer\\spec.json"
+          },
+          {
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\outer\\launcher\\retained.stdout"
+          },
+          {
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\outer\\launcher\\retained.stderr"
+          }
+        ]
+      },
+      "capture": {
+        "actual": {
+          "pid": 25032,
+          "exitCode": 1,
+          "durationSeconds": 16.6764763
+        },
+        "launcher": {
+          "Stage": "success-extra-stdout",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 17.19,
+          "DeadlineSeconds": 300,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\capture\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\capture\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "raw": [
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\capture\\stdout.log",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 49,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\capture\\stderr.log",
+            "sha256": "21B37C51D0B4A82F094B5B13EB28B73ABC36D7144A283AFAA8D509E37B9516FD"
+          },
+          {
+            "bytes": 55,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\capture\\exit.json",
+            "sha256": "0181FCC8C0DD1550F7910192DA0851BA107D3129B9E97A219F79C53BE853459E"
+          },
+          {
+            "bytes": 5,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\capture\\pid",
+            "sha256": "71C02581BA859FA1F26B4BB4D410DC395195A21DC262BC8C6DE4D19F4E82F4ED"
+          },
+          {
+            "bytes": 3023,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\capture\\raw-child.ps1",
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "bytes": 1617,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\capture\\spec.json",
+            "sha256": "C16DD8A11C57B5495A9DF3138686AC81FE8AAEFE904E663FFC16A2BC98233585"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\capture\\launcher\\retained.stdout",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\capture\\launcher\\retained.stderr",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\capture\\overflow",
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\capture\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\driver.ps1"
+          ],
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\capture\\stderr.log",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\capture\\stdout.log",
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\capture\\error",
+          "outputLimit": 16777216,
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\capture\\exit.json",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "environment": {}
+        }
+      },
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\success-extra-stdout\\source\\.lake\\controls\\intact-success\\.lake\\lifecycle-native-p0\\runs\\c92051bd10cb45b2a58d57248272427f\\SUMMARY.json",
+        "bytes": 12354,
+        "sha256": "EF1E646A2074D3FF54E3F42DFC29251B4483DAE68952750B010A746B669E881C"
+      },
+      "outcome": "reject",
+      "predicate": "Assert-LNOuterCapture"
+    },
+    {
+      "id": "error-extra-stdout",
+      "surface": "STREAM: integrity-intact-stage-error stdout differs",
+      "fixtureRestored": true,
+      "raw": [
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\driver.ps1",
+          "bytes": 477,
+          "sha256": "FED8A482B26FCD756B517D649154BEBD706CE723DD55EC492569A541F7246E58"
+        },
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\harness-derived.ps1",
+          "bytes": 20879,
+          "sha256": "CEBAB0CF2B63C821C7ECDD1A959D4F556B27A5BA84C67CA8DE2D9694443C1BD6"
+        },
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+          "bytes": 38064,
+          "sha256": "290B7B0F9892C0CF18F687C7361906118081842F53337D87FD1A43FDB5A91CD1"
+        }
+      ],
+      "carrierUnchanged": true,
+      "inner": {
+        "launcher": {
+          "Stage": "intact-stage-error",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 7.257,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "spec": {
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\stderr.log",
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\exit.json",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\stdout.log",
+          "environment": {},
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\pid",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\overflow",
+          "outputLimit": 16777216,
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\error",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ]
+        },
+        "raw": [
+          {
+            "sha256": "81F91EBDC90F61AD66E21ABD896CA0738DFFD2AA185E69EC5E9A7715B9A95227",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\stdout.log",
+            "bytes": 301
+          },
+          {
+            "sha256": "8C81C3B9AFB215DD4D494A7D532DF16AB3BB9181D971C9026143A33824637DFF",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\stderr.log",
+            "bytes": 69
+          },
+          {
+            "sha256": "597CC7AFD8D77117695D674502BE580C2521ED743DC00E15DD0BC23879D04391",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\exit.json",
+            "bytes": 53
+          },
+          {
+            "sha256": "3B5BECBB1C2CA62C2E693D5CC5D8991A6EE5C30FEEDB98E37139908B69804654",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\pid",
+            "bytes": 4
+          },
+          {
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\raw-child.ps1",
+            "bytes": 3023
+          },
+          {
+            "sha256": "F17F5DA34CDC8FA4710037738BDFC5082B9F86C55AD11792B20E3A74C60568A1",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\spec.json",
+            "bytes": 2139
+          },
+          {
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\launcher\\retained.stdout",
+            "bytes": 0
+          },
+          {
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\outer\\launcher\\retained.stderr",
+            "bytes": 0
+          }
+        ],
+        "actual": {
+          "pid": 5912,
+          "exitCode": 1,
+          "durationSeconds": 6.6152306
+        }
+      },
+      "capture": {
+        "actual": {
+          "pid": 30060,
+          "exitCode": 1,
+          "durationSeconds": 16.4640492
+        },
+        "launcher": {
+          "Stage": "error-extra-stdout",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 16.995,
+          "DeadlineSeconds": 300,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\capture\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\capture\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "raw": [
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\capture\\stdout.log",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 53,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\capture\\stderr.log",
+            "sha256": "D61BFE5515DD394BAC367954B13381F6424D8C8B5F90E796F89DA369976391BB"
+          },
+          {
+            "bytes": 55,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\capture\\exit.json",
+            "sha256": "C7635F2F93CB333811C54643E287C2C1BF6B38DA197DF8FA407140706FF5B5A9"
+          },
+          {
+            "bytes": 5,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\capture\\pid",
+            "sha256": "FBAC49AD6B6973C812FD99AF06762CB7C6F5E9C45DAA8FEC4613C64802F3CB53"
+          },
+          {
+            "bytes": 3023,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\capture\\raw-child.ps1",
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "bytes": 1603,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\capture\\spec.json",
+            "sha256": "4118CF2C8497BB587C59E32B4326EE16765516071C3BD88CBE364808D2461887"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\capture\\launcher\\retained.stdout",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\capture\\launcher\\retained.stderr",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\capture\\overflow",
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\capture\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\driver.ps1"
+          ],
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\capture\\stderr.log",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\capture\\stdout.log",
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\capture\\error",
+          "outputLimit": 16777216,
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\capture\\exit.json",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "environment": {}
+        }
+      },
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\error-extra-stdout\\source\\.lake\\controls\\intact-stage-error\\.lake\\lifecycle-native-p0\\runs\\dcb3c60fd8d44b418acae0ad37d0fbf0\\SUMMARY.json",
+        "bytes": 12477,
+        "sha256": "DF1CD1FC0DCEDB1F724A26C70A117DEFEC008536F4C8F51940577A013741854C"
+      },
+      "outcome": "reject",
+      "predicate": "Assert-LNOuterCapture"
+    },
+    {
+      "id": "selector-empty",
+      "capture": {
+        "actual": {
+          "pid": 2068,
+          "exitCode": 1,
+          "durationSeconds": 0.5998478
+        },
+        "launcher": {
+          "Stage": "selector-empty",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 1.085,
+          "DeadlineSeconds": 300,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\capture\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\capture\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "raw": [
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\capture\\stdout.log",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 24,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\capture\\stderr.log",
+            "sha256": "7D2B569CECDBD4B0AC7307593CC4CE6ACED21602010F8A0A2562FA886397257B"
+          },
+          {
+            "bytes": 53,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\capture\\exit.json",
+            "sha256": "FA36B1738DFED0DDFBD1B801F5EFF05F082F9114538BA94D4A9DE8A32B636A0C"
+          },
+          {
+            "bytes": 4,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\capture\\pid",
+            "sha256": "9BBF7A2C2940B4C95EA485F65A8731A1372AEE56EDCA6ED31E66E7EB0F47E28B"
+          },
+          {
+            "bytes": 3023,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\capture\\raw-child.ps1",
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "bytes": 1575,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\capture\\spec.json",
+            "sha256": "B5FF89E3D83C9F8FFC976ED9BB552BF9B474004160CC6E16BAD0AF2B2396A134"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\capture\\launcher\\retained.stdout",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\capture\\launcher\\retained.stderr",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\capture\\overflow",
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\capture\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\driver.ps1"
+          ],
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\capture\\stderr.log",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\capture\\stdout.log",
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\capture\\error",
+          "outputLimit": 16777216,
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\capture\\exit.json",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "environment": {}
+        }
+      },
+      "surface": "STREAM-SELECTOR: empty",
+      "predicate": "command-selector",
+      "outcome": "reject",
+      "raw": [
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-empty\\driver.ps1",
+          "bytes": 282,
+          "sha256": "C94510E2957D9E167A70CD98033929A5ADD0EFF7BCB13FED79442FDB01037684"
+        }
+      ]
+    },
+    {
+      "id": "selector-unknown",
+      "capture": {
+        "actual": {
+          "pid": 13172,
+          "exitCode": 1,
+          "durationSeconds": 0.5489241
+        },
+        "launcher": {
+          "Stage": "selector-unknown",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 1.053,
+          "DeadlineSeconds": 300,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\capture\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\capture\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "raw": [
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\capture\\stdout.log",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 26,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\capture\\stderr.log",
+            "sha256": "0CB1DE4610C930394A9EB5CB2B3B03AC2E9E631479B25E287CD8621E5C3F9D14"
+          },
+          {
+            "bytes": 54,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\capture\\exit.json",
+            "sha256": "AC052B8B200A19A417324DE8ACB9288AAA73323338A082E464821C99A12D691F"
+          },
+          {
+            "bytes": 5,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\capture\\pid",
+            "sha256": "7037C965D7D58DF13064877719EEC6D42B4FE7A2440C7A575DF697702EC5C2BA"
+          },
+          {
+            "bytes": 3023,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\capture\\raw-child.ps1",
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "bytes": 1589,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\capture\\spec.json",
+            "sha256": "E4C2186344CBFC68C8C8329335D70D31CCE05F9DA75359BEBD58FF5052955F21"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\capture\\launcher\\retained.stdout",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\capture\\launcher\\retained.stderr",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\capture\\overflow",
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\capture\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\driver.ps1"
+          ],
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\capture\\stderr.log",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\capture\\stdout.log",
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\capture\\error",
+          "outputLimit": 16777216,
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\capture\\exit.json",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "environment": {}
+        }
+      },
+      "surface": "STREAM-SELECTOR: unknown",
+      "predicate": "command-selector",
+      "outcome": "reject",
+      "raw": [
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-unknown\\driver.ps1",
+          "bytes": 289,
+          "sha256": "5FA169B571C44C20FBAA36DD0CF37AE9CBCCD89C65A58412AAC8CC9A871F2D80"
+        }
+      ]
+    },
+    {
+      "id": "selector-duplicate",
+      "capture": {
+        "actual": {
+          "pid": 15928,
+          "exitCode": 1,
+          "durationSeconds": 0.5877349
+        },
+        "launcher": {
+          "Stage": "selector-duplicate",
+          "ExitCode": 1,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 1.114,
+          "DeadlineSeconds": 300,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\capture\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\capture\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "raw": [
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\capture\\stdout.log",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 28,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\capture\\stderr.log",
+            "sha256": "D63F28FBAA10AE43F93940AF4FB59E5271D8139329B8E8416EA05256D9CC3209"
+          },
+          {
+            "bytes": 54,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\capture\\exit.json",
+            "sha256": "4442DC048D7B53B63F9A30F52D4EF5787E2E5B0F35446C941802F634AF4CF635"
+          },
+          {
+            "bytes": 5,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\capture\\pid",
+            "sha256": "D29E85BC62BB78533CD3747F65E10CAC50548317BA3614F410E18660500BC4B8"
+          },
+          {
+            "bytes": 3023,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\capture\\raw-child.ps1",
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00"
+          },
+          {
+            "bytes": 1603,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\capture\\spec.json",
+            "sha256": "76F9C59CF9249FAFCE87FBF4718A116DB2DB0648DAC44C6E5539291D4A472951"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\capture\\launcher\\retained.stdout",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "bytes": 0,
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\capture\\launcher\\retained.stderr",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          }
+        ],
+        "spec": {
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\capture\\overflow",
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\capture\\pid",
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\driver.ps1"
+          ],
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\capture\\stderr.log",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\capture\\stdout.log",
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\capture\\error",
+          "outputLimit": 16777216,
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\capture\\exit.json",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "environment": {}
+        }
+      },
+      "surface": "STREAM-SELECTOR: duplicate",
+      "predicate": "command-selector",
+      "outcome": "reject",
+      "raw": [
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\selector-duplicate\\driver.ps1",
+          "bytes": 317,
+          "sha256": "D0887B1E38439B5C2A3072AE435910B3341995D8A0F684BFBADDFFF032701805"
+        }
+      ]
+    },
+    {
+      "id": "launcher-blank-stdout",
+      "capture": {
+        "actual": {
+          "exitCode": 0
+        },
+        "launcher": {
+          "Stage": "launcher-blank-stdout",
+          "ExitCode": 0,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 0.367,
+          "DeadlineSeconds": 30,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\launcher-blank-stdout\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\launcher-blank-stdout\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "spec": {
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\launcher-blank-stdout\\stdout",
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\launcher-blank-stdout\\stderr",
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\launcher-blank-stdout\\absent-error",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\launcher-blank-stdout\\absent-overflow"
+        }
+      },
+      "surface": "STREAM: launcher-blank-stdout launcher stdout differs",
+      "predicate": "Assert-LNOuterCapture",
+      "outcome": "reject",
+      "raw": [
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\launcher-blank-stdout\\launcher\\retained.stdout",
+          "bytes": 2,
+          "sha256": "7EB70257593DA06F682A3DDDA54A9D260D4FC514F645237F5CA74B08F8DA61A6"
+        },
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\launcher-blank-stdout\\launcher\\retained.stderr",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        }
+      ]
+    },
+    {
+      "id": "launcher-blank-stderr",
+      "capture": {
+        "actual": {
+          "exitCode": 0
+        },
+        "launcher": {
+          "Stage": "launcher-blank-stderr",
+          "ExitCode": 0,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 0.421,
+          "DeadlineSeconds": 30,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\launcher-blank-stderr\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\launcher-blank-stderr\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "spec": {
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\launcher-blank-stderr\\stdout",
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\launcher-blank-stderr\\stderr",
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\launcher-blank-stderr\\absent-error",
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\launcher-blank-stderr\\absent-overflow"
+        }
+      },
+      "surface": "STREAM: launcher-blank-stderr launcher stderr differs",
+      "predicate": "Assert-LNOuterCapture",
+      "outcome": "reject",
+      "raw": [
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\launcher-blank-stderr\\launcher\\retained.stdout",
+          "bytes": 0,
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+        },
+        {
+          "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\launcher-blank-stderr\\launcher\\retained.stderr",
+          "bytes": 2,
+          "sha256": "7EB70257593DA06F682A3DDDA54A9D260D4FC514F645237F5CA74B08F8DA61A6"
+        }
+      ]
+    }
+  ]
+}

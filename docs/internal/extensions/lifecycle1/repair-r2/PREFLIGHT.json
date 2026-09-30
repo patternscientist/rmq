@@ -1,0 +1,16 @@
+{
+  "runtimeProjectSkills": [
+    "rmq-audit-prompt",
+    "rmq-coordinator",
+    "rmq-proof-sprint"
+  ],
+  "requiredSkills": [
+    "rmq-proof-sprint"
+  ],
+  "command": "scripts/project_skill_preflight.ps1 -GovernanceRef 7b227c49ef2ec044b702126cc41c9add847eed01 -RequiredSkills rmq-proof-sprint -RuntimeProjectSkills rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint -RepositoryRoot C:/Users/poin/.codex/worktrees/e993/RMQ",
+  "chunk_id": "c03454",
+  "wall_time_seconds": 1.3591366,
+  "exit_code": 0,
+  "original_token_count": 204,
+  "output": "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied\nwarning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied\nwarning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied\nSKILL-PREFLIGHT: governance=7b227c49ef2ec044b702126cc41c9add847eed01\r\nSKILL-PREFLIGHT: checkout=0485a64920a273d0830b926ee46275085222819d\r\nSKILL-PREFLIGHT: expected=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint\r\nSKILL-PREFLIGHT: checkout_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint\r\nSKILL-PREFLIGHT: working_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint\r\nSKILL-PREFLIGHT: runtime_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint\r\nSKILL-PREFLIGHT: required=rmq-proof-sprint\r\nSKILL-PREFLIGHT: required_mode=role-skills\r\nSKILL-PREFLIGHT: PASS\r\n"
+}

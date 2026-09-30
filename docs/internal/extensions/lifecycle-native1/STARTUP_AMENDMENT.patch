@@ -1,0 +1,43 @@
+diff --git a/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/SparseLevelWidth.lean b/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/SparseLevelWidth.lean
+--- a/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/SparseLevelWidth.lean
++++ b/RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/SparseLevelWidth.lean
+@@ -1600,10 +1600,12 @@
+         Cartesian.CartesianShape.size, ih]
+       omega
+
++@[macro_inline]
+ def canonicalRelativeRmmInteriorCost33WitnessShape :
+     Cartesian.CartesianShape :=
+   canonicalRelativeRmmInteriorCost33RightSpine 3469
+
++@[macro_inline]
+ def canonicalRelativeRmmInteriorCost33WitnessInput : List Int :=
+   canonicalRelativeRmmInteriorCost33WitnessShape.representative
+
+diff --git a/RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean b/RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean
+--- a/RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean
++++ b/RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean
+@@ -1709,6 +1709,7 @@
+       (.sub .inputRight (.const 1))
+   ]
+
++@[macro_inline]
+ private def reviewerSingletonBeforeLCAState : WholeQueryState :=
+   (WholeQueryProgram.evalGlobalWordTrace
+     (Cartesian.shape reviewerSingletonInput) 0 1 reviewerSingletonBeforeLCA
+@@ -1730,6 +1731,7 @@
+   , WholeQueryInstr.lcaClose .answerClose .leftClose .rightClose
+   ]
+
++@[macro_inline]
+ private def reviewerSingletonBeforeRankState : WholeQueryState :=
+   (WholeQueryProgram.evalGlobalWordTrace
+     (Cartesian.shape reviewerSingletonInput) 0 1 reviewerSingletonBeforeRank
+@@ -2039,6 +2041,7 @@
+       (.sub .inputRight (.const 1))
+   ]
+
++@[macro_inline]
+ private def reviewerIncreasingSixteenBeforeLCAState : WholeQueryState :=
+   (WholeQueryProgram.evalGlobalWordTrace
+     (Cartesian.shape reviewerIncreasingSixteenInput) 0 16

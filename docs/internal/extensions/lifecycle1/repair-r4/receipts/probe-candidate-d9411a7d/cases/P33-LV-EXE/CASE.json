@@ -1,0 +1,43 @@
+{
+  "id": "P33-LV-EXE",
+  "finding": "P3-3",
+  "harness": "scripts/lifecycle_validator.ps1",
+  "harnessSha256": "8135040dfb712cb81dd083db8f4b58d42e333bc196db3770f2b5c28e228f0cb3",
+  "stage": null,
+  "deadline": null,
+  "process": {
+    "Stage": "P33-LV-EXE",
+    "ExitCode": 1,
+    "Output": [
+      "Exception: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P33-LV-EXE\\root\\scripts\\lifecycle_validator.ps1:110",
+      "Line |",
+      " 110 |      throw 'Missing rmq_lifecycle_validate.exe; build the named Lake t .",
+      "     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | Missing rmq_lifecycle_validate.exe; build the named Lake target explicitly first"
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "Exception: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P33-LV-EXE\\root\\scripts\\lifecycle_validator.ps1:110",
+      "Line |",
+      " 110 |      throw 'Missing rmq_lifecycle_validate.exe; build the named Lake t .",
+      "     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | Missing rmq_lifecycle_validate.exe; build the named Lake target explicitly first"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 1.26,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  },
+  "completedLaunch": true,
+  "durable": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P33-LV-EXE\\root\\.lake\\lifecycle-validator\\f9a8c8c0cde6486d8eb3ab9d5fc9d789\\RESULT.json",
+  "durableSha256": "9fb67e2375fbaaea976879f60e0b351b4a7ad1ce8dd64d1fd8880771f484aed0",
+  "verdict": "fail",
+  "childFailure": null,
+  "resultTimedOut": null,
+  "defectPresent": false,
+  "repairedShape": true,
+  "expect": "repaired",
+  "passed": true
+}

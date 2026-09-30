@@ -1,0 +1,143 @@
+{
+  "handle": "LIFE-1-R2",
+  "title": "(LIFE-1-R2) Complete lifecycle verification portability",
+  "task": "01a0c23e-6fce-7542-b453-8fa7a741d7c9",
+  "root": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ",
+  "base": "0485a64920a273d0830b926ee46275085222819d",
+  "branch": "codex/life-1-r2-hash-and-contract",
+  "previousBranch": {
+    "name": "codex/life-1-r1-validator-portability",
+    "commit": "0485a64920a273d0830b926ee46275085222819d"
+  },
+  "initialClean": true,
+  "initialCleanEvidence": "Exact HEAD/branch and empty porcelain observed twice before branch creation and before first file writes; Git ignore read warnings were on stderr only.",
+  "governance": "7b227c49ef2ec044b702126cc41c9add847eed01",
+  "preflight": {
+    "runtimeProjectSkills": [
+      "rmq-audit-prompt",
+      "rmq-coordinator",
+      "rmq-proof-sprint"
+    ],
+    "requiredSkills": [
+      "rmq-proof-sprint"
+    ],
+    "command": "scripts/project_skill_preflight.ps1 -GovernanceRef 7b227c49ef2ec044b702126cc41c9add847eed01 -RequiredSkills rmq-proof-sprint -RuntimeProjectSkills rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint -RepositoryRoot C:/Users/poin/.codex/worktrees/e993/RMQ",
+    "chunk_id": "c03454",
+    "wall_time_seconds": 1.3591366,
+    "exit_code": 0,
+    "original_token_count": 204,
+    "output": "warning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied\nwarning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied\nwarning: unable to access 'C:\\Users\\poin/.config/git/ignore': Permission denied\nSKILL-PREFLIGHT: governance=7b227c49ef2ec044b702126cc41c9add847eed01\r\nSKILL-PREFLIGHT: checkout=0485a64920a273d0830b926ee46275085222819d\r\nSKILL-PREFLIGHT: expected=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint\r\nSKILL-PREFLIGHT: checkout_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint\r\nSKILL-PREFLIGHT: working_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint\r\nSKILL-PREFLIGHT: runtime_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint\r\nSKILL-PREFLIGHT: required=rmq-proof-sprint\r\nSKILL-PREFLIGHT: required_mode=role-skills\r\nSKILL-PREFLIGHT: PASS\r\n"
+  },
+  "initialManifest": {
+    "bytes": 1807644,
+    "sha256": "55b43f6fab8592d95c3cb9714fa6fca70546b4dcad2b679bab44ea584a81080f"
+  },
+  "originalFiles": {
+    "docs/internal/extensions/lifecycle1/CONTRACT_REQUIREMENTS.json": {
+      "raw": {
+        "bytes": 54250,
+        "sha256": "e47ab45acad51fe508ce9b8be9983a136f8c9267d4d8fdd7888195bd0419e488"
+      },
+      "git": {
+        "object": "d8271d9a796dbbd5fec02b4169dee3098357e9a8",
+        "mode": "100644",
+        "bytes": 53962,
+        "sha256": "5bd95d24b6cffaf9fb39abb2aa04cca9743aed7884b3f87d03d7428e6b9cd8eb"
+      },
+      "rawEqualsGit": false,
+      "rawIsExactCrlfTransform": true
+    },
+    "docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.frozen.md": {
+      "raw": {
+        "bytes": 43514,
+        "sha256": "bc596cd8a4866cf8db7bd06360d1c2e797e389c92237c9ac3a0b5e4145cd22ab"
+      },
+      "git": {
+        "object": "1aa9b2139c05574b6256fff28aa8c3035e105e04",
+        "mode": "100644",
+        "bytes": 43437,
+        "sha256": "8b08e2d7c7f284634d88bfa4262ee447f79a401c78b27dc346ea34d76ccba4a7"
+      },
+      "rawEqualsGit": false,
+      "rawIsExactCrlfTransform": true
+    },
+    "docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.md": {
+      "raw": {
+        "bytes": 73177,
+        "sha256": "63b7eb6b7c01fcf9ca109be9cdcbf67141bb83c3927c2d7f707b06e2dc482cf1"
+      },
+      "git": {
+        "object": "c6b2388371d564b24d9441f2a3489531012460c1",
+        "mode": "100644",
+        "bytes": 72806,
+        "sha256": "18bdb89a0d4873636d434effb9a8e6d4f8c1b13997deb3167159eb1da167ef8e"
+      },
+      "rawEqualsGit": false,
+      "rawIsExactCrlfTransform": true
+    }
+  },
+  "externalSources": {
+    "C:\\Users\\poin\\Documents\\RMQ\\lifecycle-implementation-20260920\\life1-r1-review\\DISPOSITION.md": {
+      "bytes": 17832,
+      "sha256": "520d24e435ab007ee84a58ca6d0c36a93aca950ec998190d4e44535c89af4a79"
+    },
+    "C:\\Users\\poin\\Documents\\RMQ\\lifecycle-implementation-20260920\\life1-r1-review\\R2_PROMPT_REVIEW.md": {
+      "bytes": 13569,
+      "sha256": "78b4a9f8304f4df0188112931d2ecc407b5b5e99ab83d6174b6638d7f5512ee8"
+    },
+    "C:\\Users\\poin\\Documents\\RMQ\\lifecycle-implementation-20260920\\LIFE-1_PROMPT.md": {
+      "bytes": 33909,
+      "sha256": "f82a24460dfa06602fc52e2c78b0fa8402fbb84a0d203b4abb95040fa56b0c18"
+    },
+    "C:\\Users\\poin\\Documents\\RMQ\\lifecycle-implementation-20260920\\CAMPAIGN_PLAN.md": {
+      "bytes": 6185,
+      "sha256": "69018d18a42069593eede1ce481bcf859482e4e69933f97bc8e965405f8f15d7"
+    }
+  },
+  "runtime": {
+    "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe": {
+      "bytes": 301368,
+      "sha256": "362a356ce7f0940ec74f73a8fc2c990a2cc24a38a11c90bbd8eca947110ad139",
+      "observed": {
+        "shell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+        "version": "7.6.5",
+        "edition": "Core",
+        "dotnet": "10.0.11"
+      }
+    },
+    "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe": {
+      "bytes": 495616,
+      "sha256": "8bb6fa8c283b4d92120b1ef249a9b311b0f804d4cabbe9981159976c8be76a5e",
+      "observed": {
+        "shell": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        "version": "5.1.26100.9444",
+        "edition": "Desktop",
+        "dotnet": "4.0.30319.42000"
+      }
+    }
+  },
+  "tools": {
+    "C:\\Python314\\python.exe": {
+      "bytes": 106328,
+      "sha256": "7ca24f26d6e3f463419ee4f537ddd3acd312c38fe45e678cce08572f26a8bd1a"
+    },
+    "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe": {
+      "bytes": 82432,
+      "sha256": "9b5af669d8dc9b5826a1f5427584915eeca659e9bf34c7ee72667b93c0bfdcb0"
+    },
+    "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lake.exe": {
+      "bytes": 85504,
+      "sha256": "aed396c5f1948b673416c8b509fa2ca31f3e2bb9596cc2d75485963f3e17bdd7"
+    }
+  },
+  "materialization": {
+    "receipt": "MATERIALIZATION.json",
+    "bytes": 8448,
+    "sha256": "cbb6b5d3e9a6d922133a5da55163703dc1282567348273fce0b9b9d9a3b9308a",
+    "postBaseline": "PROTECTED_BASELINE.json",
+    "postBaselineIdentity": {
+      "bytes": 700447,
+      "sha256": "10adce9d9a3b5909a9feb710494f990f94abc17fe17c8b018ea3fc5cc3558b47"
+    }
+  }
+}

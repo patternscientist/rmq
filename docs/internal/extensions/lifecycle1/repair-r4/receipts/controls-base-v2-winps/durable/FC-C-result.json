@@ -1,0 +1,303 @@
+{
+    "source":  {
+                   "sourceVariant":  "repaired",
+                   "base":  "12bd7f0fc2c87f2c9bdef3825bd92477e48e3433",
+                   "productionPath":  "scripts/lifecycle_dependency_replay.ps1",
+                   "sourceSha256":  "ac21ed7fc218b1318111c0b9d54b4f474be497280a9b78d204a6ba0aa5ce332b",
+                   "sourceByteLength":  22619,
+                   "workingProductionSha256":  "ac21ed7fc218b1318111c0b9d54b4f474be497280a9b78d204a6ba0aa5ce332b",
+                   "helperSha256":  "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+                   "registrySha256":  "1303ecf93c0a0c74e0a48023fe52258b7e847d020d009eb2f4deba7f084ab6df",
+                   "harnessSha256":  "e194f13d517939481184a4ca71638a4ab17a6baf44396e030b180a8b0dc01549",
+                   "shell":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                   "shellSha256":  "8bb6fa8c283b4d92120b1ef249a9b311b0f804d4cabbe9981159976c8be76a5e",
+                   "pieces":  [
+                                  {
+                                      "name":  "Hash-Bytes",
+                                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-C\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-7317c6e4f49d4e189932478c76110df5\\Hash-Bytes.source.ps1",
+                                      "startCharacter":  1453,
+                                      "endCharacter":  1690,
+                                      "startByte":  1453,
+                                      "byteLength":  237,
+                                      "sha256":  "b6a1322df223db890a9065d3a2d3be08d425256fe1d50075b3a67fb9f6501eb3"
+                                  },
+                                  {
+                                      "name":  "Hash-File",
+                                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-C\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-7317c6e4f49d4e189932478c76110df5\\Hash-File.source.ps1",
+                                      "startCharacter":  1692,
+                                      "endCharacter":  1780,
+                                      "startByte":  1692,
+                                      "byteLength":  88,
+                                      "sha256":  "1619305d8593281081e1ca9ee5d63ffe859e0705f133687d68a622e5e4be31eb"
+                                  },
+                                  {
+                                      "name":  "Write-Json",
+                                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-C\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-7317c6e4f49d4e189932478c76110df5\\Write-Json.source.ps1",
+                                      "startCharacter":  1891,
+                                      "endCharacter":  3671,
+                                      "startByte":  1891,
+                                      "byteLength":  1780,
+                                      "sha256":  "55a4bcb2c2110f0cff2f0318922b0413f2f0bfa0f0b76fb2841cfaa91814dc15"
+                                  },
+                                  {
+                                      "name":  "Assert-Restored",
+                                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-C\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-7317c6e4f49d4e189932478c76110df5\\Assert-Restored.source.ps1",
+                                      "startCharacter":  10582,
+                                      "endCharacter":  10838,
+                                      "startByte":  10582,
+                                      "byteLength":  256,
+                                      "sha256":  "2e2ab5f253865cd15fcbe5a097fba5420d8b2a8c2116846b96068eddf68e12df"
+                                  },
+                                  {
+                                      "name":  "Remove-Shadow",
+                                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-C\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-7317c6e4f49d4e189932478c76110df5\\Remove-Shadow.source.ps1",
+                                      "startCharacter":  11318,
+                                      "endCharacter":  11812,
+                                      "startByte":  11318,
+                                      "byteLength":  494,
+                                      "sha256":  "79d6d36733f4adf30d275ee8068d9900c9757dfea439d54fbc79cda77ff827a9"
+                                  },
+                                  {
+                                      "name":  "main-catch-finally",
+                                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-C\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-7317c6e4f49d4e189932478c76110df5\\main-catch-finally.source.ps1",
+                                      "startCharacter":  21573,
+                                      "endCharacter":  22529,
+                                      "startByte":  21573,
+                                      "byteLength":  956,
+                                      "sha256":  "168751badfbf158bf5abfe347e565ec967e119444925ea15e3941343a8deb14f"
+                                  },
+                                  {
+                                      "name":  "post-try-terminal",
+                                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-C\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-7317c6e4f49d4e189932478c76110df5\\post-try-terminal.source.ps1",
+                                      "startCharacter":  22529,
+                                      "endCharacter":  22619,
+                                      "startByte":  22529,
+                                      "byteLength":  90,
+                                      "sha256":  "7555eb26d15caf5b3b0adb620d7b8a53e4fdb35b35f1d658087b6ea4ede31da8"
+                                  },
+                                  {
+                                      "name":  "finally",
+                                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-C\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-7317c6e4f49d4e189932478c76110df5\\finally.source.ps1",
+                                      "startCharacter":  21822,
+                                      "endCharacter":  22529,
+                                      "startByte":  21822,
+                                      "byteLength":  707,
+                                      "sha256":  "b5577fdd0fa524b8d4f917e2660cf2eea4db5b9f6397187ea00ee6cc8ee0f47b"
+                                  }
+                              ],
+                   "chain":  "main try fixture -\u003e exact catch -\u003e exact finally -\u003e Assert-Restored -\u003e Hash-File -\u003e Hash-Bytes; independent/old coupled Remove-Shadow -\u003e guarded Remove-Item; exact mutex release/dispose; exact summary and terminal exit/PASS",
+                   "scope":  "Source-derived finalizer component with real bounded process and real owned scratch files; full production compiler replay is separate evidence",
+                   "streams":  "Inherited helper returned nonblank lines, not original raw stream bytes; helper may throw before returning overflow/cleanup output"
+               },
+    "id":  "F01_INTACT_SUCCESS",
+    "childSourceSha256":  "ce497f03646d65556b24b22b83543a3699637eaf6c7cd6159aa9ca8cfed198a2",
+    "emptyBaselineLimit":  "A successful empty baseline quantifies over no files; it cannot establish whole-tree integrity",
+    "passed":  false,
+    "error":  null,
+    "finalization":  {
+                         "schema":  "life1-r3-finalization-v1",
+                         "verdict":  "fail",
+                         "stageError":  null,
+                         "integrityErrors":  [
+                                                 "L1R1-FINALIZER: production script changed during pair"
+                                             ],
+                         "cleanupErrors":  [
+
+                                           ],
+                         "pinChecks":  [
+                                           {
+                                               "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-C\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\finalizer_cases.json",
+                                               "label":  "frozen registry",
+                                               "entrySha256":  "1303ecf93c0a0c74e0a48023fe52258b7e847d020d009eb2f4deba7f084ab6df",
+                                               "finalSha256":  "1303ecf93c0a0c74e0a48023fe52258b7e847d020d009eb2f4deba7f084ab6df",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-C\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\finalizer_control.ps1",
+                                               "label":  "harness",
+                                               "entrySha256":  "e194f13d517939481184a4ca71638a4ab17a6baf44396e030b180a8b0dc01549",
+                                               "finalSha256":  "e194f13d517939481184a4ca71638a4ab17a6baf44396e030b180a8b0dc01549",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-C\\root\\scripts\\owned_process_tree.ps1",
+                                               "label":  "protected helper",
+                                               "entrySha256":  "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+                                               "finalSha256":  "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-C\\root\\scripts\\lifecycle_dependency_replay.ps1",
+                                               "label":  "production script",
+                                               "entrySha256":  "ac21ed7fc218b1318111c0b9d54b4f474be497280a9b78d204a6ba0aa5ce332b",
+                                               "finalSha256":  "31c0be254ebcc0c3be5fb74a8e206be4ed060e9951838d8be3cfae089199c05c",
+                                               "status":  "changed"
+                                           }
+                                       ],
+                         "entryPinCount":  4,
+                         "verifiedPinCount":  3
+                     },
+    "records":  [
+                    {
+                        "role":  "P",
+                        "mode":  "success",
+                        "pid":  29580,
+                        "ownedBootstrapRootPid":  19812,
+                        "requestedChildAbsent":  true,
+                        "rootAbsent":  true,
+                        "runtime":  {
+                                        "requestedChildPid":  29580,
+                                        "shell":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                                        "psVersion":  "5.1.26100.9444",
+                                        "sourceSha256":  "ac21ed7fc218b1318111c0b9d54b4f474be497280a9b78d204a6ba0aa5ce332b",
+                                        "ownedBootstrapRootPid":  19812,
+                                        "clrVersion":  "4.0.30319.42000"
+                                    },
+                        "process":  {
+                                        "Stage":  "F01_INTACT_SUCCESS-P",
+                                        "ExitCode":  0,
+                                        "Output":  [
+                                                       "LIFE1-DEPENDENCY PASS C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-C\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-7317c6e4f49d4e189932478c76110df5\\P\\production-evidence"
+                                                   ],
+                                        "StandardOutput":  [
+                                                               "LIFE1-DEPENDENCY PASS C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-C\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-7317c6e4f49d4e189932478c76110df5\\P\\production-evidence"
+                                                           ],
+                                        "StandardError":  [
+
+                                                          ],
+                                        "TimedOut":  false,
+                                        "OutputLimitExceeded":  false,
+                                        "TerminatedIds":  [
+
+                                                          ],
+                                        "DurationSeconds":  1.098,
+                                        "DeadlineSeconds":  30,
+                                        "Ownership":  "kill-on-close-job"
+                                    },
+                        "summary":  {
+                                        "selected":  [
+                                                         "D20_ACCEPT_IDENTITY"
+                                                     ],
+                                        "shadowRemoved":  true,
+                                        "integrityError":  null,
+                                        "cleanupError":  null,
+                                        "passed":  true,
+                                        "restored":  true,
+                                        "registrySha256":  "4c9c7a4259808bb64c74656fd52559752e76f02834f2ac8567f5830968a5b80d",
+                                        "stageError":  null,
+                                        "cases":  [
+
+                                                  ]
+                                    },
+                        "fixture":  {
+                                        "pinBeforeRestore":  "initial captured fixture",
+                                        "shadowPresent":  false,
+                                        "enteredMain":  true,
+                                        "pin2BeforeRestore":  "initial second fixture",
+                                        "lockAcquired":  false,
+                                        "integrityError":  null,
+                                        "sentinelPresent":  false,
+                                        "cleanupError":  null,
+                                        "sentinelText":  null,
+                                        "stageError":  null,
+                                        "baselineCount":  2
+                                    },
+                        "restoration":  {
+                                            "ownedPinRestored":  true,
+                                            "scope":  "Only this harness-owned scratch fixture; no production original/tracked bytes restored",
+                                            "lockDisposed":  true,
+                                            "ownedSecondPinRestored":  true
+                                        },
+                        "mutexReleasedWithoutAbandonment":  true,
+                        "passed":  true
+                    },
+                    {
+                        "role":  "Q",
+                        "mode":  "success",
+                        "pid":  27236,
+                        "ownedBootstrapRootPid":  9728,
+                        "requestedChildAbsent":  true,
+                        "rootAbsent":  true,
+                        "runtime":  {
+                                        "requestedChildPid":  27236,
+                                        "shell":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                                        "psVersion":  "5.1.26100.9444",
+                                        "sourceSha256":  "ac21ed7fc218b1318111c0b9d54b4f474be497280a9b78d204a6ba0aa5ce332b",
+                                        "ownedBootstrapRootPid":  9728,
+                                        "clrVersion":  "4.0.30319.42000"
+                                    },
+                        "process":  {
+                                        "Stage":  "F01_INTACT_SUCCESS-Q",
+                                        "ExitCode":  0,
+                                        "Output":  [
+                                                       "LIFE1-DEPENDENCY PASS C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-C\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-7317c6e4f49d4e189932478c76110df5\\Q\\production-evidence"
+                                                   ],
+                                        "StandardOutput":  [
+                                                               "LIFE1-DEPENDENCY PASS C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-C\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-7317c6e4f49d4e189932478c76110df5\\Q\\production-evidence"
+                                                           ],
+                                        "StandardError":  [
+
+                                                          ],
+                                        "TimedOut":  false,
+                                        "OutputLimitExceeded":  false,
+                                        "TerminatedIds":  [
+
+                                                          ],
+                                        "DurationSeconds":  1.031,
+                                        "DeadlineSeconds":  30,
+                                        "Ownership":  "kill-on-close-job"
+                                    },
+                        "summary":  {
+                                        "selected":  [
+                                                         "D20_ACCEPT_IDENTITY"
+                                                     ],
+                                        "shadowRemoved":  true,
+                                        "integrityError":  null,
+                                        "cleanupError":  null,
+                                        "passed":  true,
+                                        "restored":  true,
+                                        "registrySha256":  "4c9c7a4259808bb64c74656fd52559752e76f02834f2ac8567f5830968a5b80d",
+                                        "stageError":  null,
+                                        "cases":  [
+
+                                                  ]
+                                    },
+                        "fixture":  {
+                                        "pinBeforeRestore":  "initial captured fixture",
+                                        "shadowPresent":  false,
+                                        "enteredMain":  true,
+                                        "pin2BeforeRestore":  "initial second fixture",
+                                        "lockAcquired":  false,
+                                        "integrityError":  null,
+                                        "sentinelPresent":  false,
+                                        "cleanupError":  null,
+                                        "sentinelText":  null,
+                                        "stageError":  null,
+                                        "baselineCount":  2
+                                    },
+                        "restoration":  {
+                                            "ownedPinRestored":  true,
+                                            "scope":  "Only this harness-owned scratch fixture; no production original/tracked bytes restored",
+                                            "lockDisposed":  true,
+                                            "ownedSecondPinRestored":  true
+                                        },
+                        "mutexReleasedWithoutAbandonment":  true,
+                        "passed":  true
+                    }
+                ],
+    "deadlineSeconds":  30,
+    "outputLimitBytes":  1048576,
+    "expected":  {
+                     "id":  "F01_INTACT_SUCCESS",
+                     "sourceVariant":  "repaired",
+                     "mode":  "success",
+                     "expectedExit":  0,
+                     "stageFailure":  false,
+                     "integrityFailure":  false,
+                     "cleanupFailure":  false,
+                     "shadowRemoved":  true,
+                     "baselineCount":  2,
+                     "minimumShellMajor":  5,
+                     "challenge":  "Legitimate successful finalizer with two captured pins and actual held private mutex"
+                 }
+}

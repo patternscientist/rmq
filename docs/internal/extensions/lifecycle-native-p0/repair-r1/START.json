@@ -1,0 +1,25 @@
+{
+  "handle": "LIFE-NATIVE-P0-R1",
+  "worktree": "C:\\Users\\poin\\.codex\\worktrees\\587c\\RMQ",
+  "base": "0c873072e84be9e1d65edab1985bcff1d23abef1",
+  "branch": "codex/life-native-p0-r1-certification",
+  "initialHead": "0c873072e84be9e1d65edab1985bcff1d23abef1",
+  "initialClean": true,
+  "governance": "7b227c49ef2ec044b702126cc41c9add847eed01",
+  "runtimeCatalog": [
+    "rmq-audit-prompt",
+    "rmq-coordinator",
+    "rmq-proof-sprint"
+  ],
+  "requiredSkill": "rmq-proof-sprint",
+  "preflight": "PASS",
+  "frozenRowsSha256": "74982691e40eb56a10365f66e74877f6518c0a13e959f559e267047bdac7130e",
+  "scope": [
+    "scripts/packed_native_lifecycle_storage_replay.ps1",
+    "scripts/packed_native_lifecycle_integrity_check.ps1",
+    "docs/internal/extensions/lifecycle-native-p0/repair-r1/",
+    "docs/internal/extensions/lifecycle-native-p0/BOUNDARY.md: optional citation only",
+    "docs/internal/WORKFLOW_DESIGN_DECISIONS.md: append",
+    "docs/internal/DESIGN_DECISIONS.md: conditional append"
+  ]
+}

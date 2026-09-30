@@ -1,0 +1,863 @@
+{
+  "schema": "lifecycle-native1-r1-repair-cases-v1",
+  "status": "FROZEN_BEFORE_PRODUCTION_EDITS",
+  "base": "3dbdebedcc6ba6b2a864df0d46dcc09ccaaa7536",
+  "repairBase": "c52c453a2f0f49c568886f502687e4d0667838e9",
+  "orderedIds": [
+    "H1-MISSING-REPLAY",
+    "H1-INTEGRITY-AND-CLEANUP",
+    "H2-native_controls-healthy",
+    "H2-native_controls-omit-middle",
+    "H2-native_controls-duplicate-middle",
+    "H2-native_controls-handler-ascii",
+    "H2-native_controls-schema-nul",
+    "H2-native_controls-schema-soft-hyphen",
+    "H2-native_controls-schema-bom",
+    "H2-native_controls-schema-zero-width-space",
+    "H2-native_controls-id-nul",
+    "H2-native_controls-id-soft-hyphen",
+    "H2-native_controls-id-bom",
+    "H2-native_controls-id-zero-width-space",
+    "H2-native_controls-handler-nul",
+    "H2-native_controls-handler-soft-hyphen",
+    "H2-native_controls-handler-bom",
+    "H2-native_controls-handler-zero-width-space",
+    "H2-native_controls-discoveryVerdict-nul",
+    "H2-native_controls-discoveryVerdict-soft-hyphen",
+    "H2-native_controls-discoveryVerdict-bom",
+    "H2-native_controls-discoveryVerdict-zero-width-space",
+    "H2-native_controls-status-nul",
+    "H2-native_controls-control-nul",
+    "H2-native_controls-phase-nul",
+    "H2-native_controls-argument-nul",
+    "H2-native_controls-surface-nul",
+    "H2-native_controls-schema-null",
+    "H2-native_controls-id-null",
+    "H2-native_controls-handler-null",
+    "H2-native_controls-discoveryVerdict-null",
+    "H2-native_controls-status-null",
+    "H2-native_controls-control-null",
+    "H2-native_controls-phase-null",
+    "H2-native_controls-argument-null",
+    "H2-native_controls-surface-null",
+    "H2-native_clients-healthy",
+    "H2-native_clients-omit-middle",
+    "H2-native_clients-duplicate-middle",
+    "H2-native_clients-handler-ascii",
+    "H2-native_clients-schema-nul",
+    "H2-native_clients-schema-soft-hyphen",
+    "H2-native_clients-schema-bom",
+    "H2-native_clients-schema-zero-width-space",
+    "H2-native_clients-id-nul",
+    "H2-native_clients-id-soft-hyphen",
+    "H2-native_clients-id-bom",
+    "H2-native_clients-id-zero-width-space",
+    "H2-native_clients-handler-nul",
+    "H2-native_clients-handler-soft-hyphen",
+    "H2-native_clients-handler-bom",
+    "H2-native_clients-handler-zero-width-space",
+    "H2-native_clients-expectedVerdict-nul",
+    "H2-native_clients-expectedVerdict-soft-hyphen",
+    "H2-native_clients-expectedVerdict-bom",
+    "H2-native_clients-expectedVerdict-zero-width-space",
+    "H2-native_clients-expectedStdout-nul",
+    "H2-native_clients-expectedStdout-soft-hyphen",
+    "H2-native_clients-expectedStdout-bom",
+    "H2-native_clients-expectedStdout-zero-width-space",
+    "H2-native_clients-expectedStderr-nul",
+    "H2-native_clients-expectedStderr-soft-hyphen",
+    "H2-native_clients-expectedStderr-bom",
+    "H2-native_clients-expectedStderr-zero-width-space",
+    "H2-native_clients-variant-nul",
+    "H2-native_clients-executable-nul",
+    "H2-native_clients-mode-nul",
+    "H2-native_clients-schema-null",
+    "H2-native_clients-id-null",
+    "H2-native_clients-handler-null",
+    "H2-native_clients-expectedVerdict-null",
+    "H2-native_clients-expectedStdout-null",
+    "H2-native_clients-expectedStderr-null",
+    "H2-native_clients-variant-null",
+    "H2-native_clients-executable-null",
+    "H2-native_clients-mode-null",
+    "H3-CODEC-dll",
+    "H3-CODEC-clients",
+    "H3-CODEC-all",
+    "H3-default-coverage",
+    "H3-lean-codec-supported",
+    "H3-native-body-mutation",
+    "H3-source-generated-required-set",
+    "R1-FINAL-healthy",
+    "R1-FINAL-out-of-scope",
+    "R1-FINAL-frozen-row",
+    "R1-FINAL-ledger-prefix",
+    "R1-FINAL-missing-path",
+    "R1-FINAL-extra-path",
+    "R1-FINAL-changed-pin",
+    "R1-FINAL-extra-stdout",
+    "R1-FINAL-extra-stderr",
+    "R1-FINAL-wrong-exit"
+  ],
+  "cases": [
+    {
+      "id": "H1-MISSING-REPLAY",
+      "handler": "setup",
+      "fault": "missing-replay",
+      "expectedExit": 1,
+      "setupComplete": false,
+      "integritySuccess": true,
+      "cleanupSuccess": true
+    },
+    {
+      "id": "H1-INTEGRITY-AND-CLEANUP",
+      "handler": "setup",
+      "fault": "changed-pin-then-missing-replay",
+      "expectedExit": 1,
+      "setupComplete": false,
+      "integritySuccess": false,
+      "cleanupSuccess": true
+    },
+    {
+      "id": "H2-native_controls-healthy",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 0,
+      "mutation": "healthy"
+    },
+    {
+      "id": "H2-native_controls-omit-middle",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "omit"
+    },
+    {
+      "id": "H2-native_controls-duplicate-middle",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "duplicate"
+    },
+    {
+      "id": "H2-native_controls-handler-ascii",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "handler",
+      "suffix": "X"
+    },
+    {
+      "id": "H2-native_controls-schema-nul",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "schema",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_controls-schema-soft-hyphen",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "schema",
+      "suffix": "\u00ad"
+    },
+    {
+      "id": "H2-native_controls-schema-bom",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "schema",
+      "suffix": "\ufeff"
+    },
+    {
+      "id": "H2-native_controls-schema-zero-width-space",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "schema",
+      "suffix": "\u200b"
+    },
+    {
+      "id": "H2-native_controls-id-nul",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "id",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_controls-id-soft-hyphen",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "id",
+      "suffix": "\u00ad"
+    },
+    {
+      "id": "H2-native_controls-id-bom",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "id",
+      "suffix": "\ufeff"
+    },
+    {
+      "id": "H2-native_controls-id-zero-width-space",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "id",
+      "suffix": "\u200b"
+    },
+    {
+      "id": "H2-native_controls-handler-nul",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "handler",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_controls-handler-soft-hyphen",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "handler",
+      "suffix": "\u00ad"
+    },
+    {
+      "id": "H2-native_controls-handler-bom",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "handler",
+      "suffix": "\ufeff"
+    },
+    {
+      "id": "H2-native_controls-handler-zero-width-space",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "handler",
+      "suffix": "\u200b"
+    },
+    {
+      "id": "H2-native_controls-discoveryVerdict-nul",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "discoveryVerdict",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_controls-discoveryVerdict-soft-hyphen",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "discoveryVerdict",
+      "suffix": "\u00ad"
+    },
+    {
+      "id": "H2-native_controls-discoveryVerdict-bom",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "discoveryVerdict",
+      "suffix": "\ufeff"
+    },
+    {
+      "id": "H2-native_controls-discoveryVerdict-zero-width-space",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "discoveryVerdict",
+      "suffix": "\u200b"
+    },
+    {
+      "id": "H2-native_controls-status-nul",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "status",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_controls-control-nul",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "control",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_controls-phase-nul",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "phase",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_controls-argument-nul",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "argument",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_controls-surface-nul",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "surface",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_controls-schema-null",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "schema",
+      "value": null
+    },
+    {
+      "id": "H2-native_controls-id-null",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "id",
+      "value": null
+    },
+    {
+      "id": "H2-native_controls-handler-null",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "handler",
+      "value": null
+    },
+    {
+      "id": "H2-native_controls-discoveryVerdict-null",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "discoveryVerdict",
+      "value": null
+    },
+    {
+      "id": "H2-native_controls-status-null",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "status",
+      "value": null
+    },
+    {
+      "id": "H2-native_controls-control-null",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "control",
+      "value": null
+    },
+    {
+      "id": "H2-native_controls-phase-null",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "phase",
+      "value": null
+    },
+    {
+      "id": "H2-native_controls-argument-null",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "argument",
+      "value": null
+    },
+    {
+      "id": "H2-native_controls-surface-null",
+      "handler": "registry",
+      "runner": "native_controls",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "surface",
+      "value": null
+    },
+    {
+      "id": "H2-native_clients-healthy",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 0,
+      "mutation": "healthy"
+    },
+    {
+      "id": "H2-native_clients-omit-middle",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "omit"
+    },
+    {
+      "id": "H2-native_clients-duplicate-middle",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "duplicate"
+    },
+    {
+      "id": "H2-native_clients-handler-ascii",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "handler",
+      "suffix": "X"
+    },
+    {
+      "id": "H2-native_clients-schema-nul",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "schema",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_clients-schema-soft-hyphen",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "schema",
+      "suffix": "\u00ad"
+    },
+    {
+      "id": "H2-native_clients-schema-bom",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "schema",
+      "suffix": "\ufeff"
+    },
+    {
+      "id": "H2-native_clients-schema-zero-width-space",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "schema",
+      "suffix": "\u200b"
+    },
+    {
+      "id": "H2-native_clients-id-nul",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "id",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_clients-id-soft-hyphen",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "id",
+      "suffix": "\u00ad"
+    },
+    {
+      "id": "H2-native_clients-id-bom",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "id",
+      "suffix": "\ufeff"
+    },
+    {
+      "id": "H2-native_clients-id-zero-width-space",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "id",
+      "suffix": "\u200b"
+    },
+    {
+      "id": "H2-native_clients-handler-nul",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "handler",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_clients-handler-soft-hyphen",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "handler",
+      "suffix": "\u00ad"
+    },
+    {
+      "id": "H2-native_clients-handler-bom",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "handler",
+      "suffix": "\ufeff"
+    },
+    {
+      "id": "H2-native_clients-handler-zero-width-space",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "handler",
+      "suffix": "\u200b"
+    },
+    {
+      "id": "H2-native_clients-expectedVerdict-nul",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "expectedVerdict",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_clients-expectedVerdict-soft-hyphen",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "expectedVerdict",
+      "suffix": "\u00ad"
+    },
+    {
+      "id": "H2-native_clients-expectedVerdict-bom",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "expectedVerdict",
+      "suffix": "\ufeff"
+    },
+    {
+      "id": "H2-native_clients-expectedVerdict-zero-width-space",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "expectedVerdict",
+      "suffix": "\u200b"
+    },
+    {
+      "id": "H2-native_clients-expectedStdout-nul",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "expectedStdout",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_clients-expectedStdout-soft-hyphen",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "expectedStdout",
+      "suffix": "\u00ad"
+    },
+    {
+      "id": "H2-native_clients-expectedStdout-bom",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "expectedStdout",
+      "suffix": "\ufeff"
+    },
+    {
+      "id": "H2-native_clients-expectedStdout-zero-width-space",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "expectedStdout",
+      "suffix": "\u200b"
+    },
+    {
+      "id": "H2-native_clients-expectedStderr-nul",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "expectedStderr",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_clients-expectedStderr-soft-hyphen",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "expectedStderr",
+      "suffix": "\u00ad"
+    },
+    {
+      "id": "H2-native_clients-expectedStderr-bom",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "expectedStderr",
+      "suffix": "\ufeff"
+    },
+    {
+      "id": "H2-native_clients-expectedStderr-zero-width-space",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "expectedStderr",
+      "suffix": "\u200b"
+    },
+    {
+      "id": "H2-native_clients-variant-nul",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "variant",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_clients-executable-nul",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "executable",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_clients-mode-nul",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "field",
+      "field": "mode",
+      "suffix": "\u0000"
+    },
+    {
+      "id": "H2-native_clients-schema-null",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "schema",
+      "value": null
+    },
+    {
+      "id": "H2-native_clients-id-null",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "id",
+      "value": null
+    },
+    {
+      "id": "H2-native_clients-handler-null",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "handler",
+      "value": null
+    },
+    {
+      "id": "H2-native_clients-expectedVerdict-null",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "expectedVerdict",
+      "value": null
+    },
+    {
+      "id": "H2-native_clients-expectedStdout-null",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "expectedStdout",
+      "value": null
+    },
+    {
+      "id": "H2-native_clients-expectedStderr-null",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "expectedStderr",
+      "value": null
+    },
+    {
+      "id": "H2-native_clients-variant-null",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "variant",
+      "value": null
+    },
+    {
+      "id": "H2-native_clients-executable-null",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "executable",
+      "value": null
+    },
+    {
+      "id": "H2-native_clients-mode-null",
+      "handler": "registry",
+      "runner": "native_clients",
+      "expectedExit": 1,
+      "mutation": "type",
+      "field": "mode",
+      "value": null
+    },
+    {
+      "id": "H3-CODEC-dll",
+      "handler": "closure-caller",
+      "phase": "dll",
+      "expectedExit": 1
+    },
+    {
+      "id": "H3-CODEC-clients",
+      "handler": "closure-caller",
+      "phase": "clients",
+      "expectedExit": 1
+    },
+    {
+      "id": "H3-CODEC-all",
+      "handler": "closure-caller",
+      "phase": "all",
+      "expectedExit": 1
+    },
+    {
+      "id": "H3-default-coverage",
+      "handler": "closure-predicate",
+      "expectedVerdict": "accept-control"
+    },
+    {
+      "id": "H3-lean-codec-supported",
+      "handler": "closure-predicate",
+      "expectedVerdict": "accept-control"
+    },
+    {
+      "id": "H3-native-body-mutation",
+      "handler": "closure-predicate",
+      "expectedVerdict": "accept-control"
+    },
+    {
+      "id": "H3-source-generated-required-set",
+      "handler": "closure-predicate",
+      "expectedVerdict": "accept-control"
+    },
+    {
+      "id": "R1-FINAL-healthy",
+      "handler": "scope-final",
+      "expectedVerdict": "accept"
+    },
+    {
+      "id": "R1-FINAL-out-of-scope",
+      "handler": "scope-final",
+      "expectedVerdict": "reject"
+    },
+    {
+      "id": "R1-FINAL-frozen-row",
+      "handler": "scope-final",
+      "expectedVerdict": "reject"
+    },
+    {
+      "id": "R1-FINAL-ledger-prefix",
+      "handler": "scope-final",
+      "expectedVerdict": "reject"
+    },
+    {
+      "id": "R1-FINAL-missing-path",
+      "handler": "scope-final",
+      "expectedVerdict": "reject"
+    },
+    {
+      "id": "R1-FINAL-extra-path",
+      "handler": "scope-final",
+      "expectedVerdict": "reject"
+    },
+    {
+      "id": "R1-FINAL-changed-pin",
+      "handler": "scope-final",
+      "expectedVerdict": "reject"
+    },
+    {
+      "id": "R1-FINAL-extra-stdout",
+      "handler": "scope-final",
+      "expectedVerdict": "reject"
+    },
+    {
+      "id": "R1-FINAL-extra-stderr",
+      "handler": "scope-final",
+      "expectedVerdict": "reject"
+    },
+    {
+      "id": "R1-FINAL-wrong-exit",
+      "handler": "scope-final",
+      "expectedVerdict": "reject"
+    }
+  ]
+}

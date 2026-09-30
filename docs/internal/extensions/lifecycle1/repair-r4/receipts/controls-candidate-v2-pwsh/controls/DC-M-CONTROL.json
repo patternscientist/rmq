@@ -1,0 +1,114 @@
+{
+  "id": "DC-M",
+  "harness": "DC",
+  "shape": "M",
+  "fault": "delete-fail",
+  "mode": "candidate",
+  "profile": "pwsh",
+  "deadlineSeconds": 180,
+  "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-M\\root",
+  "setupError": null,
+  "launchError": null,
+  "process": {
+    "Stage": "DC-M",
+    "ExitCode": 1,
+    "Output": [
+      "CONTROL: production source final hash failed: Could not find file 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-M\\root\\scripts\\lifecycle_dependency_replay.ps1'.",
+      "Exception: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-M\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\dependency_child.ps1:96",
+      "Line |",
+      "  96 |  . join ','))){throw 'CONTROL: exact same-root positive boundary failed' .",
+      "     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | CONTROL: exact same-root positive boundary failed"
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "CONTROL: production source final hash failed: Could not find file 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-M\\root\\scripts\\lifecycle_dependency_replay.ps1'.",
+      "Exception: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-M\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\dependency_child.ps1:96",
+      "Line |",
+      "  96 |  . join ','))){throw 'CONTROL: exact same-root positive boundary failed' .",
+      "     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | CONTROL: exact same-root positive boundary failed"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 1.2,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  },
+  "durable": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-M\\root\\.lake\\r3-evidence\\receipt.json",
+    "ambiguous": false,
+    "parseError": null,
+    "sha256": "c5015ae0e574772c55c588d12ae795ff28f005cb9848bcd058a672ba2cab35fe"
+  },
+  "core": {
+    "launchCompleted": true,
+    "exitClass": true,
+    "durablePresent": true,
+    "durableAsExpected": true,
+    "stageRecorded": true,
+    "integrityRecorded": true,
+    "cleanupRecorded": true,
+    "verdictAsExpected": true,
+    "values": null,
+    "labels": null,
+    "stderrAsExpected": true,
+    "absentFiles": true,
+    "stdoutWithoutSuccess": true
+  },
+  "structural": {
+    "applicable": true,
+    "finalizationPresent": true,
+    "verdictMatches": true,
+    "stageFieldMatches": true,
+    "integrityFieldMatches": true,
+    "cleanupEmpty": true,
+    "pinsVerified": true,
+    "pinCoverage": "captured 2 of 2 rows, all re-verified"
+  },
+  "restoration": {
+    "restored": [
+      "scripts/lifecycle_dependency_replay.ps1"
+    ],
+    "removed": [],
+    "errors": [],
+    "verified": true,
+    "gitClean": true,
+    "gitState": "2d4f99c7d500afbaf51a0d617402197bad6ce003\n--"
+  },
+  "verdict": "PASS",
+  "expected": "accept-all-predicates",
+  "lockWaitSeconds": 0.0,
+  "manifest": {
+    "docs/internal/extensions/lifecycle1/repair-r1/dependency_child.ps1": "0e87492cab5a5f11ff6536e8d03c153e111f4865f712b916be6f54e2a5ce6e23",
+    "scripts/lifecycle_dependency_replay.ps1": "dab13e35338955fe709edd8bf1187096fc65e8ce9b9e220cdb16eaf9ffb58f20",
+    "scripts/lifecycle_dependency_cases.json": "003343871e23c93df874a960a8af60ae7a8a2e615adb05b6e581dc4407a1c84b",
+    "r3-spec.json": "336e4de537c5279a52493d650421eddebb0185c23fbc17a3fc143747e4b16967",
+    ".gitignore": "fde850d24186b6e99c8c0debd641fb3ab85198b109eb66f71a1fea02bd6ea1b3"
+  },
+  "harnessSha256": "0e87492cab5a5f11ff6536e8d03c153e111f4865f712b916be6f54e2a5ce6e23",
+  "arguments": [
+    "-NoLogo",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-M\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\dependency_child.ps1",
+    "-SpecPath",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-M\\root/r3-spec.json",
+    "-RepositoryRoot",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-M\\root",
+    "-EvidenceRoot",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-M\\root/.lake/r3-evidence"
+  ],
+  "environment": {
+    "R3_FAULT_TARGET": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-M\\root\\scripts\\lifecycle_dependency_replay.ps1",
+    "R3_FAULT_MARKER": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-M\\fault.marker",
+    "R3_FAULT_MODE": "delete-fail",
+    "R3_FAULT_SCOPE": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-M\\root"
+  },
+  "coreAll": true,
+  "structuralAll": true,
+  "predicateOutcome": true
+}

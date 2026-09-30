@@ -1,0 +1,192 @@
+{
+    "passed":  false,
+    "profile":  "winps",
+    "shell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+    "runtime":  {
+                    "profile":  "winps",
+                    "path":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                    "sha256":  "8bb6fa8c283b4d92120b1ef249a9b311b0f804d4cabbe9981159976c8be76a5e",
+                    "version":  "5.1.26100.9444",
+                    "dotnet":  "4.0.30319.42000",
+                    "edition":  "Desktop"
+                },
+    "shellSha256":  "8BB6FA8C283B4D92120B1EF249A9B311B0F804D4CABBE9981159976C8BE76A5E",
+    "registrySha256":  "385c9bc95ac09b3cc046a7049e954cdf19361330c31f99bd83c9da0c822423f2",
+    "selected":  [
+                     "D07_ENV_VALID"
+                 ],
+    "results":  [
+
+                ],
+    "entrySourcePins":  {
+                            "scripts/lifecycle_validator.ps1":  "8135040DFB712CB81DD083DB8F4B58D42E333BC196DB3770F2B5C28E228F0CB3",
+                            "scripts/lifecycle_validator_environment.ps1":  "2FB2C4D95EAF3F6633FFAA60413D3D798B26E5BF8B4E712E6A254E293E4F9F19",
+                            "scripts/lifecycle_dependency_replay.ps1":  "4BF287CF5E0715DBE2413DE0E842E21781A38D51A94DA5873E1CF8A8972003FB",
+                            "scripts/owned_process_tree.ps1":  "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+                            "scripts/lifecycle_dependency_cases.json":  "003343871E23C93DF874A960A8AF60AE7A8A2E615ADB05B6E581DC4407A1C84B",
+                            ".lake/build/bin/rmq_lifecycle_validate.exe":  "0CDDF61031D66AF7AFDD5733279A01EAA79DE026A2679A28B61423B9F89A1478",
+                            "docs/internal/extensions/lifecycle1/repair-r1/run_controls.ps1":  "2587C9D204555ABF437B7A6E8CBF167CFC833B0EB4FF6319072D0177944E8F61",
+                            "docs/internal/extensions/lifecycle1/repair-r1/runtime_profile.ps1":  "4F296DAD60179A23BA2D049487E29E02E4C78A873A02C8542C84B8FB918F94C8",
+                            "docs/internal/extensions/lifecycle1/repair-r1/selector_child.ps1":  "F2A6663EBE067A9AB0F2FFD241DE92AAB0C57DB7CA0D8DFA73EF1A36A9D2DDCB",
+                            "docs/internal/extensions/lifecycle1/repair-r1/dependency_child.ps1":  "14B8C0704BF68247BA84974DF6B6A03C3030DB707565E6DC81CE98B6410895EA",
+                            "docs/internal/extensions/lifecycle1/repair-r1/deadline_control.ps1":  "4831CEF50CE6043F4AFB9F3E2971A34D53E2E0947D4C25B311E2B3B4C1A1E1FD",
+                            "docs/internal/extensions/lifecycle1/repair-r1/finalizer_control.ps1":  "924E46111803D0D40E7BBF1D2517EFDF646D55F8B1387418790226665EEB42B2"
+                        },
+    "finalization":  {
+                         "schema":  "life1-r3-finalization-v1",
+                         "verdict":  "fail",
+                         "stageError":  "L1R1-CONTROL: failed/incomplete D07_ENV_VALID",
+                         "integrityErrors":  [
+                                                 "L1R1-INTEGRITY: case D07_ENV_VALID final hash failed scripts/lifecycle_validator.ps1: Cannot find path \u0027C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-winps\\controls\\RC-M\\root\\scripts\\lifecycle_validator.ps1\u0027 because it does not exist.",
+                                                 "L1R1-INTEGRITY: final hash failed scripts/lifecycle_validator.ps1: Cannot find path \u0027C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-winps\\controls\\RC-M\\root\\scripts\\lifecycle_validator.ps1\u0027 because it does not exist."
+                                             ],
+                         "cleanupErrors":  [
+
+                                           ],
+                         "pinChecks":  [
+                                           {
+                                               "path":  "scripts/lifecycle_validator.ps1",
+                                               "entrySha256":  "8135040DFB712CB81DD083DB8F4B58D42E333BC196DB3770F2B5C28E228F0CB3",
+                                               "finalSha256":  null,
+                                               "status":  "unreadable-final"
+                                           },
+                                           {
+                                               "path":  "scripts/lifecycle_validator_environment.ps1",
+                                               "entrySha256":  "2FB2C4D95EAF3F6633FFAA60413D3D798B26E5BF8B4E712E6A254E293E4F9F19",
+                                               "finalSha256":  "2FB2C4D95EAF3F6633FFAA60413D3D798B26E5BF8B4E712E6A254E293E4F9F19",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "scripts/lifecycle_dependency_replay.ps1",
+                                               "entrySha256":  "4BF287CF5E0715DBE2413DE0E842E21781A38D51A94DA5873E1CF8A8972003FB",
+                                               "finalSha256":  "4BF287CF5E0715DBE2413DE0E842E21781A38D51A94DA5873E1CF8A8972003FB",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "scripts/owned_process_tree.ps1",
+                                               "entrySha256":  "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+                                               "finalSha256":  "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "scripts/lifecycle_dependency_cases.json",
+                                               "entrySha256":  "003343871E23C93DF874A960A8AF60AE7A8A2E615ADB05B6E581DC4407A1C84B",
+                                               "finalSha256":  "003343871E23C93DF874A960A8AF60AE7A8A2E615ADB05B6E581DC4407A1C84B",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  ".lake/build/bin/rmq_lifecycle_validate.exe",
+                                               "entrySha256":  "0CDDF61031D66AF7AFDD5733279A01EAA79DE026A2679A28B61423B9F89A1478",
+                                               "finalSha256":  "0CDDF61031D66AF7AFDD5733279A01EAA79DE026A2679A28B61423B9F89A1478",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "docs/internal/extensions/lifecycle1/repair-r1/run_controls.ps1",
+                                               "entrySha256":  "2587C9D204555ABF437B7A6E8CBF167CFC833B0EB4FF6319072D0177944E8F61",
+                                               "finalSha256":  "2587C9D204555ABF437B7A6E8CBF167CFC833B0EB4FF6319072D0177944E8F61",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "docs/internal/extensions/lifecycle1/repair-r1/runtime_profile.ps1",
+                                               "entrySha256":  "4F296DAD60179A23BA2D049487E29E02E4C78A873A02C8542C84B8FB918F94C8",
+                                               "finalSha256":  "4F296DAD60179A23BA2D049487E29E02E4C78A873A02C8542C84B8FB918F94C8",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "docs/internal/extensions/lifecycle1/repair-r1/selector_child.ps1",
+                                               "entrySha256":  "F2A6663EBE067A9AB0F2FFD241DE92AAB0C57DB7CA0D8DFA73EF1A36A9D2DDCB",
+                                               "finalSha256":  "F2A6663EBE067A9AB0F2FFD241DE92AAB0C57DB7CA0D8DFA73EF1A36A9D2DDCB",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "docs/internal/extensions/lifecycle1/repair-r1/dependency_child.ps1",
+                                               "entrySha256":  "14B8C0704BF68247BA84974DF6B6A03C3030DB707565E6DC81CE98B6410895EA",
+                                               "finalSha256":  "14B8C0704BF68247BA84974DF6B6A03C3030DB707565E6DC81CE98B6410895EA",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "docs/internal/extensions/lifecycle1/repair-r1/deadline_control.ps1",
+                                               "entrySha256":  "4831CEF50CE6043F4AFB9F3E2971A34D53E2E0947D4C25B311E2B3B4C1A1E1FD",
+                                               "finalSha256":  "4831CEF50CE6043F4AFB9F3E2971A34D53E2E0947D4C25B311E2B3B4C1A1E1FD",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "docs/internal/extensions/lifecycle1/repair-r1/finalizer_control.ps1",
+                                               "entrySha256":  "924E46111803D0D40E7BBF1D2517EFDF646D55F8B1387418790226665EEB42B2",
+                                               "finalSha256":  "924E46111803D0D40E7BBF1D2517EFDF646D55F8B1387418790226665EEB42B2",
+                                               "status":  "verified"
+                                           }
+                                       ],
+                         "entryPinCount":  12,
+                         "verifiedPinCount":  11,
+                         "caseSlotChecks":  [
+                                                {
+                                                    "id":  "D07_ENV_VALID",
+                                                    "slotHeld":  true,
+                                                    "checks":  [
+                                                                   {
+                                                                       "path":  "scripts/lifecycle_validator.ps1",
+                                                                       "finalSha256":  null,
+                                                                       "status":  "unreadable-final"
+                                                                   },
+                                                                   {
+                                                                       "path":  "scripts/lifecycle_validator_environment.ps1",
+                                                                       "finalSha256":  "2FB2C4D95EAF3F6633FFAA60413D3D798B26E5BF8B4E712E6A254E293E4F9F19",
+                                                                       "status":  "verified"
+                                                                   },
+                                                                   {
+                                                                       "path":  "scripts/lifecycle_dependency_replay.ps1",
+                                                                       "finalSha256":  "4BF287CF5E0715DBE2413DE0E842E21781A38D51A94DA5873E1CF8A8972003FB",
+                                                                       "status":  "verified"
+                                                                   },
+                                                                   {
+                                                                       "path":  "scripts/owned_process_tree.ps1",
+                                                                       "finalSha256":  "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+                                                                       "status":  "verified"
+                                                                   },
+                                                                   {
+                                                                       "path":  "scripts/lifecycle_dependency_cases.json",
+                                                                       "finalSha256":  "003343871E23C93DF874A960A8AF60AE7A8A2E615ADB05B6E581DC4407A1C84B",
+                                                                       "status":  "verified"
+                                                                   },
+                                                                   {
+                                                                       "path":  ".lake/build/bin/rmq_lifecycle_validate.exe",
+                                                                       "finalSha256":  "0CDDF61031D66AF7AFDD5733279A01EAA79DE026A2679A28B61423B9F89A1478",
+                                                                       "status":  "verified"
+                                                                   },
+                                                                   {
+                                                                       "path":  "docs/internal/extensions/lifecycle1/repair-r1/run_controls.ps1",
+                                                                       "finalSha256":  "2587C9D204555ABF437B7A6E8CBF167CFC833B0EB4FF6319072D0177944E8F61",
+                                                                       "status":  "verified"
+                                                                   },
+                                                                   {
+                                                                       "path":  "docs/internal/extensions/lifecycle1/repair-r1/runtime_profile.ps1",
+                                                                       "finalSha256":  "4F296DAD60179A23BA2D049487E29E02E4C78A873A02C8542C84B8FB918F94C8",
+                                                                       "status":  "verified"
+                                                                   },
+                                                                   {
+                                                                       "path":  "docs/internal/extensions/lifecycle1/repair-r1/selector_child.ps1",
+                                                                       "finalSha256":  "F2A6663EBE067A9AB0F2FFD241DE92AAB0C57DB7CA0D8DFA73EF1A36A9D2DDCB",
+                                                                       "status":  "verified"
+                                                                   },
+                                                                   {
+                                                                       "path":  "docs/internal/extensions/lifecycle1/repair-r1/dependency_child.ps1",
+                                                                       "finalSha256":  "14B8C0704BF68247BA84974DF6B6A03C3030DB707565E6DC81CE98B6410895EA",
+                                                                       "status":  "verified"
+                                                                   },
+                                                                   {
+                                                                       "path":  "docs/internal/extensions/lifecycle1/repair-r1/deadline_control.ps1",
+                                                                       "finalSha256":  "4831CEF50CE6043F4AFB9F3E2971A34D53E2E0947D4C25B311E2B3B4C1A1E1FD",
+                                                                       "status":  "verified"
+                                                                   },
+                                                                   {
+                                                                       "path":  "docs/internal/extensions/lifecycle1/repair-r1/finalizer_control.ps1",
+                                                                       "finalSha256":  "924E46111803D0D40E7BBF1D2517EFDF646D55F8B1387418790226665EEB42B2",
+                                                                       "status":  "verified"
+                                                                   }
+                                                               ]
+                                                }
+                                            ]
+                     },
+    "streamLimit":  "Inherited helper returned nonempty lines; overflow/exception may prevent output recovery."
+}

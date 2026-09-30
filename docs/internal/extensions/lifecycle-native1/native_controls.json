@@ -1,0 +1,488 @@
+{
+  "schema": "lifecycle-native1-native-control-registry-v1",
+  "status": "DISCOVERY_ROSTER_NOT_VERDICTS",
+  "orderedIds": [
+    "NC-NONE-BUILD",
+    "NC-NONE-QUERY",
+    "NC-SKIP-REPACK-BUILD",
+    "NC-SKIP-REPACK-QUERY",
+    "NC-EXTRA-OWNER-ALIAS-BUILD",
+    "NC-EXTRA-OWNER-ALIAS-QUERY",
+    "NC-RETAIN-INPUT-BUILD",
+    "NC-RETAIN-OLD-ARENA-BUILD",
+    "NC-RETAIN-OLD-ARENA-QUERY",
+    "NC-RETAIN-KEYS-BUILD",
+    "NC-RETAIN-HISTORY-BUILD",
+    "NC-RETAIN-HISTORY-QUERY",
+    "NC-WRONG-COPY-VALUE-BUILD-0",
+    "NC-WRONG-COPY-VALUE-BUILD-1",
+    "NC-WRONG-COPY-VALUE-QUERY-0",
+    "NC-WRONG-COPY-VALUE-QUERY-1",
+    "NC-WRONG-COPY-OFFSET-BUILD-0",
+    "NC-WRONG-COPY-OFFSET-BUILD-1",
+    "NC-WRONG-COPY-OFFSET-QUERY-0",
+    "NC-WRONG-COPY-OFFSET-QUERY-1",
+    "NC-PARTIAL-COPY-BUILD-0",
+    "NC-PARTIAL-COPY-BUILD-1",
+    "NC-PARTIAL-COPY-BUILD-8272",
+    "NC-PARTIAL-COPY-BUILD-8273",
+    "NC-PARTIAL-COPY-BUILD-8274",
+    "NC-PARTIAL-COPY-QUERY-0",
+    "NC-PARTIAL-COPY-QUERY-1",
+    "NC-PARTIAL-COPY-QUERY-8272",
+    "NC-PARTIAL-COPY-QUERY-8273",
+    "NC-PARTIAL-COPY-QUERY-8274",
+    "NC-FAIL-AFTER-TAKE-QUERY",
+    "NC-MODEL-FAULT-BUILD",
+    "NC-EXHAUSTED-BUILD-0",
+    "NC-EXHAUSTED-BUILD-20",
+    "NC-EXHAUSTED-BUILD-100",
+    "NC-FAIL-BEFORE-TAKE-ALLOC-BUILD",
+    "NC-FAIL-BEFORE-TAKE-ALLOC-QUERY",
+    "NC-FAIL-BEFORE-PUBLISH-BUILD",
+    "NC-FAIL-BEFORE-PUBLISH-QUERY",
+    "NC-SHARED-SCALAR-ACCEPT-BUILD",
+    "NC-SHARED-SCALAR-ACCEPT-QUERY",
+    "NC-ENDPOINT-SHORT-BUILD",
+    "NC-ENDPOINT-SHORT-QUERY",
+    "NC-ENDPOINT-LONG-BUILD",
+    "NC-ENDPOINT-LONG-QUERY",
+    "NC-NEGATIVE-ZERO-BUILD",
+    "NC-BAD-SIGN-BUILD",
+    "NC-WORD-INPUTFITS-BUILD"
+  ],
+  "cases": [
+    {
+      "id": "NC-NONE-BUILD",
+      "handler": "control-discovery",
+      "control": "none",
+      "phase": "build",
+      "argument": "0",
+      "surface": "healthy",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-NONE-QUERY",
+      "handler": "control-discovery",
+      "control": "none",
+      "phase": "query",
+      "argument": "0",
+      "surface": "healthy",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-SKIP-REPACK-BUILD",
+      "handler": "control-discovery",
+      "control": "skip-repack",
+      "phase": "build",
+      "argument": "0",
+      "surface": "skip-repack",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-SKIP-REPACK-QUERY",
+      "handler": "control-discovery",
+      "control": "skip-repack",
+      "phase": "query",
+      "argument": "0",
+      "surface": "skip-repack",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-EXTRA-OWNER-ALIAS-BUILD",
+      "handler": "control-discovery",
+      "control": "extra-owner-alias",
+      "phase": "build",
+      "argument": "0",
+      "surface": "extra-owner-alias",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-EXTRA-OWNER-ALIAS-QUERY",
+      "handler": "control-discovery",
+      "control": "extra-owner-alias",
+      "phase": "query",
+      "argument": "0",
+      "surface": "extra-owner-alias",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-RETAIN-INPUT-BUILD",
+      "handler": "control-discovery",
+      "control": "retain-input",
+      "phase": "build",
+      "argument": "0",
+      "surface": "retain-input",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-RETAIN-OLD-ARENA-BUILD",
+      "handler": "control-discovery",
+      "control": "retain-old-arena",
+      "phase": "build",
+      "argument": "0",
+      "surface": "retain-old-arena",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-RETAIN-OLD-ARENA-QUERY",
+      "handler": "control-discovery",
+      "control": "retain-old-arena",
+      "phase": "query",
+      "argument": "0",
+      "surface": "retain-old-arena",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-RETAIN-KEYS-BUILD",
+      "handler": "control-discovery",
+      "control": "retain-keys",
+      "phase": "build",
+      "argument": "0",
+      "surface": "retain-keys",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-RETAIN-HISTORY-BUILD",
+      "handler": "control-discovery",
+      "control": "retain-history",
+      "phase": "build",
+      "argument": "0",
+      "surface": "retain-history",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-RETAIN-HISTORY-QUERY",
+      "handler": "control-discovery",
+      "control": "retain-history",
+      "phase": "query",
+      "argument": "0",
+      "surface": "retain-history",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-WRONG-COPY-VALUE-BUILD-0",
+      "handler": "control-discovery",
+      "control": "wrong-copy-value",
+      "phase": "build",
+      "argument": "0",
+      "surface": "wrong-copy-value",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-WRONG-COPY-VALUE-BUILD-1",
+      "handler": "control-discovery",
+      "control": "wrong-copy-value",
+      "phase": "build",
+      "argument": "1",
+      "surface": "wrong-copy-value",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-WRONG-COPY-VALUE-QUERY-0",
+      "handler": "control-discovery",
+      "control": "wrong-copy-value",
+      "phase": "query",
+      "argument": "0",
+      "surface": "wrong-copy-value",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-WRONG-COPY-VALUE-QUERY-1",
+      "handler": "control-discovery",
+      "control": "wrong-copy-value",
+      "phase": "query",
+      "argument": "1",
+      "surface": "wrong-copy-value",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-WRONG-COPY-OFFSET-BUILD-0",
+      "handler": "control-discovery",
+      "control": "wrong-copy-offset",
+      "phase": "build",
+      "argument": "0",
+      "surface": "wrong-copy-offset",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-WRONG-COPY-OFFSET-BUILD-1",
+      "handler": "control-discovery",
+      "control": "wrong-copy-offset",
+      "phase": "build",
+      "argument": "1",
+      "surface": "wrong-copy-offset",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-WRONG-COPY-OFFSET-QUERY-0",
+      "handler": "control-discovery",
+      "control": "wrong-copy-offset",
+      "phase": "query",
+      "argument": "0",
+      "surface": "wrong-copy-offset",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-WRONG-COPY-OFFSET-QUERY-1",
+      "handler": "control-discovery",
+      "control": "wrong-copy-offset",
+      "phase": "query",
+      "argument": "1",
+      "surface": "wrong-copy-offset",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-PARTIAL-COPY-BUILD-0",
+      "handler": "control-discovery",
+      "control": "partial-copy",
+      "phase": "build",
+      "argument": "0",
+      "surface": "partial-copy",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-PARTIAL-COPY-BUILD-1",
+      "handler": "control-discovery",
+      "control": "partial-copy",
+      "phase": "build",
+      "argument": "1",
+      "surface": "partial-copy",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-PARTIAL-COPY-BUILD-8272",
+      "handler": "control-discovery",
+      "control": "partial-copy",
+      "phase": "build",
+      "argument": "8272",
+      "surface": "partial-copy",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-PARTIAL-COPY-BUILD-8273",
+      "handler": "control-discovery",
+      "control": "partial-copy",
+      "phase": "build",
+      "argument": "8273",
+      "surface": "partial-copy",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-PARTIAL-COPY-BUILD-8274",
+      "handler": "control-discovery",
+      "control": "partial-copy",
+      "phase": "build",
+      "argument": "8274",
+      "surface": "partial-copy",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-PARTIAL-COPY-QUERY-0",
+      "handler": "control-discovery",
+      "control": "partial-copy",
+      "phase": "query",
+      "argument": "0",
+      "surface": "partial-copy",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-PARTIAL-COPY-QUERY-1",
+      "handler": "control-discovery",
+      "control": "partial-copy",
+      "phase": "query",
+      "argument": "1",
+      "surface": "partial-copy",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-PARTIAL-COPY-QUERY-8272",
+      "handler": "control-discovery",
+      "control": "partial-copy",
+      "phase": "query",
+      "argument": "8272",
+      "surface": "partial-copy",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-PARTIAL-COPY-QUERY-8273",
+      "handler": "control-discovery",
+      "control": "partial-copy",
+      "phase": "query",
+      "argument": "8273",
+      "surface": "partial-copy",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-PARTIAL-COPY-QUERY-8274",
+      "handler": "control-discovery",
+      "control": "partial-copy",
+      "phase": "query",
+      "argument": "8274",
+      "surface": "partial-copy",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-FAIL-AFTER-TAKE-QUERY",
+      "handler": "control-discovery",
+      "control": "fail-after-take",
+      "phase": "query",
+      "argument": "0",
+      "surface": "post-take",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-MODEL-FAULT-BUILD",
+      "handler": "control-discovery",
+      "control": "model-fault",
+      "phase": "build",
+      "argument": "0",
+      "surface": "model-fault",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-EXHAUSTED-BUILD-0",
+      "handler": "control-discovery",
+      "control": "exhausted",
+      "phase": "build",
+      "argument": "0",
+      "surface": "fuel",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-EXHAUSTED-BUILD-20",
+      "handler": "control-discovery",
+      "control": "exhausted",
+      "phase": "build",
+      "argument": "20",
+      "surface": "fuel",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-EXHAUSTED-BUILD-100",
+      "handler": "control-discovery",
+      "control": "exhausted",
+      "phase": "build",
+      "argument": "100",
+      "surface": "fuel",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-FAIL-BEFORE-TAKE-ALLOC-BUILD",
+      "handler": "control-discovery",
+      "control": "fail-before-take-alloc",
+      "phase": "build",
+      "argument": "0",
+      "surface": "pre-take-allocation",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-FAIL-BEFORE-TAKE-ALLOC-QUERY",
+      "handler": "control-discovery",
+      "control": "fail-before-take-alloc",
+      "phase": "query",
+      "argument": "0",
+      "surface": "pre-take-allocation",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-FAIL-BEFORE-PUBLISH-BUILD",
+      "handler": "control-discovery",
+      "control": "fail-before-publish",
+      "phase": "build",
+      "argument": "0",
+      "surface": "pre-publication",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-FAIL-BEFORE-PUBLISH-QUERY",
+      "handler": "control-discovery",
+      "control": "fail-before-publish",
+      "phase": "query",
+      "argument": "0",
+      "surface": "pre-publication",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-SHARED-SCALAR-ACCEPT-BUILD",
+      "handler": "control-discovery",
+      "control": "shared-scalar-accept",
+      "phase": "build",
+      "argument": "0",
+      "surface": "shared-scalar",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-SHARED-SCALAR-ACCEPT-QUERY",
+      "handler": "control-discovery",
+      "control": "shared-scalar-accept",
+      "phase": "query",
+      "argument": "0",
+      "surface": "shared-scalar",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-ENDPOINT-SHORT-BUILD",
+      "handler": "control-discovery",
+      "control": "endpoint-short",
+      "phase": "build",
+      "argument": "0",
+      "surface": "admission",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-ENDPOINT-SHORT-QUERY",
+      "handler": "control-discovery",
+      "control": "endpoint-short",
+      "phase": "query",
+      "argument": "0",
+      "surface": "admission",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-ENDPOINT-LONG-BUILD",
+      "handler": "control-discovery",
+      "control": "endpoint-long",
+      "phase": "build",
+      "argument": "0",
+      "surface": "admission",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-ENDPOINT-LONG-QUERY",
+      "handler": "control-discovery",
+      "control": "endpoint-long",
+      "phase": "query",
+      "argument": "0",
+      "surface": "admission",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-NEGATIVE-ZERO-BUILD",
+      "handler": "control-discovery",
+      "control": "negative-zero",
+      "phase": "build",
+      "argument": "0",
+      "surface": "admission",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-BAD-SIGN-BUILD",
+      "handler": "control-discovery",
+      "control": "bad-sign",
+      "phase": "build",
+      "argument": "0",
+      "surface": "admission",
+      "discoveryVerdict": "unassigned"
+    },
+    {
+      "id": "NC-WORD-INPUTFITS-BUILD",
+      "handler": "control-discovery",
+      "control": "word-inputfits",
+      "phase": "build",
+      "argument": "0",
+      "surface": "admission",
+      "discoveryVerdict": "unassigned"
+    }
+  ]
+}

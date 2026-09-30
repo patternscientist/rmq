@@ -1,0 +1,1 @@
+r3-validator-full-pwsh exit=0 seconds=53.193 timeout=False evidence=C:\Users\poin\Documents\RMQ\.claude\worktrees\life1-r3-finally-integrity\.lake\repair-r2\checks\r3-validator-full-pwsh

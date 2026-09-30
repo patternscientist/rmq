@@ -1,0 +1,96 @@
+{
+  "schema": "life1-r4-receipt-index-v1",
+  "receipt": "campaign-r4-validator-single-pwsh",
+  "files": [
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\campaign-r4-validator-single-pwsh\\RESULT.json",
+      "sourceBytes": 2134,
+      "sourceSha256": "2f31f02b9e4623e252a871620483cc81a9e624e0742c27cb4fa5265e5e20c27b",
+      "committed": "heavy-RESULT.json",
+      "committedBytes": 2084,
+      "committedSha256": "8b211c61029d32fade70751d590880bf4345f9561cbfa0ba301c32fca7d54667",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\campaign-r4-validator-single-pwsh\\stdout.returned-lines.txt",
+      "sourceBytes": 189,
+      "sourceSha256": "c397fe1b85ee4b4f793856f68b24f26eed50095b2491d29965bdbf5097f87f8a",
+      "committed": "heavy-stdout.returned-lines.txt",
+      "committedBytes": 189,
+      "committedSha256": "c397fe1b85ee4b4f793856f68b24f26eed50095b2491d29965bdbf5097f87f8a",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\campaign-r4-validator-single-pwsh\\stderr.returned-lines.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "heavy-stderr.returned-lines.txt",
+      "committedBytes": 0,
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\checks\\r4-validator-single-pwsh\\result.json",
+      "sourceBytes": 10075,
+      "sourceSha256": "e095f229efe028f59358765732cf79c0b1d64c0262f5c93df39b28a9707cc2e5",
+      "committed": "result.json",
+      "committedBytes": 9866,
+      "committedSha256": "998c6876a7a0506edfa4149791946abe7481a4e495a7ac3b14b755af168a9a75",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\checks\\r4-validator-single-pwsh\\stdout.txt",
+      "sourceBytes": 182,
+      "sourceSha256": "7f4ec05ae5dc279888075400dd816096b579b22e6bd4cce10601c269f715eb60",
+      "committed": "stdout.txt",
+      "committedBytes": 182,
+      "committedSha256": "7f4ec05ae5dc279888075400dd816096b579b22e6bd4cce10601c269f715eb60",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\checks\\r4-validator-single-pwsh\\stderr.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "stderr.txt",
+      "committedBytes": 0,
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\campaign-specs\\r4-validator-single-pwsh.json",
+      "sourceBytes": 466,
+      "sourceSha256": "1e16dad7718d08db145c7f08f1dc4f560523eb3dc0abd88efd3a4a36c7adf420",
+      "committed": "campaign-spec.json",
+      "committedBytes": 450,
+      "committedSha256": "f3e638bbb905d8d10622855f3decba8c7c7cdbd250b7e84325ff3149f874398a",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\lifecycle-validator\\69998de520bb48c88365a6d2fc24cac1\\RESULT.json",
+      "sourceBytes": 4008,
+      "sourceSha256": "a731922b585381633d5a107895329f05e74b26b126a1dd18a1984c026d0c85f4",
+      "committed": "validator-RESULT.json",
+      "committedBytes": 3918,
+      "committedSha256": "fe648c1b31bdb9ac70bb1b68ce44e58cc818642a2c183651116d42f94dc58c44",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\lifecycle-validator\\69998de520bb48c88365a6d2fc24cac1\\PASS.json",
+      "sourceBytes": 627,
+      "sourceSha256": "cfe13168445a92dff13139ce6995ba9b72a62bca38de15db5c30fd28e64eadbd",
+      "committed": "PASS.json",
+      "committedBytes": 602,
+      "committedSha256": "1a14d89dde1ba8c473b69aeb7bfa9b8acda0d404052a87a844f6ac0a18a6d633",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\lifecycle-validator\\69998de520bb48c88365a6d2fc24cac1\\processes.json",
+      "sourceBytes": 4429,
+      "sourceSha256": "4dfde2b224aecc228037e4c53b7ef8c8ceb767f32873cfe234387b171b192719",
+      "committed": "processes.json",
+      "committedBytes": 4304,
+      "committedSha256": "4c0ffde0082902cdc995299eca5fba11cad7366bf145023ddd1e5e2324fca0cd",
+      "normalized": true
+    }
+  ]
+}

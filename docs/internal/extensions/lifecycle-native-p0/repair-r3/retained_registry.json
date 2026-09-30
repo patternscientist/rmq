@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "oldHead": "9519b2c1af5e2cf59536b311db5e8dc81376a32f",
+  "historicalRoot": "C:/Users/poin/.codex/worktrees/eafd/RMQ",
+  "profiles": ["focused", "full", "integrity", "dependencies", "claims", "checks"],
+  "integrity": ["intact-success", "intact-stage-error", "malformed-stdout-intact", "stage-error-and-pin-change", "stage-error-and-capture-error", "success-and-pin-change", "mixed-diagnostic-and-pin-change", "timeout-and-pin-change", "success-and-tracked-change", "success-and-index-change", "success-and-untracked-addition", "success-and-untracked-byte-change", "success-and-link-map-change", "partial-identity-and-pin-change", "missing-baseline"],
+  "root": [
+    {"id": "expected-error", "oldAccept": true, "currentAccept": true, "failure": null},
+    {"id": "error-plus-ascii", "oldAccept": false, "currentAccept": false, "failure": "STREAM: error-plus-ascii stderr differs"},
+    {"id": "error-plus-bom", "oldAccept": true, "currentAccept": false, "failure": "STREAM: error-plus-bom stderr differs"},
+    {"id": "otherwise-empty-bom", "oldAccept": true, "currentAccept": false, "failure": "STREAM: otherwise-empty-bom stderr differs"}
+  ],
+  "leaf": [
+    {"id": "intact-expected-error", "oldAccept": true, "currentAccept": true, "failure": null},
+    {"id": "nul-stdout", "oldAccept": true, "currentAccept": false, "failure": "STREAM: process-component stdout differs"},
+    {"id": "bom-stdout", "oldAccept": true, "currentAccept": false, "failure": "STREAM: process-component stdout differs"},
+    {"id": "extra-error-words", "oldAccept": false, "currentAccept": false, "failure": "STREAM: process-component stderr differs"}
+  ],
+  "copiedFocused": [
+    {"id": "intact", "oldAccept": true, "currentAccept": true, "failure": null},
+    {"id": "trailing-nul-stdout", "oldAccept": true, "currentAccept": false, "failure": "STREAM: wrapper-focused stdout differs"},
+    {"id": "nul-only-stderr", "oldAccept": true, "currentAccept": false, "failure": "STREAM: wrapper-focused stderr differs"},
+    {"id": "extra-error-words", "oldAccept": false, "currentAccept": false, "failure": "STREAM: wrapper-focused stderr differs"},
+    {"id": "leading-bom-stdout", "oldAccept": false, "currentAccept": false, "failure": "STREAM: evidence line missing"}
+  ],
+  "syntheticLauncher": [
+    {"id": "bom-stdout", "channel": "stdout", "codepoint": 65279, "oldAccept": true, "currentAccept": false, "failure": "STREAM: wrapper-focused launcher stdout differs"},
+    {"id": "bom-stderr", "channel": "stderr", "codepoint": 65279, "oldAccept": true, "currentAccept": false, "failure": "STREAM: wrapper-focused launcher stderr differs"},
+    {"id": "nul-stdout", "channel": "stdout", "codepoint": 0, "oldAccept": true, "currentAccept": false, "failure": "STREAM: wrapper-focused launcher stdout differs"},
+    {"id": "nul-stderr", "channel": "stderr", "codepoint": 0, "oldAccept": true, "currentAccept": false, "failure": "STREAM: wrapper-focused launcher stderr differs"},
+    {"id": "soft-hyphen-stdout", "channel": "stdout", "codepoint": 173, "oldAccept": true, "currentAccept": false, "failure": "STREAM: wrapper-focused launcher stdout differs"},
+    {"id": "soft-hyphen-stderr", "channel": "stderr", "codepoint": 173, "oldAccept": true, "currentAccept": false, "failure": "STREAM: wrapper-focused launcher stderr differs"}
+  ]
+}

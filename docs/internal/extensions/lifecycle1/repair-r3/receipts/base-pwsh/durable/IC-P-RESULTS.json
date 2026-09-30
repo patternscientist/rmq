@@ -1,0 +1,154 @@
+{
+  "candidateUnchanged": true,
+  "source": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+    "bytes": 44594,
+    "sha256": "C35BB6D38EB54562CB1E650D437D0914DE72852594DFDB865DB04E24104AD345"
+  },
+  "controls": [
+    {
+      "stageFailure": null,
+      "integrity": {
+        "attempted": true,
+        "success": true,
+        "checkedPins": 17,
+        "treeChecked": true,
+        "errors": [],
+        "restorationWrites": 0
+      },
+      "summary": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\lifecycle-native-p0\\runs\\4541bcffc9e34083a7ff3e5e3dc2506d\\SUMMARY.json",
+        "bytes": 11709,
+        "sha256": "9D76F0F901EB1821484864AC764FB27D126E52A26B65FCA8C907431D36930D35"
+      },
+      "streamContract": {
+        "validated": true,
+        "expectedExit": 0,
+        "expectedStdout": "LIFECYCLE-REPLAY evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\lifecycle-native-p0\\runs\\4541bcffc9e34083a7ff3e5e3dc2506d\r\nLIFECYCLE-REPLAY PASS cases=1 selfTest=False\r\n",
+        "expectedStderr": ""
+      },
+      "expectedSuccess": true,
+      "seconds": 14.182,
+      "id": "intact-success",
+      "fixtureSource": {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+        "bytes": 38006,
+        "sha256": "F117F58D1171A34517DE38A0D20362EFDEF0193A3CE0947807C81F2094A8C54C"
+      },
+      "actualExit": 0,
+      "expectedIntegrity": true,
+      "expectedStageError": null,
+      "capture": {
+        "spec": {
+          "arguments": [
+            "-NoProfile",
+            "-File",
+            "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\scripts\\packed_native_lifecycle_storage_replay.ps1",
+            "-Cases",
+            "pop-unique"
+          ],
+          "error": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\error",
+          "cwd": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success",
+          "file": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+          "pid": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\pid",
+          "outputLimit": 16777216,
+          "overflow": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\overflow",
+          "environment": {},
+          "exit": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\exit.json",
+          "stderr": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\stderr.log",
+          "stdout": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\stdout.log"
+        },
+        "actual": {
+          "pid": 6960,
+          "exitCode": 0,
+          "durationSeconds": 12.8983886
+        },
+        "launcher": {
+          "Stage": "intact-success",
+          "ExitCode": 0,
+          "Output": [],
+          "StandardOutput": [],
+          "StandardError": [],
+          "TimedOut": false,
+          "OutputLimitExceeded": false,
+          "TerminatedIds": [],
+          "DurationSeconds": 14.182,
+          "DeadlineSeconds": 120,
+          "Ownership": "kill-on-close-job",
+          "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\launcher\\retained.stdout",
+          "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\launcher\\retained.stderr",
+          "RetentionErrors": []
+        },
+        "raw": [
+          {
+            "bytes": 291,
+            "sha256": "2B0CE68F80C516B8F57F4535B6E1DE6774FE7E66F1B270EFE44A5F02266EFD8C",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\stdout.log"
+          },
+          {
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\stderr.log"
+          },
+          {
+            "bytes": 54,
+            "sha256": "F6DF09B5B99265ABE22624AAD433F71A009B12E8EBFB78CC7C84FD7FD4DD2239",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\exit.json"
+          },
+          {
+            "bytes": 4,
+            "sha256": "F9D4D7ACB62E17C88C0841FAB2358087EC505746F3C66614B342751D4CF3A3E1",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\pid"
+          },
+          {
+            "bytes": 3023,
+            "sha256": "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\raw-child.ps1"
+          },
+          {
+            "bytes": 1939,
+            "sha256": "23C36231F276E42421864F3F719F984DD6D6925F3A30B55A7CFA685D87C3B9D5",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\spec.json"
+          },
+          {
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\launcher\\retained.stdout"
+          },
+          {
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\launcher\\retained.stderr"
+          }
+        ]
+      },
+      "outer": {
+        "Stage": "intact-success",
+        "ExitCode": 0,
+        "Output": [],
+        "StandardOutput": [],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 14.182,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job",
+        "RawStandardOutput": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\launcher\\retained.stdout",
+        "RawStandardError": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\.lake\\r3-out\\intact-success\\.lake\\outer\\launcher\\retained.stderr",
+        "RetentionErrors": []
+      }
+    }
+  ],
+  "helper": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\IC-P\\root\\scripts\\packed_native_lifecycle_integrity_check.ps1",
+    "bytes": 7857,
+    "sha256": "4DBDE3FF1B030829C89DE70EFFD12D959404181A545117ADD11AC869BE0E426A"
+  },
+  "stageSplice": {
+    "preserved": "entire prefix and suffix, including production catch/finally/final verdict; only stage body replaced",
+    "stop": 43236,
+    "start": 36355
+  },
+  "fixtureRestoration": true
+}

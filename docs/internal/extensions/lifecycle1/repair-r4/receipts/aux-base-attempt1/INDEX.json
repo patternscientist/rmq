@@ -1,0 +1,42 @@
+{
+  "schema": "life1-r4-receipt-index-v1",
+  "receipt": "aux-base-attempt1",
+  "files": [
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\r4-aux-base\\RESULT.json",
+      "sourceBytes": 3353,
+      "sourceSha256": "17482bc37e237da32bc8f1512f4764a67ff2db3a0ed436f07927de72875893ad",
+      "committed": "heavy-RESULT.json",
+      "committedBytes": 3265,
+      "committedSha256": "44188eabfc4248b03f04a480f721571d029a747b76f5c77f2f81e23b0bfcd277",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\r4-aux-base\\stdout.returned-lines.txt",
+      "sourceBytes": 622,
+      "sourceSha256": "ed8f5c48761c46bb88cf72d0e816c9d0cd6a2a5a93cff7b3f2f2a71896d7e06c",
+      "committed": "heavy-stdout.returned-lines.txt",
+      "committedBytes": 622,
+      "committedSha256": "ed8f5c48761c46bb88cf72d0e816c9d0cd6a2a5a93cff7b3f2f2a71896d7e06c",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\r4-aux-base\\stderr.returned-lines.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "heavy-stderr.returned-lines.txt",
+      "committedBytes": 0,
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\aux\\base\\RESULT.json",
+      "sourceBytes": 9032,
+      "sourceSha256": "ba5e74d8988217016bce04e037a01fce322ef358c33c605492f6d2407b1a6bfb",
+      "committed": "RESULT.json",
+      "committedBytes": 8769,
+      "committedSha256": "a694c6e1716eb55049f0861867b90d2cc591761428471a1a6c7b2f7615e98778",
+      "normalized": true
+    }
+  ]
+}

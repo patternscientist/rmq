@@ -1,0 +1,81 @@
+{
+  "schema": "life1-r3-heavy-v1",
+  "name": "selector-base",
+  "spec": {
+    "name": "selector-base",
+    "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+    "arguments": [
+      "-NoLogo",
+      "-NoProfile",
+      "-File",
+      "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/docs/internal/extensions/lifecycle1/repair-r3/selector_controls.ps1",
+      "-OutputRoot",
+      "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/.lake/life1-r3/selector/selector-base"
+    ],
+    "cwd": "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity",
+    "deadline": 1800,
+    "mutexes": [
+      "global"
+    ],
+    "mutexWaitMilliseconds": 21600000,
+    "environment": {},
+    "out": "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/.lake/life1-r3/heavy/selector-base"
+  },
+  "host": "POINPAD",
+  "shell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+  "psVersion": "7.6.5",
+  "startedUtc": "2026-09-30T00:15:54.2115758Z",
+  "finishedUtc": "2026-09-30T00:16:38.1317130Z",
+  "mutexWaitSeconds": {
+    "global": 0.012
+  },
+  "stageError": null,
+  "cleanupErrors": [],
+  "result": {
+    "Stage": "selector-base",
+    "ExitCode": 0,
+    "Output": [
+      "R3 SELECTOR CONTROL SEL-01-OMITTED PASS",
+      "R3 SELECTOR CONTROL SEL-02-VALID PASS",
+      "R3 SELECTOR CONTROL SEL-03-EMPTY-STRING PASS",
+      "R3 SELECTOR CONTROL SEL-04-EMPTY-ARRAY PASS",
+      "R3 SELECTOR CONTROL SEL-05-WHITESPACE PASS",
+      "R3 SELECTOR CONTROL SEL-06-MALFORMED PASS",
+      "R3 SELECTOR CONTROL SEL-07-UNKNOWN PASS",
+      "R3 SELECTOR CONTROL SEL-08-DUPLICATE PASS",
+      "R3 SELECTOR CONTROL REG-09-EXACT-COPY PASS",
+      "R3 SELECTOR CONTROL REG-10-MISSING-MIDDLE PASS",
+      "R3 SELECTOR CONTROL REG-11-DUPLICATE-MIDDLE PASS",
+      "R3 SELECTOR CONTROL REG-12-UNKNOWN-MIDDLE PASS",
+      "R3 SELECTOR CONTROL REG-13-REORDERED PASS",
+      "R3 SELECTOR CONTROL REG-14-BYTE-DRIFT PASS",
+      "R3 SELECTOR CONTROL REG-15-EMPTY PASS",
+      "R3 SELECTOR CONTROLS PASS executed=15 expected=15 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\selector\\selector-base"
+    ],
+    "StandardOutput": [
+      "R3 SELECTOR CONTROL SEL-01-OMITTED PASS",
+      "R3 SELECTOR CONTROL SEL-02-VALID PASS",
+      "R3 SELECTOR CONTROL SEL-03-EMPTY-STRING PASS",
+      "R3 SELECTOR CONTROL SEL-04-EMPTY-ARRAY PASS",
+      "R3 SELECTOR CONTROL SEL-05-WHITESPACE PASS",
+      "R3 SELECTOR CONTROL SEL-06-MALFORMED PASS",
+      "R3 SELECTOR CONTROL SEL-07-UNKNOWN PASS",
+      "R3 SELECTOR CONTROL SEL-08-DUPLICATE PASS",
+      "R3 SELECTOR CONTROL REG-09-EXACT-COPY PASS",
+      "R3 SELECTOR CONTROL REG-10-MISSING-MIDDLE PASS",
+      "R3 SELECTOR CONTROL REG-11-DUPLICATE-MIDDLE PASS",
+      "R3 SELECTOR CONTROL REG-12-UNKNOWN-MIDDLE PASS",
+      "R3 SELECTOR CONTROL REG-13-REORDERED PASS",
+      "R3 SELECTOR CONTROL REG-14-BYTE-DRIFT PASS",
+      "R3 SELECTOR CONTROL REG-15-EMPTY PASS",
+      "R3 SELECTOR CONTROLS PASS executed=15 expected=15 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\selector\\selector-base"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 42.257,
+    "DeadlineSeconds": 1800,
+    "Ownership": "kill-on-close-job"
+  }
+}

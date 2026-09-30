@@ -1,0 +1,87 @@
+{
+  "selected": [
+    "selector-empty"
+  ],
+  "registry": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\candidate-pwsh\\controls\\HS-S\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r2\\HARNESS_STREAM_REGISTRY.json",
+    "bytes": 3395,
+    "sha256": "227BE213E795A6FF037ABB1F67BEF328992D6284C56E0E427243EDE63C41428B"
+  },
+  "source": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\candidate-pwsh\\controls\\HS-S\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1\\integrity_controls.ps1",
+    "bytes": 20259,
+    "sha256": "FA4CD69CFBC5236D64D0A83236839ED50B7A265C913542BF33AA6E95DA88A80C"
+  },
+  "controls": [],
+  "validator": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\candidate-pwsh\\controls\\HS-S\\root\\scripts\\packed_native_lifecycle_stream_check.ps1",
+    "bytes": 13791,
+    "sha256": "725A2F22ED508B5AB5B0D3ABE2CC798A867A4C4BF9750BDE7735E85099A6966B"
+  },
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "fail",
+    "stageError": "INTEGRITY: missing file C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\candidate-pwsh\\controls\\HS-S\\root\\native\\packed-rmq\\tests\\lifecycle_storage_probe.c",
+    "integrityErrors": [],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "docs/internal/extensions/lifecycle-native-p0/repair-r2/HARNESS_STREAM_REGISTRY.json",
+        "entrySha256": "227BE213E795A6FF037ABB1F67BEF328992D6284C56E0E427243EDE63C41428B",
+        "finalSha256": "227BE213E795A6FF037ABB1F67BEF328992D6284C56E0E427243EDE63C41428B",
+        "status": "verified"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle-native-p0/repair-r1/integrity_controls.ps1",
+        "entrySha256": "FA4CD69CFBC5236D64D0A83236839ED50B7A265C913542BF33AA6E95DA88A80C",
+        "finalSha256": "FA4CD69CFBC5236D64D0A83236839ED50B7A265C913542BF33AA6E95DA88A80C",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/packed_native_lifecycle_storage_replay.ps1",
+        "entrySha256": "C35BB6D38EB54562CB1E650D437D0914DE72852594DFDB865DB04E24104AD345",
+        "finalSha256": "C35BB6D38EB54562CB1E650D437D0914DE72852594DFDB865DB04E24104AD345",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/packed_native_lifecycle_integrity_check.ps1",
+        "entrySha256": "4DBDE3FF1B030829C89DE70EFFD12D959404181A545117ADD11AC869BE0E426A",
+        "finalSha256": "4DBDE3FF1B030829C89DE70EFFD12D959404181A545117ADD11AC869BE0E426A",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/owned_process_tree.ps1",
+        "entrySha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+        "finalSha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/packed_native_lifecycle_stream_check.ps1",
+        "entrySha256": "725A2F22ED508B5AB5B0D3ABE2CC798A867A4C4BF9750BDE7735E85099A6966B",
+        "finalSha256": "725A2F22ED508B5AB5B0D3ABE2CC798A867A4C4BF9750BDE7735E85099A6966B",
+        "status": "verified"
+      },
+      {
+        "path": "native/packed-rmq/tests/lifecycle_storage_probe.c",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "lean-toolchain",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle-native-p0/REGISTRY.json",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      }
+    ],
+    "ownedRoots": [],
+    "entryPinCount": 6,
+    "verifiedPinCount": 6
+  }
+}

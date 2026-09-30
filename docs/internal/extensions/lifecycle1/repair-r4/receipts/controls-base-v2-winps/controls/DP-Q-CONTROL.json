@@ -1,0 +1,117 @@
+{
+  "id": "DP-Q",
+  "harness": "DP",
+  "shape": "Q",
+  "fault": "change-fail",
+  "mode": "base",
+  "profile": "winps",
+  "deadlineSeconds": 300,
+  "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\DP-Q\\root",
+  "setupError": null,
+  "launchError": null,
+  "process": {
+    "Stage": "DP-Q",
+    "ExitCode": 1,
+    "Output": [
+      "INTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\DP-Q\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\RESULTS.json",
+      "unchanged fixture rejected",
+      "At C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\contr",
+      "ols\\DP-Q\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1\\dependency_controls.ps1:71 char:26",
+      "+ if(-not $intact.success){throw 'unchanged fixture rejected'}",
+      "+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "    + CategoryInfo          : OperationStopped: (unchanged fixture rejected:String) [], RuntimeException",
+      "    + FullyQualifiedErrorId : unchanged fixture rejected",
+      " "
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "INTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\DP-Q\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\RESULTS.json",
+      "unchanged fixture rejected",
+      "At C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\contr",
+      "ols\\DP-Q\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1\\dependency_controls.ps1:71 char:26",
+      "+ if(-not $intact.success){throw 'unchanged fixture rejected'}",
+      "+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "    + CategoryInfo          : OperationStopped: (unchanged fixture rejected:String) [], RuntimeException",
+      "    + FullyQualifiedErrorId : unchanged fixture rejected",
+      " "
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 8.062,
+    "DeadlineSeconds": 300,
+    "Ownership": "kill-on-close-job"
+  },
+  "durable": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\DP-Q\\root\\.lake\\r3-out\\RESULTS.json",
+    "ambiguous": false,
+    "parseError": null,
+    "sha256": "16ad034a5fe1dc32a34b77a4474f98ef9b05640617e760b07e2ab4e92be8b64d"
+  },
+  "core": {
+    "launchCompleted": true,
+    "exitClass": true,
+    "durablePresent": true,
+    "durableAsExpected": true,
+    "stageRecorded": true,
+    "integrityRecorded": true,
+    "cleanupRecorded": true,
+    "verdictAsExpected": true,
+    "values": null,
+    "labels": null,
+    "stderrAsExpected": true,
+    "absentFiles": true,
+    "stdoutWithoutSuccess": true
+  },
+  "structural": {
+    "applicable": false,
+    "finalizationPresent": true,
+    "verdictMatches": true,
+    "stageFieldMatches": true,
+    "integrityFieldMatches": true,
+    "cleanupEmpty": true,
+    "pinsVerified": true,
+    "pinCoverage": "captured 13 of 13 rows, all re-verified"
+  },
+  "restoration": {
+    "restored": [
+      "docs/internal/extensions/lifecycle-native-p0/RESULTS.json"
+    ],
+    "removed": [],
+    "errors": [],
+    "verified": true,
+    "gitClean": true,
+    "gitState": "3ed4f0048a396f813e81fda2f641765a71d8932b\n--"
+  },
+  "verdict": "PASS",
+  "expected": "accept",
+  "lockWaitSeconds": 0.0,
+  "manifest": {
+    "docs/internal/extensions/lifecycle-native-p0/repair-r1/dependency_controls.ps1": "074e7bfb3c00101f4112ffa55041e59bea202ce04ad91f00e64b34b727717d11",
+    "scripts/owned_process_tree.ps1": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+    "scripts/packed_native_lifecycle_integrity_check.ps1": "1366d79db192261e64a444887b634d32a52dd439ce2ca53d362dd9a4da7de720",
+    "docs/internal/extensions/lifecycle-native-p0/RESULTS.json": "6440a963be7a0e65222f86afe3cfb89e4bee1b6bdcd0226dc0d5cda88d296fdd",
+    ".gitignore": "fde850d24186b6e99c8c0debd641fb3ab85198b109eb66f71a1fea02bd6ea1b3"
+  },
+  "harnessSha256": "074e7bfb3c00101f4112ffa55041e59bea202ce04ad91f00e64b34b727717d11",
+  "arguments": [
+    "-NoLogo",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\DP-Q\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1\\dependency_controls.ps1",
+    "-OutputRoot",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\DP-Q\\root/.lake/r3-out"
+  ],
+  "environment": {
+    "R3_FAULT_MARKER": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\DP-Q\\fault.marker",
+    "R3_FAULT_MODE": "change-fail",
+    "R3_FAULT_TARGET": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\DP-Q\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\RESULTS.json",
+    "R3_FAULT_SCOPE": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\DP-Q\\root"
+  },
+  "coreAll": true,
+  "structuralAll": true,
+  "pairing": "P passed",
+  "predicateOutcome": true
+}

@@ -1,0 +1,20 @@
+LIBRARY packed_rmq_lifecycle
+EXPORTS
+    packed_lifecycle_init
+    packed_lifecycle_profile
+    packed_lifecycle_build_first
+    packed_lifecycle_query
+    packed_lifecycle_result_bytes
+    packed_lifecycle_result_free
+    packed_lifecycle_owner_free
+    packed_lifecycle_observation_free
+    packed_lifecycle_inspect
+    packed_lifecycle_memory_cell
+    packed_lifecycle_inspect_code
+    packed_lifecycle_observation_counter
+    packed_lifecycle_observation_read_count
+    packed_lifecycle_observation_read
+    packed_lifecycle_observation_route
+    packed_lifecycle_signature_count
+    packed_lifecycle_test_configure
+    packed_lifecycle_test_receipt

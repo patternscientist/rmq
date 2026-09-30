@@ -1,0 +1,78 @@
+{
+  "schema": "life1-r4-receipt-index-v1",
+  "receipt": "campaign-r4-p0-harness-stream-winps",
+  "files": [
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\campaign-r4-p0-harness-stream-winps\\RESULT.json",
+      "sourceBytes": 2156,
+      "sourceSha256": "24f30cef712da0e533f9026728cd05c6d749ca050bb2b0338343daa004ba9d9c",
+      "committed": "heavy-RESULT.json",
+      "committedBytes": 2106,
+      "committedSha256": "9e0be0a718663a81d7b728e918cd5d21ffbcd463d93dd54fe9b3e2c4c86d4b1c",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\campaign-r4-p0-harness-stream-winps\\stdout.returned-lines.txt",
+      "sourceBytes": 194,
+      "sourceSha256": "808ecb3056c630e7e8b48641ebee93216198041a242e4dbb8c417567e4c40dab",
+      "committed": "heavy-stdout.returned-lines.txt",
+      "committedBytes": 194,
+      "committedSha256": "808ecb3056c630e7e8b48641ebee93216198041a242e4dbb8c417567e4c40dab",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\campaign-r4-p0-harness-stream-winps\\stderr.returned-lines.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "heavy-stderr.returned-lines.txt",
+      "committedBytes": 0,
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\checks\\r4-p0-harness-stream-winps\\result.json",
+      "sourceBytes": 11222,
+      "sourceSha256": "130b1f51f321ee81df6f2fd508faed6a631f5732d4d0db2e8e672d3b31cda873",
+      "committed": "result.json",
+      "committedBytes": 10993,
+      "committedSha256": "16aa95771e65e4eb8d113edb682595c04f398a71f2b16238d66d58ec15ffc843",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\checks\\r4-p0-harness-stream-winps\\stdout.txt",
+      "sourceBytes": 573,
+      "sourceSha256": "0332715e1d64bd66dcd7c8a08136dddfc84c5b8dbfa6d396ecf7a90e54cb25e6",
+      "committed": "stdout.txt",
+      "committedBytes": 573,
+      "committedSha256": "0332715e1d64bd66dcd7c8a08136dddfc84c5b8dbfa6d396ecf7a90e54cb25e6",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\checks\\r4-p0-harness-stream-winps\\stderr.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "stderr.txt",
+      "committedBytes": 0,
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\campaign-specs\\r4-p0-harness-stream-winps.json",
+      "sourceBytes": 566,
+      "sourceSha256": "ffd36a379f071d3624f6d1d73ba4bcf59e928e6174b79e83ae4fe48930299c9d",
+      "committed": "campaign-spec.json",
+      "committedBytes": 552,
+      "committedSha256": "a64e31a5cb0c2d64fa6a783cad249caf1c4f4726b04d9bc7572291218575dc38",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-winps\\RESULTS.json",
+      "sourceBytes": 204211,
+      "sourceSha256": "321626f5e5bb44215512f8dba98116f25dfb5f4b3c104a150d88d1b647ab2b39",
+      "committed": "RESULTS.json",
+      "committedBytes": 202137,
+      "committedSha256": "efc3673be854736292ce6245a882a1ea1fc722ec8766c8109c59ece138218755",
+      "normalized": true
+    }
+  ]
+}
