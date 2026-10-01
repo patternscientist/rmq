@@ -1,0 +1,61 @@
+{
+  "schema": "rmq-v1-advisory-checker-v1",
+  "status": "FAILED_ADVISORY_NOT_ACCEPTANCE",
+  "rmqSourceBase": "ee44f04a561f2194b3713f071c26b6faf9ba7fab",
+  "rmqSpecBlob": "603ca44bc712453e67d902798e74a78b702520e5",
+  "theorem": "RMQ.leftmostArgMin_unique",
+  "leanVersion": "4.22.0",
+  "exporterCommit": "e6c7eafbb83cfad518b196164ee977f7f0ba3701",
+  "exporterPatch": "diff --git a/Export.lean b/Export.lean\nindex 7a73832..66a3276 100644\n--- a/Export.lean\n+++ b/Export.lean\n@@ -77,8 +77,8 @@ def removeMData (e : Expr) : M Expr := do\n     pure <| e.updateApp! (\u2190 removeMData f) (\u2190 removeMData a)\n   | .lam _ d b _ =>\n     pure <| e.updateLambdaE! (\u2190 removeMData d) (\u2190 removeMData b)\n-  | .letE _ d v b _ =>\n-    pure <| e.updateLet! (\u2190 removeMData d) (\u2190 removeMData v) (\u2190 removeMData b)\n+  | .letE _ d v b nondep =>\n+    pure <| e.updateLet! (\u2190 removeMData d) (\u2190 removeMData v) (\u2190 removeMData b) nondep\n   | .forallE _ d b _ =>\n     pure <| e.updateForallE! (\u2190 removeMData d) (\u2190 removeMData b)\n   | .proj _ _ e2 =>\ndiff --git a/lean-toolchain b/lean-toolchain\nindex 1efd365..b999406 100644\n--- a/lean-toolchain\n+++ b/lean-toolchain\n@@ -1 +1,2 @@\n-leanprover/lean4:v4.21.0-rc3\n+leanprover/lean4:v4.22.0\n+\n",
+  "checkerCommit": "e5438ac0a85a036b6dfe093aa457bc3448498014",
+  "checkerTrackedDiff": "",
+  "exportArguments": [
+    "RMQ.Core.Spec",
+    "--",
+    "Eq",
+    "Quot",
+    "Quot.mk",
+    "Quot.lift",
+    "Quot.ind",
+    "Quot.sound",
+    "RMQ.leftmostArgMin_unique"
+  ],
+  "checkerConfig": {
+    "export_file_path": "C:/Users/poin/Documents/RMQ/research-duet-20261001/implementation/spec.export",
+    "use_stdin": false,
+    "permitted_axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "unpermitted_axiom_hard_error": true,
+    "nat_extension": true,
+    "string_extension": true,
+    "print_success_message": true
+  },
+  "exitCode": 101,
+  "output": "\nthread 'main' panicked at src\\tc.rs:806:13:\nfailed decl name := RMQ.leftmostArgMin_unique._proof_1_1\n\nu := (((Eq.[1] Bool.[]) (((Lean.Omega.Constraint.sat'.[] ((Lean.Omega.Constraint.mk.[] (Option.none.[0] Int.[])) ((Option.some.[0] Int.[]) (((OfN\n\nv := (((Eq.[1] Bool.[]) (((Lean.Omega.Constraint.sat'.[] ((Lean.Omega.tidyConstraint.[] ((Lean.Omega.Constraint.mk.[] ((Option.some.[0] Int.[]) (\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+  "pins": [
+    {
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\tools\\lean4export\\.lake\\build\\bin\\lean4export.exe",
+      "bytes": 325120,
+      "sha256": "3e553c927df8dc752cfdc0ab826b1c04dedbb4427a9c134e5f8e4db3a57135e7"
+    },
+    {
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\tools\\nanoda\\target\\release\\nanoda_bin.exe",
+      "bytes": 793600,
+      "sha256": "01ee188bc7138ab568885abad943d4f5f9880a9e92b9a56e85c3c2976c104c86"
+    },
+    {
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\spec.export",
+      "bytes": 1736021,
+      "sha256": "175bd7b60dc843284d1fdf95467b29a1c89e5c22df0438799ba7f3c8e24f8530"
+    },
+    {
+      "path": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\nanoda-spec-config.json",
+      "bytes": 323,
+      "sha256": "d499c95016455d0b7fd9fce9f621c13f55a7dae5332951d2365ac57efaf281f7"
+    }
+  ],
+  "limitation": "The corrected selective export includes the complete Quot package. The checker then fails a definitional-equality assertion on an omega-generated auxiliary proof. This is not independent acceptance of the selected theorem or the project. No RMQ theorem or axiom whitelist was changed."
+}

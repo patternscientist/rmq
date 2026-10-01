@@ -15627,3 +15627,11 @@ Later documentation-only dispositions require report-sensitive scans; they
 do not change the identity of earlier checked source. Local Linux verification
 is explicitly distinct from a hosted CI run. The unmodified original checkout
 and all worker evidence remain available. Publication is not performed here.
+
+The advisory nanoda trial is recorded in `v1/NANODA_ADVISORY.json`, including
+tool revisions, the exporter API adaptation, executable/export hashes and the
+actual failing output. Completing the Quot package repaired an initial missing
+declaration input error; the checker then failed on an omega-generated proof in
+the unchanged reference specification. Its cause is not established here. This
+is a failed advisory check, not independent theorem acceptance or evidence of a
+Lean kernel defect. Required Lean axiom/hygiene checks remain separate.
