@@ -1,0 +1,51 @@
+{
+  "schema": "life1-r3-heavy-v1",
+  "name": "campaign-r3-validator-full-winps",
+  "spec": {
+    "name": "campaign-r3-validator-full-winps",
+    "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+    "arguments": [
+      "-NoLogo",
+      "-NoProfile",
+      "-File",
+      "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/docs/internal/extensions/lifecycle1/repair-r2/run_check.ps1",
+      "-SpecPath",
+      "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/.lake/life1-r3/campaign-specs/r3-validator-full-winps.json"
+    ],
+    "cwd": "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity",
+    "deadline": 3000,
+    "mutexes": [
+      "global"
+    ],
+    "mutexWaitMilliseconds": 21600000,
+    "environment": {},
+    "out": "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/.lake/life1-r3/heavy/campaign-r3-validator-full-winps"
+  },
+  "host": "POINPAD",
+  "shell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+  "psVersion": "7.6.5",
+  "startedUtc": "2026-09-30T06:04:39.7839755Z",
+  "finishedUtc": "2026-09-30T06:05:29.9888627Z",
+  "mutexWaitSeconds": {
+    "global": 0.003
+  },
+  "stageError": null,
+  "cleanupErrors": [],
+  "result": {
+    "Stage": "campaign-r3-validator-full-winps",
+    "ExitCode": 0,
+    "Output": [
+      "r3-validator-full-winps exit=0 seconds=48.193 timeout=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r2\\checks\\r3-validator-full-winps"
+    ],
+    "StandardOutput": [
+      "r3-validator-full-winps exit=0 seconds=48.193 timeout=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r2\\checks\\r3-validator-full-winps"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 49.857,
+    "DeadlineSeconds": 3000,
+    "Ownership": "kill-on-close-job"
+  }
+}

@@ -1,0 +1,256 @@
+{
+  "schema": "life1-r4-base-probe-v1",
+  "harnessRef": "d9411a7dae909462218fb32e3bb84e555cfa042c",
+  "harnessSha": "d9411a7dae909462218fb32e3bb84e555cfa042c",
+  "expect": "repaired",
+  "runnerShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+  "psVersion": "7.6.5",
+  "expectedCount": 6,
+  "executedCount": 6,
+  "passedCount": 6,
+  "failedIds": [],
+  "cases": [
+    {
+      "id": "P21-K1-EXIT",
+      "finding": "P2-1",
+      "harness": "docs/internal/extensions/lifecycle1/repair-r1/run_check.ps1",
+      "harnessSha256": "395bfff8570f0762742cb61a4caedf4f9060a18388ab0135d243a7d14a8a6580",
+      "stage": "exit 7",
+      "deadline": 60,
+      "process": {
+        "Stage": "P21-K1-EXIT",
+        "ExitCode": 7,
+        "Output": [
+          "probe exit=7 seconds=0.969 timeout=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P21-K1-EXIT\\root\\.lake\\repair-r1\\checks\\probe"
+        ],
+        "StandardOutput": [
+          "probe exit=7 seconds=0.969 timeout=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P21-K1-EXIT\\root\\.lake\\repair-r1\\checks\\probe"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.868,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      },
+      "completedLaunch": true,
+      "durable": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P21-K1-EXIT\\root\\.lake\\repair-r1\\checks\\probe\\result.json",
+      "durableSha256": "166f51240a4dc67b4bda85955f74bd9127cbf2e07ab96d21eb610568b9b9e4dc",
+      "verdict": "fail",
+      "childFailure": "R1-CHECK: child exit 7",
+      "resultTimedOut": false,
+      "defectPresent": false,
+      "repairedShape": true,
+      "expect": "repaired",
+      "passed": true
+    },
+    {
+      "id": "P21-K2-EXIT",
+      "finding": "P2-1",
+      "harness": "docs/internal/extensions/lifecycle1/repair-r2/run_check.ps1",
+      "harnessSha256": "f3ae2e4aea800c2f6cb094a3a74ca4fb380b9bf3aa8f61f8e79ae2717b0184cc",
+      "stage": "exit 7",
+      "deadline": 60,
+      "process": {
+        "Stage": "P21-K2-EXIT",
+        "ExitCode": 7,
+        "Output": [
+          "probe exit=7 seconds=0.957 timeout=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P21-K2-EXIT\\root\\.lake\\repair-r2\\checks\\probe"
+        ],
+        "StandardOutput": [
+          "probe exit=7 seconds=0.957 timeout=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P21-K2-EXIT\\root\\.lake\\repair-r2\\checks\\probe"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 4.647,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      },
+      "completedLaunch": true,
+      "durable": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P21-K2-EXIT\\root\\.lake\\repair-r2\\checks\\probe\\result.json",
+      "durableSha256": "45c3fa5a3ec071bb7163fdd3192aa0b25c206a480d8d5bd9935016b6c2eeab91",
+      "verdict": "fail",
+      "childFailure": "R2-CHECK: child exit 7",
+      "resultTimedOut": false,
+      "defectPresent": false,
+      "repairedShape": true,
+      "expect": "repaired",
+      "passed": true
+    },
+    {
+      "id": "P21-K1-TIMEOUT",
+      "finding": "P2-1",
+      "harness": "docs/internal/extensions/lifecycle1/repair-r1/run_check.ps1",
+      "harnessSha256": "395bfff8570f0762742cb61a4caedf4f9060a18388ab0135d243a7d14a8a6580",
+      "stage": "Start-Sleep -Seconds 30; exit 0",
+      "deadline": 3,
+      "process": {
+        "Stage": "P21-K1-TIMEOUT",
+        "ExitCode": 2,
+        "Output": [
+          "probe exit=-1 seconds=3.108 timeout=True evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P21-K1-TIMEOUT\\root\\.lake\\repair-r1\\checks\\probe"
+        ],
+        "StandardOutput": [
+          "probe exit=-1 seconds=3.108 timeout=True evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P21-K1-TIMEOUT\\root\\.lake\\repair-r1\\checks\\probe"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 5.098,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      },
+      "completedLaunch": true,
+      "durable": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P21-K1-TIMEOUT\\root\\.lake\\repair-r1\\checks\\probe\\result.json",
+      "durableSha256": "2db6747e63c414e90873d6dfbdd358e3ca5dc713927b68b3aedfbed96991b730",
+      "verdict": "fail",
+      "childFailure": "R1-CHECK: child timed out or exceeded its output limit",
+      "resultTimedOut": true,
+      "defectPresent": false,
+      "repairedShape": true,
+      "expect": "repaired",
+      "passed": true
+    },
+    {
+      "id": "P21-K2-TIMEOUT",
+      "finding": "P2-1",
+      "harness": "docs/internal/extensions/lifecycle1/repair-r2/run_check.ps1",
+      "harnessSha256": "f3ae2e4aea800c2f6cb094a3a74ca4fb380b9bf3aa8f61f8e79ae2717b0184cc",
+      "stage": "Start-Sleep -Seconds 30; exit 0",
+      "deadline": 3,
+      "process": {
+        "Stage": "P21-K2-TIMEOUT",
+        "ExitCode": 2,
+        "Output": [
+          "probe exit=-1 seconds=3.095 timeout=True evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P21-K2-TIMEOUT\\root\\.lake\\repair-r2\\checks\\probe"
+        ],
+        "StandardOutput": [
+          "probe exit=-1 seconds=3.095 timeout=True evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P21-K2-TIMEOUT\\root\\.lake\\repair-r2\\checks\\probe"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 5.962,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      },
+      "completedLaunch": true,
+      "durable": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P21-K2-TIMEOUT\\root\\.lake\\repair-r2\\checks\\probe\\result.json",
+      "durableSha256": "414a729d38b30477acdc0d0b3751db2b08c3cf9425df50c66bd829b54c61a245",
+      "verdict": "fail",
+      "childFailure": "R2-CHECK: child timed out or exceeded its output limit",
+      "resultTimedOut": true,
+      "defectPresent": false,
+      "repairedShape": true,
+      "expect": "repaired",
+      "passed": true
+    },
+    {
+      "id": "P31-K2-WRITE",
+      "finding": "P3-1",
+      "harness": "docs/internal/extensions/lifecycle1/repair-r2/run_check.ps1",
+      "harnessSha256": "f3ae2e4aea800c2f6cb094a3a74ca4fb380b9bf3aa8f61f8e79ae2717b0184cc",
+      "stage": "block",
+      "deadline": 60,
+      "process": {
+        "Stage": "P31-K2-WRITE",
+        "ExitCode": 1,
+        "Output": [
+          "probe exit=0 seconds=0.875 timeout=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P31-K2-WRITE\\root\\.lake\\repair-r2\\checks\\probe",
+          "R2-CHECK: durable result write failed: Exception calling \"WriteAllText\" with \"3\" argument(s): \"Access to the path 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P31-K2-WRITE\\root\\.lake\\repair-r2\\checks\\probe\\result.json' is denied.\""
+        ],
+        "StandardOutput": [
+          "probe exit=0 seconds=0.875 timeout=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P31-K2-WRITE\\root\\.lake\\repair-r2\\checks\\probe"
+        ],
+        "StandardError": [
+          "R2-CHECK: durable result write failed: Exception calling \"WriteAllText\" with \"3\" argument(s): \"Access to the path 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P31-K2-WRITE\\root\\.lake\\repair-r2\\checks\\probe\\result.json' is denied.\""
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 4.113,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      },
+      "completedLaunch": true,
+      "durable": null,
+      "durableSha256": null,
+      "verdict": null,
+      "childFailure": null,
+      "resultTimedOut": null,
+      "defectPresent": false,
+      "repairedShape": true,
+      "expect": "repaired",
+      "passed": true
+    },
+    {
+      "id": "P33-LV-EXE",
+      "finding": "P3-3",
+      "harness": "scripts/lifecycle_validator.ps1",
+      "harnessSha256": "8135040dfb712cb81dd083db8f4b58d42e333bc196db3770f2b5c28e228f0cb3",
+      "stage": null,
+      "deadline": null,
+      "process": {
+        "Stage": "P33-LV-EXE",
+        "ExitCode": 1,
+        "Output": [
+          "Exception: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P33-LV-EXE\\root\\scripts\\lifecycle_validator.ps1:110",
+          "Line |",
+          " 110 |      throw 'Missing rmq_lifecycle_validate.exe; build the named Lake t .",
+          "     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "     | Missing rmq_lifecycle_validate.exe; build the named Lake target explicitly first"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "Exception: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P33-LV-EXE\\root\\scripts\\lifecycle_validator.ps1:110",
+          "Line |",
+          " 110 |      throw 'Missing rmq_lifecycle_validate.exe; build the named Lake t .",
+          "     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "     | Missing rmq_lifecycle_validate.exe; build the named Lake target explicitly first"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.26,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      },
+      "completedLaunch": true,
+      "durable": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P33-LV-EXE\\root\\.lake\\lifecycle-validator\\f9a8c8c0cde6486d8eb3ab9d5fc9d789\\RESULT.json",
+      "durableSha256": "9fb67e2375fbaaea976879f60e0b351b4a7ad1ce8dd64d1fd8880771f484aed0",
+      "verdict": "fail",
+      "childFailure": null,
+      "resultTimedOut": null,
+      "defectPresent": false,
+      "repairedShape": true,
+      "expect": "repaired",
+      "passed": true
+    }
+  ],
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "pass",
+    "stageError": null,
+    "integrityErrors": [],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\docs\\internal\\extensions\\lifecycle1\\repair-r4\\base_probe.ps1",
+        "entrySha256": "57a19e8ab6b3894d6b91706d4ca5a6bdd7302adde058e346b96c95cfc950ef98",
+        "finalSha256": "57a19e8ab6b3894d6b91706d4ca5a6bdd7302adde058e346b96c95cfc950ef98",
+        "status": "verified"
+      },
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\scripts\\owned_process_tree.ps1",
+        "entrySha256": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+        "finalSha256": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+        "status": "verified"
+      }
+    ]
+  }
+}

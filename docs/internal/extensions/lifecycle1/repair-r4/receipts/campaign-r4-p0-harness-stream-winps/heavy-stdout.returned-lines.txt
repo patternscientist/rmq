@@ -1,0 +1,1 @@
+r4-p0-harness-stream-winps exit=0 seconds=94.365 timeout=False evidence=C:\Users\poin\Documents\RMQ\.claude\worktrees\life1-r4-run-check-verdict\.lake\repair-r2\checks\r4-p0-harness-stream-winps

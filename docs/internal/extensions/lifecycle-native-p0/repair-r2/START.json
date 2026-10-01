@@ -1,0 +1,24 @@
+{
+  "handle": "LIFE-NATIVE-P0-R2",
+  "worktree": "C:\\Users\\poin\\.codex\\worktrees\\eafd\\RMQ",
+  "base": "2307e3ad0739e0e1d9c3f186cdc568631086fddf",
+  "branch": "codex/life-native-p0-r2-outer-diagnostics",
+  "initialHead": "2307e3ad0739e0e1d9c3f186cdc568631086fddf",
+  "initialClean": true,
+  "initialCleanObservedBeforeScaffold": true,
+  "governance": "7b227c49ef2ec044b702126cc41c9add847eed01",
+  "runtimeCatalog": [
+    "rmq-audit-prompt",
+    "rmq-coordinator",
+    "rmq-proof-sprint"
+  ],
+  "runtimeCatalogNote": "Coordinator and audit-prompt appear both canonically and in user skill catalog; names deduplicated.",
+  "requiredSkill": "rmq-proof-sprint",
+  "preflight": "PASS",
+  "frozenRowsSha256": "7dbc035076ea9cace20ac735b1aa85b099aef3d5b5b1afe514aba2c0c63e237e",
+  "prompt": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\lifecycle-implementation-20260920\\LIFE-NATIVE-P0-R2_PROMPT.md",
+    "bytes": 25782,
+    "sha256": "7dd65657f4b6b6436fccd02a54dec2fcfdb5584663ec0ede2b56ffd35ede3db6"
+  }
+}

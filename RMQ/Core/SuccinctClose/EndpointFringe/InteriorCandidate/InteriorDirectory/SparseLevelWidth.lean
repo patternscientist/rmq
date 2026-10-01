@@ -1600,10 +1600,12 @@ theorem canonicalRelativeRmmInteriorCost33RightSpine_size (n : Nat) :
         Cartesian.CartesianShape.size, ih]
       omega
 
+@[macro_inline]
 def canonicalRelativeRmmInteriorCost33WitnessShape :
     Cartesian.CartesianShape :=
   canonicalRelativeRmmInteriorCost33RightSpine 3469
 
+@[macro_inline]
 def canonicalRelativeRmmInteriorCost33WitnessInput : List Int :=
   canonicalRelativeRmmInteriorCost33WitnessShape.representative
 

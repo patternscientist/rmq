@@ -1,0 +1,7 @@
+R4 PROBE P21-K1-EXIT defectPresent=False repairedShape=True PASS
+R4 PROBE P21-K2-EXIT defectPresent=False repairedShape=True PASS
+R4 PROBE P21-K1-TIMEOUT defectPresent=False repairedShape=True PASS
+R4 PROBE P21-K2-TIMEOUT defectPresent=False repairedShape=True PASS
+R4 PROBE P31-K2-WRITE defectPresent=False repairedShape=True PASS
+R4 PROBE P33-LV-EXE defectPresent=False repairedShape=True PASS
+R4 PROBE PASS expect=repaired ref=d9411a7dae909462218fb32e3bb84e555cfa042c executed=6 expected=6 evidence=C:\Users\poin\Documents\RMQ\.claude\worktrees\life1-r4-run-check-verdict\.lake\life1-r4\probe\candidate-repaired

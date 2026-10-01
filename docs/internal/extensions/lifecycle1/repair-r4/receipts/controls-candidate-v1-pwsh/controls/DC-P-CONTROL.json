@@ -1,0 +1,102 @@
+{
+  "id": "DC-P",
+  "harness": "DC",
+  "shape": "P",
+  "fault": "intact",
+  "mode": "candidate",
+  "profile": "pwsh",
+  "deadlineSeconds": 180,
+  "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\DC-P\\root",
+  "setupError": null,
+  "launchError": null,
+  "process": {
+    "Stage": "DC-P",
+    "ExitCode": 0,
+    "Output": [
+      "L1R1-CONTROL|D07_ENV_VALID|PASS"
+    ],
+    "StandardOutput": [
+      "L1R1-CONTROL|D07_ENV_VALID|PASS"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 1.128,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  },
+  "durable": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\DC-P\\root\\.lake\\r3-evidence\\receipt.json",
+    "ambiguous": false,
+    "parseError": null,
+    "sha256": "7c0f891f7658950b0abdced67f9e76a5c59ce2ef6dbd8d196273a9a56d49a2fb"
+  },
+  "core": {
+    "launchCompleted": true,
+    "exitClass": true,
+    "durablePresent": true,
+    "durableAsExpected": true,
+    "stageRecorded": true,
+    "integrityRecorded": true,
+    "cleanupRecorded": true,
+    "verdictAsExpected": true,
+    "values": null,
+    "labels": null,
+    "stderrAsExpected": true,
+    "absentFiles": true,
+    "stdoutWithoutSuccess": true
+  },
+  "structural": {
+    "applicable": true,
+    "finalizationPresent": true,
+    "verdictMatches": true,
+    "stageFieldMatches": true,
+    "integrityFieldMatches": true,
+    "cleanupEmpty": true,
+    "pinsVerified": true,
+    "pinCoverage": "captured 2 of 2 rows, all re-verified"
+  },
+  "restoration": {
+    "restored": [],
+    "removed": [],
+    "errors": [],
+    "verified": true,
+    "gitClean": true,
+    "gitState": "69d70f92f4c89534a22f99cf15a16bb13ab56a39\n--"
+  },
+  "verdict": "PASS",
+  "expected": "accept-all-predicates",
+  "lockWaitSeconds": 0.0,
+  "manifest": {
+    "docs/internal/extensions/lifecycle1/repair-r1/dependency_child.ps1": "0e87492cab5a5f11ff6536e8d03c153e111f4865f712b916be6f54e2a5ce6e23",
+    "scripts/lifecycle_dependency_replay.ps1": "dab13e35338955fe709edd8bf1187096fc65e8ce9b9e220cdb16eaf9ffb58f20",
+    "scripts/lifecycle_dependency_cases.json": "003343871e23c93df874a960a8af60ae7a8a2e615adb05b6e581dc4407a1c84b",
+    "r3-spec.json": "336e4de537c5279a52493d650421eddebb0185c23fbc17a3fc143747e4b16967",
+    ".gitignore": "fde850d24186b6e99c8c0debd641fb3ab85198b109eb66f71a1fea02bd6ea1b3"
+  },
+  "harnessSha256": "0e87492cab5a5f11ff6536e8d03c153e111f4865f712b916be6f54e2a5ce6e23",
+  "arguments": [
+    "-NoLogo",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\DC-P\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\dependency_child.ps1",
+    "-SpecPath",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\DC-P\\root/r3-spec.json",
+    "-RepositoryRoot",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\DC-P\\root",
+    "-EvidenceRoot",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\DC-P\\root/.lake/r3-evidence"
+  ],
+  "environment": {
+    "R3_FAULT_SCOPE": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\DC-P\\root",
+    "R3_FAULT_MODE": "intact",
+    "R3_FAULT_TARGET": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\DC-P\\root\\scripts\\lifecycle_dependency_replay.ps1",
+    "R3_FAULT_MARKER": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\DC-P\\fault.marker"
+  },
+  "coreAll": true,
+  "structuralAll": true,
+  "predicateOutcome": true
+}

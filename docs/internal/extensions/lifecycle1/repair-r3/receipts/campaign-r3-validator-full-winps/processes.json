@@ -1,0 +1,423 @@
+[
+    {
+        "name":  "registry",
+        "exitCode":  0,
+        "expectedExit":  0,
+        "durationSeconds":  1.949,
+        "timedOut":  false,
+        "outputLimitExceeded":  false,
+        "ownership":  "kill-on-close-job",
+        "terminatedIds":  [
+
+                          ],
+        "expectedCases":  [
+
+                          ],
+        "selectorPresent":  false,
+        "selector":  null,
+        "result":  {
+                       "Stage":  "registry",
+                       "ExitCode":  0,
+                       "Output":  [
+                                      "LIFE1-REGISTRY|L01-W-EMPTY|word|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L02-C-EMPTY|comparison|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L03-W-SINGLE|word|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L04-C-SINGLE|comparison|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L05-W-REPEAT|word|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L06-C-REPEAT|comparison|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L07-W-TIE|word|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L08-C-TIE|comparison|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L09-W-INVALID|word|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L10-C-INVALID|comparison|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L11-W-DIRTY|word|dirty-entry|PASS",
+                                      "LIFE1-REGISTRY|L12-C-DIRTY|comparison|dirty-entry|PASS",
+                                      "LIFE1-REGISTRY|L13-W-N24|word|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L14-C-N24|comparison|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L15-W-N83|word|lifecycle|PASS",
+                                      "LIFE1-REGISTRY|L16-C-N83|comparison|lifecycle|PASS"
+                                  ],
+                       "StandardOutput":  [
+                                              "LIFE1-REGISTRY|L01-W-EMPTY|word|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L02-C-EMPTY|comparison|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L03-W-SINGLE|word|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L04-C-SINGLE|comparison|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L05-W-REPEAT|word|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L06-C-REPEAT|comparison|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L07-W-TIE|word|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L08-C-TIE|comparison|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L09-W-INVALID|word|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L10-C-INVALID|comparison|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L11-W-DIRTY|word|dirty-entry|PASS",
+                                              "LIFE1-REGISTRY|L12-C-DIRTY|comparison|dirty-entry|PASS",
+                                              "LIFE1-REGISTRY|L13-W-N24|word|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L14-C-N24|comparison|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L15-W-N83|word|lifecycle|PASS",
+                                              "LIFE1-REGISTRY|L16-C-N83|comparison|lifecycle|PASS"
+                                          ],
+                       "StandardError":  [
+
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  1.949,
+                       "DeadlineSeconds":  30,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "name":  "startup",
+        "exitCode":  0,
+        "expectedExit":  0,
+        "durationSeconds":  1.577,
+        "timedOut":  false,
+        "outputLimitExceeded":  false,
+        "ownership":  "kill-on-close-job",
+        "terminatedIds":  [
+
+                          ],
+        "expectedCases":  [
+
+                          ],
+        "selectorPresent":  false,
+        "selector":  null,
+        "result":  {
+                       "Stage":  "startup",
+                       "ExitCode":  0,
+                       "Output":  [
+                                      "LIFE1-STARTUP|PASS|cases=16"
+                                  ],
+                       "StandardOutput":  [
+                                              "LIFE1-STARTUP|PASS|cases=16"
+                                          ],
+                       "StandardError":  [
+
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  1.577,
+                       "DeadlineSeconds":  30,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "name":  "focused",
+        "exitCode":  0,
+        "expectedExit":  0,
+        "durationSeconds":  1.61,
+        "timedOut":  false,
+        "outputLimitExceeded":  false,
+        "ownership":  "kill-on-close-job",
+        "terminatedIds":  [
+
+                          ],
+        "expectedCases":  [
+                              "L01-W-EMPTY"
+                          ],
+        "selectorPresent":  false,
+        "selector":  null,
+        "result":  {
+                       "Stage":  "focused",
+                       "ExitCode":  0,
+                       "Output":  [
+                                      "LIFE1-CASE|L01-W-EMPTY|PASS|steps=13601|queries=1|querySteps=0|extent=175|peak=307|release=132|dirty=0",
+                                      "LIFE1-PASS|mode=single|cases=1"
+                                  ],
+                       "StandardOutput":  [
+                                              "LIFE1-CASE|L01-W-EMPTY|PASS|steps=13601|queries=1|querySteps=0|extent=175|peak=307|release=132|dirty=0",
+                                              "LIFE1-PASS|mode=single|cases=1"
+                                          ],
+                       "StandardError":  [
+
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  1.61,
+                       "DeadlineSeconds":  1800,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "name":  "reject-empty",
+        "exitCode":  1,
+        "expectedExit":  1,
+        "durationSeconds":  1.429,
+        "timedOut":  false,
+        "outputLimitExceeded":  false,
+        "ownership":  "kill-on-close-job",
+        "terminatedIds":  [
+
+                          ],
+        "expectedCases":  [
+
+                          ],
+        "selectorPresent":  true,
+        "selector":  "id:",
+        "result":  {
+                       "Stage":  "reject-empty",
+                       "ExitCode":  1,
+                       "Output":  [
+                                      "LIFE1-FAIL|empty-selector"
+                                  ],
+                       "StandardOutput":  [
+
+                                          ],
+                       "StandardError":  [
+                                             "LIFE1-FAIL|empty-selector"
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  1.429,
+                       "DeadlineSeconds":  30,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "name":  "reject-whitespace",
+        "exitCode":  1,
+        "expectedExit":  1,
+        "durationSeconds":  1.443,
+        "timedOut":  false,
+        "outputLimitExceeded":  false,
+        "ownership":  "kill-on-close-job",
+        "terminatedIds":  [
+
+                          ],
+        "expectedCases":  [
+
+                          ],
+        "selectorPresent":  true,
+        "selector":  "id: ",
+        "result":  {
+                       "Stage":  "reject-whitespace",
+                       "ExitCode":  1,
+                       "Output":  [
+                                      "LIFE1-FAIL|whitespace-selector"
+                                  ],
+                       "StandardOutput":  [
+
+                                          ],
+                       "StandardError":  [
+                                             "LIFE1-FAIL|whitespace-selector"
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  1.443,
+                       "DeadlineSeconds":  30,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "name":  "reject-unknown",
+        "exitCode":  1,
+        "expectedExit":  1,
+        "durationSeconds":  1.474,
+        "timedOut":  false,
+        "outputLimitExceeded":  false,
+        "ownership":  "kill-on-close-job",
+        "terminatedIds":  [
+
+                          ],
+        "expectedCases":  [
+
+                          ],
+        "selectorPresent":  false,
+        "selector":  null,
+        "result":  {
+                       "Stage":  "reject-unknown",
+                       "ExitCode":  1,
+                       "Output":  [
+                                      "LIFE1-FAIL|unknown-selector"
+                                  ],
+                       "StandardOutput":  [
+
+                                          ],
+                       "StandardError":  [
+                                             "LIFE1-FAIL|unknown-selector"
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  1.474,
+                       "DeadlineSeconds":  30,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "name":  "reject-duplicate",
+        "exitCode":  1,
+        "expectedExit":  1,
+        "durationSeconds":  1.49,
+        "timedOut":  false,
+        "outputLimitExceeded":  false,
+        "ownership":  "kill-on-close-job",
+        "terminatedIds":  [
+
+                          ],
+        "expectedCases":  [
+
+                          ],
+        "selectorPresent":  false,
+        "selector":  null,
+        "result":  {
+                       "Stage":  "reject-duplicate",
+                       "ExitCode":  1,
+                       "Output":  [
+                                      "LIFE1-FAIL|duplicate-selector"
+                                  ],
+                       "StandardOutput":  [
+
+                                          ],
+                       "StandardError":  [
+                                             "LIFE1-FAIL|duplicate-selector"
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  1.49,
+                       "DeadlineSeconds":  30,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "name":  "reject-channels",
+        "exitCode":  1,
+        "expectedExit":  1,
+        "durationSeconds":  1.415,
+        "timedOut":  false,
+        "outputLimitExceeded":  false,
+        "ownership":  "kill-on-close-job",
+        "terminatedIds":  [
+
+                          ],
+        "expectedCases":  [
+
+                          ],
+        "selectorPresent":  true,
+        "selector":  "id:L01-W-EMPTY",
+        "result":  {
+                       "Stage":  "reject-channels",
+                       "ExitCode":  1,
+                       "Output":  [
+                                      "LIFE1-FAIL|duplicate-selector-channel"
+                                  ],
+                       "StandardOutput":  [
+
+                                          ],
+                       "StandardError":  [
+                                             "LIFE1-FAIL|duplicate-selector-channel"
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  1.415,
+                       "DeadlineSeconds":  30,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    },
+    {
+        "name":  "full",
+        "exitCode":  0,
+        "expectedExit":  0,
+        "durationSeconds":  33.403,
+        "timedOut":  false,
+        "outputLimitExceeded":  false,
+        "ownership":  "kill-on-close-job",
+        "terminatedIds":  [
+
+                          ],
+        "expectedCases":  [
+                              "L01-W-EMPTY",
+                              "L02-C-EMPTY",
+                              "L03-W-SINGLE",
+                              "L04-C-SINGLE",
+                              "L05-W-REPEAT",
+                              "L06-C-REPEAT",
+                              "L07-W-TIE",
+                              "L08-C-TIE",
+                              "L09-W-INVALID",
+                              "L10-C-INVALID",
+                              "L11-W-DIRTY",
+                              "L12-C-DIRTY",
+                              "L13-W-N24",
+                              "L14-C-N24",
+                              "L15-W-N83",
+                              "L16-C-N83"
+                          ],
+        "selectorPresent":  false,
+        "selector":  null,
+        "result":  {
+                       "Stage":  "full",
+                       "ExitCode":  0,
+                       "Output":  [
+                                      "LIFE1-CASE|L01-W-EMPTY|PASS|steps=13601|queries=1|querySteps=0|extent=175|peak=307|release=132|dirty=0",
+                                      "LIFE1-CASE|L02-C-EMPTY|PASS|steps=13608|queries=1|querySteps=0|extent=175|peak=307|release=132|dirty=0",
+                                      "LIFE1-CASE|L03-W-SINGLE|PASS|steps=24395|queries=1|querySteps=0|extent=176|peak=508|release=332|dirty=0",
+                                      "LIFE1-CASE|L04-C-SINGLE|PASS|steps=24400|queries=1|querySteps=0|extent=176|peak=507|release=331|dirty=0",
+                                      "LIFE1-CASE|L05-W-REPEAT|PASS|steps=31784|queries=2|querySteps=17168|extent=177|peak=697|release=520|dirty=0",
+                                      "LIFE1-CASE|L06-C-REPEAT|PASS|steps=31789|queries=2|querySteps=17168|extent=177|peak=694|release=517|dirty=0",
+                                      "LIFE1-CASE|L07-W-TIE|PASS|steps=39459|queries=2|querySteps=18673|extent=178|peak=934|release=756|dirty=0",
+                                      "LIFE1-CASE|L08-C-TIE|PASS|steps=39464|queries=2|querySteps=18673|extent=178|peak=930|release=752|dirty=0",
+                                      "LIFE1-CASE|L09-W-INVALID|PASS|steps=21995|queries=4|querySteps=31720|extent=177|peak=667|release=490|dirty=0",
+                                      "LIFE1-CASE|L10-C-INVALID|PASS|steps=22000|queries=4|querySteps=31720|extent=177|peak=665|release=488|dirty=0",
+                                      "LIFE1-CASE|L11-W-DIRTY|PASS|steps=39459|queries=2|querySteps=16675|extent=178|peak=934|release=756|dirty=400",
+                                      "LIFE1-CASE|L12-C-DIRTY|PASS|steps=39464|queries=2|querySteps=16675|extent=178|peak=930|release=752|dirty=400",
+                                      "LIFE1-CASE|L13-W-N24|PASS|steps=84265|queries=4|querySteps=76246|extent=186|peak=2652|release=2466|dirty=0",
+                                      "LIFE1-CASE|L14-C-N24|PASS|steps=84270|queries=4|querySteps=76246|extent=186|peak=2628|release=2442|dirty=0",
+                                      "LIFE1-CASE|L15-W-N83|PASS|steps=214277|queries=4|querySteps=81031|extent=211|peak=8436|release=8225|dirty=0",
+                                      "LIFE1-CASE|L16-C-N83|PASS|steps=214282|queries=4|querySteps=81031|extent=211|peak=8353|release=8142|dirty=0",
+                                      "LIFE1-PASS|mode=full|cases=16"
+                                  ],
+                       "StandardOutput":  [
+                                              "LIFE1-CASE|L01-W-EMPTY|PASS|steps=13601|queries=1|querySteps=0|extent=175|peak=307|release=132|dirty=0",
+                                              "LIFE1-CASE|L02-C-EMPTY|PASS|steps=13608|queries=1|querySteps=0|extent=175|peak=307|release=132|dirty=0",
+                                              "LIFE1-CASE|L03-W-SINGLE|PASS|steps=24395|queries=1|querySteps=0|extent=176|peak=508|release=332|dirty=0",
+                                              "LIFE1-CASE|L04-C-SINGLE|PASS|steps=24400|queries=1|querySteps=0|extent=176|peak=507|release=331|dirty=0",
+                                              "LIFE1-CASE|L05-W-REPEAT|PASS|steps=31784|queries=2|querySteps=17168|extent=177|peak=697|release=520|dirty=0",
+                                              "LIFE1-CASE|L06-C-REPEAT|PASS|steps=31789|queries=2|querySteps=17168|extent=177|peak=694|release=517|dirty=0",
+                                              "LIFE1-CASE|L07-W-TIE|PASS|steps=39459|queries=2|querySteps=18673|extent=178|peak=934|release=756|dirty=0",
+                                              "LIFE1-CASE|L08-C-TIE|PASS|steps=39464|queries=2|querySteps=18673|extent=178|peak=930|release=752|dirty=0",
+                                              "LIFE1-CASE|L09-W-INVALID|PASS|steps=21995|queries=4|querySteps=31720|extent=177|peak=667|release=490|dirty=0",
+                                              "LIFE1-CASE|L10-C-INVALID|PASS|steps=22000|queries=4|querySteps=31720|extent=177|peak=665|release=488|dirty=0",
+                                              "LIFE1-CASE|L11-W-DIRTY|PASS|steps=39459|queries=2|querySteps=16675|extent=178|peak=934|release=756|dirty=400",
+                                              "LIFE1-CASE|L12-C-DIRTY|PASS|steps=39464|queries=2|querySteps=16675|extent=178|peak=930|release=752|dirty=400",
+                                              "LIFE1-CASE|L13-W-N24|PASS|steps=84265|queries=4|querySteps=76246|extent=186|peak=2652|release=2466|dirty=0",
+                                              "LIFE1-CASE|L14-C-N24|PASS|steps=84270|queries=4|querySteps=76246|extent=186|peak=2628|release=2442|dirty=0",
+                                              "LIFE1-CASE|L15-W-N83|PASS|steps=214277|queries=4|querySteps=81031|extent=211|peak=8436|release=8225|dirty=0",
+                                              "LIFE1-CASE|L16-C-N83|PASS|steps=214282|queries=4|querySteps=81031|extent=211|peak=8353|release=8142|dirty=0",
+                                              "LIFE1-PASS|mode=full|cases=16"
+                                          ],
+                       "StandardError":  [
+
+                                         ],
+                       "TimedOut":  false,
+                       "OutputLimitExceeded":  false,
+                       "TerminatedIds":  [
+
+                                         ],
+                       "DurationSeconds":  33.403,
+                       "DeadlineSeconds":  1800,
+                       "Ownership":  "kill-on-close-job"
+                   }
+    }
+]

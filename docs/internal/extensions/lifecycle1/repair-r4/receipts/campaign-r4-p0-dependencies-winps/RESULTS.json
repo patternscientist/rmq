@@ -1,0 +1,971 @@
+{
+    "oldSummary":  {
+                       "path":  "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\runs\\7c97f92144714f9c9d126762635d07b4\\SUMMARY.json",
+                       "bytes":  131413,
+                       "sha256":  "0E7DCC42E1EA66C0FF1C8A8AD7ED791FEA786189FA6E38A52BF8B5B55954CD12"
+                   },
+    "oldMissing":  [
+                       "libc++.dll",
+                       "libclang-cpp.dll",
+                       "libLLVM-19.dll",
+                       "zlib1.dll"
+                   ],
+    "controls":  [
+                     {
+                         "outcome":  "accept",
+                         "id":  "complete-inventory",
+                         "nodes":  11
+                     },
+                     {
+                         "outcome":  "reject",
+                         "surface":  "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll; C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll; C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll; C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+                         "id":  "bea5ce75-incomplete"
+                     },
+                     {
+                         "outcome":  "reject",
+                         "surface":  "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+                         "id":  "omit-lean.exe"
+                     },
+                     {
+                         "outcome":  "reject",
+                         "surface":  "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\leanc.exe",
+                         "id":  "omit-leanc.exe"
+                     },
+                     {
+                         "outcome":  "reject",
+                         "surface":  "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+                         "id":  "omit-clang.exe"
+                     },
+                     {
+                         "outcome":  "reject",
+                         "surface":  "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+                         "id":  "omit-ld.lld.exe"
+                     },
+                     {
+                         "outcome":  "reject",
+                         "surface":  "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared.dll",
+                         "id":  "omit-libleanshared.dll"
+                     },
+                     {
+                         "outcome":  "reject",
+                         "surface":  "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+                         "id":  "omit-libInit_shared.dll"
+                     },
+                     {
+                         "outcome":  "reject",
+                         "surface":  "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+                         "id":  "omit-libclang-cpp.dll"
+                     },
+                     {
+                         "outcome":  "reject",
+                         "surface":  "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                         "id":  "omit-libLLVM-19.dll"
+                     },
+                     {
+                         "outcome":  "reject",
+                         "surface":  "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                         "id":  "omit-libc++.dll"
+                     },
+                     {
+                         "outcome":  "reject",
+                         "surface":  "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+                         "id":  "omit-zlib1.dll"
+                     },
+                     {
+                         "outcome":  "reject",
+                         "surface":  "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared_1.dll",
+                         "id":  "omit-libleanshared_1.dll"
+                     },
+                     {
+                         "outcome":  "reject",
+                         "surface":  "DEPENDENCY: incomplete local inventory: C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+                         "id":  "same-name-wrong-path"
+                     },
+                     {
+                         "outcome":  "accept",
+                         "id":  "complete-unchanged-finalizer",
+                         "integrity":  {
+                                           "attempted":  true,
+                                           "success":  true,
+                                           "checkedPins":  2,
+                                           "treeChecked":  true,
+                                           "errors":  [
+
+                                                      ],
+                                           "restorationWrites":  0
+                                       }
+                     },
+                     {
+                         "outcome":  "reject",
+                         "id":  "tamper-zlib1.dll",
+                         "integrity":  {
+                                           "attempted":  true,
+                                           "success":  false,
+                                           "checkedPins":  2,
+                                           "treeChecked":  true,
+                                           "errors":  [
+                                                          "INTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\dependencies-e0030bea5e564392885d25861aecd129\\fixture\\zlib1.dll",
+                                                          "INTEGRITY: live tracked/index/untracked baseline changed"
+                                                      ],
+                                           "restorationWrites":  0
+                                       }
+                     },
+                     {
+                         "outcome":  "reject",
+                         "id":  "tamper-link.map",
+                         "integrity":  {
+                                           "attempted":  true,
+                                           "success":  false,
+                                           "checkedPins":  2,
+                                           "treeChecked":  true,
+                                           "errors":  [
+                                                          "INTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\dependencies-e0030bea5e564392885d25861aecd129\\fixture\\link.map",
+                                                          "INTEGRITY: live tracked/index/untracked baseline changed"
+                                                      ],
+                                           "restorationWrites":  0
+                                       }
+                     },
+                     {
+                         "outcome":  "reject",
+                         "id":  "tamper-manifest-hash",
+                         "integrity":  {
+                                           "attempted":  true,
+                                           "success":  false,
+                                           "checkedPins":  2,
+                                           "treeChecked":  true,
+                                           "errors":  [
+                                                          "INTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\dependencies-e0030bea5e564392885d25861aecd129\\fixture\\zlib1.dll"
+                                                      ],
+                                           "restorationWrites":  0
+                                       }
+                     },
+                     {
+                         "outcome":  "accept",
+                         "id":  "restored-finalizer",
+                         "integrity":  {
+                                           "attempted":  true,
+                                           "success":  true,
+                                           "checkedPins":  2,
+                                           "treeChecked":  true,
+                                           "errors":  [
+
+                                                      ],
+                                           "restorationWrites":  0
+                                       }
+                     }
+                 ],
+    "finalization":  {
+                         "schema":  "life1-r3-finalization-v1",
+                         "verdict":  "pass",
+                         "stageError":  null,
+                         "integrityErrors":  [
+
+                                             ],
+                         "cleanupErrors":  [
+
+                                           ],
+                         "pinChecks":  [
+                                           {
+                                               "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+                                               "entrySha256":  "9B5AF669D8DC9B5826A1F5427584915EECA659E9BF34C7EE72667B93C0BFDCB0",
+                                               "finalSha256":  "9B5AF669D8DC9B5826A1F5427584915EECA659E9BF34C7EE72667B93C0BFDCB0",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\leanc.exe",
+                                               "entrySha256":  "DE2FDFEA989B9A771DA37E44EFD0BD50C00A2E2835EF9A2408F44E2385EA7618",
+                                               "finalSha256":  "DE2FDFEA989B9A771DA37E44EFD0BD50C00A2E2835EF9A2408F44E2385EA7618",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+                                               "entrySha256":  "64B1E469B15149BD23039F1D121DE6E14F4AEC84BFF000952CA85968E56CE391",
+                                               "finalSha256":  "64B1E469B15149BD23039F1D121DE6E14F4AEC84BFF000952CA85968E56CE391",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+                                               "entrySha256":  "6582CC45822AF5CF9A9C6245E75B85C445759C761F9B793F47BA919AD36AA643",
+                                               "finalSha256":  "6582CC45822AF5CF9A9C6245E75B85C445759C761F9B793F47BA919AD36AA643",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared.dll",
+                                               "entrySha256":  "54E0F641AE412B687BBC64EA1C069A9954E754775ED0D3379C9847BC3B9FDA89",
+                                               "finalSha256":  "54E0F641AE412B687BBC64EA1C069A9954E754775ED0D3379C9847BC3B9FDA89",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+                                               "entrySha256":  "5300B06EA3A45146C22996B0591CC6475ACB5B6B77802EDBECD65BAAD6485386",
+                                               "finalSha256":  "5300B06EA3A45146C22996B0591CC6475ACB5B6B77802EDBECD65BAAD6485386",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+                                               "entrySha256":  "D4028A751017B44681373A4BEC8381B120A06083AC688DCDF45F45AEC46783C6",
+                                               "finalSha256":  "D4028A751017B44681373A4BEC8381B120A06083AC688DCDF45F45AEC46783C6",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                               "entrySha256":  "74A1A54619E989CDC1F52EA3F206DA83C3C55DB73594FD1D4D4F2FE6D49CC02D",
+                                               "finalSha256":  "74A1A54619E989CDC1F52EA3F206DA83C3C55DB73594FD1D4D4F2FE6D49CC02D",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                                               "entrySha256":  "1F3D0FF8504F19E6B6DC98426B58FA60B6A571D027F2C6AC4E169637C63A95DE",
+                                               "finalSha256":  "1F3D0FF8504F19E6B6DC98426B58FA60B6A571D027F2C6AC4E169637C63A95DE",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+                                               "entrySha256":  "260997C016819F60CEF902F3E7C0267804785D7B70C87CF541D0E40E6B693C75",
+                                               "finalSha256":  "260997C016819F60CEF902F3E7C0267804785D7B70C87CF541D0E40E6B693C75",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared_1.dll",
+                                               "entrySha256":  "1378336D32450B713FDFDA31BA2829E34831FAE74BA3E503A49FB2EE96B65F5A",
+                                               "finalSha256":  "1378336D32450B713FDFDA31BA2829E34831FAE74BA3E503A49FB2EE96B65F5A",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\docs\\internal\\extensions\\lifecycle-native-p0\\RESULTS.json",
+                                               "entrySha256":  "6440A963BE7A0E65222F86AFE3CFB89E4BEE1B6BDCD0226DC0D5CDA88D296FDD",
+                                               "finalSha256":  "6440A963BE7A0E65222F86AFE3CFB89E4BEE1B6BDCD0226DC0D5CDA88D296FDD",
+                                               "status":  "verified"
+                                           },
+                                           {
+                                               "path":  "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ\\.lake\\lifecycle-native-p0\\runs\\7c97f92144714f9c9d126762635d07b4\\SUMMARY.json",
+                                               "entrySha256":  "0E7DCC42E1EA66C0FF1C8A8AD7ED791FEA786189FA6E38A52BF8B5B55954CD12",
+                                               "finalSha256":  "0E7DCC42E1EA66C0FF1C8A8AD7ED791FEA786189FA6E38A52BF8B5B55954CD12",
+                                               "status":  "verified"
+                                           }
+                                       ],
+                         "fixtureCheck":  {
+                                              "attempted":  true,
+                                              "success":  true,
+                                              "checkedPins":  2,
+                                              "treeChecked":  true,
+                                              "errors":  [
+
+                                                         ],
+                                              "restorationWrites":  0
+                                          },
+                         "entryPinCount":  13,
+                         "verifiedPinCount":  13
+                     },
+    "closure":  {
+                    "roots":  [
+                                  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+                                  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\leanc.exe",
+                                  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+                                  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe"
+                              ],
+                    "nodes":  [
+                                  {
+                                      "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+                                      "imports":  [
+                                                      "ucrtbase.dll",
+                                                      "KERNEL32.dll",
+                                                      "libleanshared.dll"
+                                                  ],
+                                      "delayRva":  0,
+                                      "delaySize":  0
+                                  },
+                                  {
+                                      "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\leanc.exe",
+                                      "imports":  [
+                                                      "ucrtbase.dll",
+                                                      "KERNEL32.dll",
+                                                      "libInit_shared.dll",
+                                                      "libleanshared.dll"
+                                                  ],
+                                      "delayRva":  0,
+                                      "delaySize":  0
+                                  },
+                                  {
+                                      "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+                                      "imports":  [
+                                                      "libclang-cpp.dll",
+                                                      "libLLVM-19.dll",
+                                                      "KERNEL32.dll",
+                                                      "libc++.dll",
+                                                      "api-ms-win-crt-stdio-l1-1-0.dll",
+                                                      "api-ms-win-crt-runtime-l1-1-0.dll",
+                                                      "api-ms-win-crt-heap-l1-1-0.dll",
+                                                      "api-ms-win-crt-environment-l1-1-0.dll",
+                                                      "api-ms-win-crt-private-l1-1-0.dll",
+                                                      "api-ms-win-crt-string-l1-1-0.dll",
+                                                      "api-ms-win-crt-math-l1-1-0.dll"
+                                                  ],
+                                      "delayRva":  0,
+                                      "delaySize":  0
+                                  },
+                                  {
+                                      "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+                                      "imports":  [
+                                                      "libLLVM-19.dll",
+                                                      "KERNEL32.dll",
+                                                      "libc++.dll",
+                                                      "api-ms-win-crt-stdio-l1-1-0.dll",
+                                                      "api-ms-win-crt-runtime-l1-1-0.dll",
+                                                      "api-ms-win-crt-heap-l1-1-0.dll",
+                                                      "api-ms-win-crt-environment-l1-1-0.dll",
+                                                      "api-ms-win-crt-private-l1-1-0.dll",
+                                                      "api-ms-win-crt-string-l1-1-0.dll",
+                                                      "api-ms-win-crt-time-l1-1-0.dll",
+                                                      "api-ms-win-crt-math-l1-1-0.dll",
+                                                      "api-ms-win-crt-utility-l1-1-0.dll",
+                                                      "zlib1.dll"
+                                                  ],
+                                      "delayRva":  0,
+                                      "delaySize":  0
+                                  },
+                                  {
+                                      "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared.dll",
+                                      "imports":  [
+                                                      "libleanshared_1.dll",
+                                                      "libInit_shared.dll",
+                                                      "ucrtbase.dll",
+                                                      "KERNEL32.dll"
+                                                  ],
+                                      "delayRva":  0,
+                                      "delaySize":  0
+                                  },
+                                  {
+                                      "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+                                      "imports":  [
+                                                      "ADVAPI32.dll",
+                                                      "WS2_32.dll",
+                                                      "ucrtbase.dll",
+                                                      "icu.dll",
+                                                      "bcrypt.dll",
+                                                      "KERNEL32.dll",
+                                                      "IPHLPAPI.DLL",
+                                                      "USERENV.dll",
+                                                      "USER32.dll",
+                                                      "SHELL32.dll",
+                                                      "ole32.dll",
+                                                      "dbghelp.dll"
+                                                  ],
+                                      "delayRva":  0,
+                                      "delaySize":  0
+                                  },
+                                  {
+                                      "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+                                      "imports":  [
+                                                      "VERSION.dll",
+                                                      "libLLVM-19.dll",
+                                                      "KERNEL32.dll",
+                                                      "libc++.dll",
+                                                      "api-ms-win-crt-stdio-l1-1-0.dll",
+                                                      "api-ms-win-crt-runtime-l1-1-0.dll",
+                                                      "api-ms-win-crt-string-l1-1-0.dll",
+                                                      "api-ms-win-crt-time-l1-1-0.dll",
+                                                      "api-ms-win-crt-heap-l1-1-0.dll",
+                                                      "api-ms-win-crt-math-l1-1-0.dll",
+                                                      "api-ms-win-crt-environment-l1-1-0.dll",
+                                                      "api-ms-win-crt-private-l1-1-0.dll",
+                                                      "api-ms-win-crt-utility-l1-1-0.dll",
+                                                      "api-ms-win-crt-convert-l1-1-0.dll"
+                                                  ],
+                                      "delayRva":  0,
+                                      "delaySize":  0
+                                  },
+                                  {
+                                      "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                      "imports":  [
+                                                      "SHELL32.dll",
+                                                      "ole32.dll",
+                                                      "ADVAPI32.dll",
+                                                      "WS2_32.dll",
+                                                      "ntdll.dll",
+                                                      "zlib1.dll",
+                                                      "KERNEL32.dll",
+                                                      "libc++.dll",
+                                                      "api-ms-win-crt-stdio-l1-1-0.dll",
+                                                      "api-ms-win-crt-runtime-l1-1-0.dll",
+                                                      "api-ms-win-crt-heap-l1-1-0.dll",
+                                                      "api-ms-win-crt-string-l1-1-0.dll",
+                                                      "api-ms-win-crt-private-l1-1-0.dll",
+                                                      "api-ms-win-crt-time-l1-1-0.dll",
+                                                      "api-ms-win-crt-math-l1-1-0.dll",
+                                                      "api-ms-win-crt-convert-l1-1-0.dll",
+                                                      "api-ms-win-crt-environment-l1-1-0.dll",
+                                                      "api-ms-win-crt-utility-l1-1-0.dll",
+                                                      "api-ms-win-crt-filesystem-l1-1-0.dll"
+                                                  ],
+                                      "delayRva":  0,
+                                      "delaySize":  0
+                                  },
+                                  {
+                                      "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                                      "imports":  [
+                                                      "KERNEL32.dll",
+                                                      "api-ms-win-crt-locale-l1-1-0.dll",
+                                                      "api-ms-win-crt-stdio-l1-1-0.dll",
+                                                      "api-ms-win-crt-runtime-l1-1-0.dll",
+                                                      "api-ms-win-crt-heap-l1-1-0.dll",
+                                                      "api-ms-win-crt-string-l1-1-0.dll",
+                                                      "api-ms-win-crt-multibyte-l1-1-0.dll",
+                                                      "api-ms-win-crt-time-l1-1-0.dll",
+                                                      "api-ms-win-crt-convert-l1-1-0.dll",
+                                                      "api-ms-win-crt-utility-l1-1-0.dll",
+                                                      "api-ms-win-crt-environment-l1-1-0.dll",
+                                                      "api-ms-win-crt-math-l1-1-0.dll",
+                                                      "api-ms-win-crt-private-l1-1-0.dll",
+                                                      "api-ms-win-crt-filesystem-l1-1-0.dll"
+                                                  ],
+                                      "delayRva":  0,
+                                      "delaySize":  0
+                                  },
+                                  {
+                                      "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+                                      "imports":  [
+                                                      "api-ms-win-crt-convert-l1-1-0.dll",
+                                                      "api-ms-win-crt-heap-l1-1-0.dll",
+                                                      "api-ms-win-crt-private-l1-1-0.dll",
+                                                      "api-ms-win-crt-runtime-l1-1-0.dll",
+                                                      "api-ms-win-crt-stdio-l1-1-0.dll",
+                                                      "api-ms-win-crt-string-l1-1-0.dll",
+                                                      "KERNEL32.dll",
+                                                      "api-ms-win-crt-utility-l1-1-0.dll",
+                                                      "api-ms-win-crt-environment-l1-1-0.dll",
+                                                      "api-ms-win-crt-time-l1-1-0.dll"
+                                                  ],
+                                      "delayRva":  0,
+                                      "delaySize":  0
+                                  },
+                                  {
+                                      "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared_1.dll",
+                                      "imports":  [
+                                                      "libInit_shared.dll",
+                                                      "ucrtbase.dll",
+                                                      "KERNEL32.dll"
+                                                  ],
+                                      "delayRva":  0,
+                                      "delaySize":  0
+                                  }
+                              ],
+                    "external":  [
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+                                         "name":  "ucrtbase.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+                                         "name":  "KERNEL32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\leanc.exe",
+                                         "name":  "ucrtbase.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\leanc.exe",
+                                         "name":  "KERNEL32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+                                         "name":  "KERNEL32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+                                         "name":  "api-ms-win-crt-stdio-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+                                         "name":  "api-ms-win-crt-runtime-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+                                         "name":  "api-ms-win-crt-heap-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+                                         "name":  "api-ms-win-crt-environment-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+                                         "name":  "api-ms-win-crt-private-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+                                         "name":  "api-ms-win-crt-string-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+                                         "name":  "api-ms-win-crt-math-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+                                         "name":  "KERNEL32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+                                         "name":  "api-ms-win-crt-stdio-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+                                         "name":  "api-ms-win-crt-runtime-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+                                         "name":  "api-ms-win-crt-heap-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+                                         "name":  "api-ms-win-crt-environment-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+                                         "name":  "api-ms-win-crt-private-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+                                         "name":  "api-ms-win-crt-string-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+                                         "name":  "api-ms-win-crt-time-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+                                         "name":  "api-ms-win-crt-math-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+                                         "name":  "api-ms-win-crt-utility-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared.dll",
+                                         "name":  "ucrtbase.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared.dll",
+                                         "name":  "KERNEL32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+                                         "name":  "ADVAPI32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+                                         "name":  "WS2_32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+                                         "name":  "ucrtbase.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+                                         "name":  "icu.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+                                         "name":  "bcrypt.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+                                         "name":  "KERNEL32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+                                         "name":  "IPHLPAPI.DLL",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+                                         "name":  "USERENV.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+                                         "name":  "USER32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+                                         "name":  "SHELL32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+                                         "name":  "ole32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+                                         "name":  "dbghelp.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+                                         "name":  "VERSION.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+                                         "name":  "KERNEL32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+                                         "name":  "api-ms-win-crt-stdio-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+                                         "name":  "api-ms-win-crt-runtime-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+                                         "name":  "api-ms-win-crt-string-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+                                         "name":  "api-ms-win-crt-time-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+                                         "name":  "api-ms-win-crt-heap-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+                                         "name":  "api-ms-win-crt-math-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+                                         "name":  "api-ms-win-crt-environment-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+                                         "name":  "api-ms-win-crt-private-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+                                         "name":  "api-ms-win-crt-utility-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+                                         "name":  "api-ms-win-crt-convert-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "SHELL32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "ole32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "ADVAPI32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "WS2_32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "ntdll.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "KERNEL32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "api-ms-win-crt-stdio-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "api-ms-win-crt-runtime-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "api-ms-win-crt-heap-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "api-ms-win-crt-string-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "api-ms-win-crt-private-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "api-ms-win-crt-time-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "api-ms-win-crt-math-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "api-ms-win-crt-convert-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "api-ms-win-crt-environment-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "api-ms-win-crt-utility-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                                         "name":  "api-ms-win-crt-filesystem-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                                         "name":  "KERNEL32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                                         "name":  "api-ms-win-crt-locale-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                                         "name":  "api-ms-win-crt-stdio-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                                         "name":  "api-ms-win-crt-runtime-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                                         "name":  "api-ms-win-crt-heap-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                                         "name":  "api-ms-win-crt-string-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                                         "name":  "api-ms-win-crt-multibyte-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                                         "name":  "api-ms-win-crt-time-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                                         "name":  "api-ms-win-crt-convert-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                                         "name":  "api-ms-win-crt-utility-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                                         "name":  "api-ms-win-crt-environment-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                                         "name":  "api-ms-win-crt-math-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                                         "name":  "api-ms-win-crt-private-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                                         "name":  "api-ms-win-crt-filesystem-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+                                         "name":  "api-ms-win-crt-convert-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+                                         "name":  "api-ms-win-crt-heap-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+                                         "name":  "api-ms-win-crt-private-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+                                         "name":  "api-ms-win-crt-runtime-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+                                         "name":  "api-ms-win-crt-stdio-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+                                         "name":  "api-ms-win-crt-string-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+                                         "name":  "KERNEL32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+                                         "name":  "api-ms-win-crt-utility-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+                                         "name":  "api-ms-win-crt-environment-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+                                         "name":  "api-ms-win-crt-time-l1-1-0.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared_1.dll",
+                                         "name":  "ucrtbase.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     },
+                                     {
+                                         "from":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared_1.dll",
+                                         "name":  "KERNEL32.dll",
+                                         "boundary":  "OS system library/API-set resolution, not pinned"
+                                     }
+                                 ],
+                    "boundary":  "Normal imports resolved beside each binary then Lean bin; nonzero delay imports reject. OS/API sets, runtime LoadLibrary/plugin/configuration behavior, Windows search/forwarder semantics, PowerShell/.NET and compiler correctness are external assumptions, not universally verified."
+                },
+    "pins":  [
+                 {
+                     "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe",
+                     "bytes":  82432,
+                     "sha256":  "9B5AF669D8DC9B5826A1F5427584915EECA659E9BF34C7EE72667B93C0BFDCB0"
+                 },
+                 {
+                     "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\leanc.exe",
+                     "bytes":  107520,
+                     "sha256":  "DE2FDFEA989B9A771DA37E44EFD0BD50C00A2E2835EF9A2408F44E2385EA7618"
+                 },
+                 {
+                     "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe",
+                     "bytes":  224256,
+                     "sha256":  "64B1E469B15149BD23039F1D121DE6E14F4AEC84BFF000952CA85968E56CE391"
+                 },
+                 {
+                     "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\ld.lld.exe",
+                     "bytes":  5927424,
+                     "sha256":  "6582CC45822AF5CF9A9C6245E75B85C445759C761F9B793F47BA919AD36AA643"
+                 },
+                 {
+                     "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared.dll",
+                     "bytes":  75793408,
+                     "sha256":  "54E0F641AE412B687BBC64EA1C069A9954E754775ED0D3379C9847BC3B9FDA89"
+                 },
+                 {
+                     "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libInit_shared.dll",
+                     "bytes":  18534912,
+                     "sha256":  "5300B06EA3A45146C22996B0591CC6475ACB5B6B77802EDBECD65BAAD6485386"
+                 },
+                 {
+                     "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libclang-cpp.dll",
+                     "bytes":  82430464,
+                     "sha256":  "D4028A751017B44681373A4BEC8381B120A06083AC688DCDF45F45AEC46783C6"
+                 },
+                 {
+                     "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libLLVM-19.dll",
+                     "bytes":  80710656,
+                     "sha256":  "74A1A54619E989CDC1F52EA3F206DA83C3C55DB73594FD1D4D4F2FE6D49CC02D"
+                 },
+                 {
+                     "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libc++.dll",
+                     "bytes":  1636864,
+                     "sha256":  "1F3D0FF8504F19E6B6DC98426B58FA60B6A571D027F2C6AC4E169637C63A95DE"
+                 },
+                 {
+                     "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\zlib1.dll",
+                     "bytes":  110592,
+                     "sha256":  "260997C016819F60CEF902F3E7C0267804785D7B70C87CF541D0E40E6B693C75"
+                 },
+                 {
+                     "path":  "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\libleanshared_1.dll",
+                     "bytes":  45882368,
+                     "sha256":  "1378336D32450B713FDFDA31BA2829E34831FAE74BA3E503A49FB2EE96B65F5A"
+                 }
+             ],
+    "fixtureRestored":  true,
+    "installedToolsUnchanged":  true
+}

@@ -1,0 +1,85 @@
+{
+    "streamValidation":  {
+                             "profile":  "dependencies",
+                             "expectedStderr":  "",
+                             "validated":  true,
+                             "expectedStdout":  "DEPENDENCY CONTROLS PASS evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\dependencies-e0030bea5e564392885d25861aecd129\r\n",
+                             "expectedExit":  0
+                         },
+    "deadline":  1200,
+    "actual":  {
+                   "pid":  18164,
+                   "exitCode":  0,
+                   "durationSeconds":  12.24226
+               },
+    "kind":  "dependencies",
+    "command":  "$mutex=[Threading.Mutex]::new($false,\u0027Local\\RMQLifecycleImplementationHeavy20260920\u0027)\n$held=$false\ntry {\n  try{$held=$mutex.WaitOne(600000)}catch [Threading.AbandonedMutexException]{$held=$true}\n  if(-not $held){throw \u0027host mutex unavailable\u0027}\n  \u0026 \u0027C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1/dependency_controls.ps1\u0027; exit $LASTEXITCODE\n} finally {if($held){$mutex.ReleaseMutex()};$mutex.Dispose()}",
+    "raw":  [
+                {
+                    "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-winps\\stdout.log",
+                    "sha256":  "3CA7E61327E8F8D7799AA5423CDEA926C9237E1B1371F26A38C1BD94A82DA94E",
+                    "bytes":  170
+                },
+                {
+                    "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-winps\\stderr.log",
+                    "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+                    "bytes":  0
+                },
+                {
+                    "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-winps\\exit.json",
+                    "sha256":  "F9C2E458737127013CC3690FFB1A48228E8E551B9741C18D51CEA6D5E71B105D",
+                    "bytes":  53
+                },
+                {
+                    "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-winps\\child.ps1",
+                    "sha256":  "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00",
+                    "bytes":  3023
+                },
+                {
+                    "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-winps\\inner.ps1",
+                    "sha256":  "D5D6E28AF7D7749AA95398BB98B17AE48BF0B465DDFE424F2C8EA7C9AFE20B84",
+                    "bytes":  614
+                },
+                {
+                    "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-winps\\spec.json",
+                    "sha256":  "9F3F2ABFBCA260F449D335C6D7F7346090D0D22F8987BF1C4D2D91A126FFC91F",
+                    "bytes":  1518
+                },
+                {
+                    "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-winps\\launcher\\retained.stdout",
+                    "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+                    "bytes":  0
+                },
+                {
+                    "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-winps\\launcher\\retained.stderr",
+                    "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+                    "bytes":  0
+                }
+            ],
+    "outer":  {
+                  "Stage":  "dependencies",
+                  "ExitCode":  0,
+                  "Output":  [
+
+                             ],
+                  "StandardOutput":  [
+
+                                     ],
+                  "StandardError":  [
+
+                                    ],
+                  "TimedOut":  false,
+                  "OutputLimitExceeded":  false,
+                  "TerminatedIds":  [
+
+                                    ],
+                  "DurationSeconds":  12.694,
+                  "DeadlineSeconds":  1200,
+                  "Ownership":  "kill-on-close-job",
+                  "RawStandardOutput":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-winps\\launcher\\retained.stdout",
+                  "RawStandardError":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-winps\\launcher\\retained.stderr",
+                  "RetentionErrors":  [
+
+                                      ]
+              }
+}

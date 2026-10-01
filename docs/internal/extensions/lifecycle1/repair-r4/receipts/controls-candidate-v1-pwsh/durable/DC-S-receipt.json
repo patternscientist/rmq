@@ -1,0 +1,29 @@
+{
+  "id": "D07_ENV_VALID",
+  "sourcePath": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\DC-S\\root\\scripts\\lifecycle_dependency_replay.ps1",
+  "sourceSha256": null,
+  "passed": false,
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "fail",
+    "stageError": "Could not find file 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\DC-S\\root\\scripts\\lifecycle_dependency_replay.ps1'.",
+    "integrityErrors": [],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\DC-S\\root\\scripts\\lifecycle_dependency_replay.ps1",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      },
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\DC-S\\root\\scripts\\lifecycle_dependency_cases.json",
+        "entrySha256": null,
+        "finalSha256": null,
+        "status": "not-captured"
+      }
+    ],
+    "entryPinCount": 0,
+    "verifiedPinCount": 0
+  }
+}

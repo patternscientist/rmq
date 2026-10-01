@@ -1,0 +1,78 @@
+{
+  "schema": "life1-r4-receipt-index-v1",
+  "receipt": "campaign-r4-p0-harness-stream-pwsh",
+  "files": [
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\campaign-r4-p0-harness-stream-pwsh\\RESULT.json",
+      "sourceBytes": 2150,
+      "sourceSha256": "b62c9caac0d67961676d1ef78ae570c53bc1dc309c67e49921aee8bd38cda931",
+      "committed": "heavy-RESULT.json",
+      "committedBytes": 2100,
+      "committedSha256": "3a098adf5d6e290b4709c58ea2962ed4319b8270aeb3daf8de1c5df7d49b26da",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\campaign-r4-p0-harness-stream-pwsh\\stdout.returned-lines.txt",
+      "sourceBytes": 193,
+      "sourceSha256": "8c29e2138edf9d08bae11c2e0871a9c2ad43c37eb98ae0faa2f16cd18113e39c",
+      "committed": "heavy-stdout.returned-lines.txt",
+      "committedBytes": 193,
+      "committedSha256": "8c29e2138edf9d08bae11c2e0871a9c2ad43c37eb98ae0faa2f16cd18113e39c",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\campaign-r4-p0-harness-stream-pwsh\\stderr.returned-lines.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "heavy-stderr.returned-lines.txt",
+      "committedBytes": 0,
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\checks\\r4-p0-harness-stream-pwsh\\result.json",
+      "sourceBytes": 11297,
+      "sourceSha256": "768519fe736da5113abbabd2b4c1cf6a34acc22632f4f8ecc871f1b24e236550",
+      "committed": "result.json",
+      "committedBytes": 11068,
+      "committedSha256": "310df1b787941017cff8e7e95a6a8c613bbdfdc834156cc1465d927855f52797",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\checks\\r4-p0-harness-stream-pwsh\\stdout.txt",
+      "sourceBytes": 572,
+      "sourceSha256": "e04b50d164aef54e89d2847896ec2ab56dd81b1e9b37caacfab654d8a1f37c5c",
+      "committed": "stdout.txt",
+      "committedBytes": 572,
+      "committedSha256": "e04b50d164aef54e89d2847896ec2ab56dd81b1e9b37caacfab654d8a1f37c5c",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\checks\\r4-p0-harness-stream-pwsh\\stderr.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "stderr.txt",
+      "committedBytes": 0,
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\campaign-specs\\r4-p0-harness-stream-pwsh.json",
+      "sourceBytes": 604,
+      "sourceSha256": "a42794c288f013bfee2cce399ff9af254c8db78b372a43ae6ff8129b359974f8",
+      "committed": "campaign-spec.json",
+      "committedBytes": 590,
+      "committedSha256": "a66b5130a02b5416d3668b94241d1f9d89f0ce15e8688c3811c82c80f4ecc634",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\r4-campaign-harness-stream-pwsh\\RESULTS.json",
+      "sourceBytes": 120036,
+      "sourceSha256": "173a03e5f45339f3b7f92a5aacae08c9df537814f8ba086d2b8cdb5d1ac96cd1",
+      "committed": "RESULTS.json",
+      "committedBytes": 118202,
+      "committedSha256": "672c8248965ee64f49d53993249b3ae2cd1b386e5b3a671435c64c20ca3de4f5",
+      "normalized": true
+    }
+  ]
+}

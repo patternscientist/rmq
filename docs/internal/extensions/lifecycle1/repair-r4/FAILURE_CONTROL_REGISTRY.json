@@ -1,0 +1,1866 @@
+{
+  "schema": "life1-r4-failure-controls-v2",
+  "version": 2,
+  "baseRef": "d27ffa341f4ed8ceccc46817455eb26c73b319a1",
+  "harnessKeys": {
+    "RC": "docs/internal/extensions/lifecycle1/repair-r1/run_controls.ps1",
+    "FC": "docs/internal/extensions/lifecycle1/repair-r1/finalizer_control.ps1",
+    "K1": "docs/internal/extensions/lifecycle1/repair-r1/run_check.ps1",
+    "K2": "docs/internal/extensions/lifecycle1/repair-r2/run_check.ps1",
+    "DC": "docs/internal/extensions/lifecycle1/repair-r1/dependency_child.ps1",
+    "LV": "scripts/lifecycle_validator.ps1",
+    "IC": "docs/internal/extensions/lifecycle-native-p0/repair-r1/integrity_controls.ps1",
+    "DP": "docs/internal/extensions/lifecycle-native-p0/repair-r1/dependency_controls.ps1",
+    "HS": "docs/internal/extensions/lifecycle-native-p0/repair-r2/harness_stream_controls.ps1"
+  },
+  "shapes": {
+    "P": "intact; the harness succeeds with no integrity difference",
+    "C": "a pinned file changes while the stage succeeds; rejected with the integrity difference",
+    "Q": "the same change plus an ordinary stage failure; rejected with both recorded",
+    "S": "a pinned file is missing at snapshot time; rejected with a durable result written",
+    "M": "an exception is raised inside the integrity step (pinned file deleted) while the stage fails; the original stage error is still recorded",
+    "X": "the owned-process call itself throws after the evidence directory exists",
+    "R": "an owned carrier is left dirty while the stage fails; the carrier check still runs",
+    "F": "the child stage fails (exit 7) with every pin intact; the durable verdict is fail",
+    "T": "the child stage outlives a real short owned deadline; the durable verdict is fail and the helper records the timeout",
+    "W": "the durable result path is a directory, so the durable write fails; the run exits nonzero with no success marker",
+    "U": "an exception is raised inside cleanup/restoration (not the integrity step) while the stage fails; stage, cleanup and integrity results are all recorded",
+    "E": "the pinned validator executable is missing; the check runs inside the evidence region and the durable result records it",
+    "L": "a labelled entry pin changes; entry values appear only under entry* keys and the plain key holds the post-run pin",
+    "G": "a git double fails or hangs during finalization; the owned git call records exit, stderr or timeout as an integrity error"
+  },
+  "textSemantics": "Missing-file witnesses use the substring find, common to the .NET and PowerShell 5.1/7 not-found messages. Each stage/integrity entry is a list of groups; every group must be matched by one string value of the durable result (all substrings of the group inside that single value). Values under a pinChecks property are excluded. stageValue is an alternative stage witness: a property with that name and numeric value anywhere in the durable result. R4 fields: expect.verdict is the exact finalization.verdict; expect.exitCode the exact process exit; expect.values exact typed values (repair-r4/predicates.ps1 Test-R4Values); expect.cleanup groups over the durable values and, structurally, over finalization.cleanupErrors; expect.labels entry-label predicates (Test-R4Labels); expect.durableAbsent/stderr/absentFiles/stdoutAbsent the durable-write-failure surface; expect.capturedPins the independent count of pins captured before the injected setup failure (Test-R4PinCoverage); expect.pins=all-verified requires every captured pin verified. Control fields: faultTarget and removePath override the recipe target/remove path; gitDouble prepends the R4 git double to PATH. baseExpectation timeout means the base harness does not finish before the control deadline.",
+  "controls": [
+    {
+      "id": "RC-P",
+      "harness": "RC",
+      "shape": "P",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "intact",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "zero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": null
+      },
+      "baseExpectation": "accept",
+      "rationale": "Intact harness with a passing injected stage; expected accept control.",
+      "r3BaseExpectation": "accept",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "RC-C",
+      "harness": "RC",
+      "shape": "C",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "change",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": [
+          [
+            "INTEGRITY",
+            "scripts/lifecycle_validator.ps1"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file changes during a passing stage.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "RC-Q",
+      "harness": "RC",
+      "shape": "Q",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "change-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "L1R1-CONTROL: failed/incomplete D07_ENV_VALID"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": [
+          [
+            "INTEGRITY",
+            "scripts/lifecycle_validator.ps1"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "The same change plus an ordinary stage failure.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "RC-S",
+      "harness": "RC",
+      "shape": "S",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "intact",
+      "removeAtSetup": true,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "rmq_lifecycle_validate.exe",
+            "find"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": null,
+        "capturedPins": 5
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is missing at snapshot time (setup failure).",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "RC-M",
+      "harness": "RC",
+      "shape": "M",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "delete-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "L1R1-CONTROL: failed/incomplete D07_ENV_VALID"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": [
+          [
+            "INTEGRITY",
+            "scripts/lifecycle_validator.ps1"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is deleted and the stage fails, so the integrity step itself raises an exception.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "FC-P",
+      "harness": "FC",
+      "shape": "P",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "intact",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "zero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": null
+      },
+      "baseExpectation": "accept",
+      "rationale": "Intact harness with a passing injected stage; expected accept control.",
+      "r3BaseExpectation": "accept",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "FC-C",
+      "harness": "FC",
+      "shape": "C",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "change",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": [
+          [
+            "production script"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file changes during a passing pair. The base success-path check already records this shape; it is an expected-accept base control.",
+      "r3BaseExpectation": "accept",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "FC-Q",
+      "harness": "FC",
+      "shape": "Q",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "change-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "unexpected child exit"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": [
+          [
+            "production script"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "The same change plus an ordinary stage failure.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "FC-S",
+      "harness": "FC",
+      "shape": "S",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "intact",
+      "removeAtSetup": true,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "owned_process_tree.ps1",
+            "find"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": null,
+        "capturedPins": 2
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is missing at snapshot time (setup failure).",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "FC-M",
+      "harness": "FC",
+      "shape": "M",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "delete-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "unexpected child exit"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": [
+          [
+            "production script"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is deleted and the stage fails, so the integrity step itself raises an exception.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "K1-P",
+      "harness": "K1",
+      "shape": "P",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "intact",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "zero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": null
+      },
+      "baseExpectation": "accept",
+      "rationale": "Intact harness with a passing injected stage; expected accept control.",
+      "r3BaseExpectation": "accept",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "K1-C",
+      "harness": "K1",
+      "shape": "C",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "change",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": [
+          [
+            "INTEGRITY",
+            "lakefile.toml"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file changes during a passing stage.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "K1-Q",
+      "harness": "K1",
+      "shape": "Q",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "change-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "child exit 7"
+          ]
+        ],
+        "stageValue": {
+          "name": "ExitCode",
+          "value": 7
+        },
+        "integrity": [
+          [
+            "INTEGRITY",
+            "lakefile.toml"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "The same change plus an ordinary stage failure.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "K1-S",
+      "harness": "K1",
+      "shape": "S",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "intact",
+      "removeAtSetup": true,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "owned_process_tree.ps1",
+            "not recognized"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": null,
+        "capturedPins": 9
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is missing at snapshot time (setup failure).",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "K1-M",
+      "harness": "K1",
+      "shape": "M",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "delete-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "child exit 7"
+          ]
+        ],
+        "stageValue": {
+          "name": "ExitCode",
+          "value": 7
+        },
+        "integrity": [
+          [
+            "INTEGRITY",
+            "lakefile.toml"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is deleted and the stage fails, so the integrity step itself raises an exception.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "K1-X",
+      "harness": "K1",
+      "shape": "X",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "intact",
+      "removeAtSetup": false,
+      "variant": "deadline-zero",
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "deadline must be positive"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": null
+      },
+      "baseExpectation": "accept",
+      "rationale": "The owned-process helper itself throws (non-positive deadline) after the evidence directory exists.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "K2-P",
+      "harness": "K2",
+      "shape": "P",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "intact",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "zero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": null
+      },
+      "baseExpectation": "accept",
+      "rationale": "Intact harness with a passing injected stage; expected accept control.",
+      "r3BaseExpectation": "accept",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "K2-C",
+      "harness": "K2",
+      "shape": "C",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "change",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": [
+          [
+            "INTEGRITY",
+            "lakefile.toml"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file changes during a passing stage.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "K2-Q",
+      "harness": "K2",
+      "shape": "Q",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "change-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "child exit 7"
+          ]
+        ],
+        "stageValue": {
+          "name": "ExitCode",
+          "value": 7
+        },
+        "integrity": [
+          [
+            "INTEGRITY",
+            "lakefile.toml"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "The same change plus an ordinary stage failure.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "K2-S",
+      "harness": "K2",
+      "shape": "S",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "intact",
+      "removeAtSetup": true,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "owned_process_tree.ps1",
+            "not recognized"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": null,
+        "capturedPins": 0
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is missing at snapshot time (setup failure).",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "K2-M",
+      "harness": "K2",
+      "shape": "M",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "delete-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "child exit 7"
+          ]
+        ],
+        "stageValue": {
+          "name": "ExitCode",
+          "value": 7
+        },
+        "integrity": [
+          [
+            "INTEGRITY",
+            "lakefile.toml"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is deleted and the stage fails, so the integrity step itself raises an exception.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "DC-P",
+      "harness": "DC",
+      "shape": "P",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "intact",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "zero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": null
+      },
+      "baseExpectation": "accept",
+      "rationale": "Intact harness with a passing injected stage; expected accept control.",
+      "r3BaseExpectation": "accept",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "DC-C",
+      "harness": "DC",
+      "shape": "C",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "change",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": [
+          [
+            "production source"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file changes during a passing stage.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "DC-Q",
+      "harness": "DC",
+      "shape": "Q",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "change-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "same-root positive boundary failed"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": [
+          [
+            "production source"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "The same change plus an ordinary stage failure.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "DC-S",
+      "harness": "DC",
+      "shape": "S",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "intact",
+      "removeAtSetup": true,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "lifecycle_dependency_replay.ps1",
+            "find"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": null,
+        "capturedPins": 0
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is missing at snapshot time (setup failure).",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "DC-M",
+      "harness": "DC",
+      "shape": "M",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "delete-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "same-root positive boundary failed"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": [
+          [
+            "production source"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is deleted and the stage fails, so the integrity step itself raises an exception.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "LV-P",
+      "harness": "LV",
+      "shape": "P",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "intact",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "zero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": null
+      },
+      "baseExpectation": "accept",
+      "rationale": "Intact harness with a passing injected stage; expected accept control.",
+      "r3BaseExpectation": "accept",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "LV-C",
+      "harness": "LV",
+      "shape": "C",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "change",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": [
+          [
+            "identity",
+            "lakefile.toml"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file changes during a passing stage.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "LV-Q",
+      "harness": "LV",
+      "shape": "Q",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "change-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "single exit 1, expected 0"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": [
+          [
+            "identity",
+            "lakefile.toml"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "The same change plus an ordinary stage failure.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "LV-S",
+      "harness": "LV",
+      "shape": "S",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "intact",
+      "removeAtSetup": true,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "Service.lean",
+            "find"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": null,
+        "capturedPins": 11
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is missing at snapshot time (setup failure).",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "LV-M",
+      "harness": "LV",
+      "shape": "M",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "delete-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "single exit 1, expected 0"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": [
+          [
+            "identity",
+            "lakefile.toml"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is deleted and the stage fails, so the integrity step itself raises an exception.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "IC-P",
+      "harness": "IC",
+      "shape": "P",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 600,
+      "fault": "intact",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "zero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": null
+      },
+      "baseExpectation": "accept",
+      "rationale": "Intact harness with a passing injected stage; expected accept control.",
+      "r3BaseExpectation": "accept",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "IC-C",
+      "harness": "IC",
+      "shape": "C",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 600,
+      "fault": "change",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": [
+          [
+            "INTEGRITY",
+            "lean-toolchain"
+          ],
+          [
+            "real candidate changed"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file changes during a passing stage.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "IC-Q",
+      "harness": "IC",
+      "shape": "Q",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 600,
+      "fault": "change-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "fixture outer deadline/output failure"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": [
+          [
+            "INTEGRITY",
+            "lean-toolchain"
+          ],
+          [
+            "real candidate changed"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "The same change plus an ordinary stage failure.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "IC-S",
+      "harness": "IC",
+      "shape": "S",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 600,
+      "fault": "intact",
+      "removeAtSetup": true,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "lifecycle_storage_probe.c",
+            "missing file"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": null,
+        "capturedPins": 4
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is missing at snapshot time (setup failure).",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "IC-M",
+      "harness": "IC",
+      "shape": "M",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 600,
+      "fault": "delete-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "fixture outer deadline/output failure"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": [
+          [
+            "INTEGRITY",
+            "lean-toolchain"
+          ],
+          [
+            "real candidate changed"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is deleted and the stage fails, so the integrity step itself raises an exception.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "DP-P",
+      "harness": "DP",
+      "shape": "P",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 300,
+      "fault": "intact",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "zero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": null
+      },
+      "baseExpectation": "accept",
+      "rationale": "Intact harness with a passing injected stage; expected accept control.",
+      "r3BaseExpectation": "accept",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "DP-C",
+      "harness": "DP",
+      "shape": "C",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 300,
+      "fault": "change",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": [
+          [
+            "INTEGRITY",
+            "RESULTS.json"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file changes during a passing stage.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "DP-Q",
+      "harness": "DP",
+      "shape": "Q",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 300,
+      "fault": "change-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "unchanged fixture rejected"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": [
+          [
+            "INTEGRITY",
+            "RESULTS.json"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "The same change plus an ordinary stage failure.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "DP-S",
+      "harness": "DP",
+      "shape": "S",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 300,
+      "fault": "intact",
+      "removeAtSetup": true,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "RESULTS.json",
+            "missing file"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": null,
+        "capturedPins": 0
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is missing at snapshot time (setup failure).",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "DP-M",
+      "harness": "DP",
+      "shape": "M",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 300,
+      "fault": "delete-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "unchanged fixture rejected"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": [
+          [
+            "INTEGRITY",
+            "RESULTS.json"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is deleted and the stage fails, so the integrity step itself raises an exception.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "HS-P",
+      "harness": "HS",
+      "shape": "P",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 300,
+      "fault": "intact",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "zero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": null
+      },
+      "baseExpectation": "accept",
+      "rationale": "Intact harness with a passing injected stage; expected accept control.",
+      "r3BaseExpectation": "accept",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "HS-C",
+      "harness": "HS",
+      "shape": "C",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 300,
+      "fault": "change",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": [
+          [
+            "INTEGRITY",
+            "lean-toolchain"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file changes during a passing stage.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "HS-Q",
+      "harness": "HS",
+      "shape": "Q",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 300,
+      "fault": "change-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "incomplete bounded capture"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": [
+          [
+            "INTEGRITY",
+            "lean-toolchain"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "The same change plus an ordinary stage failure.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "HS-S",
+      "harness": "HS",
+      "shape": "S",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 300,
+      "fault": "intact",
+      "removeAtSetup": true,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "lifecycle_storage_probe.c",
+            "missing file"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": null,
+        "capturedPins": 6
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is missing at snapshot time (setup failure).",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "HS-M",
+      "harness": "HS",
+      "shape": "M",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 300,
+      "fault": "delete-fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "incomplete bounded capture"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": [
+          [
+            "INTEGRITY",
+            "lean-toolchain"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A pinned file is deleted and the stage fails, so the integrity step itself raises an exception.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "HS-R",
+      "harness": "HS",
+      "shape": "R",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 900,
+      "fault": "carrier-fail",
+      "removeAtSetup": false,
+      "variant": "harness-carrier",
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "incomplete bounded capture"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": [
+          [
+            "restoration differs"
+          ]
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "A harness-kind case whose owned source carrier is left dirty while the stage fails; the carrier check must still run.",
+      "r3BaseExpectation": "reject",
+      "introducedIn": "r3"
+    },
+    {
+      "id": "K1-F",
+      "harness": "K1",
+      "shape": "F",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "child exit 7"
+          ]
+        ],
+        "stageValue": {
+          "name": "ExitCode",
+          "value": 7
+        },
+        "integrity": null,
+        "exitCode": 7,
+        "verdict": "fail"
+      },
+      "baseExpectation": "reject",
+      "rationale": "Ordinary child failure (exit 7) with every pin intact: the durable verdict must be fail (audit P2-1); d27ffa34 records pass.",
+      "introducedIn": "r4"
+    },
+    {
+      "id": "K2-F",
+      "harness": "K2",
+      "shape": "F",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "fail",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "child exit 7"
+          ]
+        ],
+        "stageValue": {
+          "name": "ExitCode",
+          "value": 7
+        },
+        "integrity": null,
+        "exitCode": 7,
+        "verdict": "fail"
+      },
+      "baseExpectation": "reject",
+      "rationale": "Ordinary child failure (exit 7) with every pin intact: the durable verdict must be fail (audit P2-1); d27ffa34 records pass.",
+      "introducedIn": "r4"
+    },
+    {
+      "id": "K1-T",
+      "harness": "K1",
+      "shape": "T",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "sleep",
+      "removeAtSetup": false,
+      "variant": "deadline-short",
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "timed out or exceeded its output limit"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": null,
+        "exitCode": 2,
+        "verdict": "fail",
+        "values": [
+          {
+            "name": "TimedOut",
+            "value": true
+          },
+          {
+            "name": "DeadlineSeconds",
+            "value": 3
+          }
+        ]
+      },
+      "baseExpectation": "reject",
+      "rationale": "A stage that sleeps 60 s under a real 3 s owned deadline: the helper times out and kills it, and the durable verdict must be fail (audit P2-1).",
+      "introducedIn": "r4"
+    },
+    {
+      "id": "K2-T",
+      "harness": "K2",
+      "shape": "T",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "sleep",
+      "removeAtSetup": false,
+      "variant": "deadline-short",
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "timed out or exceeded its output limit"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": null,
+        "exitCode": 2,
+        "verdict": "fail",
+        "values": [
+          {
+            "name": "TimedOut",
+            "value": true
+          },
+          {
+            "name": "DeadlineSeconds",
+            "value": 3
+          }
+        ]
+      },
+      "baseExpectation": "reject",
+      "rationale": "A stage that sleeps 60 s under a real 3 s owned deadline: the helper times out and kills it, and the durable verdict must be fail (audit P2-1).",
+      "introducedIn": "r4"
+    },
+    {
+      "id": "K1-W",
+      "harness": "K1",
+      "shape": "W",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "block-durable",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": null,
+        "durableAbsent": true,
+        "stderr": [
+          [
+            "R1-CHECK: durable result write failed"
+          ]
+        ]
+      },
+      "baseExpectation": "reject",
+      "rationale": "The stage turns result.json into a directory, so the durable write fails: the run must exit nonzero (audit P3-1); d27ffa34 exits 0.",
+      "introducedIn": "r4",
+      "faultTarget": ".lake/repair-r1/checks/r3-control/result.json"
+    },
+    {
+      "id": "K2-W",
+      "harness": "K2",
+      "shape": "W",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "block-durable",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": null,
+        "durableAbsent": true,
+        "stderr": [
+          [
+            "R2-CHECK: durable result write failed"
+          ]
+        ]
+      },
+      "baseExpectation": "reject",
+      "rationale": "The stage turns result.json into a directory, so the durable write fails: the run must exit nonzero (audit P3-1); d27ffa34 exits 0.",
+      "introducedIn": "r4",
+      "faultTarget": ".lake/repair-r2/checks/r3-control/result.json"
+    },
+    {
+      "id": "LV-W",
+      "harness": "LV",
+      "shape": "W",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "block-durable",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": null,
+        "durableAbsent": true,
+        "stderr": [
+          [
+            "LIFE1-VALIDATOR: durable result write failed"
+          ]
+        ],
+        "absentFiles": [
+          "PASS.json"
+        ],
+        "stdoutAbsent": [
+          "LIFE1-VALIDATOR PASS"
+        ]
+      },
+      "baseExpectation": "reject",
+      "rationale": "The validator double turns RESULT.json into a directory: no PASS.json, no PASS line, nonzero exit (audit P3-1); d27ffa34 writes PASS.json and exits 0.",
+      "introducedIn": "r4"
+    },
+    {
+      "id": "IC-U",
+      "harness": "IC",
+      "shape": "U",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 600,
+      "fault": "lock-cleanup",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "fixture outer deadline/output failure"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": null,
+        "cleanup": [
+          [
+            "untracked restoration"
+          ]
+        ],
+        "pins": "all-verified",
+        "values": [
+          {
+            "name": "candidateUnchanged",
+            "value": true
+          },
+          {
+            "name": "fixtureRestoration",
+            "value": false
+          }
+        ]
+      },
+      "baseExpectation": "accept",
+      "rationale": "An exclusive lock held until process exit makes the fixture restoration throw inside cleanup while the stage fails: stage error, cleanup error and all 7 verified pins plus the tree check are recorded (audit P3-2 (a)). R3 already handles this path, so d27ffa34 is expected to accept.",
+      "introducedIn": "r4"
+    },
+    {
+      "id": "LV-E",
+      "harness": "LV",
+      "shape": "E",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "intact",
+      "removeAtSetup": true,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "Missing rmq_lifecycle_validate.exe"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": null,
+        "capturedPins": 11
+      },
+      "baseExpectation": "reject",
+      "rationale": "The pinned validator executable is missing: the repaired validator records the unchanged diagnostic in RESULT.json with the other 11 identity pins re-verified (audit P3-3); d27ffa34 throws before its log root.",
+      "introducedIn": "r4",
+      "removePath": ".lake/build/bin/rmq_lifecycle_validate.exe"
+    },
+    {
+      "id": "IC-L",
+      "harness": "IC",
+      "shape": "L",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 600,
+      "fault": "change",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": [
+          [
+            "INTEGRITY",
+            "packed_native_lifecycle_integrity_check.ps1"
+          ],
+          [
+            "real candidate changed"
+          ]
+        ],
+        "labels": [
+          {
+            "key": "helper",
+            "entryKey": "entryHelper",
+            "path": "scripts/packed_native_lifecycle_integrity_check.ps1",
+            "status": "changed"
+          },
+          {
+            "key": "source",
+            "entryKey": "entrySource",
+            "path": "scripts/packed_native_lifecycle_storage_replay.ps1",
+            "status": "verified"
+          }
+        ]
+      },
+      "baseExpectation": "reject",
+      "rationale": "A labelled pin (the integrity helper) changes during a passing stage: its entry value must appear only under entryHelper and helper must hold the changed post-run pin (audit P3-5).",
+      "introducedIn": "r4",
+      "faultTarget": "scripts/packed_native_lifecycle_integrity_check.ps1"
+    },
+    {
+      "id": "HS-L",
+      "harness": "HS",
+      "shape": "L",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 300,
+      "fault": "change",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": [
+          [
+            "INTEGRITY",
+            "integrity_controls.ps1"
+          ]
+        ],
+        "labels": [
+          {
+            "key": "source",
+            "entryKey": "entrySource",
+            "path": "docs/internal/extensions/lifecycle-native-p0/repair-r1/integrity_controls.ps1",
+            "status": "changed"
+          },
+          {
+            "key": "registry",
+            "entryKey": "entryRegistry",
+            "path": "docs/internal/extensions/lifecycle-native-p0/repair-r2/HARNESS_STREAM_REGISTRY.json",
+            "status": "verified"
+          },
+          {
+            "key": "validator",
+            "entryKey": "entryValidator",
+            "path": "scripts/packed_native_lifecycle_stream_check.ps1",
+            "status": "verified"
+          }
+        ]
+      },
+      "baseExpectation": "reject",
+      "rationale": "A labelled pin (the copied integrity_controls source) changes during a passing stage: its entry value must appear only under entrySource and source must hold the changed post-run pin (audit P3-5).",
+      "introducedIn": "r4",
+      "faultTarget": "docs/internal/extensions/lifecycle-native-p0/repair-r1/integrity_controls.ps1"
+    },
+    {
+      "id": "K2-G",
+      "harness": "K2",
+      "shape": "G",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 180,
+      "fault": "git-hang",
+      "removeAtSetup": false,
+      "variant": null,
+      "expect": {
+        "exit": "nonzero",
+        "stage": null,
+        "stageValue": null,
+        "integrity": [
+          [
+            "final HEAD unavailable",
+            "timed out after 60 s"
+          ]
+        ],
+        "exitCode": 3,
+        "verdict": "fail",
+        "values": [
+          {
+            "name": "timedOut",
+            "value": true
+          }
+        ]
+      },
+      "baseExpectation": "timeout",
+      "rationale": "A git double on PATH hangs once the stage has run: the final HEAD read must time out under the owned 60 s deadline and be recorded as an integrity error (audit P3-7); d27ffa34 hangs until the control deadline.",
+      "introducedIn": "r4",
+      "gitDouble": true
+    },
+    {
+      "id": "HS-G",
+      "harness": "HS",
+      "shape": "G",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "deadlineSeconds": 900,
+      "fault": "git-fail",
+      "removeAtSetup": false,
+      "variant": "harness-carrier",
+      "expect": {
+        "exit": "nonzero",
+        "stage": [
+          [
+            "incomplete bounded capture"
+          ]
+        ],
+        "stageValue": null,
+        "integrity": [
+          [
+            "owned fixture/carrier status failed",
+            "git exit 128",
+            "R3-DOUBLE: injected git failure"
+          ]
+        ]
+      },
+      "baseExpectation": "reject",
+      "rationale": "A git double on PATH fails every call once the capture completes: the finalization carrier/fixture status must record the exit and stderr as integrity errors (audit P3-7).",
+      "introducedIn": "r4",
+      "gitDouble": true
+    }
+  ]
+}

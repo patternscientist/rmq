@@ -1,0 +1,789 @@
+{
+  "schema": "life1-r3-campaign-summary-v1",
+  "head": "2234de12541f699aa665e20b4a6dc9833c46d930",
+  "materialization": {
+    "schema": "life1-r3-materialization-v1",
+    "head": "4a2a56d549bba6cfc94e742c73d9e503023367a6",
+    "files": [
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.json",
+        "beforeBytes": 76654,
+        "beforeSha256": "68ab24530878be76e030313ae4b3a17610b5bec6f70ae3fe83351e67435f1619",
+        "afterBytes": 74726,
+        "afterSha256": "385c9bc95ac09b3cc046a7049e954cdf19361330c31f99bd83c9da0c822423f2",
+        "written": true,
+        "indexBlob": "204d6c1d48268fdec3a3d369d9b3dacd38ecb8e1",
+        "workingHashObject": "204d6c1d48268fdec3a3d369d9b3dacd38ecb8e1"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.frozen.json",
+        "beforeBytes": 76654,
+        "beforeSha256": "68ab24530878be76e030313ae4b3a17610b5bec6f70ae3fe83351e67435f1619",
+        "afterBytes": 74726,
+        "afterSha256": "385c9bc95ac09b3cc046a7049e954cdf19361330c31f99bd83c9da0c822423f2",
+        "written": true,
+        "indexBlob": "204d6c1d48268fdec3a3d369d9b3dacd38ecb8e1",
+        "workingHashObject": "204d6c1d48268fdec3a3d369d9b3dacd38ecb8e1"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/finalizer_cases.json",
+        "beforeBytes": 4731,
+        "beforeSha256": "0f03f2ebef9efe9b8f305db58e8e8636daaccb063a3d87e6872cb0f88a939767",
+        "afterBytes": 4711,
+        "afterSha256": "1303ecf93c0a0c74e0a48023fe52258b7e847d020d009eb2f4deba7f084ab6df",
+        "written": true,
+        "indexBlob": "84c8df0b0339a48a60af93ad446532d2a186cb58",
+        "workingHashObject": "84c8df0b0339a48a60af93ad446532d2a186cb58"
+      }
+    ],
+    "statusBefore": " M docs/internal/extensions/lifecycle1/repair-r3/materialize_registries.py\n?? docs/internal/extensions/lifecycle1/repair-r3/__pycache__/materialize_registries.cpython-314.pyc\n",
+    "statusAfter": " M docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.frozen.json\n M docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.json\n M docs/internal/extensions/lifecycle1/repair-r1/finalizer_cases.json\n M docs/internal/extensions/lifecycle1/repair-r3/materialize_registries.py\n?? docs/internal/extensions/lifecycle1/repair-r3/__pycache__/materialize_registries.cpython-314.pyc\n",
+    "gitDiffExitCode": 0,
+    "scope": "Exact Git blob bytes of three LF-pinned frozen inputs; Git content unchanged."
+  },
+  "campaigns": [
+    {
+      "name": "r3-controls-pwsh",
+      "heavy": "campaign-r3-controls-pwsh",
+      "command": {
+        "name": "r3-controls-pwsh",
+        "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+        "arguments": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/docs/internal/extensions/lifecycle1/repair-r1/run_controls.ps1",
+          "-Shell",
+          "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+          "-Profile",
+          "pwsh",
+          "-EvidenceRoot",
+          "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/.lake/life1-r3/campaign/controls-pwsh"
+        ],
+        "mutex": false,
+        "deadline": 2700
+      },
+      "host": "POINPAD",
+      "wrapperShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "heavyDeadline": 3600,
+      "mutexWaitSeconds": {
+        "global": 0.004
+      },
+      "heavyExit": 0,
+      "heavySeconds": 335.813,
+      "checkExit": 0,
+      "childExit": 0,
+      "childSeconds": 333.477,
+      "childDeadline": 2700,
+      "timedOut": false,
+      "overflow": false,
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "integrityErrors": [],
+        "cleanupErrors": [],
+        "entryPinCount": 17,
+        "verifiedPinCount": 17
+      },
+      "stdoutLines": [
+        "L1R1 CASE F11_PIN_AND_LOCKED_CLEANUP PASS",
+        "L1R1 CASE T01_DESCENDANT_TIMEOUT PASS",
+        "L1R1 CONTROLS PASS C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\campaign\\controls-pwsh"
+      ],
+      "stderrLineCount": 0,
+      "frozen": {
+        "expectedIds": 67,
+        "selected": 67,
+        "executedPass": 67,
+        "orderMatches": true,
+        "passed": true,
+        "finalization": {
+          "verdict": "pass",
+          "stageError": null,
+          "integrityErrors": [],
+          "cleanupErrors": [],
+          "entryPinCount": 12,
+          "verifiedPinCount": 12
+        },
+        "caseSecondsTotal": 328.663
+      }
+    },
+    {
+      "name": "r3-controls-winps",
+      "heavy": "campaign-r3-controls-winps",
+      "command": {
+        "name": "r3-controls-winps",
+        "file": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+        "arguments": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/docs/internal/extensions/lifecycle1/repair-r1/run_controls.ps1",
+          "-Shell",
+          "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+          "-Profile",
+          "winps",
+          "-EvidenceRoot",
+          "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/.lake/life1-r3/campaign/controls-winps"
+        ],
+        "mutex": false,
+        "deadline": 2700
+      },
+      "host": "POINPAD",
+      "wrapperShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "heavyDeadline": 3600,
+      "mutexWaitSeconds": {
+        "global": 0.004
+      },
+      "heavyExit": 0,
+      "heavySeconds": 229.545,
+      "checkExit": 0,
+      "childExit": 0,
+      "childSeconds": 227.68,
+      "childDeadline": 2700,
+      "timedOut": false,
+      "overflow": false,
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "integrityErrors": [],
+        "cleanupErrors": [],
+        "entryPinCount": 17,
+        "verifiedPinCount": 17
+      },
+      "stdoutLines": [
+        "L1R1 CASE F11_PIN_AND_LOCKED_CLEANUP PASS",
+        "L1R1 CASE T01_DESCENDANT_TIMEOUT PASS",
+        "L1R1 CONTROLS PASS C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\campaign\\controls-winps"
+      ],
+      "stderrLineCount": 0,
+      "frozen": {
+        "expectedIds": 66,
+        "selected": 66,
+        "executedPass": 66,
+        "orderMatches": true,
+        "passed": true,
+        "finalization": {
+          "verdict": "pass",
+          "stageError": null,
+          "integrityErrors": [],
+          "cleanupErrors": [],
+          "entryPinCount": 12,
+          "verifiedPinCount": 12
+        },
+        "caseSecondsTotal": 223.001
+      }
+    },
+    {
+      "name": "r3-validator-startup-pwsh",
+      "heavy": "campaign-r3-validator-startup-pwsh",
+      "command": {
+        "name": "r3-validator-startup-pwsh",
+        "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+        "arguments": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/scripts/lifecycle_validator.ps1",
+          "-Stage",
+          "startup"
+        ],
+        "mutex": false,
+        "deadline": 600
+      },
+      "host": "POINPAD",
+      "wrapperShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "heavyDeadline": 900,
+      "mutexWaitSeconds": {
+        "global": 0.004
+      },
+      "heavyExit": 0,
+      "heavySeconds": 8.532,
+      "checkExit": 0,
+      "childExit": 0,
+      "childSeconds": 6.317,
+      "childDeadline": 600,
+      "timedOut": false,
+      "overflow": false,
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "integrityErrors": [],
+        "cleanupErrors": [],
+        "entryPinCount": 17,
+        "verifiedPinCount": 17
+      },
+      "stdoutLines": [
+        "LIFE1-VALIDATOR PASS stage=startup processes=2 logs=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\lifecycle-validator\\9bb3a1b6f46949c5ab40efa39f7dac2d"
+      ],
+      "stderrLineCount": 0,
+      "validator": {
+        "logRoot": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\lifecycle-validator\\9bb3a1b6f46949c5ab40efa39f7dac2d",
+        "stage": "startup",
+        "processCount": 2,
+        "identityPreserved": true,
+        "finalization": {
+          "verdict": "pass",
+          "stageError": null,
+          "integrityErrors": [],
+          "cleanupErrors": [],
+          "entryPinCount": 12,
+          "verifiedPinCount": 12
+        }
+      }
+    },
+    {
+      "name": "r3-validator-single-pwsh",
+      "heavy": "campaign-r3-validator-single-pwsh",
+      "command": {
+        "name": "r3-validator-single-pwsh",
+        "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+        "arguments": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/scripts/lifecycle_validator.ps1",
+          "-Stage",
+          "single",
+          "-Case",
+          "L01-W-EMPTY"
+        ],
+        "mutex": false,
+        "deadline": 600
+      },
+      "host": "POINPAD",
+      "wrapperShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "heavyDeadline": 900,
+      "mutexWaitSeconds": {
+        "global": 0.003
+      },
+      "heavyExit": 0,
+      "heavySeconds": 11.081,
+      "checkExit": 0,
+      "childExit": 0,
+      "childSeconds": 8.55,
+      "childDeadline": 600,
+      "timedOut": false,
+      "overflow": false,
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "integrityErrors": [],
+        "cleanupErrors": [],
+        "entryPinCount": 17,
+        "verifiedPinCount": 17
+      },
+      "stdoutLines": [
+        "LIFE1-VALIDATOR PASS stage=single processes=3 logs=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\lifecycle-validator\\4006a8e698fc49fa9ee98e09ff1c35d5"
+      ],
+      "stderrLineCount": 0,
+      "validator": {
+        "logRoot": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\lifecycle-validator\\4006a8e698fc49fa9ee98e09ff1c35d5",
+        "stage": "single",
+        "processCount": 3,
+        "identityPreserved": true,
+        "finalization": {
+          "verdict": "pass",
+          "stageError": null,
+          "integrityErrors": [],
+          "cleanupErrors": [],
+          "entryPinCount": 12,
+          "verifiedPinCount": 12
+        }
+      }
+    },
+    {
+      "name": "r3-validator-full-pwsh",
+      "heavy": "campaign-r3-validator-full-pwsh",
+      "command": {
+        "name": "r3-validator-full-pwsh",
+        "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+        "arguments": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/scripts/lifecycle_validator.ps1",
+          "-Stage",
+          "full",
+          "-DeadlineSeconds",
+          "1800"
+        ],
+        "mutex": false,
+        "deadline": 2400
+      },
+      "host": "POINPAD",
+      "wrapperShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "heavyDeadline": 3000,
+      "mutexWaitSeconds": {
+        "global": 0.005
+      },
+      "heavyExit": 0,
+      "heavySeconds": 54.957,
+      "checkExit": 0,
+      "childExit": 0,
+      "childSeconds": 53.193,
+      "childDeadline": 2400,
+      "timedOut": false,
+      "overflow": false,
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "integrityErrors": [],
+        "cleanupErrors": [],
+        "entryPinCount": 17,
+        "verifiedPinCount": 17
+      },
+      "stdoutLines": [
+        "LIFE1-VALIDATOR PASS stage=full processes=9 logs=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\lifecycle-validator\\de2ecc19a5834d95a21d22cfe447f41d"
+      ],
+      "stderrLineCount": 0,
+      "validator": {
+        "logRoot": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\lifecycle-validator\\de2ecc19a5834d95a21d22cfe447f41d",
+        "stage": "full",
+        "processCount": 9,
+        "identityPreserved": true,
+        "finalization": {
+          "verdict": "pass",
+          "stageError": null,
+          "integrityErrors": [],
+          "cleanupErrors": [],
+          "entryPinCount": 12,
+          "verifiedPinCount": 12
+        }
+      }
+    },
+    {
+      "name": "r3-validator-startup-winps",
+      "heavy": "campaign-r3-validator-startup-winps",
+      "command": {
+        "name": "r3-validator-startup-winps",
+        "file": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+        "arguments": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/scripts/lifecycle_validator.ps1",
+          "-Stage",
+          "startup"
+        ],
+        "mutex": false,
+        "deadline": 600
+      },
+      "host": "POINPAD",
+      "wrapperShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "heavyDeadline": 900,
+      "mutexWaitSeconds": {
+        "global": 0.004
+      },
+      "heavyExit": 0,
+      "heavySeconds": 6.568,
+      "checkExit": 0,
+      "childExit": 0,
+      "childSeconds": 4.214,
+      "childDeadline": 600,
+      "timedOut": false,
+      "overflow": false,
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "integrityErrors": [],
+        "cleanupErrors": [],
+        "entryPinCount": 17,
+        "verifiedPinCount": 17
+      },
+      "stdoutLines": [
+        "LIFE1-VALIDATOR PASS stage=startup processes=2 logs=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\lifecycle-validator\\19ae9582b57643b594802e32de70133f"
+      ],
+      "stderrLineCount": 0,
+      "validator": {
+        "logRoot": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\lifecycle-validator\\19ae9582b57643b594802e32de70133f",
+        "stage": "startup",
+        "processCount": 2,
+        "identityPreserved": true,
+        "finalization": {
+          "verdict": "pass",
+          "stageError": null,
+          "integrityErrors": [],
+          "cleanupErrors": [],
+          "entryPinCount": 12,
+          "verifiedPinCount": 12
+        }
+      }
+    },
+    {
+      "name": "r3-validator-single-winps",
+      "heavy": "campaign-r3-validator-single-winps",
+      "command": {
+        "name": "r3-validator-single-winps",
+        "file": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+        "arguments": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/scripts/lifecycle_validator.ps1",
+          "-Stage",
+          "single",
+          "-Case",
+          "L01-W-EMPTY"
+        ],
+        "mutex": false,
+        "deadline": 600
+      },
+      "host": "POINPAD",
+      "wrapperShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "heavyDeadline": 900,
+      "mutexWaitSeconds": {
+        "global": 0.003
+      },
+      "heavyExit": 0,
+      "heavySeconds": 7.629,
+      "checkExit": 0,
+      "childExit": 0,
+      "childSeconds": 5.744,
+      "childDeadline": 600,
+      "timedOut": false,
+      "overflow": false,
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "integrityErrors": [],
+        "cleanupErrors": [],
+        "entryPinCount": 17,
+        "verifiedPinCount": 17
+      },
+      "stdoutLines": [
+        "LIFE1-VALIDATOR PASS stage=single processes=3 logs=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\lifecycle-validator\\5cebfd65a9d1403c9ccfd0ea36e10362"
+      ],
+      "stderrLineCount": 0,
+      "validator": {
+        "logRoot": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\lifecycle-validator\\5cebfd65a9d1403c9ccfd0ea36e10362",
+        "stage": "single",
+        "processCount": 3,
+        "identityPreserved": true,
+        "finalization": {
+          "verdict": "pass",
+          "stageError": null,
+          "integrityErrors": [],
+          "cleanupErrors": [],
+          "entryPinCount": 12,
+          "verifiedPinCount": 12
+        }
+      }
+    },
+    {
+      "name": "r3-validator-full-winps",
+      "heavy": "campaign-r3-validator-full-winps",
+      "command": {
+        "name": "r3-validator-full-winps",
+        "file": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+        "arguments": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/scripts/lifecycle_validator.ps1",
+          "-Stage",
+          "full",
+          "-DeadlineSeconds",
+          "1800"
+        ],
+        "mutex": false,
+        "deadline": 2400
+      },
+      "host": "POINPAD",
+      "wrapperShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "heavyDeadline": 3000,
+      "mutexWaitSeconds": {
+        "global": 0.003
+      },
+      "heavyExit": 0,
+      "heavySeconds": 49.857,
+      "checkExit": 0,
+      "childExit": 0,
+      "childSeconds": 48.193,
+      "childDeadline": 2400,
+      "timedOut": false,
+      "overflow": false,
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "integrityErrors": [],
+        "cleanupErrors": [],
+        "entryPinCount": 17,
+        "verifiedPinCount": 17
+      },
+      "stdoutLines": [
+        "LIFE1-VALIDATOR PASS stage=full processes=9 logs=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\lifecycle-validator\\e1069f1acc3a4c5e8d3357431dbcc249"
+      ],
+      "stderrLineCount": 0,
+      "validator": {
+        "logRoot": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\lifecycle-validator\\e1069f1acc3a4c5e8d3357431dbcc249",
+        "stage": "full",
+        "processCount": 9,
+        "identityPreserved": true,
+        "finalization": {
+          "verdict": "pass",
+          "stageError": null,
+          "integrityErrors": [],
+          "cleanupErrors": [],
+          "entryPinCount": 12,
+          "verifiedPinCount": 12
+        }
+      }
+    },
+    {
+      "name": "r3-p0-integrity",
+      "heavy": "campaign-r3-p0-integrity",
+      "command": {
+        "name": "r3-p0-integrity",
+        "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+        "arguments": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/docs/internal/extensions/lifecycle-native-p0/repair-r1/run_owned.ps1",
+          "-Kind",
+          "integrity",
+          "-OutputRoot",
+          "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/.lake/repair-r1/r3-campaign-integrity"
+        ],
+        "mutex": false,
+        "deadline": 3000
+      },
+      "host": "POINPAD",
+      "wrapperShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "heavyDeadline": 3600,
+      "mutexWaitSeconds": {
+        "global": 0.003
+      },
+      "heavyExit": 0,
+      "heavySeconds": 287.856,
+      "checkExit": 0,
+      "childExit": 0,
+      "childSeconds": 285.908,
+      "childDeadline": 3000,
+      "timedOut": false,
+      "overflow": false,
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "integrityErrors": [],
+        "cleanupErrors": [],
+        "entryPinCount": 17,
+        "verifiedPinCount": 17
+      },
+      "stdoutLines": [
+        "OWNED integrity exit=0 evidence=C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/.lake/repair-r1/r3-campaign-integrity"
+      ],
+      "stderrLineCount": 0,
+      "p0": {
+        "streamValidated": true,
+        "outerExit": 0,
+        "actualExit": 0,
+        "deadline": 2400,
+        "outerSeconds": 283.978,
+        "controls": 15,
+        "controlIds": [
+          "intact-success",
+          "intact-stage-error",
+          "malformed-stdout-intact",
+          "stage-error-and-pin-change",
+          "stage-error-and-capture-error",
+          "success-and-pin-change",
+          "mixed-diagnostic-and-pin-change",
+          "timeout-and-pin-change",
+          "success-and-tracked-change",
+          "success-and-index-change",
+          "success-and-untracked-addition",
+          "success-and-untracked-byte-change",
+          "success-and-link-map-change",
+          "partial-identity-and-pin-change",
+          "missing-baseline"
+        ],
+        "finalization": {
+          "verdict": "pass",
+          "stageError": null,
+          "integrityErrors": [],
+          "cleanupErrors": [],
+          "entryPinCount": 7,
+          "verifiedPinCount": 7
+        }
+      }
+    },
+    {
+      "name": "r3-p0-dependencies",
+      "heavy": "campaign-r3-p0-dependencies",
+      "command": {
+        "name": "r3-p0-dependencies",
+        "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+        "arguments": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/docs/internal/extensions/lifecycle-native-p0/repair-r1/run_owned.ps1",
+          "-Kind",
+          "dependencies",
+          "-OutputRoot",
+          "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/.lake/repair-r1/r3-campaign-dependencies"
+        ],
+        "mutex": false,
+        "deadline": 1500
+      },
+      "host": "POINPAD",
+      "wrapperShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "heavyDeadline": 1800,
+      "mutexWaitSeconds": {
+        "global": 0.003
+      },
+      "heavyExit": 0,
+      "heavySeconds": 24.166,
+      "checkExit": 0,
+      "childExit": 0,
+      "childSeconds": 22.251,
+      "childDeadline": 1500,
+      "timedOut": false,
+      "overflow": false,
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "integrityErrors": [],
+        "cleanupErrors": [],
+        "entryPinCount": 17,
+        "verifiedPinCount": 17
+      },
+      "stdoutLines": [
+        "OWNED dependencies exit=0 evidence=C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/.lake/repair-r1/r3-campaign-dependencies"
+      ],
+      "stderrLineCount": 0,
+      "p0": {
+        "streamValidated": true,
+        "outerExit": 0,
+        "actualExit": 0,
+        "deadline": 1200,
+        "outerSeconds": 20.427,
+        "controls": 19,
+        "controlIds": [
+          "complete-inventory",
+          "bea5ce75-incomplete",
+          "omit-lean.exe",
+          "omit-leanc.exe",
+          "omit-clang.exe",
+          "omit-ld.lld.exe",
+          "omit-libleanshared.dll",
+          "omit-libInit_shared.dll",
+          "omit-libclang-cpp.dll",
+          "omit-libLLVM-19.dll",
+          "omit-libc++.dll",
+          "omit-zlib1.dll",
+          "omit-libleanshared_1.dll",
+          "same-name-wrong-path",
+          "complete-unchanged-finalizer",
+          "tamper-zlib1.dll",
+          "tamper-link.map",
+          "tamper-manifest-hash",
+          "restored-finalizer"
+        ],
+        "finalization": {
+          "verdict": "pass",
+          "stageError": null,
+          "integrityErrors": [],
+          "cleanupErrors": [],
+          "entryPinCount": 13,
+          "verifiedPinCount": 13
+        }
+      }
+    },
+    {
+      "name": "r3-p0-harness-stream",
+      "heavy": "campaign-r3-p0-harness-stream",
+      "command": {
+        "name": "r3-p0-harness-stream",
+        "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+        "arguments": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/docs/internal/extensions/lifecycle-native-p0/repair-r2/harness_stream_controls.ps1",
+          "-OutputRoot",
+          "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/.lake/repair-r2/r3-campaign-harness-stream"
+        ],
+        "mutex": false,
+        "deadline": 3000
+      },
+      "host": "POINPAD",
+      "wrapperShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "heavyDeadline": 3600,
+      "mutexWaitSeconds": {
+        "global": 0.004
+      },
+      "heavyExit": 0,
+      "heavySeconds": 120.428,
+      "checkExit": 0,
+      "childExit": 0,
+      "childSeconds": 118.427,
+      "childDeadline": 3000,
+      "timedOut": false,
+      "overflow": false,
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "integrityErrors": [],
+        "cleanupErrors": [],
+        "entryPinCount": 17,
+        "verifiedPinCount": 17
+      },
+      "stdoutLines": [
+        "STREAM CONTROL PASS launcher-blank-stdout",
+        "STREAM CONTROL PASS launcher-blank-stderr",
+        "STREAM CONTROLS evidence=C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r3-finally-integrity/.lake/repair-r2/r3-campaign-harness-stream"
+      ],
+      "stderrLineCount": 0,
+      "p0": {
+        "selected": [
+          "success-positive",
+          "error-positive",
+          "success-extra-stderr",
+          "error-extra-stderr",
+          "success-extra-stdout",
+          "error-extra-stdout",
+          "selector-empty",
+          "selector-unknown",
+          "selector-duplicate",
+          "launcher-blank-stdout",
+          "launcher-blank-stderr"
+        ],
+        "controls": 11,
+        "finalization": {
+          "verdict": "pass",
+          "stageError": null,
+          "integrityErrors": [],
+          "cleanupErrors": [],
+          "entryPinCount": 9,
+          "verifiedPinCount": 9
+        },
+        "ownedRoots": 6
+      }
+    }
+  ]
+}

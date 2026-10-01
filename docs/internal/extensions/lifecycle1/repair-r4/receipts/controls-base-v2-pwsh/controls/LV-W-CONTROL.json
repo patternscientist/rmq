@@ -1,0 +1,114 @@
+{
+  "id": "LV-W",
+  "harness": "LV",
+  "shape": "W",
+  "fault": "block-durable",
+  "mode": "base",
+  "profile": "pwsh",
+  "deadlineSeconds": 180,
+  "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\LV-W\\root",
+  "setupError": null,
+  "launchError": null,
+  "process": {
+    "Stage": "LV-W",
+    "ExitCode": 0,
+    "Output": [
+      "LIFE1-VALIDATOR PASS stage=single processes=3 logs=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\LV-W\\root\\.lake\\lifecycle-validator\\de19c05879fa47fb87db06d826dc7dbb",
+      "LIFE1-VALIDATOR: durable result write failed: Exception calling \"WriteAllText\" with \"3\" argument(s): \"Access to the path 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\LV-W\\root\\.lake\\lifecycle-validator\\de19c05879fa47fb87db06d826dc7dbb\\RESULT.json' is denied.\""
+    ],
+    "StandardOutput": [
+      "LIFE1-VALIDATOR PASS stage=single processes=3 logs=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\LV-W\\root\\.lake\\lifecycle-validator\\de19c05879fa47fb87db06d826dc7dbb"
+    ],
+    "StandardError": [
+      "LIFE1-VALIDATOR: durable result write failed: Exception calling \"WriteAllText\" with \"3\" argument(s): \"Access to the path 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\LV-W\\root\\.lake\\lifecycle-validator\\de19c05879fa47fb87db06d826dc7dbb\\RESULT.json' is denied.\""
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 4.02,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  },
+  "durable": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\LV-W\\root\\.lake\\lifecycle-validator\\de19c05879fa47fb87db06d826dc7dbb\\PASS.json",
+    "ambiguous": false,
+    "parseError": null,
+    "sha256": "d393b911909cc2d1fafe1ac6b2f69121c7fbc472fad9ce59372727dbc7600567"
+  },
+  "core": {
+    "launchCompleted": true,
+    "exitClass": false,
+    "durablePresent": true,
+    "durableAsExpected": false,
+    "stageRecorded": true,
+    "integrityRecorded": true,
+    "cleanupRecorded": true,
+    "verdictAsExpected": true,
+    "values": null,
+    "labels": null,
+    "stderrAsExpected": true,
+    "absentFiles": false,
+    "stdoutWithoutSuccess": false
+  },
+  "structural": {
+    "applicable": false,
+    "reason": "no durable result by construction (durable-write failure)",
+    "finalizationPresent": true,
+    "verdictMatches": true,
+    "stageFieldMatches": true,
+    "integrityFieldMatches": true,
+    "cleanupEmpty": true,
+    "pinsVerified": true
+  },
+  "restoration": {
+    "restored": [],
+    "removed": [],
+    "errors": [],
+    "verified": true,
+    "gitClean": true,
+    "gitState": "a2a810d8f55973e5e32036d180176e98e72f7235\n--"
+  },
+  "verdict": "PASS",
+  "expected": "reject",
+  "lockWaitSeconds": null,
+  "manifest": {
+    "scripts/lifecycle_validator.ps1": "ed158afff57cb9b81e219ec138f2b5d6221dd048159120452650cb7b386059b3",
+    "scripts/lifecycle_validator_environment.ps1": "2fb2c4d95eaf3f6633ffaa60413d3d798b26e5bf8b4e712e6a254e293e4f9f19",
+    "scripts/owned_process_tree.ps1": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+    "lakefile.toml": "b47c7abe3955d1a2e9ba51a4c71fc2e7961423d2bf5f3856f79a24bebc8bdd50",
+    "RMQ/Validation/PackedLifecycle.lean": "624236001fc72817441cc3dc536da9c299ccb1dc9c050687b09896b7f1679c14",
+    "RMQ/Core/WordRAM/Lifecycle/Executable.lean": "7ed53fd5715a4ea1d6628ae52f626b1573b2f20bb4e6b9b983c0a2c32de41baf",
+    "RMQ/Core/WordRAM/Lifecycle/Controls.lean": "207f4d5ccaca1c33143c6e457c90129ad876672bdc0786e29face52f434e8828",
+    "RMQ/Core/WordRAM/Lifecycle/ArrayRun.lean": "e9342577949ec6af15ece43ebaa742d30142f7b6769c8036b9e95f22d59dd0c7",
+    "RMQ/Core/WordRAM/Lifecycle/Machine.lean": "bbc0e439fb2fa55ae75e440ac3a6c77e6203fc6f7b39b2cae8b95e1ed2b8d57b",
+    "RMQ/Core/WordRAM/Lifecycle/Program.lean": "bb40b5ab3b7532ea4f907bf1d174dd2de14013c5e022454cb7c3b99cc2707dfc",
+    "RMQ/Core/WordRAM/Lifecycle/Service.lean": "f4157493517f232a6a83bb52c87b751f6a0c2c1f9ca9c98fb6cae036542a34e0",
+    ".lake/build/bin/rmq_lifecycle_validate.exe": "1a966b22c010ddb5ea2824e9e5e1ef1077de0d040bb1e40ea797dd9660ad7e55",
+    ".gitignore": "fde850d24186b6e99c8c0debd641fb3ab85198b109eb66f71a1fea02bd6ea1b3"
+  },
+  "harnessSha256": "ed158afff57cb9b81e219ec138f2b5d6221dd048159120452650cb7b386059b3",
+  "arguments": [
+    "-NoLogo",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\LV-W\\root\\scripts\\lifecycle_validator.ps1",
+    "-Stage",
+    "single",
+    "-Case",
+    "L01-W-EMPTY",
+    "-DeadlineSeconds",
+    "60"
+  ],
+  "environment": {
+    "R3_FAULT_TARGET": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\LV-W\\root\\lakefile.toml",
+    "R3_FAULT_MARKER": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\LV-W\\fault.marker",
+    "R3_FAULT_SCOPE": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-pwsh\\controls\\LV-W\\root",
+    "R3_FAULT_MODE": "block-durable"
+  },
+  "coreAll": false,
+  "structuralAll": true,
+  "pairing": "P passed",
+  "predicateOutcome": true
+}

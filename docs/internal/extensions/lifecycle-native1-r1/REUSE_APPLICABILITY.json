@@ -1,0 +1,175 @@
+{
+  "schema": "lifecycle-native1-r1-reuse-v1",
+  "status": "PASS",
+  "createdUtc": "2026-09-27T21:47:40.113834+00:00",
+  "producingWorktree": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ",
+  "producingCommit": "c52c453a2f0f49c568886f502687e4d0667838e9",
+  "currentWorktree": "C:\\Users\\poin\\.codex\\worktrees\\4935\\RMQ",
+  "repairBase": "c52c453a2f0f49c568886f502687e4d0667838e9",
+  "originalDelivery": {
+    "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\lifecycle-native1\\delivery\\DELIVERY.json",
+    "bytes": 46367,
+    "sha256": "a87969cb5907fa936f75be9da0a7605b8a11e06035e27d8d13a6a412e79060f0"
+  },
+  "originalIdentityClassification": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\lifecycle-implementation-20260920\\native1-review-20260927\\ROOT_IDENTITY_CLASSIFIED.json",
+    "bytes": 1953,
+    "sha256": "1df41a870435a5dee2957fd7ffd880bc754ee2303f37b0db3c5d35f9e2268fa4"
+  },
+  "campaigns": [
+    {
+      "campaign": "exportReplay34",
+      "status": "APPLICABLE_ORIGINAL_EXECUTION",
+      "receipt": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\lifecycle-native1\\export-mutations\\20260927T084110803-e9431c50\\RESULT.json",
+        "bytes": 2154830,
+        "sha256": "341c44469ecb17b4eebb2b45341a71ef8120a3b12fd0d2104496998b30d58866"
+      },
+      "evidence": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\4935\\RMQ\\.lake\\lifecycle-native1-r1\\reuse-20260927T214711\\exportReplay34.json",
+        "bytes": 3690395,
+        "sha256": "682c8a1319c20de6f3a3e329b2e5f4ec1abc002ce84901638cbc22aa46d3bb34"
+      },
+      "orderedIds": [
+        "EX-WEAK-E01-PROGRAM",
+        "EX-WEAK-E02-OWNER",
+        "EX-WEAK-E03-PROJECTION",
+        "EX-WEAK-E04-READY",
+        "EX-WEAK-E05-HALTED",
+        "EX-WEAK-E06-MEMORY",
+        "EX-WEAK-E07-EMPTYKEYS",
+        "EX-WEAK-E08-BANK",
+        "EX-WEAK-E09-CAPACITY",
+        "EX-WEAK-E10-METADATA",
+        "EX-WEAK-E11-OBSERVATIONS",
+        "EX-WEAK-E12-CONTINUATION",
+        "EX-WEAK-E13-REPACKING",
+        "EX-WEAK-Q01-SOURCE",
+        "EX-WEAK-Q02-PROJECTION",
+        "EX-WEAK-Q03-READY",
+        "EX-WEAK-Q04-HALTED",
+        "EX-WEAK-Q05-MEMORY",
+        "EX-WEAK-Q06-OBSERVATIONS",
+        "EX-WEAK-Q07-BOUNDARY",
+        "EX-WEAK-Q08-STEPS",
+        "EX-WEAK-Q09-BUDGET",
+        "EX-WEAK-Q10-CAPACITY",
+        "EX-DELETE-E01-PROGRAM",
+        "EX-DELETE-Q05-MEMORY",
+        "EX-SIBLING-E01-FIXED-WORD",
+        "EX-SIBLING-E02-OTHER-REQUEST",
+        "EX-SIBLING-Q05-OUTPUT-REFLEXIVITY",
+        "EX-SIBLING-Q10-INCOMING-CAPACITY",
+        "EX-ACCEPT-COMMENT",
+        "EX-ACCEPT-UNUSED-FACT",
+        "AD-WEAK-COUNT-CONVERSION",
+        "AD-WEAK-WORD-DOMAIN",
+        "AD-WEAK-NATURAL-DECODE"
+      ],
+      "count": 34,
+      "consumedPins": 5619,
+      "currentSourceMappings": 387,
+      "historicalInputs": 371,
+      "toolInputs": 4861,
+      "checkedPinOccurrences": 6419,
+      "removedArtifactOccurrences": 34
+    },
+    {
+      "campaign": "axiomReplay21",
+      "status": "APPLICABLE_ORIGINAL_EXECUTION",
+      "receipt": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\lifecycle-native1\\axioms\\20260927T085337097\\RESULT.json",
+        "bytes": 1428368,
+        "sha256": "b298894304173a52874593ee066aea530c55574aa2897aa3a14f5cc9918a967f"
+      },
+      "evidence": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\4935\\RMQ\\.lake\\lifecycle-native1-r1\\reuse-20260927T214711\\axiomReplay21.json",
+        "bytes": 3359077,
+        "sha256": "f3803c4af8bb4dc6fb777827f22ffa863f198df87bbe14e0410d127ab8df0dea"
+      },
+      "orderedIds": [
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.cached_run",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.export_contract",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.query_contract",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.Repacked.eq",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.repack_transport",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.answer_packet_fits",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.nativeBuildFirst_packet",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.nativeQuery_packet",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.runAcc_exact",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.read_occurrence_output",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO02_firstCategories",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO06_queryCategories",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO04_firstRoutes",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO08_queryRoutes",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO10_queryReadPosition",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.runThin_eq_runOwner",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.runBoundaryThin_eq_runBoundaryOwner",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.requestProtocolThin_eq_requestProtocolOwner",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.runAccThin_eq_runAcc",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.boundaryAccThin_eq_boundaryAcc",
+        "RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.Stats.record_eq_recordBefore"
+      ],
+      "count": 21,
+      "consumedPins": 5605,
+      "currentSourceMappings": 379,
+      "historicalInputs": 370,
+      "toolInputs": 4856,
+      "checkedPinOccurrences": 5613,
+      "removedArtifactOccurrences": 0
+    },
+    {
+      "campaign": "rustReplay17",
+      "status": "APPLICABLE_ORIGINAL_EXECUTION",
+      "receipt": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\lifecycle-native1\\rust-misuse\\20260927T073749082\\RESULT.json",
+        "bytes": 138742,
+        "sha256": "921ceca64185a1ed5950ec219ed5ff3c0c3451bdd14c6507205f71af38844f5d"
+      },
+      "evidence": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\4935\\RMQ\\.lake\\lifecycle-native1-r1\\reuse-20260927T214711\\rustReplay17.json",
+        "bytes": 127862,
+        "sha256": "7a02f2e93d93129bd71fe8a00864400952127a881bb6467f7f3671744ac9a380"
+      },
+      "orderedIds": [
+        "RS-RUNTIME-SEND",
+        "RS-RUNTIME-SYNC",
+        "RS-OWNER-SEND",
+        "RS-OWNER-SYNC",
+        "RS-OBSERVATION-SEND",
+        "RS-OBSERVATION-SYNC",
+        "RS-NATURAL-SEND",
+        "RS-NATURAL-SYNC",
+        "RS-RESULT-SEND",
+        "RS-RESULT-SYNC",
+        "RS-OWNER-CLONE",
+        "RS-IMMUTABLE-QUERY",
+        "RS-BYTES-ESCAPE",
+        "RS-RAW-ALIAS",
+        "RS-RUNTIME-ESCAPE",
+        "RS-ACCEPT-MUTABLE",
+        "RS-ACCEPT-BORROW"
+      ],
+      "count": 17,
+      "consumedPins": 112,
+      "currentSourceMappings": 13,
+      "historicalInputs": 18,
+      "toolInputs": 81,
+      "checkedPinOccurrences": 275,
+      "removedArtifactOccurrences": 0
+    }
+  ],
+  "excludedFreshRequired": [
+    "four-root focused Lean",
+    "native DLL and clients builds",
+    "startup",
+    "13 fixtures in both modes",
+    "23 ABI cases",
+    "10 clients",
+    "48 native controls",
+    "changed caller/selector/recipe controls",
+    "default lake build",
+    "report-sensitive scope/design/claim/clean certification"
+  ],
+  "boundary": "No old harness execution certifies changed harness bytes. All original verdicts and captures stay immutable. Formal all-size propositions, modeled costs, native Windows/runtime/foreign-caller assumptions and finite execution evidence remain distinct."
+}

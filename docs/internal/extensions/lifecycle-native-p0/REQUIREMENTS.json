@@ -1,0 +1,50 @@
+[
+  [
+    "LN0-01",
+    "Implement a reproducible probe of the pinned Lean 4.22 runtime array ownership operations, without altering the production RMQ ABI. Record logical size, retained capacity, requested container bytes and live element references as distinct quantities. Inspect actual runtime definitions and record compiler/runtime/header identity; do not infer capacity from Array.size."
+  ],
+  [
+    "LN0-02",
+    "Exercise unique and shared owners with destructor-counted elements. Demonstrate the actual effects of pop/shrink on surviving values, tail element references and retained backing capacity, without accessing freed objects. Distinguish release of one owner from reclamation when another alias remains live."
+  ],
+  [
+    "LN0-03",
+    "Exercise a consuming replacement-buffer route: copy surviving output values into a newly allocated bounded-capacity buffer, release the old owner, and measure which old allocations/elements remain reachable. Include success, empty output, overlap-relevant source positions, alias-retained and deterministically injected handoff/allocation-stage failure cleanup. Do not assume actual Lean allocator failure is recoverable; a fatal process outcome is reported separately. Treat observed allocator/requested capacity separately from a universal native heap theorem."
+  ],
+  [
+    "LN0-04",
+    "Commit an exact replay registry and positive/negative controls for logical shrink falsely labeled reclamation, retained alias falsely labeled exclusive consumption, and an omitted cleanup action. Validation executes the actual pinned runtime operations and the owned measurement/verdict path; predecessor RMQ replay is regression evidence only. The verdict must depend on observed value/ownership/capacity projections, not labels or a prewritten expected log; use the same positive predicate or a checked/explicit measured implication."
+  ],
+  [
+    "LN0-05",
+    "Use bounded owned compiler/probe processes, preserve full stdout/stderr and actual exits, reject unexpected or mixed diagnostics, validate focused/unknown/empty selector behavior, and exercise cleanup. A platform/toolchain inability is uncovered, not success. No credit purchase, package installation or persistent service is needed as an assumed prerequisite."
+  ],
+  [
+    "LN0-06",
+    "Deliver a source-grounded consuming-boundary recommendation mapping Construction.ExecState resources and Native.StorageImage/NativeImage ownership to later transfer obligations. Specify success/failure ownership, aliases, retained observations and capacity. Do not implement a speculative production BuilderOwner-to-QueryOwner ABI before the formal lifecycle interface is reviewed."
+  ],
+  [
+    "INV-SEMANTIC-NONVACUITY",
+    "semantic coverage, liveness, ownership, and refinement predicates are derived from the operational construction they describe. A predicate defined to be `True`, an enumeration restated as membership, or a separately hand-written consumer label does not establish operational liveness by itself;"
+  ],
+  [
+    "INV-ORACLE-INDEPENDENCE",
+    "executable fixtures and edge-case expected values come from an independent specification or a theorem already connected to it, never from the implementation result being tested;"
+  ],
+  [
+    "INV-CATEGORY-SEPARATION",
+    "payload bits, proof fields, model ticks, machine state, Lean runtime, and measured performance remain distinct."
+  ],
+  [
+    "INV-MUTATION-REPRODUCIBILITY",
+    "when acceptance relies on an exhaustive, production, or public-dependency mutation campaign, the candidate contains a versioned runner or fixtures that replay every claimed case, check the exact expected failure/acceptance surface, restore tracked state, and leave the tree clean. Report prose, copied terminal output, and dangling Git objects are not replayable evidence. A public theorem additionally has a checked exact-type consumer that fails when the advertised dependency is removed; `#print axioms` over the theorem's current type is not such a consumer."
+  ],
+  [
+    "CHK-FINAL",
+    "Run the final-required checks on the final submitted content, with exact identities, complete outcomes and declared platform limits."
+  ],
+  [
+    "CHK-SCOPE",
+    "Keep the assigned write scope, clean committed tree, exact base, full frozen row integrity and truthful local-versus-campaign status."
+  ]
+]

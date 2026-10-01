@@ -1,0 +1,32 @@
+{
+  "handle": "LIFE-NATIVE-P0",
+  "title": "(LIFE-NATIVE-P0) Validate native finalization ownership and capacity",
+  "task_id": "01a0c12b-88c6-7ef2-bd68-bf63cd80b872",
+  "coordinator_task_id": "01a0830e-2777-7e50-a800-02929dc6d724",
+  "worktree": "C:\\Users\\poin\\.codex\\worktrees\\af4b\\RMQ",
+  "base": "bf31f983205175481fcb659caa4dfb70ef43e361",
+  "branch": "codex/life-native-p0-owned-finalization",
+  "governance": "7b227c49ef2ec044b702126cc41c9add847eed01",
+  "runtime_skills": [
+    "rmq-audit-prompt",
+    "rmq-coordinator",
+    "rmq-proof-sprint"
+  ],
+  "required_skills": [
+    "rmq-proof-sprint"
+  ],
+  "preflight": "PASS at governance checkout and again at exact base",
+  "initial_clean": true,
+  "isolated_from": [
+    "C:\\Users\\poin\\Documents\\RMQ",
+    "C:\\Users\\poin\\Documents\\RMQ\\lifecycle-experiments-20260920\\source"
+  ],
+  "scope": [
+    "native/packed-rmq/tests/lifecycle_storage_probe.c",
+    "scripts/packed_native_lifecycle_storage_replay.ps1",
+    "docs/internal/extensions/lifecycle-native-p0/",
+    "docs/internal/DESIGN_DECISIONS.md (append)",
+    "docs/internal/WORKFLOW_DESIGN_DECISIONS.md (append)"
+  ],
+  "status": "IMPLEMENTING"
+}

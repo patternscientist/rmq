@@ -1,0 +1,190 @@
+{
+  "base": "0485a64920a273d0830b926ee46275085222819d",
+  "checker": {
+    "bytes": 8781,
+    "sha256": "f582fdc21665307b946b41f17eeb95c9bbe96db7b025fde6cc0d7141f5c4a9df"
+  },
+  "sourcePrompt": {
+    "bytes": 33909,
+    "sha256": "f82a24460dfa06602fc52e2c78b0fa8402fbb84a0d203b4abb95040fa56b0c18"
+  },
+  "files": {
+    "docs/internal/extensions/lifecycle1/CONTRACT_REQUIREMENTS.json": {
+      "initial": {
+        "bytes": 54250,
+        "sha256": "e47ab45acad51fe508ce9b8be9983a136f8c9267d4d8fdd7888195bd0419e488"
+      },
+      "git": {
+        "bytes": 53962,
+        "sha256": "5bd95d24b6cffaf9fb39abb2aa04cca9743aed7884b3f87d03d7428e6b9cd8eb"
+      },
+      "gitObject": "d8271d9a796dbbd5fec02b4169dee3098357e9a8",
+      "transformation": "Exact LF byte -> CRLF byte sequence at every LF; no other byte difference"
+    },
+    "docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.frozen.md": {
+      "initial": {
+        "bytes": 43514,
+        "sha256": "bc596cd8a4866cf8db7bd06360d1c2e797e389c92237c9ac3a0b5e4145cd22ab"
+      },
+      "git": {
+        "bytes": 43437,
+        "sha256": "8b08e2d7c7f284634d88bfa4262ee447f79a401c78b27dc346ea34d76ccba4a7"
+      },
+      "gitObject": "1aa9b2139c05574b6256fff28aa8c3035e105e04",
+      "transformation": "Exact LF byte -> CRLF byte sequence at every LF; no other byte difference"
+    },
+    "docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.md": {
+      "initial": {
+        "bytes": 73177,
+        "sha256": "63b7eb6b7c01fcf9ca109be9cdcbf67141bb83c3927c2d7f707b06e2dc482cf1"
+      },
+      "git": {
+        "bytes": 72806,
+        "sha256": "18bdb89a0d4873636d434effb9a8e6d4f8c1b13997deb3167159eb1da167ef8e"
+      },
+      "gitObject": "c6b2388371d564b24d9441f2a3489531012460c1",
+      "transformation": "Exact LF byte -> CRLF byte sequence at every LF; no other byte difference"
+    }
+  },
+  "controls": [
+    {
+      "receipt": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ\\.lake\\repair-r2\\checks\\materialization-0\\result.json",
+      "bytes": 3405,
+      "sha256": "afa5b0be6954a5007cdbc6cc01e20af3348d79426b1bb1de20ac5450c9f2ee98",
+      "result": {
+        "Stage": "materialization-0",
+        "ExitCode": 1,
+        "Output": [
+          "LIFECYCLE-CONTRACT: FAIL CONTRACT_HASH: frozen source/requirements JSON changed"
+        ],
+        "StandardOutput": [
+          "LIFECYCLE-CONTRACT: FAIL CONTRACT_HASH: frozen source/requirements JSON changed"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.216,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "gitFiles": 0,
+      "scratchRoot": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ\\.lake\\repair-r2\\materialization\\git-files-0"
+    },
+    {
+      "receipt": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ\\.lake\\repair-r2\\checks\\materialization-1\\result.json",
+      "bytes": 3421,
+      "sha256": "3915f63a37e3dc459727046b897c1d14b723afe903cc2f77b0ebb606c8408127",
+      "result": {
+        "Stage": "materialization-1",
+        "ExitCode": 1,
+        "Output": [
+          "LIFECYCLE-CONTRACT: FAIL HEADER: frozen baseline requires the exact eight-column header"
+        ],
+        "StandardOutput": [
+          "LIFECYCLE-CONTRACT: FAIL HEADER: frozen baseline requires the exact eight-column header"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.546,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "gitFiles": 1,
+      "scratchRoot": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ\\.lake\\repair-r2\\materialization\\git-files-1"
+    },
+    {
+      "receipt": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ\\.lake\\repair-r2\\checks\\materialization-2\\result.json",
+      "bytes": 3423,
+      "sha256": "a074c357e3b6cdeae5c3b9e7553c93e678c9f2e44da1d9e0eb7b291243485c8d",
+      "result": {
+        "Stage": "materialization-2",
+        "ExitCode": 1,
+        "Output": [
+          "LIFECYCLE-CONTRACT: FAIL HEADER: candidate matrix requires the exact eight-column header"
+        ],
+        "StandardOutput": [
+          "LIFECYCLE-CONTRACT: FAIL HEADER: candidate matrix requires the exact eight-column header"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.855,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "gitFiles": 2,
+      "scratchRoot": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ\\.lake\\repair-r2\\materialization\\git-files-2"
+    },
+    {
+      "receipt": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ\\.lake\\repair-r2\\checks\\materialization-3\\result.json",
+      "bytes": 4175,
+      "sha256": "fbd4a83f1d7a79f1d705f7f8dbe3021b3e6ca34d8ce2b96c32d51545f527f1a6",
+      "result": {
+        "Stage": "materialization-3",
+        "ExitCode": 0,
+        "Output": [
+          "LIFECYCLE-CONTRACT: PASS rows=43 columns=8 changed_ids=[]",
+          "LIFECYCLE-CONTRACT: source_sha256=f82a24460dfa06602fc52e2c78b0fa8402fbb84a0d203b4abb95040fa56b0c18 baseline_sha256=8b08e2d7c7f284634d88bfa4262ee447f79a401c78b27dc346ea34d76ccba4a7",
+          "LIFECYCLE-CONTRACT: matrix_sha256=18bdb89a0d4873636d434effb9a8e6d4f8c1b13997deb3167159eb1da167ef8e matrix_bytes=72806",
+          "LIFECYCLE-CONTRACT: this checks contract integrity, not acceptance-row closure"
+        ],
+        "StandardOutput": [
+          "LIFECYCLE-CONTRACT: PASS rows=43 columns=8 changed_ids=[]",
+          "LIFECYCLE-CONTRACT: source_sha256=f82a24460dfa06602fc52e2c78b0fa8402fbb84a0d203b4abb95040fa56b0c18 baseline_sha256=8b08e2d7c7f284634d88bfa4262ee447f79a401c78b27dc346ea34d76ccba4a7",
+          "LIFECYCLE-CONTRACT: matrix_sha256=18bdb89a0d4873636d434effb9a8e6d4f8c1b13997deb3167159eb1da167ef8e matrix_bytes=72806",
+          "LIFECYCLE-CONTRACT: this checks contract integrity, not acceptance-row closure"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.751,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "gitFiles": 3,
+      "scratchRoot": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ\\.lake\\repair-r2\\materialization\\git-files-3"
+    }
+  ],
+  "positiveCount": 1,
+  "negativeCount": 3,
+  "applied": true,
+  "operation": "Explicit one-time three-file exact-base Git-blob materialization authorized by frozen LIFE-1-R2 prompt; not runtime finalizer restoration",
+  "livePositive": {
+    "receipt": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ\\.lake\\repair-r2\\checks\\materialization-live\\result.json",
+    "bytes": 4133,
+    "sha256": "fbff1c0bbde1df8b2e23f3f7ce25dc0599ed14aacb421b660a9a7801dbe6fdcd",
+    "result": {
+      "Stage": "materialization-live",
+      "ExitCode": 0,
+      "Output": [
+        "LIFECYCLE-CONTRACT: PASS rows=43 columns=8 changed_ids=[]",
+        "LIFECYCLE-CONTRACT: source_sha256=f82a24460dfa06602fc52e2c78b0fa8402fbb84a0d203b4abb95040fa56b0c18 baseline_sha256=8b08e2d7c7f284634d88bfa4262ee447f79a401c78b27dc346ea34d76ccba4a7",
+        "LIFECYCLE-CONTRACT: matrix_sha256=18bdb89a0d4873636d434effb9a8e6d4f8c1b13997deb3167159eb1da167ef8e matrix_bytes=72806",
+        "LIFECYCLE-CONTRACT: this checks contract integrity, not acceptance-row closure"
+      ],
+      "StandardOutput": [
+        "LIFECYCLE-CONTRACT: PASS rows=43 columns=8 changed_ids=[]",
+        "LIFECYCLE-CONTRACT: source_sha256=f82a24460dfa06602fc52e2c78b0fa8402fbb84a0d203b4abb95040fa56b0c18 baseline_sha256=8b08e2d7c7f284634d88bfa4262ee447f79a401c78b27dc346ea34d76ccba4a7",
+        "LIFECYCLE-CONTRACT: matrix_sha256=18bdb89a0d4873636d434effb9a8e6d4f8c1b13997deb3167159eb1da167ef8e matrix_bytes=72806",
+        "LIFECYCLE-CONTRACT: this checks contract integrity, not acceptance-row closure"
+      ],
+      "StandardError": [],
+      "TimedOut": false,
+      "OutputLimitExceeded": false,
+      "TerminatedIds": [],
+      "DurationSeconds": 2.631,
+      "DeadlineSeconds": 60,
+      "Ownership": "kill-on-close-job"
+    }
+  },
+  "gitContentDiff": "",
+  "postMaterializationBaseline": {
+    "bytes": 700447,
+    "sha256": "10adce9d9a3b5909a9feb710494f990f94abc17fe17c8b018ea3fc5cc3558b47"
+  }
+}

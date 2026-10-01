@@ -1,0 +1,31 @@
+{
+  "id": "D07_ENV_VALID",
+  "sourcePath": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\candidate-pwsh\\controls\\DC-M\\root\\scripts\\lifecycle_dependency_replay.ps1",
+  "sourceSha256": "7E24595951BBC00202FDAC5D46D177263197A99B2EC620FB27144A413CDAA823",
+  "passed": false,
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "fail",
+    "stageError": "CONTROL: exact same-root positive boundary failed",
+    "integrityErrors": [
+      "CONTROL: production source final hash failed: Could not find file 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\candidate-pwsh\\controls\\DC-M\\root\\scripts\\lifecycle_dependency_replay.ps1'."
+    ],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\candidate-pwsh\\controls\\DC-M\\root\\scripts\\lifecycle_dependency_replay.ps1",
+        "entrySha256": "7E24595951BBC00202FDAC5D46D177263197A99B2EC620FB27144A413CDAA823",
+        "finalSha256": null,
+        "status": "unreadable-final"
+      },
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\candidate-pwsh\\controls\\DC-M\\root\\scripts\\lifecycle_dependency_cases.json",
+        "entrySha256": "003343871E23C93DF874A960A8AF60AE7A8A2E615ADB05B6E581DC4407A1C84B",
+        "finalSha256": "003343871E23C93DF874A960A8AF60AE7A8A2E615ADB05B6E581DC4407A1C84B",
+        "status": "verified"
+      }
+    ],
+    "entryPinCount": 2,
+    "verifiedPinCount": 1
+  }
+}

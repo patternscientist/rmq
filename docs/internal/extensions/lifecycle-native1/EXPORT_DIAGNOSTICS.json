@@ -1,0 +1,839 @@
+{
+  "schema": "lifecycle-native1-export-diagnostics-v1",
+  "reviewStatus": "FROZEN_ROOT_REVIEWED",
+  "registrySHA256": "15034dc9ce6e6077d27487bc4dddd7990cef6b39c66de39dff2d9be8a6825660",
+  "leanSHA256": "9b5af669d8dc9b5826a1f5427584915eeca659e9bf34c7ee72667b93c0bfdcb0",
+  "orderedIds": [
+    "EX-WEAK-E01-PROGRAM",
+    "EX-WEAK-E02-OWNER",
+    "EX-WEAK-E03-PROJECTION",
+    "EX-WEAK-E04-READY",
+    "EX-WEAK-E05-HALTED",
+    "EX-WEAK-E06-MEMORY",
+    "EX-WEAK-E07-EMPTYKEYS",
+    "EX-WEAK-E08-BANK",
+    "EX-WEAK-E09-CAPACITY",
+    "EX-WEAK-E10-METADATA",
+    "EX-WEAK-E11-OBSERVATIONS",
+    "EX-WEAK-E12-CONTINUATION",
+    "EX-WEAK-E13-REPACKING",
+    "EX-WEAK-Q01-SOURCE",
+    "EX-WEAK-Q02-PROJECTION",
+    "EX-WEAK-Q03-READY",
+    "EX-WEAK-Q04-HALTED",
+    "EX-WEAK-Q05-MEMORY",
+    "EX-WEAK-Q06-OBSERVATIONS",
+    "EX-WEAK-Q07-BOUNDARY",
+    "EX-WEAK-Q08-STEPS",
+    "EX-WEAK-Q09-BUDGET",
+    "EX-WEAK-Q10-CAPACITY",
+    "EX-DELETE-E01-PROGRAM",
+    "EX-DELETE-Q05-MEMORY",
+    "EX-SIBLING-E01-FIXED-WORD",
+    "EX-SIBLING-E02-OTHER-REQUEST",
+    "EX-SIBLING-Q05-OUTPUT-REFLEXIVITY",
+    "EX-SIBLING-Q10-INCOMING-CAPACITY",
+    "EX-ACCEPT-COMMENT",
+    "EX-ACCEPT-UNUSED-FACT",
+    "AD-WEAK-COUNT-CONVERSION",
+    "AD-WEAK-WORD-DOMAIN",
+    "AD-WEAK-NATURAL-DECODE"
+  ],
+  "cases": [
+    {
+      "id": "EX-WEAK-E01-PROGRAM",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":37,\"column\":20},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":37,\"column\":84},\"data\":\"type mismatch\\n  (export_contract model xs left right domain hl hr).program\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  cachedProgram model = (Layout.program model).toArray : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 417,
+      "stderrBytes": 0,
+      "stdoutSHA256": "ff44ba10f889ecc4bced4afbd56e9097a87ab95490996a9fc8e6a01db09b7f2b",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkE01_program",
+          "class": "type-mismatch",
+          "line": 37,
+          "column": 20,
+          "messageSHA256": "7efa815de8830d1c6bfe5a1988eb44a1d5097295e8888a5e64fbd8b4df80ca6f"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-E02-OWNER",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":40,\"column\":20},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":40,\"column\":82},\"data\":\"type mismatch\\n  (export_contract model xs left right domain hl hr).owner\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  buildFirst model xs left right = Ownership.owner model xs left right : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 431,
+      "stderrBytes": 0,
+      "stdoutSHA256": "502afb7ae04eccae2574e700702138eabe408289eef6b464206c698d21929a83",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkE02_owner",
+          "class": "type-mismatch",
+          "line": 40,
+          "column": 20,
+          "messageSHA256": "f33a81d4e966288c200c6d5af8cd0a9e3c3f678357700a3f10e1129f059f9452"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-E03-PROJECTION",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":44,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":44,\"column\":63},\"data\":\"type mismatch\\n  (export_contract model xs left right domain hl hr).projection\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (buildFirst model xs left right).toState = (Continuous.continuousRun model xs left right).final : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 462,
+      "stderrBytes": 0,
+      "stdoutSHA256": "7c775c4a87199d8fa60c41e3033356e24740e22749faad9360bc5b6fd10633e2",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkE03_projection",
+          "class": "type-mismatch",
+          "line": 44,
+          "column": 2,
+          "messageSHA256": "a873673a7a45288c27c2c7c46b9a719c691ba4bb7af22e6d47be798ec70bc7f9"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-E04-READY",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":47,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":47,\"column\":58},\"data\":\"type mismatch\\n  (export_contract model xs left right domain hl hr).ready\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  ExpectedReady xs (buildFirst model xs left right) : Prop\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":152,\"column\":14},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":152,\"column\":70},\"data\":\"Application type mismatch: In the application\\n  ⟨?m.6668, (export_contract model xs left right domain hl hr).ready⟩\\nthe argument\\n  (export_contract model xs left right domain hl hr).ready\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  ExpectedReady xs (buildFirst model xs left right) : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 946,
+      "stderrBytes": 0,
+      "stdoutSHA256": "6e1e1b0856dd62224f1e8fc0d55996ad9c2647fe656acd259a87d91df154fe68",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkE04_ready",
+          "class": "type-mismatch",
+          "line": 47,
+          "column": 2,
+          "messageSHA256": "e02e3428772799f4c6e70943ccea678f88619e324ada445db5570098af50ef66"
+        },
+        {
+          "surface": "checkE13_invalid",
+          "class": "type-mismatch",
+          "line": 152,
+          "column": 14,
+          "messageSHA256": "65d86afa717534a0d3b9281b379feceb325ede8eb6cce0df49efdc5daac31def"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-E05-HALTED",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":51,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":51,\"column\":59},\"data\":\"type mismatch\\n  (export_contract model xs left right domain hl hr).halted\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (buildFirst model xs left right).status =\\n    PackedConstruction.Status.halted\\n      (PackedWordRAM.optionNatPacket (SuccinctClassic.queryTraceResult xs left right).value) : Prop\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":153,\"column\":6},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":153,\"column\":63},\"data\":\"tactic 'rewrite' failed, equality or iff proof expected\\n  True\\nmodel : InputModel\\nxs : List Int\\nleft right : Nat\\ndomain : InputDomain model xs\\nhl : left < 2 ^ wordWidth xs.length\\nhr : right < 2 ^ wordWidth xs.length\\ninvalid : ¬ValidRange xs left right\\n⊢ (buildFirst model xs left right).status = PackedConstruction.Status.halted 0\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":177,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":177,\"column\":64},\"data\":\"type mismatch\\n  (word_export_contract xs left right input hleft hright).halted\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (buildFirst InputModel.word xs left right).status =\\n    PackedConstruction.Status.halted\\n      (PackedWordRAM.optionNatPacket (SuccinctClassic.queryTraceResult xs left right).value) : Prop\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":184,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":184,\"column\":64},\"data\":\"type mismatch\\n  (comparison_export_contract xs left right hleft hright).halted\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (buildFirst InputModel.comparison xs left right).status =\\n    PackedConstruction.Status.halted\\n      (PackedWordRAM.optionNatPacket (SuccinctClassic.queryTraceResult xs left right).value) : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 2215,
+      "stderrBytes": 0,
+      "stdoutSHA256": "3d676e60ce8b60170251449c66b97a08a71078ffec6698721d6cf10aa36532a4",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkE05_halted",
+          "class": "type-mismatch",
+          "line": 51,
+          "column": 2,
+          "messageSHA256": "2736c6119fd663bd7cc33dfb46ac220fa83d0ff5d329addcfc0b1d61878d02c2"
+        },
+        {
+          "surface": "checkE13_invalid",
+          "class": "rewrite-requires-equality",
+          "line": 153,
+          "column": 6,
+          "messageSHA256": "aa26aa823072e17113cc3f8f9ba013f61d4438278bb09a26a9537e52cad80714"
+        },
+        {
+          "surface": "checkU02_word",
+          "class": "type-mismatch",
+          "line": 177,
+          "column": 2,
+          "messageSHA256": "ab4696813e0af5e5f4d9abd609ca2eef8762383c2e0ba3fefec7403d085025ed"
+        },
+        {
+          "surface": "checkU03_comparison",
+          "class": "type-mismatch",
+          "line": 184,
+          "column": 2,
+          "messageSHA256": "ad3cbe4d2a31613bccdcc5ac28ec40e0633e22c782543cd83c77f9c2b64ef362"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-E06-MEMORY",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":56,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":56,\"column\":59},\"data\":\"type mismatch\\n  (export_contract model xs left right domain hl hr).memory\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (∀ (a : Nat), (buildFirst model xs left right).memory.getD a none = (buildMemory xs)[a]?) ∧\\n    (buildFirst model xs left right).memory.size = (buildMemory xs).length : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 534,
+      "stderrBytes": 0,
+      "stdoutSHA256": "c9a3a8e98ef71f322224a880ce763ec65f1276d7ec5ae92fe6f6b4272b4f4e08",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkE06_memory",
+          "class": "type-mismatch",
+          "line": 56,
+          "column": 2,
+          "messageSHA256": "444761780c288984b663f057c5cd9735ee8835c9be72a6f4dbee29d5d231b7ed"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-E07-EMPTYKEYS",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":60,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":60,\"column\":62},\"data\":\"type mismatch\\n  (export_contract model xs left right domain hl hr).emptyKeys\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (buildFirst model xs left right).keys = #[] ∧ (buildFirst model xs left right).keyRegs = #[] : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 460,
+      "stderrBytes": 0,
+      "stdoutSHA256": "72af862694f7d8023fe2cb56a54b76ac3d42163f19fa03df0159da7a9c5e813d",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkE07_emptyKeys",
+          "class": "type-mismatch",
+          "line": 60,
+          "column": 2,
+          "messageSHA256": "e17d4db61deeca14358b9ef4560bb8408ff733896d23990f5e85ab5f267dc801"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-E08-BANK",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":63,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":63,\"column\":57},\"data\":\"type mismatch\\n  (export_contract model xs left right domain hl hr).bank\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (buildFirst model xs left right).regs.size = 8273 : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 410,
+      "stderrBytes": 0,
+      "stdoutSHA256": "e7c008e507ecf80ea9b9ad7329043bb0affad076a06930c3ed06b9a0ddf1ff31",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkE08_bank",
+          "class": "type-mismatch",
+          "line": 63,
+          "column": 2,
+          "messageSHA256": "33331c77b8c64c5d267d87d545044b911a91e741e5793530b46a4a87caabb42a"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-E09-CAPACITY",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":69,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":69,\"column\":61},\"data\":\"type mismatch\\n  (export_contract model xs left right domain hl hr).capacity\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  ((buildFirst model xs left right).memory.size + (encodedProgram model).length +\\n          (buildFirst model xs left right).regs.size +\\n        8) *\\n      wordWidth xs.length ≤\\n    2 * xs.length + retainedRho xs.length : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 588,
+      "stderrBytes": 0,
+      "stdoutSHA256": "30a6ef8c5c18888de633baa01bc521b42a81607afed367ec9f5e86ab6dc3bc51",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkE09_capacity",
+          "class": "type-mismatch",
+          "line": 69,
+          "column": 2,
+          "messageSHA256": "969075542848f1a55b73dab442565cb972990555cd014217f9217bf1c7fe282f"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-E10-METADATA",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":74,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":74,\"column\":61},\"data\":\"type mismatch\\n  (export_contract model xs left right domain hl hr).metadata\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (buildFirst model xs left right).memory.getD 0 none = some xs.length ∧\\n    (buildFirst model xs left right).memory.getD 7 none = some (buildFirst model xs left right).memory.size : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 546,
+      "stderrBytes": 0,
+      "stdoutSHA256": "6feb0bcac774f13184b65720f9b96df9819409ce156be1de8eea969b0812bb49",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkE10_metadata",
+          "class": "type-mismatch",
+          "line": 74,
+          "column": 2,
+          "messageSHA256": "f09750166518a95549c1ff5ccc5cea694e1a8df1378da2fc148332bd0f36f6c0"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-E11-OBSERVATIONS",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":78,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":78,\"column\":65},\"data\":\"type mismatch\\n  (export_contract model xs left right domain hl hr).observations\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (Ownership.observations model xs left right).toRun = Continuous.continuousRun model xs left right : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 466,
+      "stderrBytes": 0,
+      "stdoutSHA256": "c2d5a4c67297931c10e01d82bbe285899f6ce02e593b2df1a5b354e4e3217c62",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkE11_observations",
+          "class": "type-mismatch",
+          "line": 78,
+          "column": 2,
+          "messageSHA256": "e8918d0d68b8cd3a6d515c8aec74abe5508e7bc9001c7c35482dcf552f121e32"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-E12-CONTINUATION",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":96,\"column\":3},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":97,\"column\":35},\"data\":\"Function expected at\\n  (export_contract model xs left right domain hl hr).continuation\\nbut this term has type\\n  True\\n\\nNote: Expected a function because this term is being applied to the argument\\n  es\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":101,\"column\":3},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":102,\"column\":35},\"data\":\"Function expected at\\n  (export_contract model xs left right domain hl hr).continuation\\nbut this term has type\\n  True\\n\\nNote: Expected a function because this term is being applied to the argument\\n  es\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":105,\"column\":3},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":106,\"column\":35},\"data\":\"Function expected at\\n  (export_contract model xs left right domain hl hr).continuation\\nbut this term has type\\n  True\\n\\nNote: Expected a function because this term is being applied to the argument\\n  es\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":110,\"column\":3},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":111,\"column\":35},\"data\":\"Function expected at\\n  (export_contract model xs left right domain hl hr).continuation\\nbut this term has type\\n  True\\n\\nNote: Expected a function because this term is being applied to the argument\\n  es\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":114,\"column\":3},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":115,\"column\":35},\"data\":\"Function expected at\\n  (export_contract model xs left right domain hl hr).continuation\\nbut this term has type\\n  True\\n\\nNote: Expected a function because this term is being applied to the argument\\n  es\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":119,\"column\":3},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":120,\"column\":35},\"data\":\"Function expected at\\n  (export_contract model xs left right domain hl hr).continuation\\nbut this term has type\\n  True\\n\\nNote: Expected a function because this term is being applied to the argument\\n  es\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":125,\"column\":3},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":126,\"column\":35},\"data\":\"Function expected at\\n  (export_contract model xs left right domain hl hr).continuation\\nbut this term has type\\n  True\\n\\nNote: Expected a function because this term is being applied to the argument\\n  es\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":130,\"column\":3},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":131,\"column\":35},\"data\":\"Function expected at\\n  (export_contract model xs left right domain hl hr).continuation\\nbut this term has type\\n  True\\n\\nNote: Expected a function because this term is being applied to the argument\\n  es\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":134,\"column\":3},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":135,\"column\":35},\"data\":\"Function expected at\\n  (export_contract model xs left right domain hl hr).continuation\\nbut this term has type\\n  True\\n\\nNote: Expected a function because this term is being applied to the argument\\n  es\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":142,\"column\":5},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":143,\"column\":35},\"data\":\"Function expected at\\n  (export_contract model xs left right domain hl hr).continuation\\nbut this term has type\\n  True\\n\\nNote: Expected a function because this term is being applied to the argument\\n  es\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":140,\"column\":45},\"kind\":\"Tactic.unsolvedGoals\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":146,\"column\":33},\"data\":\"unsolved goals\\nmodel : InputModel\\nxs : List Int\\nleft right : Nat\\ndomain : InputDomain model xs\\nhl : left < 2 ^ wordWidth xs.length\\nhr : right < 2 ^ wordWidth xs.length\\nes : Owner\\nnewLeft newRight answer : Nat\\nready : ExpectedReady xs es\\nhalted : es.status = PackedConstruction.Status.halted answer\\nhnewLeft : newLeft < 2 ^ wordWidth xs.length\\nhnewRight : newRight < 2 ^ wordWidth xs.length\\n⊢ ((query model newLeft newRight es).memory.size + (encodedProgram model).length +\\n          (query model newLeft newRight es).regs.size +\\n        8) *\\n      wordWidth xs.length ≤\\n    2 * xs.length + retainedRho xs.length\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":160,\"column\":19},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":161,\"column\":59},\"data\":\"Function expected at\\n  (export_contract model xs left right domain hl hr).continuation\\nbut this term has type\\n  True\\n\\nNote: Expected a function because this term is being applied to the argument\\n  es\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":159,\"column\":60},\"kind\":\"Tactic.unsolvedGoals\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":164,\"column\":5},\"data\":\"unsolved goals\\nmodel : InputModel\\nxs : List Int\\nleft right : Nat\\ndomain : InputDomain model xs\\nhl : left < 2 ^ wordWidth xs.length\\nhr : right < 2 ^ wordWidth xs.length\\nes : Owner\\nnewLeft newRight answer : Nat\\nready : ExpectedReady xs es\\nhalted : es.status = PackedConstruction.Status.halted answer\\nhnewLeft : newLeft < 2 ^ wordWidth xs.length\\nhnewRight : newRight < 2 ^ wordWidth xs.length\\ninvalid : ¬ValidRange xs newLeft newRight\\n⊢ (query model newLeft newRight es).status = PackedConstruction.Status.halted 0 ∧\\n    ExpectedReady xs (query model newLeft newRight es)\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 6418,
+      "stderrBytes": 0,
+      "stdoutSHA256": "81535f4e7f20acdb05372e0c434a94c2a3a2aa1eadef7d7e88bfcb9e338aa38e",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkQ01_source",
+          "class": "function-expected",
+          "line": 96,
+          "column": 3,
+          "messageSHA256": "1c518044e4d414fc9bda905fdedb92d540f598047f9c5b958011c94dd2d6cfdf"
+        },
+        {
+          "surface": "checkQ02_projection",
+          "class": "function-expected",
+          "line": 101,
+          "column": 3,
+          "messageSHA256": "1c518044e4d414fc9bda905fdedb92d540f598047f9c5b958011c94dd2d6cfdf"
+        },
+        {
+          "surface": "checkQ03_ready",
+          "class": "function-expected",
+          "line": 105,
+          "column": 3,
+          "messageSHA256": "1c518044e4d414fc9bda905fdedb92d540f598047f9c5b958011c94dd2d6cfdf"
+        },
+        {
+          "surface": "checkQ04_halted",
+          "class": "function-expected",
+          "line": 110,
+          "column": 3,
+          "messageSHA256": "1c518044e4d414fc9bda905fdedb92d540f598047f9c5b958011c94dd2d6cfdf"
+        },
+        {
+          "surface": "checkQ05_memory",
+          "class": "function-expected",
+          "line": 114,
+          "column": 3,
+          "messageSHA256": "1c518044e4d414fc9bda905fdedb92d540f598047f9c5b958011c94dd2d6cfdf"
+        },
+        {
+          "surface": "checkQ06_observations",
+          "class": "function-expected",
+          "line": 119,
+          "column": 3,
+          "messageSHA256": "1c518044e4d414fc9bda905fdedb92d540f598047f9c5b958011c94dd2d6cfdf"
+        },
+        {
+          "surface": "checkQ07_boundary",
+          "class": "function-expected",
+          "line": 125,
+          "column": 3,
+          "messageSHA256": "1c518044e4d414fc9bda905fdedb92d540f598047f9c5b958011c94dd2d6cfdf"
+        },
+        {
+          "surface": "checkQ08_steps",
+          "class": "function-expected",
+          "line": 130,
+          "column": 3,
+          "messageSHA256": "1c518044e4d414fc9bda905fdedb92d540f598047f9c5b958011c94dd2d6cfdf"
+        },
+        {
+          "surface": "checkQ09_budget",
+          "class": "function-expected",
+          "line": 134,
+          "column": 3,
+          "messageSHA256": "1c518044e4d414fc9bda905fdedb92d540f598047f9c5b958011c94dd2d6cfdf"
+        },
+        {
+          "surface": "checkQ10_capacity",
+          "class": "function-expected",
+          "line": 142,
+          "column": 5,
+          "messageSHA256": "1c518044e4d414fc9bda905fdedb92d540f598047f9c5b958011c94dd2d6cfdf"
+        },
+        {
+          "surface": "checkQ10_capacity",
+          "class": "dependent-unsolved-goal",
+          "line": 140,
+          "column": 45,
+          "messageSHA256": "ee6bc251c8a88aeb38f83e0ef70e0fa330bd93634ebc6cd7508a1f6181f67ac3"
+        },
+        {
+          "surface": "checkQ11_invalid",
+          "class": "function-expected",
+          "line": 160,
+          "column": 19,
+          "messageSHA256": "1c518044e4d414fc9bda905fdedb92d540f598047f9c5b958011c94dd2d6cfdf"
+        },
+        {
+          "surface": "checkQ11_invalid",
+          "class": "dependent-unsolved-goal",
+          "line": 159,
+          "column": 60,
+          "messageSHA256": "052df1b41a52d635b95633da15428e0b22b648ddf0bbf05d3d698c795d6bdbd4"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-E13-REPACKING",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":87,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":87,\"column\":98},\"data\":\"Function expected at\\n  (export_contract model xs left right domain hl hr).repacking\\nbut this term has type\\n  True\\n\\nNote: Expected a function because this term is being applied to the argument\\n  source\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 429,
+      "stderrBytes": 0,
+      "stdoutSHA256": "45d8f15e4e38d34e826af723bb18c456d2d8c3e9313bcc0d748e320dfc393c98",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkE12_repacking",
+          "class": "function-expected",
+          "line": 87,
+          "column": 2,
+          "messageSHA256": "c985b49348fe500ec757d502b028a4dace64770ce6d881fed019cefddc88ff4b"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-Q01-SOURCE",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":96,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":97,\"column\":43},\"data\":\"type mismatch\\n  ((export_contract model xs left right domain hl hr).continuation es newLeft newRight answer ready halted hnewLeft\\n      hnewRight).source\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  query model newLeft newRight es = Executable.queryOwner model newLeft newRight es : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 525,
+      "stderrBytes": 0,
+      "stdoutSHA256": "a7b78b2f5a17ac2a8d1051de0ef572303f77bbc2ec8d34612acad6513ec27555",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkQ01_source",
+          "class": "type-mismatch",
+          "line": 96,
+          "column": 2,
+          "messageSHA256": "011f573097fd448713184a281cff619ad1647c2e6c60387b9942ff9cb280545e"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-Q02-PROJECTION",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":101,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":102,\"column\":47},\"data\":\"type mismatch\\n  ((export_contract model xs left right domain hl hr).continuation es newLeft newRight answer ready halted hnewLeft\\n      hnewRight).projection\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (query model newLeft newRight es).toState = (Reusable.queryRun model newLeft newRight es.toState).final : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 553,
+      "stderrBytes": 0,
+      "stdoutSHA256": "1c964a59542520935d1a463ec13031639e8d3b91b7d4f0dd3635b61c5074e829",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkQ02_projection",
+          "class": "type-mismatch",
+          "line": 101,
+          "column": 2,
+          "messageSHA256": "5f47ddc503a050a1da54fd9b074adec5c811a8d678eb217de0e320a0291c12ef"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-Q03-READY",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":105,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":106,\"column\":42},\"data\":\"type mismatch\\n  ((export_contract model xs left right domain hl hr).continuation es newLeft newRight answer ready halted hnewLeft\\n      hnewRight).ready\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  ExpectedReady xs (query model newLeft newRight es) : Prop\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":162,\"column\":14},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":162,\"column\":28},\"data\":\"Application type mismatch: In the application\\n  ⟨?m.6966, contract.ready⟩\\nthe argument\\n  contract.ready\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  ExpectedReady xs (query model newLeft newRight es) : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 947,
+      "stderrBytes": 0,
+      "stdoutSHA256": "4ea67afe574dcb16f8f9e1ed86fc0ad36fafbf25520713dab1357b93efa7d14d",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkQ03_ready",
+          "class": "type-mismatch",
+          "line": 105,
+          "column": 2,
+          "messageSHA256": "a9fc8ced2edc3cce9d8a22b68e47b293233c915ee4380cf98aab7476cac98111"
+        },
+        {
+          "surface": "checkQ11_invalid",
+          "class": "type-mismatch",
+          "line": 162,
+          "column": 14,
+          "messageSHA256": "26046a991f0fb76b2a5e127feebe827514a6153909b2969b4fe25083099b3dc8"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-Q04-HALTED",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":110,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":111,\"column\":43},\"data\":\"type mismatch\\n  ((export_contract model xs left right domain hl hr).continuation es newLeft newRight answer ready halted hnewLeft\\n      hnewRight).halted\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (query model newLeft newRight es).status =\\n    PackedConstruction.Status.halted\\n      (PackedWordRAM.optionNatPacket (SuccinctClassic.queryTraceResult xs newLeft newRight).value) : Prop\",\"caption\":\"\"}\n{\"severity\":\"error\",\"pos\":{\"line\":163,\"column\":6},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":163,\"column\":21},\"data\":\"tactic 'rewrite' failed, equality or iff proof expected\\n  True\\nmodel : InputModel\\nxs : List Int\\nleft right : Nat\\ndomain : InputDomain model xs\\nhl : left < 2 ^ wordWidth xs.length\\nhr : right < 2 ^ wordWidth xs.length\\nes : Owner\\nnewLeft newRight answer : Nat\\nready : ExpectedReady xs es\\nhalted : es.status = PackedConstruction.Status.halted answer\\nhnewLeft : newLeft < 2 ^ wordWidth xs.length\\nhnewRight : newRight < 2 ^ wordWidth xs.length\\ninvalid : ¬ValidRange xs newLeft newRight\\ncontract : QueryContract model xs newLeft newRight es\\n⊢ (query model newLeft newRight es).status = PackedConstruction.Status.halted 0\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 1483,
+      "stderrBytes": 0,
+      "stdoutSHA256": "89b2683b86cc8fbe39b725ef1393eaf056e6f889b44a5fe2c050eb19ad3a9de1",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkQ04_halted",
+          "class": "type-mismatch",
+          "line": 110,
+          "column": 2,
+          "messageSHA256": "4ede3cbc8065c4b136a695e261fb39a52540a3e554e559d6fc599613ae040b7b"
+        },
+        {
+          "surface": "checkQ11_invalid",
+          "class": "rewrite-requires-equality",
+          "line": 163,
+          "column": 6,
+          "messageSHA256": "0f8946d149d4062b0b486a40e7685c25cf45b914b75ebe7da8e54b69c99e03f7"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-Q05-MEMORY",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":114,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":115,\"column\":43},\"data\":\"type mismatch\\n  ((export_contract model xs left right domain hl hr).continuation es newLeft newRight answer ready halted hnewLeft\\n      hnewRight).memory\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (query model newLeft newRight es).memory = es.memory : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 498,
+      "stderrBytes": 0,
+      "stdoutSHA256": "d8c57b9d2cdc2c292c56c782a8b1dafd268958b6cabde240f5029cd2c2402676",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkQ05_memory",
+          "class": "type-mismatch",
+          "line": 114,
+          "column": 2,
+          "messageSHA256": "4333eaa1e75a686ce978c1f971a389cda8f53f09b86425d9a91597ce7365cc7d"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-Q06-OBSERVATIONS",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":119,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":120,\"column\":49},\"data\":\"type mismatch\\n  ((export_contract model xs left right domain hl hr).continuation es newLeft newRight answer ready halted hnewLeft\\n      hnewRight).observations\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (Executable.queryArray model newLeft newRight es).toRun = Reusable.queryRun model newLeft newRight es.toState : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 561,
+      "stderrBytes": 0,
+      "stdoutSHA256": "258fc99d9f0b9973f816940918a43c8b0d97477bc84ba1594ad0306418d2bf25",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkQ06_observations",
+          "class": "type-mismatch",
+          "line": 119,
+          "column": 2,
+          "messageSHA256": "51e2b20cd6b4ddf2486cb1c991b69ecd9285cf29c4a96b83c6b18a7df16fbc5d"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-Q07-BOUNDARY",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":125,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":126,\"column\":45},\"data\":\"type mismatch\\n  ((export_contract model xs left right domain hl hr).continuation es newLeft newRight answer ready halted hnewLeft\\n      hnewRight).boundary\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (requestProtocol Layout.serviceEntry newLeft newRight es.toState).steps = 4 ∧\\n    (requestProtocol Layout.serviceEntry newLeft newRight es.toState).categories =\\n      [Category.requestAdmission, Category.requestAdmission, Category.controlEntry, Category.controlEntry] : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 719,
+      "stderrBytes": 0,
+      "stdoutSHA256": "b3a884d752172101780dcf4d834b109a96a766c35117d4655f3802f9ec4d0b5d",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkQ07_boundary",
+          "class": "type-mismatch",
+          "line": 125,
+          "column": 2,
+          "messageSHA256": "0502ad476e9767116fb9ff943549b154749dbaa259a13b81e3a8d97913af7c2a"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-Q08-STEPS",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":130,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":131,\"column\":42},\"data\":\"type mismatch\\n  ((export_contract model xs left right domain hl hr).continuation es newLeft newRight answer ready halted hnewLeft\\n      hnewRight).steps\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (Reusable.queryRun model newLeft newRight es.toState).steps =\\n    4 + 4 + 8271 + (compactQueryRun (buildMemory xs) xs.length newLeft newRight).steps : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 594,
+      "stderrBytes": 0,
+      "stdoutSHA256": "207c030b92d040142f50f9e718be1f019ca8c6a614869848b52f5c4c258fbeb9",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkQ08_steps",
+          "class": "type-mismatch",
+          "line": 130,
+          "column": 2,
+          "messageSHA256": "db82dddbeaa726eb76a0ff80f476603af2714552a3533286323d4f119e487b62"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-Q09-BUDGET",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":134,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":135,\"column\":43},\"data\":\"type mismatch\\n  ((export_contract model xs left right domain hl hr).continuation es newLeft newRight answer ready halted hnewLeft\\n      hnewRight).budget\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (Reusable.queryRun model newLeft newRight es.toState).steps ≤ 160257 : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 516,
+      "stderrBytes": 0,
+      "stdoutSHA256": "2e807894ff4c18c27f6c2969abead245d0ff33012366ea2e3ce944192359fcef",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkQ09_budget",
+          "class": "type-mismatch",
+          "line": 134,
+          "column": 2,
+          "messageSHA256": "b751ff4d0ab3eb6804491e5050870342c073feb1249c71afe961a5f13385fd36"
+        }
+      ]
+    },
+    {
+      "id": "EX-WEAK-Q10-CAPACITY",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":146,\"column\":17},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":146,\"column\":33},\"data\":\"type mismatch\\n  projection\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  Ownership.capacity model (query model newLeft newRight es) * wordWidth xs.length ≤\\n    2 * xs.length + retainedRho xs.length : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 446,
+      "stderrBytes": 0,
+      "stdoutSHA256": "5c2bab876faafc8827417160ce6a7c3c27baa5a0239867e83777127dd32fcc6a",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkQ10_capacity",
+          "class": "type-mismatch",
+          "line": 146,
+          "column": 17,
+          "messageSHA256": "4de7de25fda17b076b43f0b924bdd51fb8f77bcc7a1c498077e26d8b246089c1"
+        }
+      ]
+    },
+    {
+      "id": "EX-DELETE-E01-PROGRAM",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":37,\"column\":26},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":37,\"column\":84},\"data\":\"Invalid field `program`: The environment does not contain `RMQ.SuccinctFinal.PackedNative.Lifecycle.ExportContract.program`\\n  export_contract model xs left right domain hl hr\\nhas type\\n  ExportContract model xs left right\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 447,
+      "stderrBytes": 0,
+      "stdoutSHA256": "22eea0a40c9ae461a636e0f98022fd7b9ab9ff278d338e9724303e9c4190b52e",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkE01_program",
+          "class": "unknown-field",
+          "line": 37,
+          "column": 26,
+          "messageSHA256": "53a930831c9399ba9b75d723631115fac3a9d373cc839baacc52f00dd09867d2"
+        }
+      ]
+    },
+    {
+      "id": "EX-DELETE-Q05-MEMORY",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":114,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":115,\"column\":43},\"data\":\"Invalid field `memory`: The environment does not contain `RMQ.SuccinctFinal.PackedNative.Lifecycle.QueryContract.memory`\\n  (export_contract model xs left right domain hl hr).continuation es newLeft newRight answer ready halted hnewLeft\\n    hnewRight\\nhas type\\n  QueryContract model xs newLeft newRight es\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 532,
+      "stderrBytes": 0,
+      "stdoutSHA256": "6c834674c64010f434f7ff246cfc26e2641576dad8b540090157f1ca2d184e49",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkQ05_memory",
+          "class": "unknown-field",
+          "line": 114,
+          "column": 2,
+          "messageSHA256": "163fc9ccd2274d974a6b2344be38f9837e2e9cabad3ebba1ba3a7544a6677242"
+        }
+      ]
+    },
+    {
+      "id": "EX-SIBLING-E01-FIXED-WORD",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":37,\"column\":20},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":37,\"column\":84},\"data\":\"type mismatch\\n  (export_contract model xs left right domain hl hr).program\\nhas type\\n  wordProgram = wordProgram : Prop\\nbut is expected to have type\\n  cachedProgram model = (Layout.program model).toArray : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 438,
+      "stderrBytes": 0,
+      "stdoutSHA256": "7b84e83d16bfbaca837c9a62e88dcf63d9434f0060be1f838a90a9d8e45525dd",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkE01_program",
+          "class": "type-mismatch",
+          "line": 37,
+          "column": 20,
+          "messageSHA256": "f348230664cd07751a0dbde2ce1c570eca120d44340150604a7ed6d81e30939b"
+        }
+      ]
+    },
+    {
+      "id": "EX-SIBLING-E02-OTHER-REQUEST",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":40,\"column\":20},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":40,\"column\":82},\"data\":\"type mismatch\\n  (export_contract model xs left right domain hl hr).owner\\nhas type\\n  buildFirst model xs 0 0 = buildFirst model xs 0 0 : Prop\\nbut is expected to have type\\n  buildFirst model xs left right = Ownership.owner model xs left right : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 476,
+      "stderrBytes": 0,
+      "stdoutSHA256": "c29019226b5c5a49d2608bec0483d2a4b2f2bc7be393a373f86734c9264e93bc",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkE02_owner",
+          "class": "type-mismatch",
+          "line": 40,
+          "column": 20,
+          "messageSHA256": "9d1a0ec045e0ffde2c920a26b1b2d19d2782e6fb96fb67f07ab46226fc9edf45"
+        }
+      ]
+    },
+    {
+      "id": "EX-SIBLING-Q05-OUTPUT-REFLEXIVITY",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":114,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":115,\"column\":43},\"data\":\"type mismatch\\n  ((export_contract model xs left right domain hl hr).continuation es newLeft newRight answer ready halted hnewLeft\\n      hnewRight).memory\\nhas type\\n  (query model newLeft newRight es).memory = (query model newLeft newRight es).memory : Prop\\nbut is expected to have type\\n  (query model newLeft newRight es).memory = es.memory : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 577,
+      "stderrBytes": 0,
+      "stdoutSHA256": "12d48705fa9a76ad9d533f082d1bcd03717db11e1a05c62344225d4ce9e83766",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkQ05_memory",
+          "class": "type-mismatch",
+          "line": 114,
+          "column": 2,
+          "messageSHA256": "4fc9cbb09cb14f353b5401eb9ecd83c9bcef2a0596781201ddb5cc0ff4d94079"
+        }
+      ]
+    },
+    {
+      "id": "EX-SIBLING-Q10-INCOMING-CAPACITY",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":146,\"column\":17},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Validation/LifecycleNativeContract.lean\",\"endPos\":{\"line\":146,\"column\":33},\"data\":\"type mismatch\\n  projection\\nhas type\\n  Ownership.capacity model es * wordWidth xs.length ≤ 2 * xs.length + retainedRho xs.length : Prop\\nbut is expected to have type\\n  Ownership.capacity model (query model newLeft newRight es) * wordWidth xs.length ≤\\n    2 * xs.length + retainedRho xs.length : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 533,
+      "stderrBytes": 0,
+      "stdoutSHA256": "c69cd17eae6705da308bf33dc0c3ee317f44b17d4a54c5a709aeae3373a82264",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "checkQ10_capacity",
+          "class": "type-mismatch",
+          "line": 146,
+          "column": 17,
+          "messageSHA256": "abb0ee9582aa38bf43db151c825b2965b0c0436b8dd364912c86e2c8a8cf150d"
+        }
+      ]
+    },
+    {
+      "id": "EX-ACCEPT-COMMENT",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "stdoutBytes": 0,
+      "stderrBytes": 0,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": []
+    },
+    {
+      "id": "EX-ACCEPT-UNUSED-FACT",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "stdoutBytes": 0,
+      "stderrBytes": 0,
+      "stdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": []
+    },
+    {
+      "id": "AD-WEAK-COUNT-CONVERSION",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":61,\"column\":41},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Core/WordRAM/Native/Lifecycle/AdmissionContract.lean\",\"endPos\":{\"line\":61,\"column\":80},\"data\":\"type mismatch\\n  nativeCount_toUSize_exact count bounded\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  (USize.ofNat count).toNat = count : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 392,
+      "stderrBytes": 0,
+      "stdoutSHA256": "da968d78869bbd81262c4aabfa4f2cc44b8a6bea63eeaf016a709d9b80b4873f",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "count_conversion",
+          "class": "type-mismatch",
+          "line": 61,
+          "column": 41,
+          "messageSHA256": "44739a27c5748717cdba60c61b1e297f93daf7752de35d4c07bf6a43adf5e984"
+        }
+      ]
+    },
+    {
+      "id": "AD-WEAK-WORD-DOMAIN",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":129,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Core/WordRAM/Native/Lifecycle/AdmissionContract.lean\",\"endPos\":{\"line\":129,\"column\":57},\"data\":\"type mismatch\\n  buildAdmission_word_rejects xs count left right outside\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  buildAdmission InputModel.word xs count left right = false : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 434,
+      "stderrBytes": 0,
+      "stdoutSHA256": "a73e5f92fba7d8ac556488a8e7b183ef6ebb103545ec7e2be1fc10e8473b0c3b",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "word_domain_failure",
+          "class": "type-mismatch",
+          "line": 129,
+          "column": 2,
+          "messageSHA256": "0ad01fc8bfdd7ea2a13cfed85a998b0bc314ea5f8039e9d56056617550d7749e"
+        }
+      ]
+    },
+    {
+      "id": "AD-WEAK-NATURAL-DECODE",
+      "exit": 1,
+      "stdout": "{\"severity\":\"error\",\"pos\":{\"line\":35,\"column\":2},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"RMQ/Core/WordRAM/Native/Lifecycle/AdmissionContract.lean\",\"endPos\":{\"line\":35,\"column\":27},\"data\":\"type mismatch\\n  encodeNatural_exact value\\nhas type\\n  True : Prop\\nbut is expected to have type\\n  0 < (encodeNatural value).size ∧\\n    (encodeNatural value).size = value.log2 / 8 + 1 ∧ decodeMagnitude (encodeNatural value) = value : Prop\",\"caption\":\"\"}\n",
+      "stderr": "",
+      "stdoutBytes": 481,
+      "stderrBytes": 0,
+      "stdoutSHA256": "b652cbd35d07f0616346a48cece2a4102bbd3b4a2c3c2492b6ee00ac361d0a85",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": [
+        {
+          "surface": "natural_serialization",
+          "class": "type-mismatch",
+          "line": 35,
+          "column": 2,
+          "messageSHA256": "6c39a37540fc54966780ec37fda6e175cdeb9d975d3ff0bbb478d8d420af3bd6"
+        }
+      ]
+    }
+  ],
+  "review": {
+    "reviewedUtc": "2026-09-27T07:24:18.657674+00:00",
+    "reviewer": "root, with independent read-only client_selectors review of first 25 cases",
+    "discovery": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\lifecycle-native1\\export-mutations\\20260927T070116393-4514a722\\RESULT.json",
+      "bytes": 2154595,
+      "sha256": "a17d0f53da280bd5b827a41a43e739ad63f526c0b1cbde412a603c08cbf42ea0"
+    },
+    "candidate": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\lifecycle-native1\\export-mutations\\20260927T070116393-4514a722\\DIAGNOSTICS.candidate.json",
+      "bytes": 54208,
+      "sha256": "bc9591a741b31100527ea313b95b48b9d0becb9cadfb108f9b504d849cad3848"
+    },
+    "independentFirst25": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\lifecycle-native1\\export-independent-review\\20260927T070116393-first25\\REVIEW.json",
+      "bytes": 440920,
+      "sha256": "5a0246223fcb1c09f66df046c416c336563e737761b9fced9ef5e7ef8219b6e1"
+    },
+    "focusedLast9": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\lifecycle-native1\\export-mutations\\20260927T062619289-c2944c55\\DIAGNOSTICS.candidate.json",
+      "bytes": 9394,
+      "sha256": "bbc31b62da5344fafaa0916da8c56871e77dd18096e033a192a544103faed5e0"
+    },
+    "consumer": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\RMQ\\Validation\\LifecycleNativeContract.lean",
+      "bytes": 46399,
+      "sha256": "4075aa30a3587995091debe002aea8ca0b111dddbf210082f0e9a019fd6314c2"
+    },
+    "exactLast9EqualPreviouslyReadFocusedDiagnostics": true,
+    "expectedRejects": 32,
+    "expectedAccepts": 2,
+    "producerAndDescendantOrdinaryZeroStages": 66,
+    "diagnosticObjects": 50,
+    "recordedExpectedSignatureEntries": 48,
+    "distinctExpectedCheckNames": 29,
+    "conclusion": "All intended consumers fail only after ordinary successful producer/descendant compilation. The 23 field weakenings, two deletions, four fixed-object sibling substitutions and three admission/codec weakenings reject at their intended source-derived surfaces; the two accept controls compile. No timeout, crash, resource exception or unrelated parser/import failure is accepted as a semantic rejection.",
+    "coordinateBoundary": "Registry declaration_line values are historical signature-freeze hints. Actual source-derived check ranges, exact signature_source and complete raw diagnostic positions are authoritative.",
+    "rawDiagnosticsPreserved": true
+  }
+}

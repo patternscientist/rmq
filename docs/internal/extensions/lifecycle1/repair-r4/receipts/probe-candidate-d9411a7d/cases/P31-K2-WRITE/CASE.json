@@ -1,0 +1,38 @@
+{
+  "id": "P31-K2-WRITE",
+  "finding": "P3-1",
+  "harness": "docs/internal/extensions/lifecycle1/repair-r2/run_check.ps1",
+  "harnessSha256": "f3ae2e4aea800c2f6cb094a3a74ca4fb380b9bf3aa8f61f8e79ae2717b0184cc",
+  "stage": "block",
+  "deadline": 60,
+  "process": {
+    "Stage": "P31-K2-WRITE",
+    "ExitCode": 1,
+    "Output": [
+      "probe exit=0 seconds=0.875 timeout=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P31-K2-WRITE\\root\\.lake\\repair-r2\\checks\\probe",
+      "R2-CHECK: durable result write failed: Exception calling \"WriteAllText\" with \"3\" argument(s): \"Access to the path 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P31-K2-WRITE\\root\\.lake\\repair-r2\\checks\\probe\\result.json' is denied.\""
+    ],
+    "StandardOutput": [
+      "probe exit=0 seconds=0.875 timeout=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P31-K2-WRITE\\root\\.lake\\repair-r2\\checks\\probe"
+    ],
+    "StandardError": [
+      "R2-CHECK: durable result write failed: Exception calling \"WriteAllText\" with \"3\" argument(s): \"Access to the path 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\candidate-repaired\\cases\\P31-K2-WRITE\\root\\.lake\\repair-r2\\checks\\probe\\result.json' is denied.\""
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 4.113,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  },
+  "completedLaunch": true,
+  "durable": null,
+  "durableSha256": null,
+  "verdict": null,
+  "childFailure": null,
+  "resultTimedOut": null,
+  "defectPresent": false,
+  "repairedShape": true,
+  "expect": "repaired",
+  "passed": true
+}

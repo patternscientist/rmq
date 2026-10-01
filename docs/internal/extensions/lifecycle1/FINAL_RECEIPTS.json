@@ -1,0 +1,1961 @@
+{
+  "schema": 1,
+  "base": "bf31f983205175481fcb659caa4dfb70ef43e361",
+  "sourceCommit": "299ec6527ca2fbcf73cfc34e9de75f4a1f34140c",
+  "sourceManifest": {
+    "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/docs/internal/extensions/lifecycle1/SOURCE_MANIFEST.json",
+    "bytes": 16501,
+    "sha256": "fea2771ddd95bfe76dc89c6b1988201d28ad35b34e3f1e935582492f2f34110f"
+  },
+
+  "createdUtc": "2026-09-21T02:29:05.0571998Z",
+  "platform": "Windows; no separate Linux execution in this local candidate",
+  "defaultBuild": {
+    "mode": "default",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "startedUtc": "2026-09-21T01:59:08.1668109Z",
+    "endedUtc": "2026-09-21T01:59:14.0690605Z",
+    "deadlineSeconds": 7200,
+    "outputLimitBytes": 16777216,
+    "exitCode": 0,
+    "durationSeconds": 5.732,
+    "timedOut": false,
+    "outputLimitExceeded": false,
+    "ownership": "kill-on-close-job",
+    "terminatedIds": []
+  },
+
+  "namedBuild": {
+    "mode": "named",
+    "command": [
+      "lake",
+      "build",
+      "RMQ.Core.WordRAM.Lifecycle.Capstone",
+      "RMQ.Validation.LifecycleContract",
+      "rmq_lifecycle_validate",
+      "RMQ.Headlines.Lifecycle",
+      "RMQ.Core.WordRAM.Lifecycle.Provenance"
+    ],
+    "startedUtc": "2026-09-21T01:59:37.0835334Z",
+    "endedUtc": "2026-09-21T02:00:34.8390924Z",
+    "deadlineSeconds": 7200,
+    "outputLimitBytes": 16777216,
+    "exitCode": 0,
+    "durationSeconds": 57.584,
+    "timedOut": false,
+    "outputLimitExceeded": false,
+    "ownership": "kill-on-close-job",
+    "terminatedIds": []
+  },
+
+  "inventory": {
+    "mode": "inventory",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "scripts/lifecycle_inventory.lean"
+    ],
+    "startedUtc": "2026-09-21T02:01:22.6582053Z",
+    "endedUtc": "2026-09-21T02:03:38.2852955Z",
+    "deadlineSeconds": 300,
+    "outputLimitBytes": 16777216,
+    "exitCode": 0,
+    "durationSeconds": 135.302,
+    "timedOut": false,
+    "outputLimitExceeded": false,
+    "ownership": "kill-on-close-job",
+    "terminatedIds": []
+  },
+
+  "nativeProcesses": [
+    {
+      "name": "registry",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "durationSeconds": 3.056,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "ownership": "kill-on-close-job",
+      "terminatedIds": [],
+      "expectedCases": []
+    },
+
+    {
+      "name": "startup",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "durationSeconds": 2.508,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "ownership": "kill-on-close-job",
+      "terminatedIds": [],
+      "expectedCases": []
+    },
+
+    {
+      "name": "focused",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "durationSeconds": 2.669,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "ownership": "kill-on-close-job",
+      "terminatedIds": [],
+      "expectedCases": [
+        "L01-W-EMPTY"
+      ]
+    },
+
+    {
+      "name": "reject-empty",
+      "exitCode": 1,
+      "expectedExit": 1,
+      "durationSeconds": 3.06,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "ownership": "kill-on-close-job",
+      "terminatedIds": [],
+      "expectedCases": []
+    },
+
+    {
+      "name": "reject-whitespace",
+      "exitCode": 1,
+      "expectedExit": 1,
+      "durationSeconds": 4.646,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "ownership": "kill-on-close-job",
+      "terminatedIds": [],
+      "expectedCases": []
+    },
+
+    {
+      "name": "reject-unknown",
+      "exitCode": 1,
+      "expectedExit": 1,
+      "durationSeconds": 4.601,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "ownership": "kill-on-close-job",
+      "terminatedIds": [],
+      "expectedCases": []
+    },
+
+    {
+      "name": "reject-duplicate",
+      "exitCode": 1,
+      "expectedExit": 1,
+      "durationSeconds": 3.443,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "ownership": "kill-on-close-job",
+      "terminatedIds": [],
+      "expectedCases": []
+    },
+
+    {
+      "name": "reject-channels",
+      "exitCode": 1,
+      "expectedExit": 1,
+      "durationSeconds": 2.382,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "ownership": "kill-on-close-job",
+      "terminatedIds": [],
+      "expectedCases": []
+    },
+
+    {
+      "name": "full",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "durationSeconds": 81.505,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "ownership": "kill-on-close-job",
+      "terminatedIds": [],
+      "expectedCases": [
+        "L01-W-EMPTY",
+        "L02-C-EMPTY",
+        "L03-W-SINGLE",
+        "L04-C-SINGLE",
+        "L05-W-REPEAT",
+        "L06-C-REPEAT",
+        "L07-W-TIE",
+        "L08-C-TIE",
+        "L09-W-INVALID",
+        "L10-C-INVALID",
+        "L11-W-DIRTY",
+        "L12-C-DIRTY",
+        "L13-W-N24",
+        "L14-C-N24",
+        "L15-W-N83",
+        "L16-C-N83"
+      ]
+    }
+
+  ],
+  "dependencySummary": {
+    "passed": true,
+    "selected": [
+      "D01_CONSTRUCTION",
+      "D02_RETAINED",
+      "D03_SAFETY",
+      "D04_PHYSICAL",
+      "D05_EXECUTABLE",
+      "D06_REUSABLE",
+      "D07_UNIFORM",
+      "D08_DELETE_PHYSICAL",
+      "D09_SIBLING_PHYSICAL",
+      "D10_PUBLIC_TRUE",
+      "D11_WORD_TRUE",
+      "D12_COMPARISON_TRUE",
+      "D13_ALIAS_PHYSICAL",
+      "D14_RETAINED_COST",
+      "D15_CODE_FETCH_DROP",
+      "D16_PREFIX_RESOURCES",
+      "D17_READY_BANK",
+      "D18_STORE_TRUE",
+      "D19_ACCEPT_COMMENT",
+      "D20_ACCEPT_IDENTITY",
+      "P01_OUTPUT",
+      "P02_METADATA",
+      "P03_COPY",
+      "P04_RELEASES",
+      "P05_PUBLIC_TRUE",
+      "P06_ACCEPT_IDENTITY"
+    ],
+    "cases": [
+      {
+        "id": "D01_CONSTRUCTION",
+        "expected": "reject",
+        "producerSourceHash": "ee35e15799b965e65441039e1f8d61c96f8a04aa24913813c6c7506c8cb0fae5",
+        "producerArtifactHash": "0727d5bb327783158dc838217e7cb5f60d0dbe121ff8433b133eed7d5dbde082",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 13.009,
+        "consumerSeconds": 8.479,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D02_RETAINED",
+        "expected": "reject",
+        "producerSourceHash": "e88bdaf169a4d0b4e0d3ed93358bb099cf9c8a33aa5cf87f7319f20d50d83426",
+        "producerArtifactHash": "da55f9bdc89862a1c147273df4a527e0f2480f539f22913f352872226f46bdf7",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 2.919,
+        "consumerSeconds": 13.298,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D03_SAFETY",
+        "expected": "reject",
+        "producerSourceHash": "56d068d427d8d480dbd1d5af4801cc8cf3440b302e2f38e26e46a6de26c96500",
+        "producerArtifactHash": "e245d7831d8349487cbffb2c5839fd3fe6f019877e52789ee2b52c50ae9b2453",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 3.124,
+        "consumerSeconds": 13.242,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D04_PHYSICAL",
+        "expected": "reject",
+        "producerSourceHash": "0cd5ccf68db2f9e406b3fc9d879f150c3f6669add0b1cf58746e35f23babf2f0",
+        "producerArtifactHash": "d3e417e9a21a71c634dd0e4ef745a54ae65f0909676c152e14c6bbd288e2f341",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 2.755,
+        "consumerSeconds": 13.555,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D05_EXECUTABLE",
+        "expected": "reject",
+        "producerSourceHash": "e7c3978f920f5913ee9e8741a5b454c0aaf6a90885ee7e8aaf20fb43e5bb9325",
+        "producerArtifactHash": "3dc5cb8f7185c55bb90eed4ac6673d38382c7b2557057c0a27b090bcb7e93b51",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 5.269,
+        "consumerSeconds": 14.677,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D06_REUSABLE",
+        "expected": "reject",
+        "producerSourceHash": "2a71e59114d2a4333d7342921f3897fb59f81dd4bee34eb6b54d1c5e94dd631b",
+        "producerArtifactHash": "85a7beeb7c7e6976343e434bf82b94614167b983e45c008885371911e22fa57a",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 3.793,
+        "consumerSeconds": 16.602,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D07_UNIFORM",
+        "expected": "reject",
+        "producerSourceHash": "d77b1c38d03eef57bd6a1988617b0b3e541bd6714a5dbfe40cbe3fdc996055f2",
+        "producerArtifactHash": "7c0128bff267695edb877e4e47d722052cea8e32ca004b69568634ef069c6542",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 4.336,
+        "consumerSeconds": 16.106,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D08_DELETE_PHYSICAL",
+        "expected": "reject",
+        "producerSourceHash": "1d6307530783ce3119febb12d6d8f8f613782c22cfafc2a5ee736c4a49e7f856",
+        "producerArtifactHash": "ee8fab15be0960033482abf3c7ad0abae76c1e4edd9c6694698cec20028909e5",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 3.733,
+        "consumerSeconds": 17.258,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D09_SIBLING_PHYSICAL",
+        "expected": "reject",
+        "producerSourceHash": "a06fa44f17a0350fafec061991b0393b361e0af980ca05e4a6cbfefbbb39da06",
+        "producerArtifactHash": "91b4d01e3f4f957d6c534b63e8c52514ecfa086d0069e36894cffc56f79de0d6",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 4.782,
+        "consumerSeconds": 14.447,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D10_PUBLIC_TRUE",
+        "expected": "reject",
+        "producerSourceHash": "b0cf2e95c4ec93868aba0b49809a96d1b8e4419a27e941fc57aa6f72b48456de",
+        "producerArtifactHash": "206639ad9ca6351eb40aa572b5c7ae62ff8f96d2f3d659efd4b71176e568f3f5",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 4.114,
+        "consumerSeconds": 14.57,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D11_WORD_TRUE",
+        "expected": "reject",
+        "producerSourceHash": "b176de2aab37b498ea7c3d6e59878c0eee521f125350bcf024e24f815e5cb14a",
+        "producerArtifactHash": "0bad9085b6ba1365b81ed7b21d27462bf2cda9c50a002566a785576724092542",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 4.242,
+        "consumerSeconds": 15.628,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D12_COMPARISON_TRUE",
+        "expected": "reject",
+        "producerSourceHash": "8a8b5c4fc3fdaffaf17146f75bbbc522bc36878327b479ad3e4687f9659e9028",
+        "producerArtifactHash": "44a32e2b59a595f7aa9597ccd788aea386b6b4f5f6cc9b54f91288caf0850d52",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 3.676,
+        "consumerSeconds": 15.064,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D13_ALIAS_PHYSICAL",
+        "expected": "reject",
+        "producerSourceHash": "4639177cf5c69e0bee9bf1ce15d793a045a722ddf843fa305f585d737e9f5848",
+        "producerArtifactHash": "9a3a08745513f4c188be759c31dfb83cd60e7f31ef538427181b2862045e45b1",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 4.006,
+        "consumerSeconds": 13.979,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D14_RETAINED_COST",
+        "expected": "reject",
+        "producerSourceHash": "2a34ddf364560007ef60a2c6ca0f44c31d11294c445448543e01a5b060d7340a",
+        "producerArtifactHash": "19e220e1fdb844c2664ef6a12985641f4fc41557c0022704daa49e4f59195d9c",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 3.888,
+        "consumerSeconds": 16.209,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D15_CODE_FETCH_DROP",
+        "expected": "reject",
+        "producerSourceHash": "436ce8780b5fc3f7d2288ed559e1cd41cbed8f1e4457d34ce1e664eb3aa82936",
+        "producerArtifactHash": "41b434e0abfb50010c6c3a0c162875999f5ca3bf6f2611812542670a40a721b8",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 3.713,
+        "consumerSeconds": 15.991,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D16_PREFIX_RESOURCES",
+        "expected": "reject",
+        "producerSourceHash": "57e9ebf8499e757ad888eb3bd829b47692c353e425b5acfe4bb6a1f431bbac59",
+        "producerArtifactHash": "40d214d45cfc2c9507587d18e18cef28589f21026ec0b609e07bf5f74bddf50a",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 4.544,
+        "consumerSeconds": 14.402,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D17_READY_BANK",
+        "expected": "reject",
+        "producerSourceHash": "84c6ba71409dc60d961a67ce58b0c131e77b870eb0ffc308b612e60f0eb882b4",
+        "producerArtifactHash": "3d5d7d4f9caf8aee33013e977711a83904ac80270b52238450e0616a82ebd3f3",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 4.05,
+        "consumerSeconds": 15.118,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D18_STORE_TRUE",
+        "expected": "reject",
+        "producerSourceHash": "f533219471fbf376f7ccd790822e5d0cee6f26b8334f7030001698dfee9313e7",
+        "producerArtifactHash": "c0ed4d757b9e546e7b200a2943f7dff553c264dfab892b3fe075aaaf22df6956",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 4.405,
+        "consumerSeconds": 15.67,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D19_ACCEPT_COMMENT",
+        "expected": "accept",
+        "producerSourceHash": "9084488c56ecca4f6e08905f69a3296d5137f284834ed8ab8e9b0baf39ed8067",
+        "producerArtifactHash": "1507459c115ca9bbcee4d27dc52a504ce174546770a333e0e90fa2a262e3c157",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 3.024,
+        "consumerSeconds": 13.1,
+        "consumerExit": 0,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "D20_ACCEPT_IDENTITY",
+        "expected": "accept",
+        "producerSourceHash": "ba48ee2d9d0e845df5c642dbe08879da4a19c25ef54abc744c564b331dc68a69",
+        "producerArtifactHash": "6c84889c55148c3f9e894ace714cc786faf96a1229846582085e4539eac63337",
+        "consumerHash": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+        "producerSeconds": 4.123,
+        "consumerSeconds": 15.45,
+        "consumerExit": 0,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "P01_OUTPUT",
+        "expected": "reject",
+        "producerSourceHash": "d712821966f312fd210521c58db60c1e1e6c10453b37fcd57804e006d3c1b170",
+        "producerArtifactHash": "ea6e4d9ab3b05424f77835552d36fd84d1510b3cfc4db663cbef4b7c48ae82e7",
+        "consumerHash": "d7d291fb45e376ef2be54cca1d1c93a603c69fbd41ade2a702836fc3a687bb4a",
+        "producerSeconds": 4.193,
+        "consumerSeconds": 3.634,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "P02_METADATA",
+        "expected": "reject",
+        "producerSourceHash": "32e4681cbc3d3ec34bc762cc7ddc40ec696f4e320e950815338c0d20dbda98ce",
+        "producerArtifactHash": "29bdb74df9aa5ca20466c6052d5d191300f78c4c193740f5364819a0ebbb2a3d",
+        "consumerHash": "d7d291fb45e376ef2be54cca1d1c93a603c69fbd41ade2a702836fc3a687bb4a",
+        "producerSeconds": 3.96,
+        "consumerSeconds": 4.126,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "P03_COPY",
+        "expected": "reject",
+        "producerSourceHash": "b75618e92bc28fb7e923879d5418fb8701401a0b435218c9a9e5c7726252012f",
+        "producerArtifactHash": "42a76dfab837f66c90dd4cd0f7775e0451561b0c737bf7a47dad5b4c5bbe8511",
+        "consumerHash": "d7d291fb45e376ef2be54cca1d1c93a603c69fbd41ade2a702836fc3a687bb4a",
+        "producerSeconds": 4.011,
+        "consumerSeconds": 4.01,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "P04_RELEASES",
+        "expected": "reject",
+        "producerSourceHash": "c496ee631634ede795f53137d22351392c24b3f2e49c1f686277f557b623afe1",
+        "producerArtifactHash": "65025acfcf078fdd11a8fdaf9c912c98cb559b68b85f1f94969a26ef4bede160",
+        "consumerHash": "d7d291fb45e376ef2be54cca1d1c93a603c69fbd41ade2a702836fc3a687bb4a",
+        "producerSeconds": 4.519,
+        "consumerSeconds": 3.845,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "P05_PUBLIC_TRUE",
+        "expected": "reject",
+        "producerSourceHash": "986c76f3866b23577786ead04cbfaaf60f07f8a5c1df44c3074d9ccb1dc730fa",
+        "producerArtifactHash": "f950e436eedd4983f363d3adc7939ed6a02c8d0649553fdf873de369366f94a3",
+        "consumerHash": "d7d291fb45e376ef2be54cca1d1c93a603c69fbd41ade2a702836fc3a687bb4a",
+        "producerSeconds": 3.86,
+        "consumerSeconds": 3.587,
+        "consumerExit": 1,
+        "restored": true,
+        "privateRestored": true
+      },
+
+      {
+        "id": "P06_ACCEPT_IDENTITY",
+        "expected": "accept",
+        "producerSourceHash": "454ecb3a9615977aa2d5d52015771a187fada6e6f5ce1f90d5a125cd873d273e",
+        "producerArtifactHash": "2d5aec69897a18cfec597263766479bcd6440537d60b441a9220847917086eb4",
+        "consumerHash": "d7d291fb45e376ef2be54cca1d1c93a603c69fbd41ade2a702836fc3a687bb4a",
+        "producerSeconds": 4.075,
+        "consumerSeconds": 5.885,
+        "consumerExit": 0,
+        "restored": true,
+        "privateRestored": true
+      }
+
+    ],
+    "shadowRemoved": true,
+    "restored": true,
+    "registrySha256": "4c9c7a4259808bb64c74656fd52559752e76f02834f2ac8567f5830968a5b80d"
+  },
+
+  "artifacts": [
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/baseline.json",
+      "bytes": 2422,
+      "sha256": "22c9e036c518ae1b39dbfc5b3e476af36f0a363cdc0c42cef4825c0e8213455f"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/cases.json",
+      "bytes": 12674,
+      "sha256": "b28bd3e34a8cc5b487951082a8791b8a3aa6bfc24f54c0b90e5f1bf0cb451394"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D01_CONSTRUCTION-consumer.json",
+      "bytes": 6126,
+      "sha256": "9af20936248b0082415313dc68295c1ede14e64571bfdecf052ba78fc6b2af4a"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D01_CONSTRUCTION-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D01_CONSTRUCTION-consumer.stdout.txt",
+      "bytes": 2321,
+      "sha256": "271f74d8c249e8fc7837051350d99a25a8510f9d45cf8552b561e13915ac2666"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D01_CONSTRUCTION-producer.json",
+      "bytes": 1465,
+      "sha256": "b1e1124429114539b751a55fb1b1c1e599c2cbe193738d43f428dad1a8c307a2"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D01_CONSTRUCTION-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D01_CONSTRUCTION-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D02_RETAINED-consumer.json",
+      "bytes": 5969,
+      "sha256": "4eb1b05dba8ac08098e0750f54972b333d9b8eea49ba1fccfc1d605762217789"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D02_RETAINED-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D02_RETAINED-consumer.stdout.txt",
+      "bytes": 2109,
+      "sha256": "7a638b5e2f3355714217379763d7b71161b573a3b19692a693ee835c9c1a4659"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D02_RETAINED-producer.json",
+      "bytes": 1444,
+      "sha256": "99bd397e5840bba2edb507fec89b22280aab33ab714e6369a7751949d4555808"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D02_RETAINED-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D02_RETAINED-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D03_SAFETY-consumer.json",
+      "bytes": 3177,
+      "sha256": "a5dd3534b4fb42c5271728ad43270495a37045807fa1e7115d1a771cfb2dfbde"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D03_SAFETY-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D03_SAFETY-consumer.stdout.txt",
+      "bytes": 876,
+      "sha256": "18459b6b29bca63a0ef48e92ca0445ec4a9648646aa9d09b222d8d4e62fee06e"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D03_SAFETY-producer.json",
+      "bytes": 1434,
+      "sha256": "2709d02a3e3ba4ac35f7e7605bbcca603847174f4ff9e900820238ed873fa783"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D03_SAFETY-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D03_SAFETY-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D04_PHYSICAL-consumer.json",
+      "bytes": 7261,
+      "sha256": "c3cc5b6d2f61f48c047bc93dc258afae9815d2b34d12ff83899cfb038a799435"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D04_PHYSICAL-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D04_PHYSICAL-consumer.stdout.txt",
+      "bytes": 2886,
+      "sha256": "1c1f81a02c3ab9c94ef3b49c62bfe2675eb0c525d491ee6a2f894aeb1292760c"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D04_PHYSICAL-producer.json",
+      "bytes": 1444,
+      "sha256": "e7a3c3aacc48bea9ad67bc40eb5de0bd128c0f54f1579e0f4f019b64c8005d68"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D04_PHYSICAL-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D04_PHYSICAL-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D05_EXECUTABLE-consumer.json",
+      "bytes": 3339,
+      "sha256": "1ab286afd31bc2921bc6e67ac88702ab71c9e29e2dcff9657e0425e2dd1a71d4"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D05_EXECUTABLE-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D05_EXECUTABLE-consumer.stdout.txt",
+      "bytes": 946,
+      "sha256": "67ac0769d473379e59bf1df080d3cf19eb349445820a94465aee60bf1d03a1dc"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D05_EXECUTABLE-producer.json",
+      "bytes": 1454,
+      "sha256": "52b4599c4b895c061890bd3242388d2d574dc5ddef34515e9d3213e748dfd85c"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D05_EXECUTABLE-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D05_EXECUTABLE-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D06_REUSABLE-consumer.json",
+      "bytes": 6581,
+      "sha256": "fd35d95ee88c1f90deb85761a041ed20787ff1f7bee69d336363f53052524377"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D06_REUSABLE-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D06_REUSABLE-consumer.stdout.txt",
+      "bytes": 2552,
+      "sha256": "8a12b064ab252b0aa6423f7818fd8342d036f1f7ea8576882695ba79810e911d"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D06_REUSABLE-producer.json",
+      "bytes": 1444,
+      "sha256": "44bba93e2958211f94f001997799dc2e69dabf4a2b5ee380c120f2c58cb0a6d1"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D06_REUSABLE-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D06_REUSABLE-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D07_UNIFORM-consumer.json",
+      "bytes": 2902,
+      "sha256": "f760e309d5119a1f3d3a47f7567f208643751f223d92b504cbf73ed295a09f1f"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D07_UNIFORM-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D07_UNIFORM-consumer.stdout.txt",
+      "bytes": 740,
+      "sha256": "44cf27d9ff384b6a1c64b777c35419e0db2b3270c8aae0e34a3f4b3b15933f13"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D07_UNIFORM-producer.json",
+      "bytes": 1439,
+      "sha256": "6115058899998d005f9aa880ccb31864d1274453a3a0487e4c889b95a24207b7"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D07_UNIFORM-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D07_UNIFORM-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D08_DELETE_PHYSICAL-consumer.json",
+      "bytes": 2648,
+      "sha256": "5066a1763b7ff6d978252629dd19783ac662b33b09390577c2e2aafb7cf50dd3"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D08_DELETE_PHYSICAL-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D08_DELETE_PHYSICAL-consumer.stdout.txt",
+      "bytes": 597,
+      "sha256": "ab2a7c9e5343e9600421ba8d645b32bbc076dfe20d34721ade9ea2236ae60a72"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D08_DELETE_PHYSICAL-producer.json",
+      "bytes": 1479,
+      "sha256": "19dcff20d2a8f609fa07821b2ce39a0db493ae2c477049af918758c0a39658b8"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D08_DELETE_PHYSICAL-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D08_DELETE_PHYSICAL-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D09_SIBLING_PHYSICAL-consumer.json",
+      "bytes": 7375,
+      "sha256": "6644070cc95ea6a7eafed6d555d55a5487bf2c44bce6c6aee01ecdba78e58263"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D09_SIBLING_PHYSICAL-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D09_SIBLING_PHYSICAL-consumer.stdout.txt",
+      "bytes": 2923,
+      "sha256": "47b4d6ca9abf513f7a4d744d3292be3c05b438cdac57ceff2516fc98ad064a34"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D09_SIBLING_PHYSICAL-producer.json",
+      "bytes": 1484,
+      "sha256": "4c898592c7e099cf500cda26efdf897742fead07e054e46a268e9a57b2b669f6"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D09_SIBLING_PHYSICAL-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D09_SIBLING_PHYSICAL-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D10_PUBLIC_TRUE-consumer.json",
+      "bytes": 5065,
+      "sha256": "5b48819b9d2764810a9308939e59afcfef9782717f4f46c61713e952bc9bcde2"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D10_PUBLIC_TRUE-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D10_PUBLIC_TRUE-consumer.stdout.txt",
+      "bytes": 1656,
+      "sha256": "656bf1b3c9139181603e29906e5566b559af876d2414fad992a1c92bbbf73250"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D10_PUBLIC_TRUE-producer.json",
+      "bytes": 1459,
+      "sha256": "9f3054e21b99274bf32c56a05e6d774cd146159ee5227547315d2511d13f10da"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D10_PUBLIC_TRUE-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D10_PUBLIC_TRUE-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D11_WORD_TRUE-consumer.json",
+      "bytes": 2528,
+      "sha256": "9549e5787b2cd42cec549c60ddd7201d8620af7aba5b98cc9598954fc8d01ae6"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D11_WORD_TRUE-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D11_WORD_TRUE-consumer.stdout.txt",
+      "bytes": 550,
+      "sha256": "eb16ab388b15eca5fa534ae57823d931bbd6ab21a80695b15648a0240ad94b4a"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D11_WORD_TRUE-producer.json",
+      "bytes": 1449,
+      "sha256": "276f6dcce55f9be51ce849785d57301a6f39012c0f4c9a3abe02e3e650f0181a"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D11_WORD_TRUE-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D11_WORD_TRUE-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D12_COMPARISON_TRUE-consumer.json",
+      "bytes": 2582,
+      "sha256": "e23f861585e21b48b34c49b7533054824f388a69e745a591a533f03857d3e47a"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D12_COMPARISON_TRUE-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D12_COMPARISON_TRUE-consumer.stdout.txt",
+      "bytes": 562,
+      "sha256": "866e72fc68a535fb6450e387956009842cd3b5ebcb94aa42645980a2f60c3171"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D12_COMPARISON_TRUE-producer.json",
+      "bytes": 1479,
+      "sha256": "f33384e815f111a72cf4c327ae45430012fd205ac828dbe92fa059e1fc44e5a0"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D12_COMPARISON_TRUE-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D12_COMPARISON_TRUE-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D13_ALIAS_PHYSICAL-consumer.json",
+      "bytes": 7357,
+      "sha256": "8a08468390e8c96e324149fe91e0365b5fe705636f222210a689c3928d8e0417"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D13_ALIAS_PHYSICAL-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D13_ALIAS_PHYSICAL-consumer.stdout.txt",
+      "bytes": 2919,
+      "sha256": "520fefddfb0a62f4e6814702a07cb3c0d979592c2d2b21eab511404506b06c4d"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D13_ALIAS_PHYSICAL-producer.json",
+      "bytes": 1474,
+      "sha256": "b7ed2f738c38aeaeea665a75834f898ba54e216ba44b7ca2ac5f136fa05fcec7"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D13_ALIAS_PHYSICAL-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D13_ALIAS_PHYSICAL-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D14_RETAINED_COST-consumer.json",
+      "bytes": 3888,
+      "sha256": "1ee0f9f784473441936faf1d1996bb24819691e58cb8d3ce2ab5e67462ac165d"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D14_RETAINED_COST-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D14_RETAINED_COST-consumer.stdout.txt",
+      "bytes": 1212,
+      "sha256": "43d3426def346df5b1bece02336e9bdc01164a580933a11c2802731746666e3c"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D14_RETAINED_COST-producer.json",
+      "bytes": 1469,
+      "sha256": "22e50d92637ba6648c4b283ba5f8f4951cf3cccd01c236a4ea8e5b305c61a889"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D14_RETAINED_COST-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D14_RETAINED_COST-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D15_CODE_FETCH_DROP-consumer.json",
+      "bytes": 7364,
+      "sha256": "56016c8c82ec1ac770cbc670d1531e176d47c19a775d2fa3a71faa0034d73063"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D15_CODE_FETCH_DROP-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D15_CODE_FETCH_DROP-consumer.stdout.txt",
+      "bytes": 2920,
+      "sha256": "4ba4ab84aa35aee815eaf44751469ae3a103e18227c7c16c8fb03dc32212141a"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D15_CODE_FETCH_DROP-producer.json",
+      "bytes": 1479,
+      "sha256": "e84a9d900150d0553cd380b854e2350341cc146a579ccc6fb7daa37fe7134157"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D15_CODE_FETCH_DROP-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D15_CODE_FETCH_DROP-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D16_PREFIX_RESOURCES-consumer.json",
+      "bytes": 4083,
+      "sha256": "6e5e06f1c5b67c1632bcae440db3845a191160443929319f47ad98a9d6ff3082"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D16_PREFIX_RESOURCES-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D16_PREFIX_RESOURCES-consumer.stdout.txt",
+      "bytes": 1298,
+      "sha256": "9b150adbd5c76515b0e46dfba414cde2e8a69ca76482ae18b1def4e7b69cad15"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D16_PREFIX_RESOURCES-producer.json",
+      "bytes": 1484,
+      "sha256": "adc1949cfb017df80356d1f49af21d276a628e39ded0a784406521388b71f083"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D16_PREFIX_RESOURCES-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D16_PREFIX_RESOURCES-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D17_READY_BANK-consumer.json",
+      "bytes": 3397,
+      "sha256": "866a576e5b683388e1fc34a66816ca487a3a2cce23ba0cdc2f426439df6ab937"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D17_READY_BANK-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D17_READY_BANK-consumer.stdout.txt",
+      "bytes": 975,
+      "sha256": "df29e0239d9c619b4c658900173b8c32e0c299ea82c0649c93ddf8d14c63acff"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D17_READY_BANK-producer.json",
+      "bytes": 1453,
+      "sha256": "522024f4f2b641a165d24ee17e1403393ddc63b8d1d6eb38de9ebf2738004dfb"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D17_READY_BANK-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D17_READY_BANK-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D18_STORE_TRUE-consumer.json",
+      "bytes": 3372,
+      "sha256": "b1f14cfb36ca291ddd13ab21cd63b07cca7dad618364a2b5caaa0120a7e0a3a9"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D18_STORE_TRUE-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D18_STORE_TRUE-consumer.stdout.txt",
+      "bytes": 965,
+      "sha256": "53daf385873fc805c57d010fccf136f87c0e85fb8e2df662eadc137fc6fa1a6d"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D18_STORE_TRUE-producer.json",
+      "bytes": 1454,
+      "sha256": "d4d4c0c41292cb11a8b367e008fbb73e33a59c2a225592e7a9f25e12032d64e8"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D18_STORE_TRUE-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D18_STORE_TRUE-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D19_ACCEPT_COMMENT-consumer.json",
+      "bytes": 1281,
+      "sha256": "2e6034f7285f9918dec1147002d64ee28c010b90bd277f0dab8bf311dedc4a0c"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D19_ACCEPT_COMMENT-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D19_ACCEPT_COMMENT-consumer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D19_ACCEPT_COMMENT-producer.json",
+      "bytes": 1474,
+      "sha256": "901a0242b6c54d8112b216f8d584316d48458d0a872811ce8057ef2712bdf54f"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D19_ACCEPT_COMMENT-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D19_ACCEPT_COMMENT-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D20_ACCEPT_IDENTITY-consumer.json",
+      "bytes": 1287,
+      "sha256": "019a4d8073c8b6a68a3a5e1225851d73a1cc491fd2628dc5629569dbb6a0a644"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D20_ACCEPT_IDENTITY-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D20_ACCEPT_IDENTITY-consumer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D20_ACCEPT_IDENTITY-producer.json",
+      "bytes": 1479,
+      "sha256": "e7b9ad381b9ce3d302ab7aaa0d25ce29a67403b2baa331ce244b3ffbfb3f9461"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D20_ACCEPT_IDENTITY-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/D20_ACCEPT_IDENTITY-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/manifest.json",
+      "bytes": 22889,
+      "sha256": "a8c5e47dde423a6434efe710f082618cd25724655765d4c98cfcc7661c5e6ad1"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P01_OUTPUT-consumer.json",
+      "bytes": 4528,
+      "sha256": "e24c85a8046736e479ebbf6d12a996cb1606e8a674667ccef613f973030c9a5d"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P01_OUTPUT-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P01_OUTPUT-consumer.stdout.txt",
+      "bytes": 1541,
+      "sha256": "ad9accd7944ae36f2d4b296b19c7a2f89b2004b938d13ec6b5ed36ff77c96bda"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P01_OUTPUT-producer.json",
+      "bytes": 1438,
+      "sha256": "0ee166627fd8c5142979f475e813995a6afc4a69937e93574b21c3222bf9ff70"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P01_OUTPUT-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P01_OUTPUT-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P02_METADATA-consumer.json",
+      "bytes": 3620,
+      "sha256": "c897142eb2beaa9f01525fd3dd12e8b7daffc6bdf169b2b92fd2c746e64e2d0e"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P02_METADATA-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P02_METADATA-consumer.stdout.txt",
+      "bytes": 1090,
+      "sha256": "9b53d60b8d4ddf0d20489ed55ce1a48173e92cffb9e5bf50c7b5947104783ff3"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P02_METADATA-producer.json",
+      "bytes": 1447,
+      "sha256": "470478b2fee03d729cebe2e97017f3d12346e4b97856e4909d706770fceaeeec"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P02_METADATA-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P02_METADATA-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P03_COPY-consumer.json",
+      "bytes": 3239,
+      "sha256": "494793bc0ee88e4a3908ea43a9b5a5ff324ea8940484f4e9e41f407cde584e65"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P03_COPY-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P03_COPY-consumer.stdout.txt",
+      "bytes": 912,
+      "sha256": "c026158d3636ce548680f8e7f065380a1871a1b0ec76ce346a793d8db41efd60"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P03_COPY-producer.json",
+      "bytes": 1428,
+      "sha256": "5ea32ee07966dce891f7b9857cff9a2e87c20202541d93284445602ee1f68fc7"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P03_COPY-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P03_COPY-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P04_RELEASES-consumer.json",
+      "bytes": 2844,
+      "sha256": "ccd2bf68487fe2a7251eac8de792ab9c1ff07bba58f2317538c049d6f1e33b0c"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P04_RELEASES-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P04_RELEASES-consumer.stdout.txt",
+      "bytes": 707,
+      "sha256": "608aafe0281aec1c1a7721360ae90ea9df02076fa2b60f37717b557f03c733f1"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P04_RELEASES-producer.json",
+      "bytes": 1448,
+      "sha256": "6ef3c174c2cbb85e21edbe05d72b58fc944506bd9014f58f5d067bb5ec9d054b"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P04_RELEASES-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P04_RELEASES-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P05_PUBLIC_TRUE-consumer.json",
+      "bytes": 2741,
+      "sha256": "aaa5ec17bfe9fd73e0a90af2c47dbdefe3e2cad09c3f1135719c1e53a35cdead"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P05_PUBLIC_TRUE-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P05_PUBLIC_TRUE-consumer.stdout.txt",
+      "bytes": 650,
+      "sha256": "4ae0b2b5ebe50bd5ebc0424825abe18add1205b6ba6c2180aca885a35f9587d1"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P05_PUBLIC_TRUE-producer.json",
+      "bytes": 1462,
+      "sha256": "f9cdd5c47eecd60cdd951226f4f1e0a938bea79ff05ab36b8ae382d232ed20e7"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P05_PUBLIC_TRUE-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P05_PUBLIC_TRUE-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P06_ACCEPT_IDENTITY-consumer.json",
+      "bytes": 1291,
+      "sha256": "d0502586967f949e3ed0e569f6f4325870553bbee16a6be2def26fe5947e5d19"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P06_ACCEPT_IDENTITY-consumer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P06_ACCEPT_IDENTITY-consumer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P06_ACCEPT_IDENTITY-producer.json",
+      "bytes": 1483,
+      "sha256": "78b73e6be5a6618cb4d513b57a1f3b405aed668dd76930f53a07e8b850df10f1"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P06_ACCEPT_IDENTITY-producer.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/P06_ACCEPT_IDENTITY-producer.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dependency/20260921T021035666-83fc2827/summary.json",
+      "bytes": 14116,
+      "sha256": "17d5798eb4a91699c2b938fa9f82e393652c43de9a28654976649c8c5ae29ed7"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dev/lifecycle-native-02.result.json",
+      "bytes": 277,
+      "sha256": "83fe2aac07affcae8b469fc00b94053ba53fcd9e59e2e7b078996f65da0a91b3"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dev/lifecycle-native-02.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dev/lifecycle-native-02.stdout.txt",
+      "bytes": 110403,
+      "sha256": "6e74204aa2854fd85b40e0b401b9764ba441e5ba11618db461cf310ccd0cf61c"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dev/lifecycle-native-03.result.json",
+      "bytes": 276,
+      "sha256": "c7cecc3f27071e36b2d4d3edad4d6a4221cbce3d629b258dc709f163b02f3286"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dev/lifecycle-native-03.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dev/lifecycle-native-03.stdout.txt",
+      "bytes": 89472,
+      "sha256": "0c0931643e2472f6337e82ef2bd9bfc2216810e5fda109ceb9c20a1f10b2d8ca"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dev/lifecycle-validator-06.result.json",
+      "bytes": 288,
+      "sha256": "9226198d7c5f40969e100f164442ffd87954e7d5eb061aea06a2f00283dea4e5"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dev/lifecycle-validator-06.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dev/lifecycle-validator-06.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dev/lifecycleprovenancecontract02.result.json",
+      "bytes": 244,
+      "sha256": "e658787e17a890d782f001d1c39b422ed35710ad045bed894922634e794d8d4f"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dev/lifecycleprovenancecontract02.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-dev/lifecycleprovenancecontract02.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/default.result.json",
+      "bytes": 393,
+      "sha256": "892475af662afc8087ede4c307d75560d5064972f513a452fba321836d6b4ba8"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/default.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/default.stdout.txt",
+      "bytes": 107771,
+      "sha256": "23a19d817977e1fa0ed77db3da80c13c7ae0356f7d4754e1437a77f69ffe74c9"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/implementation-commit.txt",
+      "bytes": 40,
+      "sha256": "085496b4d159403113e78a368b21604c57521af552c28dfa5d37c472a7c53920"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/inventory.result.json",
+      "bytes": 448,
+      "sha256": "ae8679e005d0834829a4971e1387f5af95d843ba9f9380395d74f774ce4fdbcb"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/inventory.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/inventory.stdout.txt",
+      "bytes": 47783,
+      "sha256": "76acd8fd09b7673e0d6a1682a418787a9252c44f48d60bcafb659c37c6c4f66b"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/named.result.json",
+      "bytes": 586,
+      "sha256": "e7cef6a5b3fdc1bf308c9846a01a2ba903ed33da0bbb85782ff801033f907d20"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/named.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/named.stdout.txt",
+      "bytes": 89928,
+      "sha256": "bdbc8ed9ebbc5565cef3dfce304bb3e90f732d316456be0518027a5076e73e18"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/scoped-paths-beforecommit.json",
+      "bytes": 3058,
+      "sha256": "27021c0eb9e9a5018ee65282d4a1f63758b9594f352aba344d2e5f77732c11f8"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/source-validation.json",
+      "bytes": 298,
+      "sha256": "6eafd52bf456c99d186ced92811fb16c72d5805961f5582f39665a47a6799803"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/claim-report-draft.result.json",
+      "bytes": 650,
+      "sha256": "7e3abce3072ced6ab873db6abee98b414184dde1a50abe5f9a09a7449f1661d3"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/claim-report-draft.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/claim-report-draft.stdout.txt",
+      "bytes": 92,
+      "sha256": "2f6b44ea190e370fbc16d9365e59d2a768980720651deb4287df93131a6f12a7"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/design-implementation-commit.result.json",
+      "bytes": 682,
+      "sha256": "0a75bda0c40c163ece5f835ed4722964171a9fb602df83b8bab91f8da4a94c7d"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/design-implementation-commit.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/design-implementation-commit.stdout.txt",
+      "bytes": 71,
+      "sha256": "46bb8f4d7199cd3a156469693f1d09253764cfa55ce035c19a07f0322fa6f65d"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/design-implementation-working.result.json",
+      "bytes": 621,
+      "sha256": "348283880771b8eb3a90bd3ed5c2903a1e3c5f730b6b134f632a04cbca009920"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/design-implementation-working.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/design-implementation-working.stdout.txt",
+      "bytes": 72,
+      "sha256": "58f731b0553d1c3b257dcda6f17c17df7401272052e204249a3fc8f69b8c03e6"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/diff-implementation-staged.result.json",
+      "bytes": 469,
+      "sha256": "bd8f2c0601e71df2435484ec093aa069b2017d856a3b2a90bedc2b6088f7e824"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/diff-implementation-staged.stderr.txt",
+      "bytes": 79,
+      "sha256": "6f96a0f4ca83dff6dd8a6ddc476f26f283d9e0f5a244ceb1d311e26877e87318"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/diff-implementation-staged.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/diff-implementation-working.result.json",
+      "bytes": 452,
+      "sha256": "5c0c907b5f6cd1fe4f0f13f480fdb7006dc26c2b352772bdaf11be656a0d7299"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/diff-implementation-working.stderr.txt",
+      "bytes": 595,
+      "sha256": "ca2fc99396c8e4c39b1a3f989f6bafa86b84eebc3beed3ccb48cc9f05392dc29"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/diff-implementation-working.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/hygiene.result.json",
+      "bytes": 570,
+      "sha256": "b3082c4402173cceeebc34e5b3b4b16f387473946dbbcd8486cff622f59f0b51"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/hygiene.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/hygiene.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/integrity-before-final-append.result.json",
+      "bytes": 616,
+      "sha256": "4b55ed278c82dd447cf7c0fef7d46c1d402e98a0a7a902282ede5102b9688344"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/integrity-before-final-append.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/integrity-before-final-append.stdout.txt",
+      "bytes": 434,
+      "sha256": "c3d57351860e60066b57e29b5d90150959001ff53cc7e80bfe1a510df8b5e212"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/native-scan.result.json",
+      "bytes": 487,
+      "sha256": "d858191e11953e2ab69ce29018e913d744f181db4722274904db4408ada16f45"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/native-scan.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/static/native-scan.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/focused.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/focused.stdout.txt",
+      "bytes": 133,
+      "sha256": "4592e55ae3ad09187e20fd261afc6db1afaa1f43ef291c530f8f9e41355e2cfe"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/full.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/full.stdout.txt",
+      "bytes": 1735,
+      "sha256": "04b0189bb4b4b6e953417fef77bdf67622a95bd2026a63745b6d444ed04fad0d"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/identity-after.json",
+      "bytes": 1143,
+      "sha256": "7e79e653daaf5a066b6a4471133f55698ec9a9f69e6833316b0180e09b5e08a8"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/identity-before.json",
+      "bytes": 1143,
+      "sha256": "7e79e653daaf5a066b6a4471133f55698ec9a9f69e6833316b0180e09b5e08a8"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/PASS.json",
+      "bytes": 837,
+      "sha256": "a1a3172d1c8646098c530eec09efc5fea859bcac45199e958941290c908bbe78"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/processes.json",
+      "bytes": 4124,
+      "sha256": "a3aa73838dd46c3fdb543bc3894e30cbb28feec811d2f0ff460526e693af8675"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/registry.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/registry.stdout.txt",
+      "bytes": 799,
+      "sha256": "5391888b24e987721fc25c41a7b5b9debdeee393240912eb379e18710cfeb01a"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/reject-channels.stderr.txt",
+      "bytes": 37,
+      "sha256": "c9444578de7e161f11cd35457ef257132d74e50981f6810c51e81e7618d60837"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/reject-channels.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/reject-duplicate.stderr.txt",
+      "bytes": 29,
+      "sha256": "4ad1605bad3e3fac2d2060d59e670e607d852f5b18429537f6494e005c8dddc3"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/reject-duplicate.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/reject-empty.stderr.txt",
+      "bytes": 25,
+      "sha256": "135403e29fd2f1186790d55e5e65f567a6d6f62227b69684597dc50d72199e42"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/reject-empty.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/reject-unknown.stderr.txt",
+      "bytes": 27,
+      "sha256": "5ffff3ddd832f3d25be84388782ddbfd6ff0f02b7363d4ced0c65337395231cf"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/reject-unknown.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/reject-whitespace.stderr.txt",
+      "bytes": 30,
+      "sha256": "a4c5e62fca0a2c48ed25f83afb8f1b18ab671810adf154ccd2b7de8f55d0acca"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/reject-whitespace.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/startup.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-validator/da0d7bf710d148dfa5e439022fca3ede/startup.stdout.txt",
+      "bytes": 27,
+      "sha256": "158267eba008c295149b798aec346a03b488e3cd85cc8dab4cb4809d8036c2ca"
+    }
+
+  ],
+  "scope": "Complete outputs stay in ignored local evidence directories; this compact manifest binds them by exact bytes and hashes. Post-closing-commit checks are in delivery.json and the submission message because this manifest cannot hash itself or its enclosing commit."
+}

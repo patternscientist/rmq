@@ -1,0 +1,443 @@
+{
+  "schema": "life1-r3-selector-controls-v1",
+  "registryVersion": "v2",
+  "registryPath": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\docs\\internal\\extensions\\lifecycle1\\repair-r4\\FAILURE_CONTROL_REGISTRY.json",
+  "expectedCount": 15,
+  "executedCount": 15,
+  "passedCount": 15,
+  "failedIds": [],
+  "cases": [
+    {
+      "id": "SEL-01-OMITTED",
+      "arguments": "-HarnessRef base -Profile pwsh -ProbeOnly",
+      "registryMutation": null,
+      "expectedExit": 0,
+      "expectedStdout": "R3 SELECT RC-P,RC-C,RC-Q,RC-S,RC-M,FC-P,FC-C,FC-Q,FC-S,FC-M,K1-P,K1-C,K1-Q,K1-S,K1-M,K1-X,K2-P,K2-C,K2-Q,K2-S,K2-M,DC-P,DC-C,DC-Q,DC-S,DC-M,LV-P,LV-C,LV-Q,LV-S,LV-M,IC-P,IC-C,IC-Q,IC-S,IC-M,DP-P,DP-C,DP-Q,DP-S,DP-M,HS-P,HS-C,HS-Q,HS-S,HS-M,HS-R,K1-F,K2-F,K1-T,K2-T,K1-W,K2-W,LV-W,IC-U,LV-E,IC-L,HS-L,K2-G,HS-G",
+      "expectedStderr": "",
+      "process": {
+        "Stage": "SEL-01-OMITTED",
+        "ExitCode": 0,
+        "Output": [
+          "R3 SELECT RC-P,RC-C,RC-Q,RC-S,RC-M,FC-P,FC-C,FC-Q,FC-S,FC-M,K1-P,K1-C,K1-Q,K1-S,K1-M,K1-X,K2-P,K2-C,K2-Q,K2-S,K2-M,DC-P,DC-C,DC-Q,DC-S,DC-M,LV-P,LV-C,LV-Q,LV-S,LV-M,IC-P,IC-C,IC-Q,IC-S,IC-M,DP-P,DP-C,DP-Q,DP-S,DP-M,HS-P,HS-C,HS-Q,HS-S,HS-M,HS-R,K1-F,K2-F,K1-T,K2-T,K1-W,K2-W,LV-W,IC-U,LV-E,IC-L,HS-L,K2-G,HS-G"
+        ],
+        "StandardOutput": [
+          "R3 SELECT RC-P,RC-C,RC-Q,RC-S,RC-M,FC-P,FC-C,FC-Q,FC-S,FC-M,K1-P,K1-C,K1-Q,K1-S,K1-M,K1-X,K2-P,K2-C,K2-Q,K2-S,K2-M,DC-P,DC-C,DC-Q,DC-S,DC-M,LV-P,LV-C,LV-Q,LV-S,LV-M,IC-P,IC-C,IC-Q,IC-S,IC-M,DP-P,DP-C,DP-Q,DP-S,DP-M,HS-P,HS-C,HS-Q,HS-S,HS-M,HS-R,K1-F,K2-F,K1-T,K2-T,K1-W,K2-W,LV-W,IC-U,LV-E,IC-L,HS-L,K2-G,HS-G"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.274,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "noControlEvidenceCreated": true,
+      "passed": true
+    },
+    {
+      "id": "SEL-02-VALID",
+      "arguments": "-HarnessRef base -Profile pwsh -ProbeOnly -OnlyControl 'K1-F'",
+      "registryMutation": null,
+      "expectedExit": 0,
+      "expectedStdout": "R3 SELECT K1-F",
+      "expectedStderr": "",
+      "process": {
+        "Stage": "SEL-02-VALID",
+        "ExitCode": 0,
+        "Output": [
+          "R3 SELECT K1-F"
+        ],
+        "StandardOutput": [
+          "R3 SELECT K1-F"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.245,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "noControlEvidenceCreated": true,
+      "passed": true
+    },
+    {
+      "id": "SEL-03-EMPTY-STRING",
+      "arguments": "-HarnessRef base -Profile pwsh -ProbeOnly -OnlyControl ''",
+      "registryMutation": null,
+      "expectedExit": 1,
+      "expectedStdout": "",
+      "expectedStderr": "R3-SELECTOR: empty or whitespace selector",
+      "process": {
+        "Stage": "SEL-03-EMPTY-STRING",
+        "ExitCode": 1,
+        "Output": [
+          "R3-SELECTOR: empty or whitespace selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "R3-SELECTOR: empty or whitespace selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.136,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "noControlEvidenceCreated": true,
+      "passed": true
+    },
+    {
+      "id": "SEL-04-EMPTY-ARRAY",
+      "arguments": "-HarnessRef base -Profile pwsh -ProbeOnly -OnlyControl @()",
+      "registryMutation": null,
+      "expectedExit": 1,
+      "expectedStdout": "",
+      "expectedStderr": "R3-SELECTOR: explicitly empty selector",
+      "process": {
+        "Stage": "SEL-04-EMPTY-ARRAY",
+        "ExitCode": 1,
+        "Output": [
+          "R3-SELECTOR: explicitly empty selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "R3-SELECTOR: explicitly empty selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.139,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "noControlEvidenceCreated": true,
+      "passed": true
+    },
+    {
+      "id": "SEL-05-WHITESPACE",
+      "arguments": "-HarnessRef base -Profile pwsh -ProbeOnly -OnlyControl ' '",
+      "registryMutation": null,
+      "expectedExit": 1,
+      "expectedStdout": "",
+      "expectedStderr": "R3-SELECTOR: empty or whitespace selector",
+      "process": {
+        "Stage": "SEL-05-WHITESPACE",
+        "ExitCode": 1,
+        "Output": [
+          "R3-SELECTOR: empty or whitespace selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "R3-SELECTOR: empty or whitespace selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.113,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "noControlEvidenceCreated": true,
+      "passed": true
+    },
+    {
+      "id": "SEL-06-MALFORMED",
+      "arguments": "-HarnessRef base -Profile pwsh -ProbeOnly -OnlyControl 'k1-p'",
+      "registryMutation": null,
+      "expectedExit": 1,
+      "expectedStdout": "",
+      "expectedStderr": "R3-SELECTOR: malformed selector",
+      "process": {
+        "Stage": "SEL-06-MALFORMED",
+        "ExitCode": 1,
+        "Output": [
+          "R3-SELECTOR: malformed selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "R3-SELECTOR: malformed selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.145,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "noControlEvidenceCreated": true,
+      "passed": true
+    },
+    {
+      "id": "SEL-07-UNKNOWN",
+      "arguments": "-HarnessRef base -Profile pwsh -ProbeOnly -OnlyControl 'ZZ-P'",
+      "registryMutation": null,
+      "expectedExit": 1,
+      "expectedStdout": "",
+      "expectedStderr": "R3-SELECTOR: unknown selector",
+      "process": {
+        "Stage": "SEL-07-UNKNOWN",
+        "ExitCode": 1,
+        "Output": [
+          "R3-SELECTOR: unknown selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "R3-SELECTOR: unknown selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.174,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "noControlEvidenceCreated": true,
+      "passed": true
+    },
+    {
+      "id": "SEL-08-DUPLICATE",
+      "arguments": "-HarnessRef base -Profile pwsh -ProbeOnly -OnlyControl 'K1-P','K1-P'",
+      "registryMutation": null,
+      "expectedExit": 1,
+      "expectedStdout": "",
+      "expectedStderr": "R3-SELECTOR: duplicate selector",
+      "process": {
+        "Stage": "SEL-08-DUPLICATE",
+        "ExitCode": 1,
+        "Output": [
+          "R3-SELECTOR: duplicate selector"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "R3-SELECTOR: duplicate selector"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.13,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "noControlEvidenceCreated": true,
+      "passed": true
+    },
+    {
+      "id": "REG-09-EXACT-COPY",
+      "arguments": "-HarnessRef base -Profile pwsh -ProbeOnly",
+      "registryMutation": "exact-copy",
+      "expectedExit": 0,
+      "expectedStdout": "R3 SELECT RC-P,RC-C,RC-Q,RC-S,RC-M,FC-P,FC-C,FC-Q,FC-S,FC-M,K1-P,K1-C,K1-Q,K1-S,K1-M,K1-X,K2-P,K2-C,K2-Q,K2-S,K2-M,DC-P,DC-C,DC-Q,DC-S,DC-M,LV-P,LV-C,LV-Q,LV-S,LV-M,IC-P,IC-C,IC-Q,IC-S,IC-M,DP-P,DP-C,DP-Q,DP-S,DP-M,HS-P,HS-C,HS-Q,HS-S,HS-M,HS-R,K1-F,K2-F,K1-T,K2-T,K1-W,K2-W,LV-W,IC-U,LV-E,IC-L,HS-L,K2-G,HS-G",
+      "expectedStderr": "",
+      "process": {
+        "Stage": "REG-09-EXACT-COPY",
+        "ExitCode": 0,
+        "Output": [
+          "R3 SELECT RC-P,RC-C,RC-Q,RC-S,RC-M,FC-P,FC-C,FC-Q,FC-S,FC-M,K1-P,K1-C,K1-Q,K1-S,K1-M,K1-X,K2-P,K2-C,K2-Q,K2-S,K2-M,DC-P,DC-C,DC-Q,DC-S,DC-M,LV-P,LV-C,LV-Q,LV-S,LV-M,IC-P,IC-C,IC-Q,IC-S,IC-M,DP-P,DP-C,DP-Q,DP-S,DP-M,HS-P,HS-C,HS-Q,HS-S,HS-M,HS-R,K1-F,K2-F,K1-T,K2-T,K1-W,K2-W,LV-W,IC-U,LV-E,IC-L,HS-L,K2-G,HS-G"
+        ],
+        "StandardOutput": [
+          "R3 SELECT RC-P,RC-C,RC-Q,RC-S,RC-M,FC-P,FC-C,FC-Q,FC-S,FC-M,K1-P,K1-C,K1-Q,K1-S,K1-M,K1-X,K2-P,K2-C,K2-Q,K2-S,K2-M,DC-P,DC-C,DC-Q,DC-S,DC-M,LV-P,LV-C,LV-Q,LV-S,LV-M,IC-P,IC-C,IC-Q,IC-S,IC-M,DP-P,DP-C,DP-Q,DP-S,DP-M,HS-P,HS-C,HS-Q,HS-S,HS-M,HS-R,K1-F,K2-F,K1-T,K2-T,K1-W,K2-W,LV-W,IC-U,LV-E,IC-L,HS-L,K2-G,HS-G"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.137,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "noControlEvidenceCreated": true,
+      "passed": true
+    },
+    {
+      "id": "REG-10-MISSING-MIDDLE",
+      "arguments": "-HarnessRef base -Profile pwsh -ProbeOnly",
+      "registryMutation": "missing-middle",
+      "expectedExit": 1,
+      "expectedStdout": "",
+      "expectedStderr": "R3-REGISTRY: missing ID DC-P",
+      "process": {
+        "Stage": "REG-10-MISSING-MIDDLE",
+        "ExitCode": 1,
+        "Output": [
+          "R3-REGISTRY: missing ID DC-P"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "R3-REGISTRY: missing ID DC-P"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.061,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "noControlEvidenceCreated": true,
+      "passed": true
+    },
+    {
+      "id": "REG-11-DUPLICATE-MIDDLE",
+      "arguments": "-HarnessRef base -Profile pwsh -ProbeOnly",
+      "registryMutation": "duplicate-middle",
+      "expectedExit": 1,
+      "expectedStdout": "",
+      "expectedStderr": "R3-REGISTRY: duplicate ID DC-P",
+      "process": {
+        "Stage": "REG-11-DUPLICATE-MIDDLE",
+        "ExitCode": 1,
+        "Output": [
+          "R3-REGISTRY: duplicate ID DC-P"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "R3-REGISTRY: duplicate ID DC-P"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.133,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "noControlEvidenceCreated": true,
+      "passed": true
+    },
+    {
+      "id": "REG-12-UNKNOWN-MIDDLE",
+      "arguments": "-HarnessRef base -Profile pwsh -ProbeOnly",
+      "registryMutation": "unknown-middle",
+      "expectedExit": 1,
+      "expectedStdout": "",
+      "expectedStderr": "R3-REGISTRY: unknown ID ZZ-Z",
+      "process": {
+        "Stage": "REG-12-UNKNOWN-MIDDLE",
+        "ExitCode": 1,
+        "Output": [
+          "R3-REGISTRY: unknown ID ZZ-Z"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "R3-REGISTRY: unknown ID ZZ-Z"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.049,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "noControlEvidenceCreated": true,
+      "passed": true
+    },
+    {
+      "id": "REG-13-REORDERED",
+      "arguments": "-HarnessRef base -Profile pwsh -ProbeOnly",
+      "registryMutation": "reordered",
+      "expectedExit": 1,
+      "expectedStdout": "",
+      "expectedStderr": "R3-REGISTRY: reordered IDs",
+      "process": {
+        "Stage": "REG-13-REORDERED",
+        "ExitCode": 1,
+        "Output": [
+          "R3-REGISTRY: reordered IDs"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "R3-REGISTRY: reordered IDs"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.095,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "noControlEvidenceCreated": true,
+      "passed": true
+    },
+    {
+      "id": "REG-14-BYTE-DRIFT",
+      "arguments": "-HarnessRef base -Profile pwsh -ProbeOnly",
+      "registryMutation": "byte-drift",
+      "expectedExit": 1,
+      "expectedStdout": "",
+      "expectedStderr": "R3-REGISTRY: registry bytes differ from the pinned version",
+      "process": {
+        "Stage": "REG-14-BYTE-DRIFT",
+        "ExitCode": 1,
+        "Output": [
+          "R3-REGISTRY: registry bytes differ from the pinned version"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "R3-REGISTRY: registry bytes differ from the pinned version"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.115,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "noControlEvidenceCreated": true,
+      "passed": true
+    },
+    {
+      "id": "REG-15-EMPTY",
+      "arguments": "-HarnessRef base -Profile pwsh -ProbeOnly",
+      "registryMutation": "empty",
+      "expectedExit": 1,
+      "expectedStdout": "",
+      "expectedStderr": "R3-REGISTRY: empty registry",
+      "process": {
+        "Stage": "REG-15-EMPTY",
+        "ExitCode": 1,
+        "Output": [
+          "R3-REGISTRY: empty registry"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "R3-REGISTRY: empty registry"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 1.038,
+        "DeadlineSeconds": 60,
+        "Ownership": "kill-on-close-job"
+      },
+      "noControlEvidenceCreated": true,
+      "passed": true
+    }
+  ],
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "pass",
+    "stageError": null,
+    "integrityErrors": [],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\docs\\internal\\extensions\\lifecycle1\\repair-r3\\failure_controls.ps1",
+        "entrySha256": "e7334a6de477dd6c813fe73b6425df7fa3991305b72f5ba4032cae9b6f344419",
+        "finalSha256": "e7334a6de477dd6c813fe73b6425df7fa3991305b72f5ba4032cae9b6f344419",
+        "status": "verified"
+      },
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\docs\\internal\\extensions\\lifecycle1\\repair-r4\\FAILURE_CONTROL_REGISTRY.json",
+        "entrySha256": "cf5ef090543773ef0a4fa473164e56633fabeef140301aad737bb2a7a3226dbc",
+        "finalSha256": "cf5ef090543773ef0a4fa473164e56633fabeef140301aad737bb2a7a3226dbc",
+        "status": "verified"
+      },
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\docs\\internal\\extensions\\lifecycle1\\repair-r3\\selector_controls.ps1",
+        "entrySha256": "074a1f4ad8b3547cd454dcd80ba427c65123c056ef7aad5ffc97c3141f905a6d",
+        "finalSha256": "074a1f4ad8b3547cd454dcd80ba427c65123c056ef7aad5ffc97c3141f905a6d",
+        "status": "verified"
+      }
+    ]
+  }
+}

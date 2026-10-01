@@ -1,0 +1,17 @@
+{
+  "name": "r4-p0-dependencies-pwsh",
+  "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+  "arguments": [
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/docs/internal/extensions/lifecycle-native-p0/repair-r1/run_owned.ps1",
+    "-Kind",
+    "dependencies",
+    "-OutputRoot",
+    "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/repair-r1/r4-campaign-dependencies-pwsh"
+  ],
+  "mutex": false,
+  "deadline": 1500
+}

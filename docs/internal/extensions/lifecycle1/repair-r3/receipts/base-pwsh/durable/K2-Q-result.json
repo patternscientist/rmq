@@ -1,0 +1,57 @@
+{
+  "spec": {
+    "name": "r3-control",
+    "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+    "arguments": [
+      "-NoLogo",
+      "-NoProfile",
+      "-File",
+      "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\K2-Q\\root\\r3-stage.ps1"
+    ],
+    "mutex": false,
+    "deadline": 60
+  },
+  "sources": {
+    "scripts/lifecycle_validator.ps1": "CD016BBDC5B9DEA046D718AF51A0786F0791A15EC01DB1AE863517912EED9262",
+    "scripts/lifecycle_validator_environment.ps1": "2FB2C4D95EAF3F6633FFAA60413D3D798B26E5BF8B4E712E6A254E293E4F9F19",
+    "scripts/lifecycle_dependency_replay.ps1": "4BF287CF5E0715DBE2413DE0E842E21781A38D51A94DA5873E1CF8A8972003FB",
+    "scripts/owned_process_tree.ps1": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+    "scripts/lifecycle_dependency_cases.json": "003343871E23C93DF874A960A8AF60AE7A8A2E615ADB05B6E581DC4407A1C84B",
+    "RMQ/Validation/PackedLifecycle.lean": "624236001FC72817441CC3DC536DA9C299CCB1DC9C050687B09896B7F1679C14",
+    "RMQ/Validation/LifecycleContract.lean": "F7022AC916813779745B9847B43D9091A90F4F2356615BDBF3B560F2861AD9EC",
+    "scripts/lifecycle_provenance_contract.lean": "767743A4DD79B34377F5F5550BAB88693DF4A966826B02DE7AEDDA78043FD020",
+    "lean-toolchain": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F",
+    "lakefile.toml": "B47C7ABE3955D1A2E9BA51A4C71FC2E7961423D2BF5F3856F79A24BEBC8BDD50"
+  },
+  "invocation": {
+    "head": "3c428fea5908ee49779e0e3bc22e12365a7e8e43",
+    "driverSha256": "C865BAF801E3E6634B805823C03F01143419528776FAA94C19D31D222B83EDF5",
+    "specSha256": "4F13DC265DC9638690BD3A0B0FC26523BCFA18AE1041323D4D201BC6EF68AE2B",
+    "executableSha256": "362A356CE7F0940EC74F73A8FC2C990A2CC24A38A11C90BBD8ECA947110AD139",
+    "hostSha256": "362A356CE7F0940EC74F73A8FC2C990A2CC24A38A11C90BBD8ECA947110AD139",
+    "argumentFilePins": {
+      "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-pwsh\\controls\\K2-Q\\root\\r3-stage.ps1": "C04553293140E62E2A73E56490A3DFEB346DA9C79CB0DF7BD67BC508901817D3"
+    }
+  },
+  "shell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+  "version": "7.6.5",
+  "dotnet": "10.0.11",
+  "result": {
+    "Stage": "r3-control",
+    "ExitCode": 7,
+    "Output": [
+      "R3-DOUBLE: injected ordinary stage failure"
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "R3-DOUBLE: injected ordinary stage failure"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 2.282,
+    "DeadlineSeconds": 60,
+    "Ownership": "kill-on-close-job"
+  },
+  "streamRepresentation": "unchanged helper returned nonempty lines"
+}

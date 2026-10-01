@@ -14007,3 +14007,1457 @@ Decision: the regex literal is written with its two-character escapes again, the
 Alternatives rejected: leaving the CRLF blob and adding a `cr-at-eol` whitespace exemption (it would silence the check that caught a real defect, on a maintained script rather than on frozen evidence); `text` without `eol=lf` (correct in the repository but it changes Windows checkout bytes for no benefit); a repository-wide `* text=auto` (it would renormalize evidence deliberately pinned `-text` by four lanes).
 
 Consequences: no behaviour of the lint changes; the diff against the pre-integration blob is exactly the prefilter block. The committed-patch whitespace check is still absent from the local gate, so this class can reach CI again from a file the attribute does not cover; adding it to `scripts/gate.ps1` is proposed as a separate tooling change.
+
+## WDD-20260920-LIFE-001: freeze complete lifecycle rows and serialize proof evidence
+
+Context: LIFE-1 has 43 frozen acceptance rows and several independent proof leaves. Earlier lifecycle experiments exposed a parser that compared only the first line of wrapped requirement cells, and historical receipts confused checkout newline serialization with exact Git bytes. Heavy proof checks share a host with the independent native prerequisite, but each worktree must own its artifacts.
+
+Decision: the lifecycle task records its exact base, governance, branch, runtime skill inventory and isolated absolute worktree in `extensions/lifecycle1/START.json`. Before implementation, all eight columns of every row were frozen in strict UTF-8, with complete requirement cells matched to the exact launch prompt and an embedded source snapshot. `scripts/lifecycle_contract_integrity.ps1` checks the exact ordered 43-ID registry, full row/prefix bytes and complete source requirement text. Evidence is append-only below the frozen matrix marker. The initial Open dispositions remain historical baseline data; later evidence states each current disposition without altering those rows.
+
+Alternatives rejected: row counts alone, first-line comparison, rewriting requirements into summaries, normalizing later row bytes, or editing initial statuses in place. Parser boundary checks include duplicate/unknown/missing IDs, late-clause changes, malformed columns/encoding and explicitly empty paths. Their receipt is parser evidence, not proof closure of semantic rows.
+
+Execution policy: leaf checks use the shared host mutex `Local\RMQLifecycleImplementationHeavy20260920` and the existing owned-process-tree helper, preserving full stdout, stderr, exit and elapsed time before compact summaries. Warm baseline artifacts were copied into this worktree as separate files from a clean exact `7b227c4` source whose Lean/toolchain/Lake content matches `bf31f983`; `CACHE_PROVENANCE.json` records the identity. These are development artifacts, not independent cold-build evidence or a shared mutable cache. Final candidate checks remain the frozen verification plan, with the complete aggregate and fresh-blind acceptance assigned to the coordinator.
+
+Consequences: the final receipt must distinguish exact Git blobs from LF/CRLF working bytes, especially because local Git enables automatic CRLF conversion. Neither a parser pass nor a successful component compilation closes the lifecycle target. The optional external Claude source-review transfer was rejected by automatic approval review on authorization grounds; it was stopped, and local Astra/Lean work continued without a transfer workaround or quota change.
+
+## WDD-20260920-LIFE-002: independent client types, shadow dependency mutations and direct owner validation
+
+Context: a successful producer build can hide a weakened public conclusion if its clients simply adopt the producer's current type. The lifecycle also needs executable evidence for the new scalar owner, including a second query with dirty registers. Predecessor validators and copied diagnostic transcripts cannot establish either dependency.
+
+Decision: `LifecycleContract.lean` independently spells the seven public groups, expanding canonical data, finite-owner readiness, numeric prefix resources and the literal bank/setup constants. The separate `scripts/lifecycle_provenance_contract.lean` pins actual producing occurrences without importing a precompiled downstream module into a mutated capstone environment. Dedicated dependency cases modify copies of the real producer source, compile shadow artifacts in an isolated `.lake` tree, and elaborate the unchanged direct client against those artifacts. A producer error is not the expected client rejection. The exact ordered registry records each edit, expected verdict and diagnostic surface; positive controls retain the public propositions. Replays reject missing/unknown/duplicate/explicit-empty selectors, mixed diagnostics, output/deadline failures and restoration mismatches. Original sources and build artifacts remain distinct from the shadow tree.
+
+The compiled `rmq_lifecycle_validate` target invokes `Executable.initialOwner`, the new `runOwner`, and `queryOwner`; expected answers come from a separate strict-comparison half-open scan. Validation-only counters fold actual scalar transitions and have a proved final-owner projection, while the production owner contains no observations. Sixteen cases cover empty, singleton, ties, invalid/repeated requests and sizes 24 and 83 in both input models; comparison cases include keys larger than the numeric word domain. The dirty-bank control starts from an actual first-query owner, skips one witnessed nonzero scratch register's clear, and challenges the same compact-entry ABI projection proved by the positive entry theorem. It does not invent an answer-failure counterexample.
+
+Alternatives rejected: mutating source in the shared checkout, accepting any compiler failure, keeping an adapted alias as the expected public type, importing old downstream artifacts after mutating their dependency, reading success markers before checking all diagnostics, running only an old validator, or claiming a dirty-bank counterexample from an artificial starting state. Scalar controls are direct checked positive/negative fixtures where a mutation harness would add no evidence.
+
+Consequences: source, registry, client and command receipts must be frozen together before the final replay. The Windows runner uses the existing owned process-tree helper and the shared compiler mutex. Startup and one known exact case precede the complete native registry. The interrupted first native build is an uncertified scheduling checkpoint, with retained partial C artifacts; the incremental continuation is separately identified. The final report distinguishes these development events from the required final content checks and records platform coverage explicitly. The complete repository aggregate and fresh blind exact-candidate audit remain coordinator-owned.
+
+A read-only runner review found that text diagnostic grouping could accept an expected located type error followed by an unlocated compiler failure. The final classifier consumes Lean's JSON diagnostics and rejects every non-JSON output line, unexpected severity/count/class/surface, or stderr. Explicit controls retain the three rejected tails (`error:`, `uncaught exception:`, and `PANIC:`); the clean expected JSON error remains accepted. Exact assignment proofs in the independent client avoid cascading tactic diagnostics after the first deliberately weakened field. The client also pins both the service budget and the linear construction-budget function to literal expressions, so an alias cannot silently loosen the advertised bounds.
+
+## WDD-20260920-LIFE-003: separate the implementation identity from the closing evidence identity
+
+Context: LIFE-1 requires a durable complete report, exact source and receipt hashes, per-commit design checks, an exact-base committed-range check, and a clean delivered tree. A report cannot contain the Git hash of its own enclosing commit. The source implementation is committed as `299ec6527ca2fbcf73cfc34e9de75f4a1f34140c`; all final Lean, native and dependency checks consumed the source bytes identified by the manifest.
+
+Decision: use one subsequent evidence-only closing commit for the contract/evidence packet and final report. `SOURCE_MANIFEST.json` independently records raw workspace SHA-256/length and exact Git blob SHA-256/length/OID at the implementation commit. `FINAL_RECEIPTS.json` binds compact results and complete ignored local outputs by bytes and hashes. The final submission and local `delivery.json` bind the closing commit, report bytes, committed-range/per-commit checks and clean state. Byte-pinned contract files require an LF-preserving checkout; the checker must reject CRLF serialization rather than normalize frozen rows. No user Git configuration or repository attributes are changed.
+
+Alternatives rejected: inventing a self-referential report hash/commit, leaving the requested report uncommitted, treating working-tree whitespace checks as committed-range evidence, conflating raw checkout bytes with Git blobs, or rerunning unchanged expensive semantic suites solely because evidence prose changed. Evidence edits receive the appropriate claim/design/row/whitespace checks; unchanged implementation results retain their source bindings.
+
+Consequences: the delivered commit contains both the implementation and the complete local candidate packet. Each commit receives its own strict design check and the final range receives the exact-base check. The closing commit introduces no new machine or proof-design decision, so DD-20260920-LIFE-001 remains the design rationale. Coordinator aggregate certification, native consuming-boundary integration and fresh blind exact-candidate acceptance remain separately commissioned consumers.
+
+Final scheduling evidence: the first whole-repository claim scan exhausted its 180-second wrapper budget after 181.412 seconds, before a verdict. The owned job terminated its three process IDs, and all were verified absent. Read-only inspection identified the last emitted policy item as term 29 of 35; later multiline PCRE2 scans buffer their output. The retry raises only the owned deadline to 900 seconds, based on that measured lower bound and remaining-stage uncertainty. Scope, policy, matching logic and acceptance criteria are unchanged; the earlier receipt is retained as uncertified and the completed retry owns final coverage.
+
+The 900-second scan also supplied no verdict (900.910 seconds); its three owned IDs were verified absent. Static inspection found that the generated FINAL_RECEIPTS.json had one 1,691-line paragraph, while a late PCRE2 rule tries arbitrary nonempty-line prefixes before a trigger and applies its reporting-scope filter after matching. A temporary object-separated copy preserved deep JSON equality and every nonblank line, reduced the maximum paragraph to 44 lines, and passed the production scoped strict scan in 4.734 seconds. The final receipt therefore inserts only 270 LF bytes after object records. This is an owned metadata serialization change, with no policy/matcher/scope/claim change and no alteration of recorded hashes or frozen files. The isolated result supports the change but does not by itself establish the full-tree bottleneck or final coverage; the full scan must run again on the final serialized packet. Both prior attempts remain uncertified in delivery evidence.
+
+The formatted full scan likewise timed out at 901.547 seconds and its owned process IDs were verified absent. Further read-only diagnosis found baseline-identical native1 receipts with 40,000–66,000-line nonempty paragraphs. Exact production term-34 samples of 4,000/8,000/16,000 lines took 1.964/12.384/45.017 seconds, supporting roughly quadratic growth but not a guaranteed runtime bound. Weighted estimates place one representative whole receipt near 896 seconds and sequential no-trigger work near 5,724 seconds; parallel scheduling is uncertain. The unchanged full scan therefore receives a 7200-second owned deadline with margin. Replacing or weakening the scanner, excluding inherited files, or changing their pinned bytes was rejected. Samples are scheduling evidence, never final-scan coverage; the third timeout remains uncertified and all sample identities/outputs are bound by delivery.json. An attempted coordinator status message was separately rejected by automatic approval review on destination-authorization grounds; it was not sent, and explicit confirmation was requested while local work continued.
+
+## WDD-20260921-LIFE-R1-001: preserve selector absence and independent failure cleanup
+
+Context: the exact LIFE-1 executable and wrapper pass full validation on Windows
+PowerShell 5.1, while bundled pwsh 7.6.5 preserves an empty environment value
+that the old wrapper uses to mean omission. The unchanged native selector then
+correctly rejects registry startup as duplicate channels. The old dependency
+finally also skips safe disposable-shadow removal when original integrity fails.
+Both failures were independently reproduced with source and executable pins.
+
+Decision: introduce a lifecycle-local, production-used process adapter whose
+object selector distinguishes null absence from exact string presence. It
+snapshots process key presence/value, removes or sets that key before calling
+the unchanged owned helper without a selector override, and restores the caller
+state in finally. Ordinary registry/startup/argument/full callers pass absence;
+intentional id: values retain their characters. Add the adapter/helper to the
+validator identity roster and persist its full available returned process result.
+Do not alter the native selector or the Stage/Case command interface.
+
+The dependency finalizer independently guards original integrity and safe shadow
+removal, retaining separate stage, integrity and cleanup errors. Any failure
+keeps a nonzero exit and suppresses the production terminal success record.
+The resolved descendant and exact shadow-basename guards stay byte-identical.
+No changed original source is overwritten automatically.
+
+Alternatives rejected: empty string or null through the inherited helper's
+string cast, allowing ambient selector inheritance on omission, weakening the
+Lean selector, editing the global helper, treating integrity failure as success,
+or removing an unchecked path. Exact source-derived finalizer children preserve
+production function/block bytes and error/terminal paths; only owned scratch
+pin/shadow fixtures are challenged. Real exclusive file locks and private mutex
+observers distinguish cleanup failure, integrity failure and ordinary release.
+
+Evidence plan: the repair's 45-row matrix preserves all 43 original complete
+rows and adds the exact two repair requirements. The frozen process-control
+registry binds every ID to its production route and exact outcome; registry
+mutations and focused selection are separate real command-boundary controls.
+Both declared shells require full16 native validation and real selector/deadline
+controls. Current pwsh additionally requires all26 original producer/client
+cases through the changed dependency runner. Source/build/tool/old-receipt
+identities remain separately pinned. Windows dependency finalizer verification
+has exposed the existing Hash-Bytes API incompatibility with .NET Framework;
+its out-of-scope implementation change is pending explicit authorization, not
+silently substituted in the controls.
+
+Consequences: this repair changes launch and failure-cleanup evidence, with no
+new Lean theorem, machine operation, native capacity or alias claim. The shared
+heavy mutex still serializes expensive children; callers never acquire it around
+a production wrapper that already owns it. Historical receipts retain their
+original source hashes. The inherited helper supplies returned nonempty lines,
+not original raw bytes, and may lose overflow/exception output. An empty captured
+baseline proves no whole-tree integrity. Aggregate certification, native consumer
+review, fresh-blind audit, coordinator acceptance and publication remain later
+campaign phases. The exact repaired-source report and receipts will record final
+outcomes before submission; this entry is the implementation/evidence choice.
+### WDD-20260921-LIFE-R1-002: bind repair controls to actual runtime and exact positive fixtures
+
+Before freezing the repair source, independent review identified three ways a
+control could report the intended rejection for an unintended reason: a registry
+reserialization changed its newline as well as the selected edit, captured stderr
+was trimmed, and a profile label did not prove the driver ran in that runtime.
+The controls now run the original registry bytes as P before a one-byte Q, compare
+all captured Console.Error text including its newline, and bind both the current
+host and supplied child executable to exact runtime paths, hashes and versions.
+Native and wrapper negatives likewise first run an accepted case in the same
+ambient process environment. The bounded failure fixture compares exit 0 with
+exit 7 through the same source and production environment adapter.
+
+The alternatives of accepting the first 67-control development PASS unchanged,
+or accepting any exception as an intended rejection, would leave those evidence
+boundaries untested. That earlier run is retained only as development evidence.
+The corrected focused native, wrapper and registry-edit checks pass; independent
+source review found no further actionable defect. The twelve registry controls
+also reject wrong profile and wrong supplied-shell identity through the actual
+driver before semantic work. Full final replays remain required after this freeze.
+
+The unchanged installed Lean 4.22.0 Lake binary completed both the default build
+and the named lifecycle builds using verified copied cache artifacts. The elan
+shim had attempted a network download and failed before build work; the direct
+pinned installed binary avoids that unrelated shim lookup. No installation or
+runtime mutation occurred, and the lifecycle executable retains its original
+SHA256. Original contract serialization and the protected dependency Hash-Bytes
+WinPS incompatibility still require the pending scope decisions. This entry does
+not amend those requirements or imply acceptance. The repair changes launch and
+cleanup evidence; theorem types, counted resources and native ownership remain
+outside its modification scope.
+### WDD-20260921-LIFE-R1-003: portable control bootstrap and JSON receipt cardinality
+
+The actual Windows PowerShell control run exposed two repair-harness portability
+issues after the production full16 and full26 replays had passed. At parameter
+binding, the optional RegistryPath default evaluated PSScriptRoot before that
+shell supplied it. After an explicit registry path reached the real wrapper,
+ConvertFrom-Json returned its array as one pipeline object, and an outer array
+expression made the harness count one instead of the valid two startup records.
+Neither failure was accepted as semantic evidence; the production startup PASS
+and restored ambient selector were preserved for diagnosis.
+
+The driver now supplies its default registry path in the body only when the
+parameter is absent. Explicit empty remains distinct. The receipt reader assigns
+the parsed JSON value directly and keeps the exact two/three-process count check.
+Using only explicit RegistryPath is contract-compatible, but fixing this small
+convenience default is preferable while the receipt reader already requires a
+new control freeze. Dropping the count check or accepting either count would
+weaken the evidence and was rejected. The frozen case mappings and all production
+scripts, Lean sources, consumers and strict diagnostics are unchanged.
+
+A bounded Windows W01 startup control with omitted RegistryPath passed after
+both fixes, in 13.013 seconds. Independent source review found no actionable
+defect. A new private control-source commit will be followed by fresh complete
+current-PowerShell controls, both registry campaigns, and Windows controls up to
+the separately known protected Hash-Bytes blocker. Existing successful production
+full16/full26 and build receipts retain their exact consumed source identities;
+repeating those unchanged semantic suites would add no coverage. This does not
+waive the blocked Windows intact-pin/finalizer or original contract-byte gates.
+### WDD-20260921-LIFE-R1-004: preserve a blocked repair with complete observed evidence
+
+The final control revision passed all 67 current-PowerShell controls and both
+12-case registry campaigns. Windows passed its exact 32 selector/wrapper prefix
+and the separate real descendant timeout. Its full profile still selects all
+66 assigned IDs: D01's accepted P fails at the protected SHA256.HashData call,
+and the source-bound intact-pin F01 positive separately fails at that same call.
+These are unmet obligations, not accepted negative controls. The missing API
+prevents the shared accepted baseline for the remaining Windows dependency and
+finalizer pairs. The final report therefore remains BLOCKED for L1R1-CLEANUP,
+L1-18, INV-MUTATION-REPRODUCIBILITY and the corresponding delivery rows.
+
+Both production full16 runs and the current-PowerShell full26 replay passed on
+unchanged production bytes; the latter retains exactly 23 rejects/3 accepts,
+original/private restoration and shadow removal. Default and named builds,
+source and artifact identities, and historical exact type/axiom output remain
+bound separately from finite runtime observations. The initial contract-byte
+checker still rejects the checkout's inherited CRLF serialization. Restoring
+those protected files or changing the protected hash implementation requires
+the already requested scope decision, which has not arrived. Weakening either
+checker, substituting a passing hash predicate, or calling a partial campaign
+complete was rejected. The repair does not establish a theorem obstruction.
+
+Packaging quotes all 43 inherited proposition/object-chain cells and appends all
+45 successor dispositions without changing any frozen row. Generated indexes
+store identities and compact summaries; bulky child outputs and fixtures remain
+in the owned .lake evidence directory. A read-only scope --check mode runs the
+same full raw preservation predicate after committing without rewriting its
+committed receipt. Postcommit delivery binds the enclosing commit, report hash,
+source checks and clean state outside the report, avoiding a self-hash cycle.
+
+The conceptual change is limited to environment absence and independent safe
+cleanup. Formal model counts, counted payload, executable owner and native
+allocation obligations remain distinct. Final report/contract/workflow prose
+receives the unchanged strict claim scanner; each commit and exact-base range
+receives the unchanged strict design checker. No aggregate, acceptance, push,
+merge or retirement is authorized or recorded by this blocked package.
+### WDD-20260921-LIFE-R2-001: exact contract commissioning and portable byte hashing
+
+Context: the completed coordinator LIFE-1-R1 review measured two blockers at
+0485a64920a273d0830b926ee46275085222819d. Original contract files had their
+reviewed CRLF checkout representation while the unchanged checker pins Git LF
+bytes. Windows PowerShell's .NET Framework cannot execute the dependency
+runner's SHA256.HashData or Convert.ToHexString. The frozen R2 prompt explicitly
+authorizes only three exact-blob setup writes and the Hash-Bytes body repair.
+
+Decision: capture all initial tracked raw and Git identities, reproduce the old
+actual checker failure, verify each of the three files equals its reviewed raw
+baseline and differs only by the recorded CRLF checkout transformation, then
+materialize its exact base Git blob once. A four-root actual-checker control
+requires the original CRLF negative, each partial materialization negative,
+and the complete Git-byte positive. The live checker must then pass before a
+new protected raw baseline is captured. This operation is never called by a
+runtime finally and does not claim default CRLF checkout portability.
+
+Hash-Bytes keeps its byte-array signature and every caller. Its body now uses
+SHA256.Create, ComputeHash, portable BitConverter hexadecimal conversion and
+finally disposal. The raw file-hash path remains raw; only the existing explicit
+registry caller normalizes its registry text. Raw prefix and suffix equality
+outside this body is recorded, preserving the source's mixed newline history.
+Eight fixed independent Python/hashlib vectors cover empty, binary, UTF-8,
+one-byte and LF/CRLF differences. The exact old function passes on modern pwsh
+and still fails at HashData on Windows; the repaired production span passes all
+eight on both shells. Actual F01 controls then capture and check two real pins
+on both shells, before the full negative campaigns. An empty baseline is never
+credited as this positive.
+
+Alternatives rejected: normalizing equality, updating expected hashes, changing
+attributes/configuration, hiding the Windows error, replacing the hash only in
+a fixture, broad helper changes, or rewriting old manifests to fit new source.
+Historical pins are resolved against their immutable producing source, followed
+by separate checks of unchanged actual consumer inputs. The old wrapper's extra
+dependency pin is incidental to validator execution; this does not permit
+omitting a real validator, helper, executable, runtime or Lean dependency.
+
+Consequences: new R2 artifacts preserve all45 inherited complete row bytes and
+add the exact two requirements. R1 reports and failed receipts remain immutable.
+The unchanged 67/66 controls and affected current-pwsh full26 must be replayed
+against the repaired hash with their original predicates and bounds. A required
+warm default build reuses the verified unchanged cache; unchanged full16/type/
+axiom evidence is reused only after the new applicability check. Every private
+commit receives strict design certification. No proof/model design changed, so
+no DESIGN_DECISIONS edit is authorized or needed. Native ownership, full Windows
+compiler replay, joint aggregate, fresh-blind audit and coordinator acceptance
+are separate obligations or unclaimed platforms, exactly as the prompt assigns.
+
+### WDD-20260921-LIFE-R2-002: exact execution evidence and separate historical applicability
+
+Context: the unchanged R1 registry/handlers now complete all 67 current-pwsh and
+66 Windows cases; both 12-case registry campaigns and the fresh current-pwsh
+26-case dependency replay also pass. A count alone cannot establish that these
+were the intended inputs, P/Q controls, diagnostic surfaces or source versions.
+
+Decision: freeze a separate read-only evidence reader that binds actual ordered
+registry mappings, source/tool/runtime pins, owned process bounds, both wrapper
+log roots, intact positives and exact negative verdicts. It reconstructs each
+dependency producer edit and checked consumer, binds all 52 compiler invocations,
+and checks diagnostic class, consumer path boundary and named theorem range.
+The original predicates, selectors, bounds and handler files remain unchanged.
+Independent review tightened six such bindings before this code freeze. The one
+new HASH_CHANGE receipt originally emitted as CRLF has its exact raw hash pinned
+separately from its immutable Git LF blob; no normalizing equality is credited.
+
+Historical reuse has its own exhaustive read-only applicability verifier. It
+checks all actual artifacts and cache inputs, resolves old pins against exact
+producing Git content and documented raw profiles, and separately checks current
+consumer inputs. It preserves the original mixed lakefile bytes and all old
+reports/receipts. Changed-runner full26 and blocked old Windows controls receive
+fresh evidence; they are not excused by historical applicability. The actual old
+full16 and type/axiom observations remain bounded historical evidence, not new
+runs or a theorem about host allocation. The final report generator requires a
+fresh successful 47-row/22-control receipt for its actual final inputs and an
+exact commit-bound source freeze before asserting local completion.
+
+Alternatives rejected: editing historical manifests to fit current files,
+discarding inconvenient old failures, treating a manifest as execution, checking
+only counts, substituting loose diagnostics, or rerunning unaffected expensive
+Lean work after reader-only changes. New compact indexes reference preserved
+complete child outputs in owned .lake evidence. Consequences: every reused item
+has an explicit applicability relation, every newly affected campaign has actual
+current receipts, and final packaging remains a separately certified step. No
+mathematical or model design changed, so DESIGN_DECISIONS remains unchanged.
+
+### WDD-20260921-LIFE-R2-003: complete local evidence package and external final certification
+
+Context: production/control freeze cb4739220c01e6554a25ff8333652c0501486fa8
+and evidence-code freeze d8a2d8bad2f1e7a8cd89e7905c1568fd98001dbe preserve
+the assigned production boundary. Actual current-pwsh/Windows control campaigns
+passed 67/66 cases in 495.745/296.723 seconds; registry profiles passed 12/12 in
+41.579/37.634 seconds. Fresh current-pwsh full26 passed in 421.444 seconds,
+including all 23 expected rejects and three accepts; its 52 compiler invocations
+retained the original per-process bound and restored the complete baseline.
+The required warm default build passed in 2.039 seconds. These observations do
+not claim a full Windows compiler campaign or native allocation correspondence.
+
+Decision: package the complete 47-row appendix, preserving every frozen row and
+quoting exact original proposition/object-chain and challenge paragraphs. Bind
+the complete current receipts, historical applicability, source freeze and final
+contract verification separately. Append this decision before the last history
+generation so its current raw source identity is included. The final report
+retains previous failures as failures and distinguishes raw bytes, returned helper
+lines, immutable Git objects, actual executed inputs and historical applicability.
+
+Each private commit and the exact-base range receive strict unchanged design
+checks. Final report-sensitive claim checking uses explicit package paths and
+the unchanged policy after final prose exists. Hygiene/trust, whitespace, source,
+scope and clean-state checks complete certification. Their actual receipts and
+the enclosing commit/report identity are pinned outside the committed report in
+owned .lake delivery evidence, avoiding a self-referential hash. Any final failed
+check must be resolved before the candidate is handed back; this entry itself is
+not a substitute for those receipts.
+
+Alternatives rejected: overwriting R1 closure history, reducing inherited rows
+to theorem names, treating a green component as complete acceptance, inventing a
+raw-stream guarantee, or running an unauthorized campaign aggregate. The report
+may state only CANDIDATE_COMPLETE after all assigned local rows and the final
+delivery condition hold. Native ownership, the consuming adapter, joint aggregate,
+fresh-blind audit and coordinator acceptance retain their campaign order. No
+push, integration, publication, branch retirement or transfer retry is performed.
+This is an evidence/process packaging decision; no formal design log changes.
+
+## WDD-20260920-LIFE-NATIVE-P0-001: frozen native ownership registry and exact measured verdicts
+
+Context: the local native prerequisite needs executable evidence against three false ownership claims, and the commissioning review identified first-line-only matrix comparisons, mixed expected/unrelated diagnostics and source/newline hash confusion as recurring failures. The production design classifier already authorizes C sources under native/packed-rmq and treats scripts/internal contracts as workflow-sensitive; no classification allowance is changed.
+
+Decision: freeze twelve complete eight-column acceptance rows before implementation, with strict UTF-8 prompt requirements, baseline bytes and independent hash pins. Preserve the frozen rows and append evidence separately. A local evidence-directory gitattributes rule fixes LF transport so actual Git and working evidence bytes remain distinguishable and replayable under core.autocrlf. Commit an ordered registry and an owned replay runner that executes the C operations, checks observed projections against a fixed independent input specification, rejects unexpected or mixed diagnostics and tests focused, missing, empty, unknown and duplicate selectors at the command boundary. Negative mutations are explicit executable branches, with the same positive predicates and restoration after observation, rather than unreferenced patched Git objects.
+
+Alternatives rejected: interpreting arbitrary process failure as successful mutation rejection; accepting labels or a prewritten expected log instead of capacity/value/reference observations; deleting the full output after retaining only a summary; weakening old gate policies or silently installing a compiler/runtime; running predecessor fixtures as evidence for the new native path; and concurrent broad Lean builds. Compiler/probe processes have finite stage deadlines and owned-tree cleanup. Actual fatal allocation-handler termination is a separate measured process outcome, not recoverable cleanup evidence.
+
+Consequences and evidence: exact raw stdout/stderr, actual exits, source/compiler/header/runtime/binary identities and durations remain at explicit ignored local paths with hashes; compact result evidence and replayable fixtures are committed. The single unchanged Lean baseline build holds Local\RMQLifecycleImplementationHeavy20260920, with source-verified independently copied cache provenance if reused. The final report records strict design/claim, hygiene, frozen-row and clean-commit checks. Aggregate certification, fresh-blind audit, coordinator acceptance and any later published integration remain ordered downstream campaign responsibilities.
+
+Pre-commit review refinement for WDD-20260920-LIFE-NATIVE-P0-001: a phase-name-only checker could accept a mid-copy failure rerouted to the empty allocated buffer, or a post-consumption failure rerouted before release, because their phase sequences coincide. The probe now exposes the full frozen case tuple, and the replay must additionally check the actual failure pre-state: source ownership, initialized destination size/values and reference projections. Tuple metadata is provenance, not operational reach evidence. Source and measurement controls challenge these stage distinctions through the production verdict. The checked intermediate object, rather than a stage label, supplies the cleanup-stage claim.
+
+Toolchain refinement for WDD-20260920-LIFE-NATIVE-P0-001: the installed pinned leanc/clang distribution lacks general-purpose C headers. The measured build retains that compiler and Lean runtime, adds the already-installed matching Strawberry x64 MinGW standard-header tree, and copies only its exact mm_malloc.h into a run-local fallback directory. A whole GCC builtin-header fallback was rejected after its stdatomic.h conflicted with Clang. The successful command pins every included header from the compiler's requested include trace, an actual link map, the conservative installed archive/object roster and compiler/runtime binaries. It rejects unrecorded compiler search overrides. Failed startup/header attempts remain raw local evidence. A final output-length check after draining both streams covers fast-exit overflow; complete identity-output grammar and strict protocol shapes reject mixed diagnostics. These are owned runner repairs, not changes to production claim/design policies.
+
+## WDD-20260920-LIFE-NATIVE-P0-002: separate native source identity from final report certification
+
+Context: source commit bea5ce75f788c4035031ba81e69d8de36eda3f92 freezes the measured C probe, replay script, registry and result receipts. A report cannot contain its own future commit hash. The first post-report claim invocation also exposed a capture error: Write-Host bypassed the draft redirection, so that invocation was interrupted and is explicitly non-certifying.
+
+Decision: preserve the source commit and add a documentation-only packaging commit, following WDD-20260912-NATIVE1-013. Record the source hash in the report, its final byte length and SHA-256 in certification, and the exact packaging commit in the final handoff and local post-commit receipt. Capture complete raw streams and actual exits in an owned replacement invocation. The unchanged default-root strict claim scanner passed with 3,479 hits, zero strict failures, exit 0, in 2,211.841 seconds under a 3,600-second deadline. The earlier same-policy scan at d0b4cef took 1,265.16 seconds with the same three large native JSON blobs; those inherited records explain why a short default scan estimate was unsuitable. No scanner or policy changes are made.
+
+Alternatives rejected: asserting a future report commit hash inside that same commit; treating the interrupted invocation as a pass; truncating evidence to obtain a convenient log; rerunning the expensive default-root scan solely for final documentation edits; or reporting a focused scan as if it were a new whole-tree execution. Inspection of claim_drift_scan.ps1 lines 338-456 establishes that term decisions and attribution requirements are per file, with only failure aggregation at the end. Therefore the completed full scan composes with a final unchanged-policy scan of the entire lifecycle-native-p0 directory and both ledgers, provided every outside path and byte and the scanner environment remain unchanged. A snapshot and final check cover all 2,910 outside files; final focused checks include the completed report and certification.
+
+Consequences and evidence: CERTIFICATION.json indexes the completed full scan, native replay, baseline, source-byte and evidence-pin checks. The final package's per-commit and whole-range design checks, whitespace checks, claim coverage, exact Git/report bytes and clean status are recorded after committing, without creating another self-referential receipt commit. The first capture failure remains in claim-draft-interrupted.json; the corrected run retains all 4,118,433 stdout bytes and empty stderr. Native source is unchanged, so the completed replay and source-verified Lean build remain applicable. This is local CANDIDATE_COMPLETE evidence only; the coordinator still owns acceptance, campaign gates, independent final audit and integration.
+
+## WDD-20260921-LIFE-NATIVE-P0-R1-001: independent final integrity and measured compiler dependency closure
+
+Context: exact native source bea5ce75f788c4035031ba81e69d8de36eda3f92 and report base 0c873072e84be9e1d65edab1985bcff1d23abef1 passed the bounded ownership experiment, but coordinator source review found that earlier stage failures bypassed the success-only pin loop and that substantive compiler DLLs were absent. The existing coordinator skill's finally-integrity floor already applies; this repair creates no repository-wide policy. Independent normal-import inspection also found zlib1.dll beyond the three direct clang imports named in the repair prompt.
+
+Decision: register each captured pin immediately, independently of partially constructed identity records. The production finally checks every captured pin and the declared live tracked/index/nonignored-untracked baseline, records its own outcome, and forces a failed final verdict independently of the original stage error. It detects rather than overwrites unrelated data. Raw stage files enter the inventory before strict decoding; available compiler binary/map outputs enter it in a local finally whose capture errors cannot replace a propagating stage error. The tree inventory checks working bytes and semantic staged entries; ignored outputs enter separately through explicit artifact pins. Unsupported multiline Git path output fails closed under this Windows text-host boundary.
+
+The compiler/runtime receipt derives a recursive local normal-import closure from the actual pinned executable roots, records PE import names and delay-directory metadata, and pins discovered files before invoking tools. The current closure contains eleven local PE files, including libclang-cpp.dll, libLLVM-19.dll, libc++.dll and zlib1.dll. Unresolved non-system dependencies and unsupported delay imports prevent success. OS/API-set loading, dynamic LoadLibrary behavior, PowerShell/.NET and compiler correctness remain external assumptions. Link-map integrity is included explicitly.
+
+Alternatives rejected: giving an expected earlier error precedence over integrity failure; success-only checking; replacing the dependency inventory with a fixed three-DLL list; testing installed-file mutations; resetting unrelated live user data; and accepting broad error prefixes without actual exit/stream guards. Isolated committed controls preserve the production runner's complete setup/functions and catch/finally/verdict while substituting only its stage body. They run actual owned processes and real pin/tree checks. Each owned mutation is restored in its own finally, including ignored maps without depending on summary parsing. Dependency controls use actual measured PE inventory and copied-file/manifest fixtures. The historical source and result are bound through strict Git bytes, independently of Windows checkout newline filtering.
+
+Consequences and evidence: all twelve inherited complete rows remain unchanged; two repair rows and replayable controls are additive. Native C, Lean, ABI, reference semantics, registry, and the sixty-five original check identities remain preserved. Exact ordinary exits, malformed bytes, mixed diagnostics, timeout, partial initialization, source/index/untracked/map changes and artifact-capture errors are distinguished. Source and report packaging identities remain separate; the final full native replay holds the assigned host mutex and an owned deadline. Verified unchanged baseline sources and original claim coverage can be reused with a final unchanged-policy changed-root rescan. The concrete receipts and final outcomes are indexed in repair-r1/REPORT.md. No mathematical/model decision changed, so DESIGN_DECISIONS.md needs no append. The production consuming adapter, aggregate, fresh-blind campaign audit and coordinator acceptance remain downstream.
+
+## WDD-20260921-LIFE-NATIVE-P0-R1-002: certify established timeout reach and correct the mutex wrapper
+
+Context: the first source-frozen repair-control invocation reached the expected timeout but its three-second fixture budget expired before the native child PID was established under concurrent lightweight verification. The tightened control correctly rejected this as uncovered. A separate focused invocation stopped at a PowerShell parser error in the generated mutex wrapper (`catch` needed whitespace before its exception type); no native semantic process ran in that attempt.
+
+Decision: retain the live-child/cleanup assertion and raise only this new fixture's deadline to the existing eight-second sleeper margin, while its deliberate sleep remains 120 seconds. Correct the wrapper syntax without changing mutex identity, ownership, native predicates or the compiler/probe limits. Preserve both failed raw receipts, then rerun the affected controls and native wrapper on the corrected committed source. The original whole-source static checks remain historical evidence; final checks will include this commit independently.
+
+Alternatives rejected: accepting a timeout with no established native process; weakening exact exit/stream assertions; calling the parser failure a native result; changing production compiler/probe deadlines; or retrying unchanged. Consequences: the new timed control remains a measured termination test, the full native replay still requires the assigned host mutex and 1200-second owned deadline, and the final report separates these failed development/certification attempts from the final outcomes. This is a verification-process correction with no Lean/C/ABI/model change.
+
+## WDD-20260921-LIFE-NATIVE-P0-R1-003: package final local repair evidence separately from source
+
+Context: the corrected source closes the native prerequisite verifier through the unchanged operational registry plus independent integrity and compiler-dependency controls. A report cannot contain its own future commit/hash, and final committed policy checks must consume the complete report.
+
+Decision: preserve the implementation and certification correction commits; add the complete report, compact pinned results and append-only matrix dispositions in a documentation-only package. Exact source/runtime/control receipts retain the measured outcomes. Run final exact-base and each-parent strict design, working/range whitespace, hygiene, frozen-byte/scope/baseline identity and clean-tree checks after committing; preserve their raw logs and actual exits in local final certification without creating a recursive receipt commit. Re-establish the unchanged outside-file/checker context and run the unchanged strict claim scanner over lifecycle-native-p0 and both ledgers after report packaging. This composes with the verified prior full scan and is not described as a newly executed default-root scan.
+
+Alternatives rejected: rewriting historical candidate receipts or pending frozen cells; recording a future package hash as if already known; rerunning unchanged Lean compilation; hiding the diagnosed source-frozen wrapper/timeout failures; or presenting local controls as campaign acceptance. Consequences: the handoff gives exact source/correction/package commits and report bytes/hash; coordinator reconstruction, production consuming adapter, aggregate and fresh-blind campaign audit remain downstream. No representation or mathematical-model change needs a design-ledger entry.
+
+## WDD-20260921-LIFE-NATIVE-P0-R2-001: validate complete outer diagnostic streams at their actual callers
+
+Context: the exact 2307e3ad candidate's integrity-control harness accepted an unrelated derived-runner stderr line both after intact success and alongside the expected exit-seven diagnostic. Its native measurements, production finally verification and eleven-node compiler provenance remain supported. The certification wrapper likewise recorded child streams without checking their declared output grammar. The existing exact-diagnostics requirements already govern this omission; no policy expansion is needed.
+
+Decision: a focused shared stream validator checks the actual ordinary exit and complete strict UTF-8 raw streams, after transport/timeout/overflow checks, at both callers. Integrity expectations come from the declared case and independently checked inner operations, including runtime-specific decoder and exclusive-lock messages. Expected stage and integrity errors remain separate, ordered and exact; the expected-error route does not skip stdout or stderr validation. Each supported wrapper profile has a precise producer-derived contract. Claim records are independently enumerated from the protected policy and actual source matches, with exact whole-record content/multiplicity and terminal summary while allowing ripgrep file-order variation. Useful multiline claim output is retained.
+
+The integrity caller reuses the production byte-copy child. At the unchanged owned-process helper's cleanup boundary, a scope-local adapter copies only this invocation's exact stdout/stderr redirect files before forwarding deletion to the original cmdlet. This retains even blank-only launcher output that the helper's text arrays omit. The adapter does not change process launch, deadlines, ownership, termination or global commands; retention failure prevents acceptance. Fixture controls exercise real blank launcher streams as well as successful and expected-failure derived runners with extra stdout/stderr.
+
+Alternatives rejected: a blanket empty-stderr rule for expected failures; prefix-only exceptions or successful JSON as an output oracle; normalizing away unrelated whitespace; modifying the protected native/finally/PE/process implementations; broad claim-output wildcards; regenerating old reports or receipts; and making the later adapter prerequisite gate its own producer. Controls use immutable source-derived carriers and restore only owned fixture state. The old source and captured accepted failure remain immutable counterexamples. Exact row/prompt/byte checks and historical Git identities are distinct from current working-byte pins.
+
+Consequences and evidence: repair-r2 freezes all sixteen complete rows, preserves the original operational and R1 control rosters, and adds exact selector-aware stream registries plus real caller regressions. Shared heavy work remains serialized by Local\RMQLifecycleImplementationHeavy20260920 with evidence-based deadlines. The successor report corrects the R1 map wording: dependency_controls creates a synthetic text map fixture; actual generated-map capture/final hashing are separate observations. No Lean, C, ABI, allocation model, payload theorem or production design decision changes, so DESIGN_DECISIONS.md is preserved. Source freeze and final report packaging remain separate; final claims include the completed report. The consuming adapter, formal/native aggregate, fresh-blind audit and coordinator acceptance remain downstream.
+
+## WDD-20260921-LIFE-NATIVE-P0-R2-002: bind wrapper controls to both observed streams and their producing roster
+
+Context: the production predicate and all six legitimate profiles passed on source c3fcc2e0beb08d090382f56d16dbe9446639164a. Independent review then found two test-harness weaknesses: an expected stdout exception could precede an unrelated stderr check, and a claims holdout could use an independently named expectation without binding it to the producer receipt.
+
+Decision: establish both complete observed streams and all transport/ordinary-exit guards before crediting a real wrapper rejection. Add an explicit mixed-output holdout on the same captured object. Require the exact claims expectation path, bytes and hash saved by the producing wrapper. Publish the independent result collector with these checks, retaining all failed development attempts separately. Source-sensitive work was kept in ignored scratch until the live native/integrity snapshots completed.
+
+Alternatives rejected: treating any expected exception as adequate evidence; accepting a compatible but unbound claims roster; editing tracked source while live baseline snapshots run; and repeating the unchanged full native/integrity runs for test-only corrections. Those runs already measured the unchanged production validator and native sources. Final checks and claims do change with the new source and report content, so they are regenerated on each final clean freeze before the complete wrapper registry is evaluated.
+
+Consequences and evidence: the wrapper registry has 120 exact controls with recorded operational mappings, including the new two-stream holdout. The eleven real harness controls and original native, integrity and dependency evidence remain applicable by checked source identity. The final report distinguishes source-phase and post-package receipts; no aggregate or coordinator acceptance is inferred. This is an internal verification-process decision and changes no mathematical or native model.
+
+## WDD-20260921-LIFE-NATIVE-P0-R2-003: package complete diagnostic evidence without recursive report identities
+
+Context: core source c3fcc2e0beb08d090382f56d16dbe9446639164a passed all six genuine profiles and the eleven-case real harness registry. Corrected test/collector source 4d6f195b306bd1615aced8c7a7cd1db0d48a8d69 passed fresh checks/claims and all 120 wrapper controls in 93.550 seconds. The independent collector verified 1938 distinct pins over 2931 occurrences, including the successful 23/65/58 native run, all fifteen integrity and nineteen dependency controls, and the immutable old counterexample that still accepts both unrelated diagnostics.
+
+Decision: package the complete successor report, compact factual result index and appended matrix evidence in a documentation-only commit. Keep the complete raw streams, actual exits and full pin ledger at exact ignored local paths pinned by that index. After committing, rerun checks and claims against the complete report and exact package, then re-evaluate the full wrapper registry with those new producer receipts and run the independent collector. Record the final commit/report bytes/hash and those results in local FINAL_CERTIFICATION.json and the handoff; do not create a recursive report-hash commit.
+
+Alternatives rejected: recording a future package hash inside itself; calling source-only claims coverage final report coverage; treating a source-phase checks roster as current after another commit; committing large raw transcripts; or rerunning unchanged native/Lean producers solely for packaging. The unchanged-policy final subtree/both-ledger claim scan composes only after exact outside source, policy, scanner, ripgrep and configuration verification.
+
+Consequences and evidence: all sixteen frozen rows and historical reports remain byte-preserved. The successor explicitly corrects the old copied-map wording and retains platform, final-drain overflow, OS/dynamic-loading and consuming-adapter limits. The final package is clean and private; no push, integration, aggregate, fresh-blind campaign audit or coordinator acceptance is inferred. This is evidence packaging with no mathematical or native-model change.
+
+## WDD-20260921-LIFE-NATIVE-P0-R3-001: literal decoded streams and upfront nonempty profile selection
+
+Context: independent review of exact 9519b2c1af5e2cf59536b311db5e8dc81376a32f measured four actual captured children. Exact expected error passed, extra ASCII rejected, but trailing U+FEFF after an expected error and U+FEFF-only stderr incorrectly passed. Strict UTF-8 decoding preserved the characters; PowerShell's culture-sensitive case comparison treated some additions as ignorable. A separate direct invocation with explicitly empty Kinds returned without a child or profile manifest. Both defects violate existing local requirements; neither changes the native ownership experiment.
+
+Decision: change only the common text equality to String.Equals with StringComparison.Ordinal after the unchanged strict UTF-8 decoder. Preserve characters, newlines, BOMs and every existing transport/ordinary-exit guard. At the actual certify_profiles boundary, validate the whole explicitly bound profile array before any output creation or invocation, rejecting null, empty, whitespace, unknown and repeated values. Omission retains the six-profile default. Current checks dispatch and its stream roster advance together to exact base 9519b2c1 and the successor contract verifier.
+
+Alternatives rejected: stripping ignorable characters, normalizing bytes, using a stronger test-only equality, accepting an expected-error prefix, rejecting all stderr, validating selections inside the execution loop, or adding another wrapper hierarchy. A private fixture suite prescribes exact bytes before execution and consumes the actual comparator; malformed UTF-8 and normalization/newline holdouts distinguish decoding from equality. Direct selector controls include invalid trailing entries so no valid leading profile starts first. One real focused native invocation supplies nonvacuous positive selection evidence.
+
+Evidence reuse: the sixteen complete historical rows remain frozen including pending cells, and two additive rows bind this repair. The retained six-profile and fifteen-integrity captures keep original paths, producing roots, source identities and ordinary exits. Their historical checks roster is reconstructed at its own base and HEAD before the current common predicate is applied. Fresh current checks/claims and the focused invocation consume their complete current profile predicate. Retained named old counterexamples still demonstrate old acceptance on the same bytes; copied-capture and synthetic launcher components are labeled separately from actual emitted children. The unchanged native 23/65/58 and dependency/control/build records are reused only after exact protected-source, registry and raw-pin checks. The final-drain overflow limit remains disclosed.
+
+Consequences: this is a narrow local verifier repair, with replayable registry, source and report identities, full raw local artifacts and finally checks. Source freeze precedes execution and report packaging; final committed checks and completed-report claims are recorded without recursive self-hashes. No Lean, C, ABI, mathematical model or public theorem changes require DESIGN_DECISIONS.md. The consuming adapter, joint aggregate, fresh-blind audit and coordinator acceptance remain downstream.
+
+
+## WDD-20260921-LIFE-NATIVE-P0-R3-002: bind final claims to scanned inputs and package literal evidence
+
+Context: source 6bcd1fc50020482ab441723a1964eec0232d223f passed all 37 controls, including actual focused native execution and the success/error integrity caller pair. The retained component pass verified 40 cases. A read-only evidence review found that a claims receipt in the same checkout plus a manifest HEAD would not by itself prove which report bytes were scanned. It also identified an exit-artifact check that must precede malformed UTF-8 rejection and a missing explicit join between pinned fixture drivers and captured commands.
+
+Decision: publish an explicit final evidence adapter that snapshots the clean producing HEAD and exact complete native-subtree/both-ledger scanned inputs before and after invoking the existing checks/claims certification boundary. The result collector binds that actual captured command, source pins, report bytes, final checks contract and resulting six-profile manifest. It checks the retained actual exit artifact even when strict decoding rejects, and verifies each source-control capture names its pinned driver and working directory. This adapter only produces evidence for the existing verification actions; it does not add a new production stream layer or change the named convenience-launcher scope.
+
+Alternatives rejected: trusting an edited manifest HEAD, treating a malformed decoder exception as enough without the ordinary-exit artifact, cloning historical validators, repeating unchanged native experiments for documentation packaging, or embedding a future commit/report hash inside the report. A compact committed index pins source evidence; the post-commit external FINAL_CERTIFICATION.json and handoff carry the final package/report identity. Complete raw streams remain at their original local paths. Historical source and historical captures retain their distinct exact-byte/Git-identity treatment.
+
+Execution evidence: the original 300-second combined tiny group timed out and is excluded. Owned captures were short but pre-capture gaps accumulated, consistent with uninstrumented shared-mutex waiting; after process-identity and cleanup inspection, ordered subsets of 9, 9 and 17 controls completed under the same bound. PID reuse was distinguished by creation time rather than killing an unrelated later process. The first retained convenience driver failed on its own path-format expectation; its original failure is preserved, its successful child is separately revalidated, and a distinct canonical-path driver is used for the final retained pass. These are recorded failures and evidence scheduling decisions, not relaxed verdicts.
+
+Consequences: append the full row dispositions without rewriting frozen cells, commit the complete successor report and evidence consumers, then run final checks/claims and the inexpensive retained component against that clean package. All production/control source pins tested at the source freeze must remain identical. No Lean/C/ABI or public theorem change occurred; no DESIGN_DECISIONS.md entry is needed. The native consuming adapter, complete joint aggregate, fresh-blind campaign audit and coordinator acceptance remain downstream.
+
+
+## WDD-20260921-LIFE-NATIVE-P0-R3-003: preserve pinned claim-tool selection across process environments
+
+Context: the first final-profile invocation on package a7b8566a44f9ff6d3e9c294f822937eaa76c3754 failed the unchanged historical-claim composition guard because the elevated shell resolved a WinGet ripgrep path ahead of the pinned Codex ripgrep. The source-phase process had resolved the pinned path. The actual child/launcher exited 1/1 and the final before/after source checks remained intact; no final profile from that attempt is credited.
+
+Decision: preserve the failed raw records and append the failure to the report/index. Use a separate local convenience driver that checks the original claim-context SHA256 and existing pinned ripgrep SHA256, then prepends only that directory to PATH in its disposable process and descendants. Keep the unchanged contract and claim producer responsible for verifying the actual resolved path, binary bytes and configuration. Commit this complete evidence disclosure before the final check/claim rerun.
+
+Alternatives rejected: weakening the exact path guard, substituting the other installed binary, changing any installed tool or persistent environment, concealing the failed attempt, or repeating the identical environment. The failure did not invalidate native/Lean evidence or justify an expensive full campaign. A fresh output directory preserves both attempts and source identity.
+
+Consequences: no production verifier, formal model, native implementation or policy change; this is an explicit process-environment and evidence-packaging decision. Final certification is still required on the resulting clean package. Source controls remain attributed to 6bcd1fc50020482ab441723a1964eec0232d223f; downstream adapter, aggregate, audit and acceptance obligations remain unchanged.
+
+
+## WDD-20260921-LIFE-NATIVE-P0-R3-004: make pinned process-local tool discovery unique
+
+Context: package 9a15563f4231e79bb143ddbd885f6171811f94d2 passed all ten source checks, including full contract, hygiene, committed whitespace, whole-range and each-parent strict design, and clean HEAD. The protected claim-expectation producer then rejected multiple resolved ripgrep applications. The prior PATH prepend selected the right first executable but retained duplicate or alternate executable directories; the historical producer requires exactly one discovery result.
+
+Decision: retain both the failed producer and enclosing final-invocation records. In a separate disposable convenience process, remove PATH directories containing rg.exe and duplicate entries, insert the existing hash-checked pinned ripgrep directory once, and require exactly one resolved application at the pinned path. Run the failing expectation producer alone before another final package run. Its actual bounded diagnostic passed at claim-expectation-042b2d5a1b6b4cb4a26681d312fa2cd3 with complete raw captures. Preserve this diagnostic as a component, not final report coverage.
+
+Alternatives rejected: relaxing the unchanged producer's one-executable condition, changing the production script or installed tools, accepting the earlier checks receipt as final after report edits, or rerunning the same PATH unchanged. All edits to PATH exist only in the disposable process and descendants; the full final invocation still verifies actual rg path, hash, policy/config and scanned inputs.
+
+Consequences: the report/index now disclose both failed final attempts and the successful narrow diagnosis. No production/control-source bytes or native operations changed. The final package must receive fresh checks and claims, followed by retained revalidation and complete collection; source controls and downstream campaign limits retain their original attribution.
+
+
+## WDD-20260922-LIFE-NATIVE-JOIN-001: private reviewed producer base for the consuming adapter
+
+Context: formal R2 7d247703a7009aa0f5faa1a9a67abf5f2ce526b6 and native prerequisite R3 8a74ad3af84feaf0ccea7185813ce8b55c50d96a have completed coordinator source/evidence review. The consuming adapter requires both. Their common base is bf31f983205175481fcb659caa4dfb70ef43e361; source paths are disjoint and only append-only design ledgers overlap.
+
+Decision: form one private unpublished two-parent preparation base, preserving every non-ledger blob from its producing parent. Preserve the common ledger prefix once, then the complete formal additions and complete native additions verbatim. No code, model, public theorem or policy choice is made by this mechanical join. Exact parent/blob/raw-byte checks and canonical skill preflight are retained in the external coordination packet. New checkout materializes Git bytes with command-local autocrlf=false; old raw receipts still resolve to their original producers, not this checkout.
+
+Alternatives rejected: launching the adapter on an incomplete sibling, modifying retired worktrees, silently rebasing historical evidence, or calling a private preparation join acceptance. No old heavy evidence is relabeled as a joint run. The adapter still needs its own frozen scope/controls, source review, complete final aggregate and fresh-blind exact-candidate audit. Main integration, push and destructive retirement remain unauthorized.
+
+
+## WDD-LIFE-NATIVE1-01 - Freeze requirements before compilation and retain literal child evidence
+
+Date: 2026-09-23. Status: implementation workflow; certification pending.
+
+LIFE-NATIVE-1 starts at the exact reviewed private join with a successful
+project-skill preflight and a clean private branch. START.json records the
+actual runtime catalog and startup result; BASE_IDENTITY.json records raw and
+Git identities of all 3844 predecessor tracked paths. The 55 ordered acceptance
+rows and complete verbatim source spans are frozen before production editing.
+Markdown line-break rendering is distinct from exact source UTF-8 bytes, which
+are retained and hashed in CONTRACT_REQUIREMENTS.json. Evidence/status evolve
+separately. The explicitly approved five-annotation source exception is stored
+as CONTRACT_AMENDMENT_01.json without rewriting the frozen requirements.
+
+New build/replay scripts reuse the protected owned-process and literal-stream
+helpers. Every compiler/native child gets a positive evidence-based deadline,
+complete retained stdout/stderr bytes, ordinary-exit status, and timeout/limit
+flags. The helper's returned line arrays are not literal stream evidence:
+strict UTF-8 decoding and ordinal checks operate on the raw captures. Build
+logs have no prescribed semantic output language; exact replay diagnostics do.
+Integrity and disposable cleanup are independent finalization obligations.
+A new wrapper registry does not reinterpret the old profile-specific registries.
+
+Heavy work acquires Local\RMQLifecycleImplementationHeavy20260920. The first
+cold-dependency attempt found the slot busy and launched no child; a later
+attempt after the authorized source amendment acquired it. The cold worktree
+has a 2400-second dependency-build deadline, explicitly distinct from the
+62-120-second historical warm lifecycle validation clue. Silence alone does
+not trigger a restart. Root owns compilation while disjoint proof leaves edit
+new module files; no leaf runs a competing Lean/Lake process.
+
+The verification order is frozen contract/scope, narrow Lean/export consumer,
+generated initialization, bounded native startup, one exact selector, frozen
+full native registry, then final report-sensitive checks. One default lake
+build is assigned here; the full campaign aggregate and blind audit belong to
+the coordinator and are not duplicated. Compact indexes are committed; complete
+raw captures remain at exact ignored .lake/lifecycle-native1 paths. A completed
+report precedes its final scope/design/claim certification, with external
+receipt pins avoiding recursive report self-hashes.
+
+Alternatives rejected: copying predecessor whole-checkout pins onto the new
+join, treating a busy slot as a build result, silently relaxing literal stream
+checks, and accepting a route probe as the production owner. The local worker
+may report CANDIDATE_COMPLETE only when every applicable frozen row closes.
+The new lifecycle_native_identity/build/replay scripts consume these decisions;
+no protected generic helper, policy, gate or registry is changed.
+
+## WDD-LIFE-NATIVE1-02 - Share checked staging within the native control campaign
+
+Date: 2026-09-27. Status: implementation workflow; certification pending.
+
+The first actual healthy control established a measurable orchestration cost:
+the native process took 2.1593481 seconds, while its nested replay wrapper took
+47.295414 seconds. The outer campaign had already pinned the complete source,
+tool and artifact inputs and checked them again in finally. Spawning a complete
+inner replay for each of 48 cases would repeat that same full inventory around
+every short native call. The historical measurement is retained at
+`.lake/lifecycle-native1/native-controls/20260927T045419192-8422f68f/RESULT.json`.
+
+The native-control runner instead stages one hash-identical testing client,
+testing DLL and pinned Lean runtime together, checks their PE dependency closure,
+and runs each declared control through that same C entry point. It holds the
+shared heavy-work mutex for the campaign. Each actual native child retains its
+own positive deadline, owned process tree, complete raw stdout/stderr, ordinary
+exit and exact expected OBSERVED line. Full source/tool/artifact integrity is
+checked before the campaign and independently in finally; environment and mutex
+cleanup are separate obligations. Staged-file identity is part of the evidence.
+
+The ordered 48 challenges, direct C acceptance predicates, report projection
+and root-review-before-verdict protocol remain unchanged. This orchestration
+edit changes the runner fingerprint, so prior captures are historical and new
+discovery must bind the revised runner before expectations can be frozen.
+Caller/registry controls run again on the changed script. Root still reviews
+actual state/resource differences before assigning rejection, acceptance or an
+explicitly nondistinguishing outcome.
+
+Alternatives rejected were repeatedly hashing the same inventory per control,
+removing integrity checks, replacing the actual C client with a synthetic
+component, and weakening stream or timeout verdicts to compensate for setup
+cost. The narrow runner reuses the unchanged generic stream, owned-process and
+PE helpers. No protected policy or predecessor producer is modified, and no
+native source or Lean theorem changes for this scheduling decision.
+
+
+## WDD-LIFE-NATIVE1-03 - Bind final certification to report bytes and actual checker output
+
+Date: 2026-09-27. Status: local worker certification design.
+
+Execution receipts bind the frozen producing sources, while final scope, design
+and claim checks must consume the final report, evidence matrix and decision
+ledgers. Rebuilding an unchanged native DLL after prose edits would not establish
+that second property. Conversely, a pre-report claim scan cannot certify prose
+written later. The local final_checks helper therefore invokes the unchanged
+production scope/design/claim checkers on the complete changed/new path roster,
+including process records and frozen JSON evidence, then checks HEAD, the roster
+and every consumed byte again. Strict design receives the exact assigned base.
+A later committed pass also requires clean Git state and committed-range
+whitespace. Report-sensitive edits require only these narrow checks to repeat;
+unchanged native semantic campaigns are not repeated for separate report edits.
+Comments inside pinned native source files are a different recipe boundary:
+even an operationally inert comment correction changes those raw source pins.
+The strict final-source contract therefore refreshes affected native producers
+and consumers, while retaining the earlier measurements as historical evidence.
+
+The full ordinary exit and strict UTF-8 stdout/stderr of every child are retained
+before deciding its verdict. Output validation reconstructs the scope receipt
+line, design count line and source-authenticated claim findings from the pinned
+checker/policy inputs; unrelated diagnostics cannot be accepted as self-supplied
+expectations. The unchanged production scanner remains the classification
+consumer. The scope receipt and its input identities are included in the final
+record. Temporary Git advice/exclude overrides are confined to a fresh child;
+they append to inherited entries so the sandbox's Git ownership context remains
+intact. No repository or user configuration is edited.
+
+A separate default_build helper owns the required single final default Lake
+build under the shared heavy mutex. Its compiler version is retained as exact
+raw bytes, including the observed LF, instead of relying on legacy returned-line
+normalization. Failed build captures remain indexed before any assertion throws.
+Default build progress and warnings are a variable output language, distinct from
+fixed semantic-rejection diagnostics; the complete bytes, ordinary exit,
+timeout/overflow and independent source/tool integrity remain recorded. Cleanup
+and integrity run independently even after partial setup.
+
+Alternatives rejected were treating parsed PASS text as the exit status,
+accepting captured diagnostics as their own expected language, dropping failed
+captures from result indexes, changing the protected claim policy, and embedding
+self-referential commit/report hashes in the report. The external delivery
+receipt instead pins the final commit, report bytes, source applicability and
+final certification receipts after the local candidate commit exists. Coordinator
+aggregate, blind audit, acceptance, integration and publication remain separate.
+
+The output-language controls also freeze their complete ID, handler, mutation,
+verdict and diagnostic mapping before setup. Checking only the ordered names
+would let a retained name dispatch to another harmless case while losing its
+intended challenge. Actual disposable mapping mutations test that rejection.
+Git whitespace and clean-tree checks require empty stdout and stderr through
+the existing ordinal raw-stream predicate; cultural equality to an empty string
+would accept a NUL-only diagnostic. These are constraints on the added wrappers,
+not changes to the protected production scanner, policy or Git implementation.
+
+The refresh also exposed a distinct source-binding defect: named-property
+sorting with `-Unique` over ordered-dictionary pins collapsed the native control
+recipe to its first row. Individual file checks still ran, but the resulting
+cross-run fingerprint did not bind all inputs. The corrected local recipe uses
+explicit path keys, rejects conflicting duplicates, sorts complete key strings
+ordinally and retains the exact recipe rows and counts. Sensitivity controls
+change non-first records and test ordering and duplicate behavior through the
+same recipe function. Reassigning the old hash or changing the expected native
+projections would conceal the defect; neither is an acceptable repair. Old
+measurements remain historical oracle data, and current full replay follows a
+fresh discovery and independently reviewed binding of that unchanged oracle.
+
+
+## WDD-LIFE-NATIVE1-R1 - Certify setup lifetime, exact registry strings and native closure
+
+Date: 2026-09-27. Status: repair implementation; local certification pending.
+
+Trigger: independent c52c453a2f0f49c568886f502687e4d0667838e9 review established
+three required certification failures. Missing replay source escaped selector
+setup finalization; cultural case-sensitive comparison accepted altered frozen
+registry strings; Codec-only native builds certified three source modules while
+Entry compilation consumed 365. The full default roots cover 371. These findings
+concern promised verification boundaries and do not demonstrate an incorrect RMQ
+answer or a stale default-target DLL.
+
+Decision: begin the selector runner's protected lifetime before evidence/scratch
+acquisition, initialize a failure report first, and accumulate pins individually.
+On setup failure the independent integrity, disposal and final receipt attempts
+retain the original error and explicitly incomplete pin set. A cleanup failure
+cannot turn the setup failure into success or suppress other finalization duties.
+The actual owning runner receives missing-input and changed-pin-plus-missing-input
+controls, with isolated fault injection and complete ordinary-exit streams.
+
+Both external native registries now compare every fixed textual field with an
+explicit string-type check and StringComparison.Ordinal. The frozen expectation
+cross-map additionally checks each exact ID/field/verdict, and complete normalized
+projections compare ordinally. Hash spelling normalization remains separately
+identified where the inherited interface permits hexadecimal case variation.
+Actual Plan and Validate callers exercise healthy, ordinary corruption, middle
+omission/duplication, matching middle-ID changes, NUL/soft-hyphen/BOM/zero-width
+space and non-string fields. Strict output decoding was already correct and is
+not a substitute for registry validation. Original 48/10 case mappings and
+measured meanings remain immutable.
+
+The native builder computes the actual Entry closure before acquiring output
+resources and rejects every native phase whose selected Lean closure omits a
+compiled module. Lean-only focused compilation stays supported. The existing
+source/generated/tool/cache checks then certify a superset of the actual native
+closure. This guard was chosen over silently expanding a focused request because
+it keeps the requested compilation domain explicit and preserves the unchanged
+default route. The regression is the actual closure/preflight/receipt predicate;
+it does not manufacture a stale DLL or count a rejected unsupported combination
+as a compiler failure.
+
+Alternatives rejected: copied-detector tests instead of caller controls, complete
+pin-set prerequisites on a failure whose cause is pin acquisition, merely moving
+one hash while leaving acquisition unprotected, cultural case-sensitive equality,
+pass-total-only closure, and reusing a focused proof receipt for a larger native
+consumer. The four production repairs leave Lean/C/Rust/C++ semantics, old frozen
+rows, shared helpers, prior captures and public claims unchanged.
+
+Evidence refresh follows actual consumed inputs. A fresh focused Lean receipt and
+native DLL/client chain, startup, fixtures, ABI/client cases and full native
+controls are required because the build and control scripts are pinned inputs.
+Unchanged formal export/axiom and Rust misuse evidence requires explicit original
+source/tool/generated applicability. New native expectations preserve the complete
+old measured projections/verdicts but need an externally approved new recipe
+binding before Replay. Pending coordinator approval is never self-assigned.
+R1 scope/final wrappers preserve the exact four-script exception, fourteen-file
+new roster, all original bytes and this ledger prefix; final design checks use
+both c52 and 3db, and strict claim checking covers the original-base cumulative
+surface including the final report. Aggregate and blind audit remain subsequent
+coordinator gates.
+
+Exact sources: original audit packet native1-review-20260927/{DISPOSITION.md,
+FAILURE_FEEDBACK.md,R1_SCOPE_REVIEW.md,SELECTOR_SETUP_REPRO.json,
+MAPPING_CALLER_REPRO.json,BUILD_CLOSURE_REPRO.json} beneath
+C:/Users/poin/Documents/RMQ/lifecycle-implementation-20260920. Fresh reproduction
+and control receipts are indexed by docs/internal/extensions/lifecycle-native1-r1/
+COMMANDS.md and its final report. The original candidate remains the named failed
+fixture; no historical evidence is overwritten. Publication significance is
+reliable certification of this bounded native consumer, with model steps/payload,
+foreign runtime assumptions and measured native resources still separate.
+
+## WDD-LN1-R1-CHECKOUT-20260927 - Preserve audited raw bytes in the fresh worktree
+
+The managed 4935 checkout was Git-clean at c52 but 64 tracked files had CRLF
+conversion relative to the immutable audited 44d6 producer. The unchanged frozen
+contract and selector registry hashes correctly rejected them. This blocked the
+actual H1 reproduction before its intended lifetime boundary. All 3930 tracked
+files were compared; exactly 64 differed, solely in line endings. Eight origin
+files have audited mixed endings, so extracting Git blobs or generic normalization
+would not reproduce their recorded raw identity.
+
+Coordinator CHECKOUT_DISPOSITION.md, SHA256
+8c6d80c15ce32fbe0fd64f2bcae78be3678d0e6cd88ca2ba2b90c9f9c67dd13d,
+authorized only the independently reviewed 64 exact source-to-target copies.
+Initial bytes/inventory were retained, both hashes checked before each write,
+and the full post-restore inventory matched all 3930 original files. The first
+finalization receipt failed because Git status retained representation-related
+modified flags despite empty content diffs. Coordinator INDEX_DISPOSITION.md,
+SHA256 235a3225b43cf9c6a366baaeffedeba94a46aa6a6200a4a175a5b6382a1c28c9,
+authorized the separately tested bounded `git update-index --info-only --` over
+only those 64 paths. The successful live operation preserved every staged entry
+and flag, both diffs remained empty, and only owned new R1 files remained in status.
+The index was backed up; the original worktree, object database, configuration and
+policies were not modified. Initial and restored identities stay separate in the
+R1 BASE_IDENTITY, with failed attempts retained under ignored restoration evidence.
+
+The approval documents are under the campaign native1-repair-launch-20260927
+folder. Successful finalization is .lake/lifecycle-native1-r1/
+restoration-final-authorized/RESULT.json. This bounded materialization exception
+does not promise arbitrary default checkouts reproduce byte-pinned evidence.
+Future audit/integration checkouts must establish the same raw identity. A general
+line-ending policy, hash relaxation or repository configuration change is outside
+this repair. The choice preserves the original evidence domain and implementation
+scope rather than retroactively declaring converted bytes to be original bytes.
+
+
+## WDD-LIFE-TOPOLOGY-01 - Certify documentary imports before expensive aggregate replay
+
+Date: 2026-09-28. Status: private coordinator repair; final gates pending.
+
+The final e13e6631 aggregate ran all 20 advertised checkers in 16302 seconds and
+failed only paper topology lint and its regression. The local lifecycle headline
+was explicitly importable in its producer's build but was not exported by the
+repository-wide headline barrel used to check every documentary citation. A
+locally complete producer report therefore remained incompatible with the final
+repository import contract. This is a reusable verification-order miss, not a
+new lifecycle proof or native ownership finding.
+
+The root retained the failed raw output, normal exit, restored source/index and
+released mutex; it then reproduced both failed positive cases through the
+unchanged production linter, and a virtual citation-removal control passed. The
+original exact e13 case is the negative fixture. Preserve that failure and every
+historical report. Do not let a later repair relabel the failed aggregate green.
+
+The new private repair owns only the broad headline barrel, its family-summary
+import description and append-only DD/WDD entries. The former R1 four-script and
+fourteen-new-file scope is historical and is not silently widened. An explicit
+source applicability bridge must show that all 55 frozen rows, original source,
+native producer recipe and approved 48-case expectations survive this successor.
+No expectation rebinding or native semantic replay is justified merely by a
+barrel import outside the native producer's dependency closure.
+
+Run focused actual headline/default builds and unchanged documentary lint plus
+the full 16-case regression on a clean private commit before one final aggregate
+on the unchanged tree. Reuse an independent copied cache, never producer evidence
+directories or concurrent owners. Fresh-blind full lifecycle audit follows the
+successful aggregate; the repair and coordinator reviews are not that audit.
+This scheduling rule and evidence bridge replace an expensive blind full retry;
+checker policies, all cases and deadlines remain unchanged. Campaign evidence is
+in lifecycle-implementation-20260920/native1-final-aggregate-20260928 and
+native1-topology-repair-20260928. No main integration, publication or push.
+
+
+## WDD-20260929-LIFE1-R3-01 - Freeze the failure-path integrity contract before touching harnesses
+
+Date: 2026-09-29. Status: LIFE-1-R3 worker decision; coordinator acceptance pending.
+
+Context. The fresh blind audit of lifecycle candidate eb8e4f25 found one P2
+workflow defect (F1): the formal control orchestrator
+`lifecycle1/repair-r1/run_controls.ps1` compared its entry source pins with the
+live tree only on the success path, and its `finally` wrote the entry pins into
+`summary.json` as if they were verified. A coordinator sibling review widened the
+same defect class to eight more committed harnesses in this lane. The repair
+contract (LIFE1_R3_FINALLY_INTEGRITY.md, SHA-256 552fe34f...) fixes the property
+per harness: on every exit path, cleanup runs, every entry pin and tree snapshot
+is compared independently, the stage error, every integrity difference and every
+cleanup error are recorded separately in an always-written durable result, and
+the verdict fails when any is non-empty.
+
+Decision. Create `lifecycle1/repair-r3/ACCEPTANCE_MATRIX.md` as the first edit of
+the branch. Inherited rows are referenced, not restated: each is identified by its
+frozen source file, line and exact row SHA-256 at the base, so the matrix cannot
+drift from the frozen matrices it cites. The nine R3/REPLAY requirement texts are
+copied mechanically from the prompt bytes. Evidence, dispositions and the command
+ledger are append-only below a marker.
+
+Alternatives rejected. Restating inherited rows by hand would create a second
+copy that could silently diverge from the frozen blobs. Writing evidence into the
+row cells would make the frozen rows mutable.
+
+Consequences. Every later commit on this branch must leave the rows above the
+marker byte-identical; row closure is argued only in the appended evidence.
+No theorem, Lean, native, frozen matrix or frozen registry changes.
+
+Evidence. Row identities are listed in the matrix; the generator asserted the
+prompt SHA-256 and that no inherited row ID is missing or duplicated.
+
+
+## WDD-20260929-LIFE1-R3-02 - Whole-harness failure-path controls in disposable copies
+
+Date: 2026-09-29. Status: LIFE-1-R3 worker decision; coordinator acceptance pending.
+
+Context. REQ-L1R3-CONTROLS requires committed P/C/Q/S/M controls per repaired
+harness that run the whole harness file, not a copied detector, in a disposable
+copy with only the minimal injected stage or test double, fixed before entry pins
+are taken, and that first show the unchanged base harness fails them.
+
+Decision. Add `lifecycle1/repair-r3/failure_controls.ps1` with the exact ordered,
+versioned `FAILURE_CONTROL_REGISTRY.json` (47 controls: P/C/Q/S/M for nine
+harnesses, K1-X for an owned-process exception, HS-R for a dirty owned carrier).
+For each control the runner materializes the harness's inputs under
+`.lake/life1-r3/controls/...`, takes the harness bytes from an exact Git ref
+(`base` = eb8e4f25, otherwise the candidate commit), git-initializes the copy so
+tree snapshots stay inside it, places one test double, and launches the whole
+harness through the unchanged `scripts/owned_process_tree.ps1` with a positive
+deadline. The doubles are: a replacement handler child, a stage script, an
+in-process dependency-replay double, a compiled validator executable, a fault
+hook inside the production `Write-Json` used by the finalizer control, and
+function wrappers appended to disposable copies of the stream-capture and
+integrity helpers. Each injects one fault at most once, selected by environment:
+change a pinned file, change it and fail, delete it and fail (so the harness's
+own integrity step raises), or dirty an owned carrier and fail.
+The runner evaluates mode-independent core predicates (completed owned launch,
+exit class, durable result present, stage error and integrity difference recorded
+as exact text groups in string values of that durable result) and, for the
+candidate, the structural finalization contract (separate stageError,
+integrityErrors and cleanupErrors fields, verdict, every pin verified for P).
+Base mode compares observed outcomes with predictions written from source before
+the run, and accepts a base rejection only when the same harness's P control
+passed in that run. After every control the runner restores the disposable copy
+from pristine bytes, verifies the exact manifest and a clean copy Git state, and
+in its own finally re-checks its inputs and the real worktree Git state.
+`selector_controls.ps1` launches the runner at its real parameter boundary for
+omitted, valid, empty, empty-array, whitespace, malformed, unknown and duplicate
+selectors and for registry copies with an omitted, duplicated or unknown middle
+ID, a reordering, byte drift and an empty registry. A third ref value, `worktree`, reads the nine harness files from the working tree
+for the development loop only; its receipts record that mode and are never cited
+as candidate evidence. `heavy_run.ps1` wraps any
+multi-minute command in the fixed global-then-lane mutex order and always writes
+RESULT.json.
+
+Alternatives rejected. Copying only the finalization code into a detector would
+not show that the real harness reaches it; editing harness bytes to inject faults
+would test a different file; injecting faults from a concurrent process would be
+nondeterministic; mutating tracked files would risk the real worktree.
+
+Consequences. The controls are component/failure-path tests of harness control
+flow with real owned processes; they are not semantic or native campaigns.
+Harnesses that take the lane mutex themselves are launched without the runner
+holding it; for the others the runner holds the lane mutex around the launch.
+
+Evidence. Base and candidate receipts are committed under
+`lifecycle1/repair-r3/receipts/` and indexed in the R3 acceptance matrix.
+
+
+## WDD-20260929-LIFE1-R3-03 - Record base reproductions before repairing
+
+Date: 2026-09-29. Status: LIFE-1-R3 worker decision; coordinator acceptance pending.
+
+Context. REQ-L1R3-CONTROLS requires that the P/C/Q/S/M shapes first run against
+the unchanged base harness so that each control is shown to discriminate.
+
+Decision. Run the committed runner in base mode on both declared shells and the
+selector/registry controls before any harness byte changes, and commit their
+complete receipts (run RESULT.json, heavy-wrapper RESULT.json and every
+control's durable result, normalized to LF) under `repair-r3/receipts/`, with the
+per-harness failed clauses appended to the R3 acceptance matrix. Predictions of
+which shapes the base fails were fixed in the registry from source reading before
+the run; a base rejection counts only when the same harness's P control passed.
+
+Alternatives rejected. Repairing first and reconstructing the base behaviour
+from source alone would not show the controls discriminate; keeping receipts only
+under ignored `.lake` would lose them to host cleanup.
+
+Consequences. 47/47 base predictions matched on pwsh 7.6.5 and Windows
+PowerShell 5.1; the only already-satisfied shape is the finalizer control's
+changed-pin success path. Development-loop runs that preceded these (a registry
+component-byte recipe error and missing-file message wording) are not evidence
+and are not committed.
+
+
+## WDD-20260929-LIFE1-R3-04 - One finalization shape for the nine lifecycle harnesses
+
+Date: 2026-09-29. Status: LIFE-1-R3 worker decision; coordinator acceptance pending.
+
+Context. Each of the nine named harnesses had at least one exit path on which
+entry pins were never compared with the live state, a cleanup or integrity throw
+replaced the original error, or no durable result was written. The committed
+base-mode control receipts reproduce every listed defect class (see the R3
+acceptance matrix evidence).
+
+Decision. Every repaired harness now follows the same local shape, written
+inline in each file rather than through a new shared helper:
+(1) pre-evidence argument, selector and frozen-registry validation stays exactly
+where it was and still launches nothing and pins nothing; (2) once the harness's
+own evidence location exists, all setup (helper dot-sourcing, entry pins, tree
+snapshots, child generation) runs inside one `try`; (3) `catch` keeps the
+original error record as the stage error; (4) `finally` runs each cleanup step
+in its own guard, then compares every captured entry pin (and tree snapshot)
+with the live state in its own guard, continuing past the first difference or
+exception, and records a pin that was never captured as `not-captured` rather
+than comparing it; (5) the durable result (summary/result/receipt/RESULTS/
+RESULT json) is always written with a `finalization` block
+(`life1-r3-finalization-v1`: verdict, stageError, integrityErrors,
+cleanupErrors, pinChecks with entry and final hashes and a status) and its own
+write failure is reported on stderr without replacing the first error; (6) after
+`finally`, extra integrity/cleanup errors go to stderr and the original stage
+error record is rethrown unchanged, so every existing diagnostic surface that
+frozen cases compare (selector rejections, validator stage errors, the
+integrity-controls stream contract) is byte-identical when integrity holds.
+Summaries now name entry pins as entry pins (`entrySourcePins`,
+`entrySources`, `entryInvocation`); verified state lives only in `pinChecks`.
+`run_check.ps1` keeps its transparent child exit code and adds exit 3 for an
+integrity or cleanup failure. `lifecycle_validator.ps1` compares identity
+before releasing its slot, reports every changed path and writes RESULT.json on
+every exit after its log root exists. `integrity_controls.ps1` pins every live
+source it reads or copies, checks each fixture restoration step's exit code and
+keeps restoration errors separate from the case error. `harness_stream_controls.ps1`
+pins the live sources it copies into carriers and status-checks every created
+carrier and fixture in finally. `dependency_controls.ps1` re-checks every captured
+installed-tool pin (including a partial inventory), its historical inputs and
+the owned fixture in finally.
+
+Alternatives rejected. A shared dot-sourced finalization helper would add a new
+pinned dependency to nine old harnesses and redesign the harness framework,
+which the contract forbids. Throwing a combined message would change existing
+failure surfaces that frozen selector cases compare exactly.
+
+Consequences. No case, expected verdict, diagnostic, frozen registry or pin
+value of another artifact changes. The nine files' raw bytes now differ from the
+historical per-branch inventories (lifecycle1 SOURCE_FREEZE/EVIDENCE_INDEX and
+lifecycle-native1 BASE_IDENTITY); those records describe their historical bases
+and remain unchanged, and their branch-bound scope checkers are not rerun on
+this branch.
+
+Evidence. Candidate control receipts and the re-run campaigns are committed
+under `lifecycle1/repair-r3/receipts/`.
+
+
+## WDD-20260929-LIFE1-R3-05 - Candidate controls, and an incomplete run is not a failed or passed run
+
+Date: 2026-09-30. Status: LIFE-1-R3 worker decision; coordinator acceptance pending.
+
+Context. The repaired harness commit a2e40779 was run through the unchanged
+runner on both shells. The first Windows PowerShell run was terminated by its
+own wrapper deadline after a five-hour gap with no activity between two
+consecutive control steps, consistent with host suspension.
+
+Decision. Commit the complete receipts of the passing runs and, separately, the
+wrapper receipt of the terminated attempt labelled incomplete. Retry only after
+confirming that no owned process survived, with a fresh output root and no change
+to harness, runner or registry bytes; the material change is the host state,
+evidenced by the directory timestamps.
+
+Alternatives rejected. Treating the timeout as a failed control would claim a
+semantic result nobody observed; silently discarding it would hide a real event
+in the verification history; raising deadlines would not address suspension.
+
+Consequences. Candidate evidence: 47/47 on pwsh 7.6.5 and 47/47 on Windows
+PowerShell 5.1, with all structural finalization predicates, plus 15/15 selector
+and registry controls. The runner cannot write its own result when it is killed
+from outside; that limit is recorded, and the wrapper's result stands in for it.
+
+
+## WDD-20260930-LIFE1-R3-06 - Materialize exact blob bytes of three LF-pinned inputs for the frozen campaign
+
+Date: 2026-09-30. Status: LIFE-1-R3 worker decision; coordinator acceptance pending.
+
+Context. The frozen 67-case control registry pins CONTROL_REGISTRY(.frozen).json
+and finalizer_cases.json by the SHA-256 of their LF Git blobs, but pins
+selector_cases.json and dependency_boundary_cases.json, and the finalizer control
+pins scripts/owned_process_tree.ps1, by their CRLF checkout bytes. The historical
+campaign worktree had exactly that mixed materialization. This checkout uses
+core.autocrlf=true, so run_controls.ps1 correctly rejects the CRLF registry.
+The fresh blind audit met the same boundary and restored only those JSON bytes in
+its disposable tree.
+
+Decision. Before the campaign, `repair-r3/materialize_registries.py` writes the
+exact Git blob bytes of only those three files into this checkout, after proving
+each CRLF-normalized working text equals its blob and each blob has the frozen
+hash, and proves `git status` is unchanged. It writes a JSON receipt.
+
+Alternatives rejected. Relaxing any pinned hash or normalizing inside the harness
+would weaken a frozen check; changing repository line-ending configuration would
+affect other worktrees; re-freezing the registry is forbidden.
+
+Consequences. Git content is unchanged; only the checkout representation of three
+frozen inputs matches the one they were frozen in. A default CRLF checkout still
+needs this step before replaying the frozen campaign.
+
+
+## WDD-20260930-LIFE1-R3-07 - Prove materialization by content, not porcelain status
+
+Date: 2026-09-30. Status: LIFE-1-R3 worker decision; coordinator acceptance pending.
+
+Context. The first run of materialize_registries.py (c6d94ad0) wrote the three
+exact blob byte strings, but `git status` then reported them modified at stat
+level although `git diff` was empty and `git hash-object` equalled the index
+blob; the script correctly refused and wrote no receipt. The files were restored
+by `git checkout --` before any campaign ran.
+
+Decision. The receipt now proves identity by an empty `git diff --exit-code` over
+the three paths and per-path equality of `git hash-object` with the index blob,
+recording both porcelain states. A `--restore` mode re-checks-out the three paths
+after the campaign and requires a clean status for them, so the branch ends with
+a clean tree.
+
+Alternatives rejected. `git update-index` flag surgery would change index state
+for a representation artifact; accepting a status change without the content
+proof would not show the Git content is unchanged.
+
+Consequences. The campaign's frozen inputs are exact blob bytes during the run and
+the checkout representation is restored afterwards.
+
+
+## WDD-20260930-LIFE1-R3-08 - Repair a newline literal collapsed while generating the restore mode
+
+Date: 2026-09-30. Status: LIFE-1-R3 worker correction; coordinator acceptance pending.
+
+Context. Commit 4a2a56d5 generated the `--restore` branch of
+materialize_registries.py through a shell here-document; two escaped newline
+literals were collapsed into real line breaks, leaving a Python syntax error
+(no carriage return was introduced). The script failed to compile before doing
+anything.
+
+Decision. Replace the two literals with `chr(10)`, compile-check the file, scan
+it for carriage returns, and only then run it. The exact committed bytes are the
+ones that produced the campaign materialization receipt.
+
+Consequences. Commit 4a2a56d5 remains in history as a non-functional
+intermediate; no evidence was produced by it. Generated source is compile-checked
+before it is committed for the rest of this branch.
+
+
+## WDD-20260930-LIFE1-R3-09 - Re-run the lane campaigns through the repaired harnesses
+
+Date: 2026-09-30. Status: LIFE-1-R3 worker decision; coordinator acceptance pending.
+
+Context. REQ-L1R3-CAMPAIGNS requires fresh evidence produced by the repaired
+harnesses: the frozen control registry on both declared profiles through the
+repaired repair-r2 run_check.ps1, the validator's standard modes, and the normal
+full run of each repaired lifecycle-native-p0 harness.
+
+Decision. Run each campaign as one repaired run_check.ps1 spec (mutex false,
+because each harness owns the lane mutex itself and a nested acquisition would
+deadlock) under heavy_run.ps1 holding the global mutex, and commit complete
+receipts plus a machine summary. The p0 integrity and dependency harnesses run
+through their existing run_owned.ps1 wrapper, whose unchanged stream contract
+also validates the repaired harness output.
+
+Alternatives rejected. Holding the lane mutex in the wrapper would block every
+case of run_controls for two hours; running harnesses directly would skip the
+repaired run_check finalization being certified.
+
+Consequences. 67/67 and 66/66 frozen cases, six validator runs, 15/15, 19/19 and
+11/11 p0 controls passed with finalization verdict pass and every entry pin
+verified. The p0 harnesses have no Windows PowerShell campaign; that is recorded
+as not run.
+
+
+## WDD-20260930-LIFE1-R3-10 - Close the R3 rung with a returned report and final dispositions
+
+Date: 2026-09-30. Status: LIFE-1-R3 worker decision; coordinator acceptance pending.
+
+Context. The contract names `repair-r3/REPORT.md` as the durable completion
+artifact, but this worker's runtime refused to write a report file at that path
+and instructs the worker to return the report as text; the coordinator's runtime
+adaptation says to report the refusal verbatim and return the report with its
+byte length and SHA-256 rather than work around the refusal.
+
+Decision. Append the final check results and worker row dispositions to the R3
+acceptance matrix, return the complete report text to the coordinator for
+persistence, and state that the status is INCOMPLETE pending coordinator
+certification, continuation audit, integration with main and CI.
+
+Alternatives rejected. Writing the report through a shell command would evade the
+runtime's refusal; claiming candidate completion would overstate the remaining
+coordinator-owned phases.
+
+Consequences. The branch tip carries every receipt and the matrix; the report
+bytes are identified by the hash given in the handoff.
+
+
+## WDD-20260930-LIFE1-R3-11 - Commit the coordinator-persisted R3 report
+
+Date: 2026-09-30. Status: coordinator decision; coordinator acceptance pending.
+
+Context. WDD-20260930-LIFE1-R3-10 records that the worker runtime refused the
+report write and returned the report text with its byte length and SHA-256. The
+coordinator recovered the text from the worker transcript and confirmed 11,450
+bytes and SHA-256 69eed604f6e4fd74b008c920b08f6cceeea0a5e9455bc4d34005239705c45810
+before writing it.
+
+Decision. Commit exactly those bytes at `repair-r3/REPORT.md`, the durable
+completion artifact the contract names, without editing them. The worker's
+status inside the report (INCOMPLETE pending coordinator certification) is left
+as written; coordinator verification and the continuation audit are recorded
+outside the report.
+
+Alternatives rejected. Leaving the report only in the coordinator directory would
+leave the branch without its contracted artifact; editing it to reflect later
+coordinator steps would make its bytes differ from the hash in the handoff.
+
+Consequences. The branch tip carries the report whose identity matches the
+worker handoff; the delta scope is unchanged (repair-r3/** plus this append).
+
+
+## WDD-20260930-LIFE1-R4-01 - Freeze the R4 contract before reproducing or repairing anything
+
+Date: 2026-09-30. Status: LIFE-1-R4 worker decision; coordinator acceptance pending.
+
+Context. The fresh blind delta audit of LIFE-1-R3 (LIFE-1-R3-A1) found one P2
+(both run_check.ps1 files record `finalization.verdict = "pass"` when the child
+stage fails or times out) and seven P3 items. The R4 contract closes P2-1 and
+P3-1, P3-2, P3-3, P3-5, P3-6 and P3-7, defers P3-4, and requires every R3 row to
+be re-established on the R4 tip. It asks for the matrix before any other edit and
+for a base reproduction of P2-1 before the repair.
+
+Decision. Create `repair-r4/ACCEPTANCE_MATRIX.md` as the first edit. The nine R4
+requirement texts are copied mechanically from the contract bytes (lines 37-45,
+the text after the ID and its audit tag), and a self-check asserts each appears
+byte-for-byte in the table. The thirteen inherited R3 rows are referenced by the
+exact line, byte length and SHA-256 of their table line in
+`repair-r3/ACCEPTANCE_MATRIX.md` at 695a7e72, the frozen commit the contract
+names, rather than restated. The P2-1 reproduction is run after this commit, on
+unchanged base harness bytes, by a committed probe, which reconciles "matrix
+first" with "reproduce before repair".
+
+Alternatives rejected. Restating the inherited rows would create a second copy
+that could drift from the frozen source. Running the probe before the matrix
+would make an uncommitted experiment the reproduction evidence.
+
+Consequences. Every later commit appends evidence below the marker only; the
+frozen block is an exact byte prefix and its row identities can be rechecked
+from Git objects.
+
+
+## WDD-20260930-LIFE1-R4-02 - Reproduce P2-1 on the unchanged base with a committed probe
+
+Date: 2026-09-30. Status: LIFE-1-R4 worker decision; coordinator acceptance pending.
+
+Context. The auditor reproduced P2-1 with a disposable probe under `.lake`;
+the R4 contract asks for a committed-quality reproduction on the unchanged base
+before the repair, and for reproductions of the other in-scope items where
+feasible.
+
+Decision. Commit `repair-r4/base_probe.ps1`, a probe with an exact ordered case
+list and no selector. Each case exports the exact harness blob of the named ref,
+copies it with the unchanged owned-process helper into a git-initialized
+disposable root, launches the whole harness file through the helper with a
+positive deadline and reads its durable result. `-Expect defect` requires every
+case to show the audited defect; `-Expect repaired` requires the repaired shape,
+so the same committed probe is later rerun at the R4 tip. Cases: child exit 7
+with intact pins (K1, K2), a 30 s stage under a real 3 s owned deadline (K1, K2),
+a durable-write failure in K2 (P3-1), and the validator without its pinned
+executable (P3-3). A small `collect_receipts.py` copies evidence into
+`repair-r4/receipts/<name>/`, stores CRLF-written text as LF, refuses a lone CR,
+records source and committed hashes in INDEX.json and never overwrites a receipt.
+
+Evidence. At d27ffa34 (pwsh 7.6.5, 31 s): 6/6 cases show the defect. Both
+run_check files write `verdict: "pass"` beside `childFailure` for exit 7 and for
+the helper timeout (process exit 2, `result.TimedOut = true`); the K2
+durable-write failure exits 0 with only a stderr line; the validator without its
+executable exits 1 with no RESULT.json.
+
+Alternatives rejected. Reusing the auditor's probe would not be committed
+evidence; waiting for the extended control runner would place the reproduction
+after the repair it motivates. P3-2 (coverage), P3-5 (labels), P3-6 (ordering)
+and P3-7 (unowned git) are reproduced from source here and by base-mode R4
+controls or static controls at d27ffa34 once those exist, because each needs a
+test double or AST check that belongs to the control runner.
+
+Consequences. The probe is replayable on any ref, and it is the before/after
+witness for P2-1 independent of the control runner.
+
+
+## WDD-20260930-LIFE1-R4-03 - One overall verdict, a failing durable write, and owned finalization git in the nine harnesses
+
+Date: 2026-09-30. Status: LIFE-1-R4 worker decision; coordinator acceptance pending.
+
+Context. After LIFE-1-R3 the nine lifecycle harnesses record stage, integrity
+and cleanup errors separately, but the fresh blind delta audit found: both
+run_check.ps1 files compute `finalization.verdict` without the child outcome
+(P2-1); every durable-result write failure only prints to stderr and can leave
+a PASS line or PASS.json (P3-1); the validator checks its pinned executable
+before its evidence root (P3-3); integrity_controls and harness_stream_controls
+publish entry pins under keys that at eb8e4f25 held post-run pins (P3-5); the
+run_check files and run_controls' per-case slot release the lane mutex before
+the integrity re-check (P3-6); and the finalization git calls added by R3 are
+not owned (P3-7).
+
+Decision.
+- run_check (r1, r2): `verdict` is the overall verdict and includes
+  `childFailure` (child exit != 0, timeout, output limit); a malformed or unowned
+  helper result (non-integer exit, unknown ownership, terminated IDs on a
+  completed run) is raised as a stage error. The exit mapping is unchanged
+  (child exit; 2 timeout/overflow; 3 integrity or cleanup; 1 harness
+  exception); a durable-write failure that would otherwise exit 0 exits 1.
+- Every durable write failure (all nine harnesses) now marks the run failed:
+  nonzero exit, no PASS line, and the validator writes PASS.json only when
+  RESULT.json was written; the write error is still printed and the first error
+  is still rethrown first.
+- The validator's pinned-executable check moves inside the evidence region,
+  after the identity capture, so a missing executable yields RESULT.json with
+  the unchanged diagnostic and every other captured pin re-verified. The other
+  pre-root checks (argument, selector and registry validation, including the
+  registry and runtime-profile reads that validate the arguments) stay before
+  the root: they launch and pin nothing, and REPLAY-EXACT-REGISTRY requires
+  them to reject before any execution.
+- integrity_controls adds `entrySource`/`entryHelper` and harness_stream_controls
+  `entryRegistry`/`entrySource`/`entryValidator`; the old keys again carry the
+  post-run pin read in finalization (their eb8e4f25 meaning), or null.
+- Both run_check finally blocks re-check every pin before releasing the mutex;
+  run_controls re-checks every captured pin in each case's finally before
+  releasing that case's slot and records the result in
+  `finalization.caseSlotChecks`.
+- repair-r2 run_check reads HEAD (entry and final) and harness_stream_controls
+  reads carrier/fixture status through Invoke-RMQOwnedBoundedProcess with a
+  60 s deadline; exit, streams, timeout and overflow are recorded
+  (`finalization.gitProcesses`, `finalization.ownedRootStatus`) and any failure
+  is an integrity error (a stage error at entry).
+
+Alternatives rejected. Renaming the IC/HS keys outright (as run_controls and
+run_check did) would make the dormant lifecycle-native-p0 verifiers
+(repair-r2/verify_results.py `integrity_results`/`verify_harness`, reused by
+repair-r3/verify_contract.py) raise KeyError on current outputs; restoring the
+old keys to their original post-run meaning satisfies "no top-level key presents
+an entry value as verified" and keeps every reader on retained keys. Renaming
+`verdict` to an integrity-only field would leave two meanings of one schema.
+Owning only the final HEAD read would compare two differently produced strings.
+
+Consequences. Case semantics, expected verdicts and diagnostics are unchanged;
+the frozen control registry and the lane's stream contracts see identical
+stdout. Controls for each change follow in the extended control registry.
+
+
+## WDD-20260930-LIFE1-R4-04 - Keep the missing-executable diagnostic ahead of helper loading
+
+Date: 2026-09-30. Status: LIFE-1-R4 worker correction; coordinator acceptance pending.
+
+Context. WDD-20260930-LIFE1-R4-03 moved the validator's pinned-executable check
+inside the evidence region but left it after the two helper dot-sources. The
+committed base probe (`-Expect repaired` at 5fbc1c99) caught the consequence:
+in a root without the environment helper the run wrote RESULT.json, but its
+stage error was the dot-source failure, not the missing-executable diagnostic
+that at d27ffa34 preceded every other check.
+
+Decision. Order the validator's try block as: capture every identity pin (pure
+hashing, no helper), write identity-before.json, check the executable with the
+unchanged diagnostic, raise any other identity failure, then load the helpers.
+The executable check keeps its base precedence over helper loading, and every
+pin captured before any failure is re-verified in finally.
+
+Alternatives rejected. Adding the environment helper to the probe root would
+hide the precedence change instead of removing it. Checking the executable
+before the identity capture would leave the other identity pins uncaptured on
+this path.
+
+Consequences. A missing dot-sourced helper is now reported as an identity
+failure at entry (the file is itself an identity path) rather than a
+dot-source error; both are stage errors naming the path, and no control or
+frozen case depends on that wording.
+
+
+## WDD-20260930-LIFE1-R4-05 - Version the failure-control runner and add discriminating R4 controls
+
+Date: 2026-09-30. Status: LIFE-1-R4 worker decision; coordinator acceptance pending.
+
+Context. The R4 contract requires controls that fail at d27ffa34 and pass at the
+R4 tip for the run_check verdict (ordinary child failure, and a real
+harness-level deadline), a durable-write failure, a cleanup/restoration
+exception, the validator's missing executable, and a stronger setup-failure
+predicate; it lets the R3 runner files change only through a versioned change
+that keeps every R3 receipt byte-identical and the R3 v1 registry replayable.
+
+Decision.
+- Registry versioning. `repair-r3/failure_controls.ps1` now accepts exactly two
+  pinned registries, selected by schema and version: the unchanged R3 v1
+  registry (default; 47 controls; base eb8e4f25) and a new v2 registry at
+  `repair-r4/FAILURE_CONTROL_REGISTRY.json` (normalized SHA-256
+  cf5ef090543773ef0a4fa473164e56633fabeef140301aad737bb2a7a3226dbc; 60 controls;
+  base d27ffa34), generated by the committed `repair-r4/make_registry.py`. The
+  47 R3 control objects are copied from the exact d27ffa34 blob; their
+  `baseExpectation` is re-derived for the new base (accept, because the nine
+  harness blobs at d27ffa34 equal those of the R3 candidate runs) with the R3
+  value kept as `r3BaseExpectation`, and the nine S controls gain
+  `expect.capturedPins`, derived from each harness's capture order.
+- Thirteen R4 controls: K1-F/K2-F (child exit 7, pins intact, verdict must be
+  fail), K1-T/K2-T (60 s stage under a real 3 s owned deadline), K1-W/K2-W/LV-W
+  (durable path made a directory: nonzero exit, no durable file, no PASS.json or
+  PASS line), IC-U (an exclusive lock held until exit makes the fixture
+  restoration throw inside cleanup), LV-E (missing validator executable), IC-L
+  and HS-L (a labelled pin changes: entry value only under entry*), K2-G and
+  HS-G (a compiled git double on PATH hangs or fails during finalization).
+- Predicates live in `repair-r4/predicates.ps1` (Test-R4PinCoverage,
+  Test-R4Labels, Test-R4Values), dot-sourced by the runner and exercised by
+  synthetic mutation cases. Pin coverage now requires every captured pin to be
+  re-verified, the captured count to equal entryPinCount and, for setup-failure
+  shapes, the registry count; it applies to v1 and v2 alike (a strengthening).
+- The R3 doubles gain modes (sleep, block-durable, git-hang, git-fail,
+  lock-cleanup, and block-durable in the validator double); the R3 modes are
+  unchanged. `selector_controls.ps1 -RegistryVersion v2` replays the same
+  fifteen selector/registry cases against v2; v1 remains the default.
+- `repair-r4/aux_controls.ps1` adds static ordering controls on exact blobs
+  (P3-6: every integrity recording precedes the first ReleaseMutex in each
+  releasing finally), heavy_run.ps1 write-failure controls, and the synthetic
+  predicate controls. heavy_run.ps1, failure_controls.ps1 and
+  selector_controls.ps1 fail when their own durable write fails.
+
+Alternatives rejected. A separate R4 runner would duplicate 550 lines and leave
+the R3 runner's own durable-write defect; editing the v1 registry would break
+its pinned identity and the R3 receipts' meaning. A behavioural ordering control
+would have to contend for the live lane mutex (the runner itself holds it for
+the run_check controls), so ordering is certified statically on Git blobs.
+
+Consequences. v1 stays replayable at this tip; v2 base mode runs at d27ffa34
+and candidate mode at the R4 tip.
+
+
+## WDD-20260930-LIFE1-R4-06 - Record the control receipts and repair a synthetic-fixture defect in the auxiliary controls
+
+Date: 2026-09-30. Status: LIFE-1-R4 worker decision and correction; coordinator acceptance pending.
+
+Context. With the harnesses and runners fixed at d9411a7d, one sequential queue
+under the global mutex ran: the v2 registry in base mode at d27ffa34 on pwsh 7
+and Windows PowerShell 5.1; the v2 registry in candidate mode at d9411a7d on
+both shells; the unchanged R3 v1 registry at d9411a7d on pwsh (replayability);
+the selector/registry controls for v1 and v2; the auxiliary controls at
+d27ffa34 and d9411a7d; and the base probe with `-Expect repaired` at d9411a7d.
+Everything passed except the auxiliary candidate run: PRED-PIN-GOOD was
+rejected with "captured pin not re-verified: d status not-captured".
+
+Diagnosis. The fixture, not the predicate: the synthetic row builder typed the
+entry hash as `[string]`, and PowerShell coerces `$null` to `''` for a string
+parameter, so the uncaptured row looked captured. The rejection cases then
+passed partly for that unintended reason. No real harness writes an empty entry
+hash (all 47 R3 and all 60 R4 durable results use JSON null), and the runner's
+evaluation of real results is unaffected.
+
+Decision. Keep the pinned predicate unchanged (the candidate control runs used
+it), make the builder's entry/final parameters untyped, and require each
+synthetic case to match both the expected verdict and the exact first violated
+clause, so a rejection for an unintended reason fails. Both auxiliary runs are
+kept as `*-attempt1*` receipts and rerun with the corrected script. Receipts
+are collected with `collect_receipts.py` (LF, indexed, append-only).
+
+Evidence. Base v2: 60/60 predictions matched on each shell (the thirteen R4
+controls: eleven base rejections, IC-U accepted as predicted, K2-G hung until the
+180 s control deadline). Candidate v2: 60/60 on each shell. v1 at the candidate:
+47/47. Selector/registry: 15/15 for v1 and 15/15 for v2. Probe at d9411a7d:
+6/6 in the repaired shape. Every control restored and verified its copy, and
+the real worktree Git state was unchanged across each run.
+
+Consequences. The candidate harness and runner bytes stay those of d9411a7d;
+only the auxiliary control script changes in this commit.
+
+
+## WDD-20260930-LIFE1-R4-07 - Rerun the auxiliary controls with the corrected fixture
+
+Date: 2026-09-30. Status: LIFE-1-R4 worker decision; coordinator acceptance pending.
+
+Context. WDD-20260930-LIFE1-R4-06 corrected the auxiliary synthetic row builder
+and made each synthetic case pin its first violated clause.
+
+Decision. Rerun the committed auxiliary controls under the global mutex: at
+d27ffa34 with `-Expect base` and at 9a21a547 with `-Expect candidate`, and
+record both as receipts next to the attempt-1 receipts.
+
+Evidence. Base: 17/17 as predicted (ORD-K1, ORD-K2 and ORD-RC find a mutex
+released before any integrity recording, ORD-LV passes, HR-W exits 0 with its
+success line although RESULT.json was not written, the predicate cases are not
+applicable because repair-r4/predicates.ps1 does not exist at d27ffa34).
+Candidate: 17/17 (every ordering holds, HR-W exits 1 without a success line,
+every synthetic case matches its verdict and exact reason; the transcribed R3
+predicate accepts all four pin-coverage mutations the R4 predicate rejects).
+
+Consequences. The auxiliary evidence is produced by the committed corrected
+script; the next step is the lane campaign queue.
+
+
+## WDD-20260930-LIFE1-R4-08 - Re-run the lane campaigns through the R4 harnesses, now on both shells for the p0 harnesses
+
+Date: 2026-09-30. Status: LIFE-1-R4 worker decision; coordinator acceptance pending.
+
+Context. REQ-L1R4-CAMPAIGNS asks for the complete frozen control registry
+(67 cases on pwsh, 66 on winps) through run_controls.ps1 invoked by repair-r2
+run_check.ps1, the validator's startup, single and full modes on both shells,
+and the normal full run of each lifecycle-native-p0 harness on pwsh and, where
+the harness supports it, on winps.
+
+Decision. Run one sequential queue at 2802b84d, whose nine harness blobs and
+runner files equal d9411a7d: materialize the three LF-pinned frozen inputs with
+the unchanged repair-r3/materialize_registries.py, run fourteen campaigns, each
+as a repaired repair-r2 run_check.ps1 spec (`mutex: false`) under
+repair-r3/heavy_run.ps1 holding only the global mutex, because every campaign
+harness takes the lane mutex itself (run_controls per case, the validator,
+run_owned for integrity and dependencies, harness_stream_controls), then
+restore the checkout representation. The p0 harnesses run on Windows
+PowerShell 5.1 as well, because the R3 and R4 control runs show all three run
+under 5.1.
+
+Evidence. Every run_check finalization passed with 17/17 pins verified and a
+global-mutex wait of at most 0.006 s. Frozen registry: 67/67 (pwsh, 273.4 s) and
+66/66 (winps, 204.5 s) in frozen order, registry SHA-256 385c9bc9..., summary
+12/12 pins, and every per-case slot re-check (67 and 66) verified before
+release. Validator: startup 2, single 3, full 9 processes on each shell with
+12/12 identity pins and PASS.json. p0: integrity 15 controls (273.5 s pwsh,
+170.8 s winps), dependencies 19 (20.0 s, 14.0 s), harness-stream 11 (121.7 s,
+94.4 s), each finalization pass; the stream check's retained keys hold, the
+entry-labelled keys equal the post-run keys on these intact runs, and all twelve
+owned carrier/fixture git status checks are verified. Materialization and
+restore both proved the Git content unchanged; the tree was clean afterwards.
+
+Consequences. The R3 "uncovered" note for winps runs of the p0 harnesses is
+closed for R4. The historical verifiers remain as deferred under P3-4.
+
+
+## WDD-20260930-LIFE1-R4-09 - Record R4 row dispositions and hand the report back
+
+Date: 2026-09-30. Status: LIFE-1-R4 worker decision; coordinator acceptance pending.
+
+Context. Every R4 control, replay and campaign has run on the candidate harness
+and runner bytes (d9411a7d, unchanged through this commit), and the
+preservation, whitespace, design and hygiene checks pass for d27ffa34..8ec10ec2.
+The claim-drift scanner reads `docs/`, so any report or matrix text changes its
+input, and the contract requires the scans on the final tip.
+
+Decision. Append the evidence sections E-00..E-07 and the worker row
+dispositions to the R4 matrix below the frozen marker, and make this commit the
+final tip. The claim-drift `-Strict` and `-SelfTest` runs then execute on this
+exact tip, and the worker report, which the contract names as
+`repair-r4/REPORT.md`, carries their counts. The worker runtime refuses writes
+into this worktree through its file tool; the contract forbids working around a
+refusal for the report, so the report is returned verbatim with its byte length
+and SHA-256 for coordinator persistence, as for R3 (WDD-20260930-LIFE1-R3-10).
+
+Alternatives rejected. Committing the report before the scans would leave the
+scans on an earlier tree; scanning, then committing the counts, would scan a
+tree that is not the final one.
+
+Consequences. The final tip carries every receipt and the matrix; the report,
+with the final-tip scan counts, is identified by the hash in the handoff.
+
+
+## WDD-20260930-LIFE1-R4-10 - Commit the coordinator-persisted R4 report
+
+Date: 2026-09-30. Status: coordinator decision; coordinator acceptance pending.
+
+Context. WDD-20260930-LIFE1-R4-09 records that the worker runtime refused the
+report write and returned the report text with its byte length and SHA-256. The
+coordinator recovered the text from the worker transcript and confirmed 14,179
+bytes and SHA-256 229aa70c45ada4187d631b90bd78a89ddcbb801dba99fae4d312c0f29a45a739
+before writing it.
+
+Decision. Commit exactly those bytes at `repair-r4/REPORT.md`, the durable
+completion artifact the contract names, without editing them; follow the R3
+precedent WDD-20260930-LIFE1-R3-11.
+
+Alternatives rejected. Leaving the report outside the branch would leave the rung
+without its contracted artifact; editing it would break the handoff hash.
+
+Consequences. The branch tip carries the report whose identity matches the
+worker handoff; the delta scope is unchanged (repair-r4/** plus this append).

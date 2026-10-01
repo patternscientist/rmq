@@ -1,0 +1,129 @@
+{
+    "registry":  {
+                     "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r2\\HARNESS_STREAM_REGISTRY.json",
+                     "bytes":  3395,
+                     "sha256":  "227BE213E795A6FF037ABB1F67BEF328992D6284C56E0E427243EDE63C41428B"
+                 },
+    "source":  {
+                   "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1\\integrity_controls.ps1",
+                   "bytes":  16062,
+                   "sha256":  "7D3C787D00E41C5639102FD9F4EDAD42CEAB621C7637DF36D8834A505192BF77"
+               },
+    "selected":  [
+                     "selector-empty"
+                 ],
+    "controls":  [
+                     {
+                         "id":  "selector-empty",
+                         "surface":  "STREAM-SELECTOR: empty",
+                         "predicate":  "command-selector",
+                         "outcome":  "reject",
+                         "capture":  {
+                                         "launcher":  {
+                                                          "Stage":  "selector-empty",
+                                                          "ExitCode":  1,
+                                                          "Output":  [
+
+                                                                     ],
+                                                          "StandardOutput":  [
+
+                                                                             ],
+                                                          "StandardError":  [
+
+                                                                            ],
+                                                          "TimedOut":  false,
+                                                          "OutputLimitExceeded":  false,
+                                                          "TerminatedIds":  [
+
+                                                                            ],
+                                                          "DurationSeconds":  2.293,
+                                                          "DeadlineSeconds":  300,
+                                                          "Ownership":  "kill-on-close-job",
+                                                          "RawStandardOutput":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\capture\\launcher\\retained.stdout",
+                                                          "RawStandardError":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\capture\\launcher\\retained.stderr",
+                                                          "RetentionErrors":  [
+
+                                                                              ]
+                                                      },
+                                         "actual":  {
+                                                        "pid":  25060,
+                                                        "exitCode":  1,
+                                                        "durationSeconds":  1.0760887
+                                                    },
+                                         "spec":  {
+                                                      "exit":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\capture\\exit.json",
+                                                      "environment":  {
+
+                                                                      },
+                                                      "cwd":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root",
+                                                      "stdout":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\capture\\stdout.log",
+                                                      "overflow":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\capture\\overflow",
+                                                      "error":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\capture\\error",
+                                                      "stderr":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\capture\\stderr.log",
+                                                      "arguments":  [
+                                                                        "-NoProfile",
+                                                                        "-File",
+                                                                        "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\driver.ps1"
+                                                                    ],
+                                                      "pid":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\capture\\pid",
+                                                      "outputLimit":  16777216,
+                                                      "file":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+                                                  },
+                                         "raw":  [
+                                                     {
+                                                         "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\capture\\stdout.log",
+                                                         "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+                                                         "bytes":  0
+                                                     },
+                                                     {
+                                                         "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\capture\\stderr.log",
+                                                         "sha256":  "7D2B569CECDBD4B0AC7307593CC4CE6ACED21602010F8A0A2562FA886397257B",
+                                                         "bytes":  24
+                                                     },
+                                                     {
+                                                         "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\capture\\exit.json",
+                                                         "sha256":  "B6710BE93AF18243119DEB33744869DBC5DC6B68CFBBD009C4BE612B104F81A3",
+                                                         "bytes":  54
+                                                     },
+                                                     {
+                                                         "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\capture\\pid",
+                                                         "sha256":  "A1DF479D710EE75C035E837540F1AFF252B7FE05288A8E00FD51B725D9DA6976",
+                                                         "bytes":  5
+                                                     },
+                                                     {
+                                                         "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\capture\\raw-child.ps1",
+                                                         "sha256":  "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00",
+                                                         "bytes":  3023
+                                                     },
+                                                     {
+                                                         "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\capture\\spec.json",
+                                                         "sha256":  "0578C40BD9053C8901EF9425A9D613CF157F82DA141C758A75668FD23148A22D",
+                                                         "bytes":  1894
+                                                     },
+                                                     {
+                                                         "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\capture\\launcher\\retained.stdout",
+                                                         "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+                                                         "bytes":  0
+                                                     },
+                                                     {
+                                                         "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\capture\\launcher\\retained.stderr",
+                                                         "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+                                                         "bytes":  0
+                                                     }
+                                                 ]
+                                     },
+                         "raw":  [
+                                     {
+                                         "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\.lake\\r3-out\\selector-empty\\driver.ps1",
+                                         "bytes":  336,
+                                         "sha256":  "D740546071F6D3EDE24C8FB849B89A1769CEFBCD62A787C8D39D3F7000C92B5D"
+                                     }
+                                 ]
+                     }
+                 ],
+    "validator":  {
+                      "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\HS-P\\root\\scripts\\packed_native_lifecycle_stream_check.ps1",
+                      "bytes":  13791,
+                      "sha256":  "725A2F22ED508B5AB5B0D3ABE2CC798A867A4C4BF9750BDE7735E85099A6966B"
+                  }
+}

@@ -1,0 +1,55 @@
+{
+  "receipt": "campaign-r3-controls-pwsh",
+  "heavy": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\heavy\\campaign-r3-controls-pwsh",
+  "files": [
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\heavy\\campaign-r3-controls-pwsh\\RESULT.json",
+      "sourceBytes": 2096,
+      "sourceSha256": "ac3b4b96f589af22eecc7003fb9b283c1e0eb17f707694b8a23df8c9e0c4ad7b",
+      "committed": "heavy-RESULT.json",
+      "committedSha256": "5956f83852978d26015913158d95550fd7797555f8e889d039286e4d62d8e860"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\heavy\\campaign-r3-controls-pwsh\\stdout.returned-lines.txt",
+      "sourceBytes": 175,
+      "sourceSha256": "8f9adee34031b50cb4ac03b430f8a7b674ed3d61f8c3b8cb2992ef8a1e818916",
+      "committed": "heavy-stdout.returned-lines.txt",
+      "committedSha256": "8f9adee34031b50cb4ac03b430f8a7b674ed3d61f8c3b8cb2992ef8a1e818916"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\heavy\\campaign-r3-controls-pwsh\\stderr.returned-lines.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "heavy-stderr.returned-lines.txt",
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r2\\checks\\r3-controls-pwsh\\result.json",
+      "sourceBytes": 15710,
+      "sourceSha256": "013ebf201439e2dc11a3b86924b29a373bbfaba85f3c8f1c25de31ee6716c81e",
+      "committed": "result.json",
+      "committedSha256": "528bcb8ba0738b96efc6e05f00b33e3f461da70bed66b20c23cc068e317516f5"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r2\\checks\\r3-controls-pwsh\\stdout.txt",
+      "sourceBytes": 2563,
+      "sourceSha256": "a182741ac1307d37bfdbd16eaf061b31d8fed62673a437abee61de93959cc308",
+      "committed": "stdout.txt",
+      "committedSha256": "a182741ac1307d37bfdbd16eaf061b31d8fed62673a437abee61de93959cc308"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r2\\checks\\r3-controls-pwsh\\stderr.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "stderr.txt",
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\campaign\\controls-pwsh\\summary.json",
+      "sourceBytes": 26928,
+      "sourceSha256": "8b6850d0599fd1689833dcc19d6b8713259cb2ac2b66658ebdc63236abb4a9d4",
+      "committed": "summary.json",
+      "committedSha256": "ca90a459bc06301e7feb4138756ab64b0632e1e351ed6ac9dfaa34240836bc21"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "schema": "life1-r4-receipt-index-v1",
+  "receipt": "campaign-r4-p0-dependencies-winps",
+  "files": [
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\campaign-r4-p0-dependencies-winps\\RESULT.json",
+      "sourceBytes": 2134,
+      "sourceSha256": "d2907e5c6c545f45f46999b0a82686f2dd0351bdb243dd65071f2846fd55acb9",
+      "committed": "heavy-RESULT.json",
+      "committedBytes": 2084,
+      "committedSha256": "76920519e6a42c75b95243ba02dc0898ae0e1b987a9ade1889165238325fd433",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\campaign-r4-p0-dependencies-winps\\stdout.returned-lines.txt",
+      "sourceBytes": 189,
+      "sourceSha256": "cb7f51a9ec5b92481368b87f6a848dca90a02eab8fc0911c70267cbd89602bcc",
+      "committed": "heavy-stdout.returned-lines.txt",
+      "committedBytes": 189,
+      "committedSha256": "cb7f51a9ec5b92481368b87f6a848dca90a02eab8fc0911c70267cbd89602bcc",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\campaign-r4-p0-dependencies-winps\\stderr.returned-lines.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "heavy-stderr.returned-lines.txt",
+      "committedBytes": 0,
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\checks\\r4-p0-dependencies-winps\\result.json",
+      "sourceBytes": 10151,
+      "sourceSha256": "3e88b15e2ea95b50666605e8c5d94b71fd4de5990ef40c65f854ba2620761b35",
+      "committed": "result.json",
+      "committedBytes": 9942,
+      "committedSha256": "c2de6ad13416847b08bd54eaa020b9a1479288924e37382e3c21a6eecd4ed254",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\checks\\r4-p0-dependencies-winps\\stdout.txt",
+      "sourceBytes": 154,
+      "sourceSha256": "efa96200c49fb340852dd06250ea1c8b8851ae3a4778ae1a25104c5e01cf0e65",
+      "committed": "stdout.txt",
+      "committedBytes": 154,
+      "committedSha256": "efa96200c49fb340852dd06250ea1c8b8851ae3a4778ae1a25104c5e01cf0e65",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\checks\\r4-p0-dependencies-winps\\stderr.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "stderr.txt",
+      "committedBytes": 0,
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\campaign-specs\\r4-p0-dependencies-winps.json",
+      "sourceBytes": 583,
+      "sourceSha256": "5c26c7f26771f1bf55577f6185613e2a6af79fd37f92aba5ec1ac12042eee3d8",
+      "committed": "campaign-spec.json",
+      "committedBytes": 567,
+      "committedSha256": "be64b2499586493123e0d8d7f9a9221a79578cc81169a8ed2c508e19a477cb0a",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-winps\\RECEIPT.json",
+      "sourceBytes": 5264,
+      "sourceSha256": "395648e5b9a30cd70016edaa39c85e67eee033d0387e70651378ab3c526146b2",
+      "committed": "RECEIPT.json",
+      "committedBytes": 5180,
+      "committedSha256": "12b9fc9fe3e46ca4b4d61f4dd0a73a44ece7303b9c8cbfbb3f95e486b555aec9",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-dependencies-winps\\stdout.log",
+      "sourceBytes": 170,
+      "sourceSha256": "3ca7e61327e8f8d7799aa5423cdea926c9237e1b1371f26a38c1bd94a82da94e",
+      "committed": "stdout.log",
+      "committedBytes": 169,
+      "committedSha256": "fecfefed198154a2b9be606ce0ab392ee8a077fbbae5d56a68e366fcfa556cf6",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\dependencies-e0030bea5e564392885d25861aecd129\\RESULTS.json",
+      "sourceBytes": 72934,
+      "sourceSha256": "c51ebe57d6ec92c8897e52e7cbcccc9dfd7711488a77228061c0901ef2564c56",
+      "committed": "RESULTS.json",
+      "committedBytes": 71964,
+      "committedSha256": "65d709f8f39ae1657303276b62e3aeba5a356bcd5a3b56e381fbcf990d54aeea",
+      "normalized": true
+    }
+  ]
+}

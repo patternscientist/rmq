@@ -1,0 +1,89 @@
+{
+  "schema": "life1-r3-heavy-v1",
+  "name": "r4-aux-base-2",
+  "spec": {
+    "name": "r4-aux-base-2",
+    "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+    "arguments": [
+      "-NoLogo",
+      "-NoProfile",
+      "-File",
+      "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/docs/internal/extensions/lifecycle1/repair-r4/aux_controls.ps1",
+      "-HarnessRef",
+      "d27ffa341f4ed8ceccc46817455eb26c73b319a1",
+      "-Expect",
+      "base",
+      "-OutputRoot",
+      "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/life1-r4/aux/r4-aux-base-2"
+    ],
+    "cwd": "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict",
+    "deadline": 900,
+    "mutexes": [
+      "global"
+    ],
+    "mutexWaitMilliseconds": 3600000,
+    "environment": {},
+    "out": "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/life1-r4/heavy/r4-aux-base-2"
+  },
+  "host": "POINPAD",
+  "shell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+  "psVersion": "7.6.5",
+  "startedUtc": "2026-09-30T10:43:21.9278821Z",
+  "finishedUtc": "2026-09-30T10:43:30.3585658Z",
+  "mutexWaitSeconds": {
+    "global": 0.004
+  },
+  "stageError": null,
+  "cleanupErrors": [],
+  "result": {
+    "Stage": "r4-aux-base-2",
+    "ExitCode": 0,
+    "Output": [
+      "R4 AUX ORD-K1 PASS",
+      "R4 AUX ORD-K2 PASS",
+      "R4 AUX ORD-RC PASS",
+      "R4 AUX ORD-LV PASS",
+      "R4 AUX HR-P PASS",
+      "R4 AUX HR-W PASS",
+      "R4 AUX PRED-PIN-GOOD PASS",
+      "R4 AUX PRED-PIN-DROPPED PASS",
+      "R4 AUX PRED-PIN-UNVERIFIED PASS",
+      "R4 AUX PRED-PIN-COUNT PASS",
+      "R4 AUX PRED-PIN-DUP PASS",
+      "R4 AUX PRED-PIN-ALLVERIFIED PASS",
+      "R4 AUX PRED-LABEL-GOOD PASS",
+      "R4 AUX PRED-LABEL-ENTRY PASS",
+      "R4 AUX PRED-LABEL-STALE PASS",
+      "R4 AUX PRED-VALUE-GOOD PASS",
+      "R4 AUX PRED-VALUE-TYPE PASS",
+      "R4 AUX PASS expect=base ref=d27ffa341f4ed8ceccc46817455eb26c73b319a1 executed=17 expected=17 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\aux\\r4-aux-base-2"
+    ],
+    "StandardOutput": [
+      "R4 AUX ORD-K1 PASS",
+      "R4 AUX ORD-K2 PASS",
+      "R4 AUX ORD-RC PASS",
+      "R4 AUX ORD-LV PASS",
+      "R4 AUX HR-P PASS",
+      "R4 AUX HR-W PASS",
+      "R4 AUX PRED-PIN-GOOD PASS",
+      "R4 AUX PRED-PIN-DROPPED PASS",
+      "R4 AUX PRED-PIN-UNVERIFIED PASS",
+      "R4 AUX PRED-PIN-COUNT PASS",
+      "R4 AUX PRED-PIN-DUP PASS",
+      "R4 AUX PRED-PIN-ALLVERIFIED PASS",
+      "R4 AUX PRED-LABEL-GOOD PASS",
+      "R4 AUX PRED-LABEL-ENTRY PASS",
+      "R4 AUX PRED-LABEL-STALE PASS",
+      "R4 AUX PRED-VALUE-GOOD PASS",
+      "R4 AUX PRED-VALUE-TYPE PASS",
+      "R4 AUX PASS expect=base ref=d27ffa341f4ed8ceccc46817455eb26c73b319a1 executed=17 expected=17 evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\aux\\r4-aux-base-2"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 7.816,
+    "DeadlineSeconds": 900,
+    "Ownership": "kill-on-close-job"
+  }
+}

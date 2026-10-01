@@ -123,3 +123,38 @@ Fresh independent acceptance and aggregate certification are coordinator-schedul
 Development evidence, exact types, assumptions and retained
 failures are in `docs/internal/extensions/native1`. The earlier textual route
 experiment and its receipts remain available there as historical evidence.
+
+## Consuming lifecycle owner
+
+The additive `packed_rmq_lifecycle` DLL constructs an owner and executes the
+caller's first query through the existing lifecycle program. Later queries
+consume that owner through the four charged request/control events. The C ABI
+is `include/packed_rmq_lifecycle.h`; safe Rust uses `lifecycle::LifecycleRuntime`
+and `lifecycle::Owner`; `examples/lifecycle.cpp` wraps the same ABI with RAII.
+The older image and textual interfaces retain their existing entry points.
+
+Inputs use sign plus arbitrary-width little-endian magnitude. The word model
+checks its formal signed-input domain; the comparison model admits arbitrary
+signed integers within the explicit host limits. Endpoints have exactly the
+queried profile width. Limits are 4096 inputs, 4096 magnitude bytes per input,
+and 16777216 magnitude bytes in total. Packet zero represents an invalid range;
+positive packets represent the leftmost minimum index plus one. A represented
+invalid interval is distinct from malformed input, fault and exhausted fuel.
+
+All calls and destruction occur on the initializing thread. Rust requires a
+mutable owner borrow for a query, exposes no safe raw-handle or clone operation,
+and ties owner, result and observation lifetimes to that runtime. A request
+rejected before transfer preserves the owner; a failure after irrevocable take
+leaves an empty owner. Answers and optional observations have separate ownership.
+The crate-wide runtime guard rejects acquiring an incompatible second interface.
+
+The candidate replaces all four backing arrays at every successful publication,
+including later queries, and checks their values and exact capacities. Copying
+the whole memory again is extra native work. The Lean repacking theorem preserves the owner
+value, while actual pointer ownership, compiled code, GMP representation and
+allocation behavior remain native implementation assumptions and measurements.
+Modeled retained bits are not a bound on allocator usable bytes, RSS or time.
+See the [worked guide](../../docs/internal/extensions/lifecycle-native1/GUIDE.md)
+for the theorem chain and error table, and the
+[evidence matrix](../../docs/internal/extensions/lifecycle-native1/ACCEPTANCE_MATRIX.md)
+for verification status and exact receipts. This is a locally certified candidate; coordinator acceptance remains separate.

@@ -1,0 +1,25 @@
+{
+  "handle": "LIFE-NATIVE-1-R1",
+  "taskId": "01a0e4b3-ac6d-7973-b6ca-557f3d21ca34",
+  "worktree": "C:\\Users\\poin\\.codex\\worktrees\\4935\\RMQ",
+  "branch": "codex/life-native-1-certification-repair",
+  "base": "c52c453a2f0f49c568886f502687e4d0667838e9",
+  "originalBase": "3dbdebedcc6ba6b2a864df0d46dcc09ccaaa7536",
+  "governance": "7b227c49ef2ec044b702126cc41c9add847eed01",
+  "cleanExactStart": true,
+  "preflight": "PASS",
+  "runtimeProjectSkills": [
+    "rmq-audit-prompt",
+    "rmq-coordinator",
+    "rmq-proof-sprint"
+  ],
+  "requiredSkills": [
+    "rmq-coordinator"
+  ],
+  "startedUtc": "2026-09-27T21:10:35.5484496Z",
+  "auditRoot": "C:/Users/poin/Documents/RMQ/lifecycle-implementation-20260920/native1-review-20260927",
+  "scopeReview": "C:/Users/poin/Documents/RMQ/lifecycle-implementation-20260920/native1-review-20260927/R1_SCOPE_REVIEW.md",
+  "scopeAdoption": "C:/Users/poin/Documents/RMQ/lifecycle-implementation-20260920/native1-repair-launch-20260927/R1_SCOPE_ADOPTION.md",
+  "status": "STARTED",
+  "evidencePlan": "docs/internal/extensions/lifecycle-native1-r1/VERIFICATION_PLAN.md"
+}

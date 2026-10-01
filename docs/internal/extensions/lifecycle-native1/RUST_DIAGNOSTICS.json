@@ -1,0 +1,182 @@
+{
+  "cases": [
+    {
+      "exitCode": 1,
+      "sourceSHA256": "8AF883F18FD2563CF1424344BE41C99A5486C3C66A9D8F9E9FA65694ACC3DAF9",
+      "code": "E0277",
+      "stderr": "error[E0277]: `Rc<()>` cannot be sent between threads safely\n   --> LN1-RUST\\RS-RUNTIME-SEND.rs:4:34\n    |\n4   | fn demand<T: Send>() {} demand::<LifecycleRuntime>();\n    |                                  ^^^^^^^^^^^^^^^^ `Rc<()>` cannot be sent between threads safely\n    |\n    = help: within `LifecycleRuntime`, the trait `Send` is not implemented for `Rc<()>`\nnote: required because it appears within the type `PhantomData<Rc<()>>`\n   --> /rustc/29483883eed69d5fb4db01964cdf2af4d86e9cb2\\library\\core\\src\\marker.rs:815:12\nnote: required because it appears within the type `LifecycleRuntime`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:169:12\n    |\n169 | pub struct LifecycleRuntime { _thread: PhantomData<Rc<()>> }\n    |            ^^^^^^^^^^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-RUNTIME-SEND.rs:4:14\n    |\n4   | fn demand<T: Send>() {} demand::<LifecycleRuntime>();\n    |              ^^^^ required by this bound in `demand`\n\nerror: aborting due to 1 previous error\n\nFor more information about this error, try `rustc --explain E0277`.\n",
+      "id": "RS-RUNTIME-SEND",
+      "stdout": ""
+    },
+    {
+      "exitCode": 1,
+      "sourceSHA256": "44F5556B8769B9FA81F540145F5F8488A62F8D1E29DCF85F519EE7801A8258BE",
+      "code": "E0277",
+      "stderr": "error[E0277]: `Rc<()>` cannot be shared between threads safely\n   --> LN1-RUST\\RS-RUNTIME-SYNC.rs:4:34\n    |\n4   | fn demand<T: Sync>() {} demand::<LifecycleRuntime>();\n    |                                  ^^^^^^^^^^^^^^^^ `Rc<()>` cannot be shared between threads safely\n    |\n    = help: within `LifecycleRuntime`, the trait `Sync` is not implemented for `Rc<()>`\nnote: required because it appears within the type `PhantomData<Rc<()>>`\n   --> /rustc/29483883eed69d5fb4db01964cdf2af4d86e9cb2\\library\\core\\src\\marker.rs:815:12\nnote: required because it appears within the type `LifecycleRuntime`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:169:12\n    |\n169 | pub struct LifecycleRuntime { _thread: PhantomData<Rc<()>> }\n    |            ^^^^^^^^^^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-RUNTIME-SYNC.rs:4:14\n    |\n4   | fn demand<T: Sync>() {} demand::<LifecycleRuntime>();\n    |              ^^^^ required by this bound in `demand`\n\nerror: aborting due to 1 previous error\n\nFor more information about this error, try `rustc --explain E0277`.\n",
+      "id": "RS-RUNTIME-SYNC",
+      "stdout": ""
+    },
+    {
+      "exitCode": 1,
+      "sourceSHA256": "511BBC7E46D56D2E41ADAEAFFC6733E669DD9EC1B64D76821B96FCC99A5E1244",
+      "code": "E0277",
+      "stderr": "error[E0277]: `NonNull<c_void>` cannot be sent between threads safely\n   --> LN1-RUST\\RS-OWNER-SEND.rs:4:34\n    |\n4   | fn demand<T: Send>() {} demand::<Owner<'static>>();\n    |                                  ^^^^^^^^^^^^^^ `NonNull<c_void>` cannot be sent between threads safely\n    |\n    = help: within `Owner<'static>`, the trait `Send` is not implemented for `NonNull<c_void>`\nnote: required because it appears within the type `Option<NonNull<c_void>>`\n   --> /rustc/29483883eed69d5fb4db01964cdf2af4d86e9cb2\\library\\core\\src\\option.rs:591:10\nnote: required because it appears within the type `Owner<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:287:12\n    |\n287 | pub struct Owner<'runtime> { raw: Option<NonNull<c_void>>, runtime: &'runtime LifecycleRuntime }\n    |            ^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-OWNER-SEND.rs:4:14\n    |\n4   | fn demand<T: Send>() {} demand::<Owner<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror[E0277]: `Rc<()>` cannot be shared between threads safely\n   --> LN1-RUST\\RS-OWNER-SEND.rs:4:34\n    |\n4   | fn demand<T: Send>() {} demand::<Owner<'static>>();\n    |                                  ^^^^^^^^^^^^^^ `Rc<()>` cannot be shared between threads safely\n    |\n    = help: within `LifecycleRuntime`, the trait `Sync` is not implemented for `Rc<()>`\nnote: required because it appears within the type `PhantomData<Rc<()>>`\n   --> /rustc/29483883eed69d5fb4db01964cdf2af4d86e9cb2\\library\\core\\src\\marker.rs:815:12\nnote: required because it appears within the type `LifecycleRuntime`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:169:12\n    |\n169 | pub struct LifecycleRuntime { _thread: PhantomData<Rc<()>> }\n    |            ^^^^^^^^^^^^^^^^\n    = note: required for `&'static LifecycleRuntime` to implement `Send`\nnote: required because it appears within the type `Owner<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:287:12\n    |\n287 | pub struct Owner<'runtime> { raw: Option<NonNull<c_void>>, runtime: &'runtime LifecycleRuntime }\n    |            ^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-OWNER-SEND.rs:4:14\n    |\n4   | fn demand<T: Send>() {} demand::<Owner<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror: aborting due to 2 previous errors\n\nFor more information about this error, try `rustc --explain E0277`.\n",
+      "id": "RS-OWNER-SEND",
+      "stdout": ""
+    },
+    {
+      "exitCode": 1,
+      "sourceSHA256": "03F3B7725B99FC8AF9DC7BA495237A98415A0206FEB0EAC4DEA7F121514A24FC",
+      "code": "E0277",
+      "stderr": "error[E0277]: `NonNull<c_void>` cannot be shared between threads safely\n   --> LN1-RUST\\RS-OWNER-SYNC.rs:4:34\n    |\n4   | fn demand<T: Sync>() {} demand::<Owner<'static>>();\n    |                                  ^^^^^^^^^^^^^^ `NonNull<c_void>` cannot be shared between threads safely\n    |\n    = help: within `Owner<'static>`, the trait `Sync` is not implemented for `NonNull<c_void>`\nnote: required because it appears within the type `Option<NonNull<c_void>>`\n   --> /rustc/29483883eed69d5fb4db01964cdf2af4d86e9cb2\\library\\core\\src\\option.rs:591:10\nnote: required because it appears within the type `Owner<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:287:12\n    |\n287 | pub struct Owner<'runtime> { raw: Option<NonNull<c_void>>, runtime: &'runtime LifecycleRuntime }\n    |            ^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-OWNER-SYNC.rs:4:14\n    |\n4   | fn demand<T: Sync>() {} demand::<Owner<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror[E0277]: `Rc<()>` cannot be shared between threads safely\n   --> LN1-RUST\\RS-OWNER-SYNC.rs:4:34\n    |\n4   | fn demand<T: Sync>() {} demand::<Owner<'static>>();\n    |                                  ^^^^^^^^^^^^^^ `Rc<()>` cannot be shared between threads safely\n    |\n    = help: within `Owner<'static>`, the trait `Sync` is not implemented for `Rc<()>`\nnote: required because it appears within the type `PhantomData<Rc<()>>`\n   --> /rustc/29483883eed69d5fb4db01964cdf2af4d86e9cb2\\library\\core\\src\\marker.rs:815:12\nnote: required because it appears within the type `LifecycleRuntime`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:169:12\n    |\n169 | pub struct LifecycleRuntime { _thread: PhantomData<Rc<()>> }\n    |            ^^^^^^^^^^^^^^^^\n    = note: required because it appears within the type `&'static LifecycleRuntime`\nnote: required because it appears within the type `Owner<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:287:12\n    |\n287 | pub struct Owner<'runtime> { raw: Option<NonNull<c_void>>, runtime: &'runtime LifecycleRuntime }\n    |            ^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-OWNER-SYNC.rs:4:14\n    |\n4   | fn demand<T: Sync>() {} demand::<Owner<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror: aborting due to 2 previous errors\n\nFor more information about this error, try `rustc --explain E0277`.\n",
+      "id": "RS-OWNER-SYNC",
+      "stdout": ""
+    },
+    {
+      "exitCode": 1,
+      "sourceSHA256": "A32C4C96AB175C33DA8A8A85DD5937E91B791DDA1EC22EDF08F4B2EF17B91F7D",
+      "code": "E0277",
+      "stderr": "error[E0277]: `NonNull<c_void>` cannot be sent between threads safely\n   --> LN1-RUST\\RS-OBSERVATION-SEND.rs:4:34\n    |\n4   | fn demand<T: Send>() {} demand::<Observation<'static>>();\n    |                                  ^^^^^^^^^^^^^^^^^^^^ `NonNull<c_void>` cannot be sent between threads safely\n    |\n    = help: within `Observation<'static>`, the trait `Send` is not implemented for `NonNull<c_void>`\nnote: required because it appears within the type `Observation<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:360:12\n    |\n360 | pub struct Observation<'runtime> { raw: NonNull<c_void>, runtime: &'runtime LifecycleRuntime }\n    |            ^^^^^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-OBSERVATION-SEND.rs:4:14\n    |\n4   | fn demand<T: Send>() {} demand::<Observation<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror[E0277]: `Rc<()>` cannot be shared between threads safely\n   --> LN1-RUST\\RS-OBSERVATION-SEND.rs:4:34\n    |\n4   | fn demand<T: Send>() {} demand::<Observation<'static>>();\n    |                                  ^^^^^^^^^^^^^^^^^^^^ `Rc<()>` cannot be shared between threads safely\n    |\n    = help: within `LifecycleRuntime`, the trait `Sync` is not implemented for `Rc<()>`\nnote: required because it appears within the type `PhantomData<Rc<()>>`\n   --> /rustc/29483883eed69d5fb4db01964cdf2af4d86e9cb2\\library\\core\\src\\marker.rs:815:12\nnote: required because it appears within the type `LifecycleRuntime`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:169:12\n    |\n169 | pub struct LifecycleRuntime { _thread: PhantomData<Rc<()>> }\n    |            ^^^^^^^^^^^^^^^^\n    = note: required for `&'static LifecycleRuntime` to implement `Send`\nnote: required because it appears within the type `Observation<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:360:12\n    |\n360 | pub struct Observation<'runtime> { raw: NonNull<c_void>, runtime: &'runtime LifecycleRuntime }\n    |            ^^^^^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-OBSERVATION-SEND.rs:4:14\n    |\n4   | fn demand<T: Send>() {} demand::<Observation<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror: aborting due to 2 previous errors\n\nFor more information about this error, try `rustc --explain E0277`.\n",
+      "id": "RS-OBSERVATION-SEND",
+      "stdout": ""
+    },
+    {
+      "exitCode": 1,
+      "sourceSHA256": "2D07AB59B84005E01A4592FAA6265C00B39C458F0A3E191E3823FC9593266A42",
+      "code": "E0277",
+      "stderr": "error[E0277]: `NonNull<c_void>` cannot be shared between threads safely\n   --> LN1-RUST\\RS-OBSERVATION-SYNC.rs:4:34\n    |\n4   | fn demand<T: Sync>() {} demand::<Observation<'static>>();\n    |                                  ^^^^^^^^^^^^^^^^^^^^ `NonNull<c_void>` cannot be shared between threads safely\n    |\n    = help: within `Observation<'static>`, the trait `Sync` is not implemented for `NonNull<c_void>`\nnote: required because it appears within the type `Observation<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:360:12\n    |\n360 | pub struct Observation<'runtime> { raw: NonNull<c_void>, runtime: &'runtime LifecycleRuntime }\n    |            ^^^^^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-OBSERVATION-SYNC.rs:4:14\n    |\n4   | fn demand<T: Sync>() {} demand::<Observation<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror[E0277]: `Rc<()>` cannot be shared between threads safely\n   --> LN1-RUST\\RS-OBSERVATION-SYNC.rs:4:34\n    |\n4   | fn demand<T: Sync>() {} demand::<Observation<'static>>();\n    |                                  ^^^^^^^^^^^^^^^^^^^^ `Rc<()>` cannot be shared between threads safely\n    |\n    = help: within `Observation<'static>`, the trait `Sync` is not implemented for `Rc<()>`\nnote: required because it appears within the type `PhantomData<Rc<()>>`\n   --> /rustc/29483883eed69d5fb4db01964cdf2af4d86e9cb2\\library\\core\\src\\marker.rs:815:12\nnote: required because it appears within the type `LifecycleRuntime`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:169:12\n    |\n169 | pub struct LifecycleRuntime { _thread: PhantomData<Rc<()>> }\n    |            ^^^^^^^^^^^^^^^^\n    = note: required because it appears within the type `&'static LifecycleRuntime`\nnote: required because it appears within the type `Observation<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:360:12\n    |\n360 | pub struct Observation<'runtime> { raw: NonNull<c_void>, runtime: &'runtime LifecycleRuntime }\n    |            ^^^^^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-OBSERVATION-SYNC.rs:4:14\n    |\n4   | fn demand<T: Sync>() {} demand::<Observation<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror: aborting due to 2 previous errors\n\nFor more information about this error, try `rustc --explain E0277`.\n",
+      "id": "RS-OBSERVATION-SYNC",
+      "stdout": ""
+    },
+    {
+      "exitCode": 1,
+      "sourceSHA256": "274FC79CC23040CC999842E2601A7AF8B699CEA499BFC03063DCD00A517E00F0",
+      "code": "E0277",
+      "stderr": "error[E0277]: `NonNull<c_void>` cannot be sent between threads safely\n   --> LN1-RUST\\RS-NATURAL-SEND.rs:4:34\n    |\n4   | fn demand<T: Send>() {} demand::<Natural<'static>>();\n    |                                  ^^^^^^^^^^^^^^^^ `NonNull<c_void>` cannot be sent between threads safely\n    |\n    = help: within `Natural<'static>`, the trait `Send` is not implemented for `NonNull<c_void>`\nnote: required because it appears within the type `Natural<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:236:12\n    |\n236 | pub struct Natural<'runtime> {\n    |            ^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-NATURAL-SEND.rs:4:14\n    |\n4   | fn demand<T: Send>() {} demand::<Natural<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror[E0277]: `*const u8` cannot be sent between threads safely\n   --> LN1-RUST\\RS-NATURAL-SEND.rs:4:34\n    |\n4   | fn demand<T: Send>() {} demand::<Natural<'static>>();\n    |                                  ^^^^^^^^^^^^^^^^ `*const u8` cannot be sent between threads safely\n    |\n    = help: within `Natural<'static>`, the trait `Send` is not implemented for `*const u8`\nnote: required because it appears within the type `lifecycle::Bytes`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:78:8\n    |\n78  | struct Bytes { data: *const u8, size: usize }\n    |        ^^^^^\nnote: required because it appears within the type `Natural<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:236:12\n    |\n236 | pub struct Natural<'runtime> {\n    |            ^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-NATURAL-SEND.rs:4:14\n    |\n4   | fn demand<T: Send>() {} demand::<Natural<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror[E0277]: `Rc<()>` cannot be shared between threads safely\n   --> LN1-RUST\\RS-NATURAL-SEND.rs:4:34\n    |\n4   | fn demand<T: Send>() {} demand::<Natural<'static>>();\n    |                                  ^^^^^^^^^^^^^^^^ `Rc<()>` cannot be shared between threads safely\n    |\n    = help: within `LifecycleRuntime`, the trait `Sync` is not implemented for `Rc<()>`\nnote: required because it appears within the type `PhantomData<Rc<()>>`\n   --> /rustc/29483883eed69d5fb4db01964cdf2af4d86e9cb2\\library\\core\\src\\marker.rs:815:12\nnote: required because it appears within the type `LifecycleRuntime`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:169:12\n    |\n169 | pub struct LifecycleRuntime { _thread: PhantomData<Rc<()>> }\n    |            ^^^^^^^^^^^^^^^^\n    = note: required for `&'static LifecycleRuntime` to implement `Send`\nnote: required because it appears within the type `Natural<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:236:12\n    |\n236 | pub struct Natural<'runtime> {\n    |            ^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-NATURAL-SEND.rs:4:14\n    |\n4   | fn demand<T: Send>() {} demand::<Natural<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror: aborting due to 3 previous errors\n\nFor more information about this error, try `rustc --explain E0277`.\n",
+      "id": "RS-NATURAL-SEND",
+      "stdout": ""
+    },
+    {
+      "exitCode": 1,
+      "sourceSHA256": "FAC19142314F22C1DD37609ED94113D09C46AEA5C57D77E19A74C03E80C430E5",
+      "code": "E0277",
+      "stderr": "error[E0277]: `NonNull<c_void>` cannot be shared between threads safely\n   --> LN1-RUST\\RS-NATURAL-SYNC.rs:4:34\n    |\n4   | fn demand<T: Sync>() {} demand::<Natural<'static>>();\n    |                                  ^^^^^^^^^^^^^^^^ `NonNull<c_void>` cannot be shared between threads safely\n    |\n    = help: within `Natural<'static>`, the trait `Sync` is not implemented for `NonNull<c_void>`\nnote: required because it appears within the type `Natural<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:236:12\n    |\n236 | pub struct Natural<'runtime> {\n    |            ^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-NATURAL-SYNC.rs:4:14\n    |\n4   | fn demand<T: Sync>() {} demand::<Natural<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror[E0277]: `*const u8` cannot be shared between threads safely\n   --> LN1-RUST\\RS-NATURAL-SYNC.rs:4:34\n    |\n4   | fn demand<T: Sync>() {} demand::<Natural<'static>>();\n    |                                  ^^^^^^^^^^^^^^^^ `*const u8` cannot be shared between threads safely\n    |\n    = help: within `Natural<'static>`, the trait `Sync` is not implemented for `*const u8`\nnote: required because it appears within the type `lifecycle::Bytes`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:78:8\n    |\n78  | struct Bytes { data: *const u8, size: usize }\n    |        ^^^^^\nnote: required because it appears within the type `Natural<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:236:12\n    |\n236 | pub struct Natural<'runtime> {\n    |            ^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-NATURAL-SYNC.rs:4:14\n    |\n4   | fn demand<T: Sync>() {} demand::<Natural<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror[E0277]: `Rc<()>` cannot be shared between threads safely\n   --> LN1-RUST\\RS-NATURAL-SYNC.rs:4:34\n    |\n4   | fn demand<T: Sync>() {} demand::<Natural<'static>>();\n    |                                  ^^^^^^^^^^^^^^^^ `Rc<()>` cannot be shared between threads safely\n    |\n    = help: within `Natural<'static>`, the trait `Sync` is not implemented for `Rc<()>`\nnote: required because it appears within the type `PhantomData<Rc<()>>`\n   --> /rustc/29483883eed69d5fb4db01964cdf2af4d86e9cb2\\library\\core\\src\\marker.rs:815:12\nnote: required because it appears within the type `LifecycleRuntime`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:169:12\n    |\n169 | pub struct LifecycleRuntime { _thread: PhantomData<Rc<()>> }\n    |            ^^^^^^^^^^^^^^^^\n    = note: required because it appears within the type `&'static LifecycleRuntime`\nnote: required because it appears within the type `Natural<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:236:12\n    |\n236 | pub struct Natural<'runtime> {\n    |            ^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-NATURAL-SYNC.rs:4:14\n    |\n4   | fn demand<T: Sync>() {} demand::<Natural<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror: aborting due to 3 previous errors\n\nFor more information about this error, try `rustc --explain E0277`.\n",
+      "id": "RS-NATURAL-SYNC",
+      "stdout": ""
+    },
+    {
+      "exitCode": 1,
+      "sourceSHA256": "97FD969A225E89AF55E8B53A87849225AD3B5FA0B8D3A078474E05F3639E3849",
+      "code": "E0277",
+      "stderr": "error[E0277]: `NonNull<c_void>` cannot be sent between threads safely\n   --> LN1-RUST\\RS-RESULT-SEND.rs:4:34\n    |\n4   | fn demand<T: Send>() {} demand::<QueryResult<'static>>();\n    |                                  ^^^^^^^^^^^^^^^^^^^^ `NonNull<c_void>` cannot be sent between threads safely\n    |\n    = help: within `QueryResult<'static>`, the trait `Send` is not implemented for `NonNull<c_void>`\nnote: required because it appears within the type `Natural<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:236:12\n    |\n236 | pub struct Natural<'runtime> {\n    |            ^^^^^^^\nnote: required because it appears within the type `QueryResult<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:257:12\n    |\n257 | pub struct QueryResult<'runtime> {\n    |            ^^^^^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-RESULT-SEND.rs:4:14\n    |\n4   | fn demand<T: Send>() {} demand::<QueryResult<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror[E0277]: `*const u8` cannot be sent between threads safely\n   --> LN1-RUST\\RS-RESULT-SEND.rs:4:34\n    |\n4   | fn demand<T: Send>() {} demand::<QueryResult<'static>>();\n    |                                  ^^^^^^^^^^^^^^^^^^^^ `*const u8` cannot be sent between threads safely\n    |\n    = help: within `QueryResult<'static>`, the trait `Send` is not implemented for `*const u8`\nnote: required because it appears within the type `lifecycle::Bytes`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:78:8\n    |\n78  | struct Bytes { data: *const u8, size: usize }\n    |        ^^^^^\nnote: required because it appears within the type `Natural<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:236:12\n    |\n236 | pub struct Natural<'runtime> {\n    |            ^^^^^^^\nnote: required because it appears within the type `QueryResult<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:257:12\n    |\n257 | pub struct QueryResult<'runtime> {\n    |            ^^^^^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-RESULT-SEND.rs:4:14\n    |\n4   | fn demand<T: Send>() {} demand::<QueryResult<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror[E0277]: `Rc<()>` cannot be shared between threads safely\n   --> LN1-RUST\\RS-RESULT-SEND.rs:4:34\n    |\n4   | fn demand<T: Send>() {} demand::<QueryResult<'static>>();\n    |                                  ^^^^^^^^^^^^^^^^^^^^ `Rc<()>` cannot be shared between threads safely\n    |\n    = help: within `LifecycleRuntime`, the trait `Sync` is not implemented for `Rc<()>`\nnote: required because it appears within the type `PhantomData<Rc<()>>`\n   --> /rustc/29483883eed69d5fb4db01964cdf2af4d86e9cb2\\library\\core\\src\\marker.rs:815:12\nnote: required because it appears within the type `LifecycleRuntime`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:169:12\n    |\n169 | pub struct LifecycleRuntime { _thread: PhantomData<Rc<()>> }\n    |            ^^^^^^^^^^^^^^^^\n    = note: required for `&'static LifecycleRuntime` to implement `Send`\nnote: required because it appears within the type `Natural<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:236:12\n    |\n236 | pub struct Natural<'runtime> {\n    |            ^^^^^^^\nnote: required because it appears within the type `QueryResult<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:257:12\n    |\n257 | pub struct QueryResult<'runtime> {\n    |            ^^^^^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-RESULT-SEND.rs:4:14\n    |\n4   | fn demand<T: Send>() {} demand::<QueryResult<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror: aborting due to 3 previous errors\n\nFor more information about this error, try `rustc --explain E0277`.\n",
+      "id": "RS-RESULT-SEND",
+      "stdout": ""
+    },
+    {
+      "exitCode": 1,
+      "sourceSHA256": "04E2C16EE5960ABC7C0B0BEF14F190E3EA47F7A4AD396A0557A7E4FDC0A95E09",
+      "code": "E0277",
+      "stderr": "error[E0277]: `NonNull<c_void>` cannot be shared between threads safely\n   --> LN1-RUST\\RS-RESULT-SYNC.rs:4:34\n    |\n4   | fn demand<T: Sync>() {} demand::<QueryResult<'static>>();\n    |                                  ^^^^^^^^^^^^^^^^^^^^ `NonNull<c_void>` cannot be shared between threads safely\n    |\n    = help: within `QueryResult<'static>`, the trait `Sync` is not implemented for `NonNull<c_void>`\nnote: required because it appears within the type `Natural<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:236:12\n    |\n236 | pub struct Natural<'runtime> {\n    |            ^^^^^^^\nnote: required because it appears within the type `QueryResult<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:257:12\n    |\n257 | pub struct QueryResult<'runtime> {\n    |            ^^^^^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-RESULT-SYNC.rs:4:14\n    |\n4   | fn demand<T: Sync>() {} demand::<QueryResult<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror[E0277]: `*const u8` cannot be shared between threads safely\n   --> LN1-RUST\\RS-RESULT-SYNC.rs:4:34\n    |\n4   | fn demand<T: Sync>() {} demand::<QueryResult<'static>>();\n    |                                  ^^^^^^^^^^^^^^^^^^^^ `*const u8` cannot be shared between threads safely\n    |\n    = help: within `QueryResult<'static>`, the trait `Sync` is not implemented for `*const u8`\nnote: required because it appears within the type `lifecycle::Bytes`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:78:8\n    |\n78  | struct Bytes { data: *const u8, size: usize }\n    |        ^^^^^\nnote: required because it appears within the type `Natural<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:236:12\n    |\n236 | pub struct Natural<'runtime> {\n    |            ^^^^^^^\nnote: required because it appears within the type `QueryResult<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:257:12\n    |\n257 | pub struct QueryResult<'runtime> {\n    |            ^^^^^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-RESULT-SYNC.rs:4:14\n    |\n4   | fn demand<T: Sync>() {} demand::<QueryResult<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror[E0277]: `Rc<()>` cannot be shared between threads safely\n   --> LN1-RUST\\RS-RESULT-SYNC.rs:4:34\n    |\n4   | fn demand<T: Sync>() {} demand::<QueryResult<'static>>();\n    |                                  ^^^^^^^^^^^^^^^^^^^^ `Rc<()>` cannot be shared between threads safely\n    |\n    = help: within `QueryResult<'static>`, the trait `Sync` is not implemented for `Rc<()>`\nnote: required because it appears within the type `PhantomData<Rc<()>>`\n   --> /rustc/29483883eed69d5fb4db01964cdf2af4d86e9cb2\\library\\core\\src\\marker.rs:815:12\nnote: required because it appears within the type `LifecycleRuntime`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:169:12\n    |\n169 | pub struct LifecycleRuntime { _thread: PhantomData<Rc<()>> }\n    |            ^^^^^^^^^^^^^^^^\n    = note: required because it appears within the type `&'static LifecycleRuntime`\nnote: required because it appears within the type `Natural<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:236:12\n    |\n236 | pub struct Natural<'runtime> {\n    |            ^^^^^^^\nnote: required because it appears within the type `QueryResult<'static>`\n   --> RMQ\\native\\packed-rmq\\src\\lifecycle.rs:257:12\n    |\n257 | pub struct QueryResult<'runtime> {\n    |            ^^^^^^^^^^^\nnote: required by a bound in `demand`\n   --> LN1-RUST\\RS-RESULT-SYNC.rs:4:14\n    |\n4   | fn demand<T: Sync>() {} demand::<QueryResult<'static>>();\n    |              ^^^^ required by this bound in `demand`\n\nerror: aborting due to 3 previous errors\n\nFor more information about this error, try `rustc --explain E0277`.\n",
+      "id": "RS-RESULT-SYNC",
+      "stdout": ""
+    },
+    {
+      "exitCode": 1,
+      "sourceSHA256": "26BC783A888F8EFF5B711E1AA3C0DFE66D07593E0FE138B66DD3AC401AB629C3",
+      "code": "E0277",
+      "stderr": "error[E0277]: the trait bound `Owner<'_>: Clone` is not satisfied\n --> LN1-RUST\\RS-OWNER-CLONE.rs:4:43\n  |\n4 | fn duplicate(owner: &Owner<'_>) { let _ = Owner::clone(owner); }\n  |                                           ^^^^^ the trait `Clone` is not implemented for `Owner<'_>`\n\nerror: aborting due to 1 previous error\n\nFor more information about this error, try `rustc --explain E0277`.\n",
+      "id": "RS-OWNER-CLONE",
+      "stdout": ""
+    },
+    {
+      "exitCode": 1,
+      "sourceSHA256": "118A215FF004EDB70F158334FB64F7EB211DA8B964EEE7F1CB177EA20BC96BB6",
+      "code": "E0596",
+      "stderr": "error[E0596]: cannot borrow `*owner` as mutable, as it is behind a `&` reference\n --> LN1-RUST\\RS-IMMUTABLE-QUERY.rs:4:40\n  |\n4 | fn mutate(owner: &Owner<'_>) { let _ = owner.query(&[], &[], false); }\n  |                                        ^^^^^ `owner` is a `&` reference, so the data it refers to cannot be borrowed as mutable\n  |\nhelp: consider changing this to be a mutable reference\n  |\n4 | fn mutate(owner: &mut Owner<'_>) { let _ = owner.query(&[], &[], false); }\n  |                   +++\n\nerror: aborting due to 1 previous error\n\nFor more information about this error, try `rustc --explain E0596`.\n",
+      "id": "RS-IMMUTABLE-QUERY",
+      "stdout": ""
+    },
+    {
+      "exitCode": 1,
+      "sourceSHA256": "5A44A7678F2DB2CBB67185AECAFDA0DC38852C6CE32CC2F2FE5FBB55606D44EE",
+      "code": "E0515",
+      "stderr": "error[E0515]: cannot return value referencing function parameter `answer`\n --> LN1-RUST\\RS-BYTES-ESCAPE.rs:4:50\n  |\n4 | fn escape<'a>(answer: Natural<'a>) -> &'a [u8] { answer.bytes() }\n  |                                                  ------^^^^^^^^\n  |                                                  |\n  |                                                  returns a value referencing data owned by the current function\n  |                                                  `answer` is borrowed here\n\nerror: aborting due to 1 previous error\n\nFor more information about this error, try `rustc --explain E0515`.\n",
+      "id": "RS-BYTES-ESCAPE",
+      "stdout": ""
+    },
+    {
+      "exitCode": 1,
+      "sourceSHA256": "973DD06E00C087889BF689F1395C12302A129DBC0F40A65AB8669FB124C12D97",
+      "code": "E0616",
+      "stderr": "error[E0616]: field `raw` of struct `Owner` is private\n --> LN1-RUST\\RS-RAW-ALIAS.rs:4:45\n  |\n4 | fn alias(owner: &Owner<'_>) { let _ = owner.raw; }\n  |                                             ^^^ private field\n\nerror: aborting due to 1 previous error\n\nFor more information about this error, try `rustc --explain E0616`.\n",
+      "id": "RS-RAW-ALIAS",
+      "stdout": ""
+    },
+    {
+      "exitCode": 1,
+      "sourceSHA256": "29F210C54BD3D59365F7359F3C04A3690B0B309778F597628C4E362E6E419675",
+      "code": "E0515",
+      "stderr": "error[E0515]: cannot return value referencing local variable `runtime`\n --> LN1-RUST\\RS-RUNTIME-ESCAPE.rs:4:259\n  |\n4 | ...ner, answer) = runtime.build_first(Model::Comparison, &[], &bytes, &bytes, false).unwrap(); drop(answer); owner }\n  |                   ------- `runtime` is borrowed here                                                         ^^^^^ returns a value referencing data owned by the current function\n\nerror: aborting due to 1 previous error\n\nFor more information about this error, try `rustc --explain E0515`.\n",
+      "id": "RS-RUNTIME-ESCAPE",
+      "stdout": ""
+    },
+    {
+      "exitCode": 0,
+      "sourceSHA256": "6F4EA86637D6D43375A820999ECFEF9AF617A3CDF9FC7D78AA210F1D71232046",
+      "code": "",
+      "stderr": "",
+      "id": "RS-ACCEPT-MUTABLE",
+      "stdout": ""
+    },
+    {
+      "exitCode": 0,
+      "sourceSHA256": "E15D5B70106824EF7A55A02842C431F87595AC01455EAD4FB8DCEC810DCD8E10",
+      "code": "",
+      "stderr": "",
+      "id": "RS-ACCEPT-BORROW",
+      "stdout": ""
+    }
+  ],
+  "status": "FROZEN_ROOT_REVIEWED",
+  "schema": "lifecycle-native1-rust-diagnostics-v1",
+  "inputFingerprint": "12c2881f6c9b5a08698a2a8d29054adf11a3c1e5175a2b0a5f1ef862eefd6a58",
+  "mappingSHA256": "8c5f71775d51a892b23267b79ddf60982b77bdb1174ca83ee7efe0e977ec7de6",
+  "review": {
+    "reviewer": "root",
+    "discoveryReceipt": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\lifecycle-native1\\rust-misuse\\20260927T050848252\\RESULT.json",
+    "discoveryReceiptSHA256": "70b7c875ae960651a9924cc7463c2b88d5a5b3cfeb6d2e0affa5384237bd3173",
+    "basis": "All17 exact diagnostics inspected: thread traits10, Clone, mutable borrow, borrowed bytes escape, private raw field, runtime escape; two positive controls have empty streams and exit0. Multiple E0277 diagnostics all concern the same intended thread-trait obligation.",
+    "provenanceRebinding": {
+      "reviewer": "root",
+      "reviewedUtc": "2026-09-27T07:33:51.858769+00:00",
+      "oldManifest": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\lifecycle-native1\\native-refresh-review\\root-rebind-20260927\\RUST_DIAGNOSTICS.before-rebind.json",
+        "bytes": 33093,
+        "sha256": "73986b4874784bb6a97b722e430f30634b30050b17a12ce9ed6c92ccb2897767"
+      },
+      "oldFingerprint": "692c9ed438e2788094bf364bd4def1c2de742e85fc2bde35dafbe630ccdce6a8",
+      "newFingerprint": "12c2881f6c9b5a08698a2a8d29054adf11a3c1e5175a2b0a5f1ef862eefd6a58",
+      "discovery": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\lifecycle-native1\\rust-misuse\\20260927T072740867\\RESULT.json",
+        "bytes": 138495,
+        "sha256": "b7fae4e0276428c4bf33dbce9c2ff2ae35dc965bb70424defb559f8bf24393eb"
+      },
+      "candidate": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\lifecycle-native1\\rust-misuse\\20260927T072740867\\DIAGNOSTICS.candidate.json",
+        "bytes": 32667,
+        "sha256": "0de6fcdb254b82bfb5ebff11ae10bab0d8ae9a50cdc568a776f93e829db6f5fb"
+      },
+      "unchanged17CasesCanonicalSHA256": "9d686c79df9b519227035fd9051dcd79e3b4d9a3b55ba8bf216cef4d9290ed26",
+      "sourceToolFixturePinsRechecked": 111,
+      "rawCapturePinsRechecked": 144,
+      "completeRecipePinCount": 93,
+      "completeRecipeOrder": "Complete runtime-produced permutation of all 93 source/tool rows, independently checked as the exact original multiset. Missing-key sorting can reorder the OrderedDictionary entries without dropping any. No insertion-order or path-sorted recipe is claimed; changed enumeration can conservatively reject.",
+      "runtimeRecipeOrder": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\lifecycle-native1\\native-refresh-review\\root-rebind-20260927\\RUST_RECIPE_ORDER.json",
+        "bytes": 22932,
+        "sha256": "847eee14501147a8e2cc516eac925184d4c52d59d497f26a554e7efc265e9f4f"
+      },
+      "conclusion": "Every current full compiler stream, source hash, expected error code and ordinary exit equals the independently reviewed historical case exactly. Only the complete current input fingerprint and this provenance note change. Fresh complete Replay remains required."
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "receipt": "campaign-r3-p0-dependencies",
+  "heavy": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\heavy\\campaign-r3-p0-dependencies",
+  "files": [
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\heavy\\campaign-r3-p0-dependencies\\RESULT.json",
+      "sourceBytes": 2111,
+      "sourceSha256": "3fbc4c954b8d43e43a782a71bd81f7540e266e0f724353367f6e672b41b18018",
+      "committed": "heavy-RESULT.json",
+      "committedSha256": "ba612d8c10a79b1af66b0af432b5f32479b2283a297686f200a18fa8d0918684"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\heavy\\campaign-r3-p0-dependencies\\stdout.returned-lines.txt",
+      "sourceBytes": 178,
+      "sourceSha256": "844283f3ab3a53ecc8bd8ad9f555eacaa93d67326f25e20bb868b0570e455583",
+      "committed": "heavy-stdout.returned-lines.txt",
+      "committedSha256": "844283f3ab3a53ecc8bd8ad9f555eacaa93d67326f25e20bb868b0570e455583"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\heavy\\campaign-r3-p0-dependencies\\stderr.returned-lines.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "heavy-stderr.returned-lines.txt",
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r2\\checks\\r3-p0-dependencies\\result.json",
+      "sourceBytes": 9246,
+      "sourceSha256": "fbe58c21e458ac9b34e1889b5466d5aa7c8333091181639eb9348136aabb9003",
+      "committed": "result.json",
+      "committedSha256": "61b21d440c51fab7ff4e19a44627115ccd6850a861117caa78299bf079526567"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r2\\checks\\r3-p0-dependencies\\stdout.txt",
+      "sourceBytes": 148,
+      "sourceSha256": "ec00ab322748d2487fc2815f3f595a7c998d491a0887fa898f3a1578a6df8b82",
+      "committed": "stdout.txt",
+      "committedSha256": "ec00ab322748d2487fc2815f3f595a7c998d491a0887fa898f3a1578a6df8b82"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r2\\checks\\r3-p0-dependencies\\stderr.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "stderr.txt",
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-dependencies\\RECEIPT.json",
+      "sourceBytes": 3956,
+      "sourceSha256": "a64780e5fc6eda5b070bd584d67bfd85c0aa21437622689a47719c4158e71738",
+      "committed": "RECEIPT.json",
+      "committedSha256": "b408637df0cd824b4ff70369865de756b00fe7e20aa98af79a7e40d9dad38221"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\r3-campaign-dependencies\\stdout.log",
+      "sourceBytes": 170,
+      "sourceSha256": "1e3ad8500c26132d2d256695e625a118f98abba78591e0357f505e635a5664ac",
+      "committed": "stdout.log",
+      "committedSha256": "01beb03666005384971d08828a80fa9dbfce9f9f61dd6ad8f65787213c60c9b2"
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\repair-r1\\dependencies-48817a52b7b74f4e9fb6e4be349d612e\\RESULTS.json",
+      "sourceBytes": 42291,
+      "sourceSha256": "9c65e58f7e939020cfb0da7904a33da3cbdb0898d28acb1c61ea7c2bdb71dd2f",
+      "committed": "RESULTS.json",
+      "committedSha256": "aad517c869a228b6381b65f79a05486c85c99306e38206ab3f1eddfe1ff8353b"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "r4-controls-pwsh",
+  "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+  "arguments": [
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/docs/internal/extensions/lifecycle1/repair-r1/run_controls.ps1",
+    "-Shell",
+    "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+    "-Profile",
+    "pwsh",
+    "-EvidenceRoot",
+    "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/life1-r4/campaign/controls-pwsh"
+  ],
+  "mutex": false,
+  "deadline": 2700
+}

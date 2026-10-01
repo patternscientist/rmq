@@ -1,0 +1,461 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "D01_OMITTED",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 0,
+        "error": null,
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D02_ARGUMENT_VALID",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true,
+        "OnlyCase": "D01_CONSTRUCTION"
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 0,
+        "error": null,
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D03_BOUND_EMPTY",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true,
+        "OnlyCase": ""
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-SELECTOR: explicitly empty selector",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D04_BOUND_WHITESPACE",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true,
+        "OnlyCase": " "
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-SELECTOR: explicitly empty selector",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D05_ARGUMENT_UNKNOWN",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true,
+        "OnlyCase": "D99_UNKNOWN"
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-SELECTOR: unknown selector",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D06_ARGUMENT_MALFORMED",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true,
+        "OnlyCase": "wrong"
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-SELECTOR: malformed selector",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D07_ENV_VALID",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true
+      },
+      "ambient": {
+        "present": true,
+        "value": "id:D01_CONSTRUCTION"
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 0,
+        "error": null,
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D08_ENV_EMPTY_ID",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true
+      },
+      "ambient": {
+        "present": true,
+        "value": "id:"
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-SELECTOR: explicitly empty selector",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D09_ENV_WHITESPACE",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true
+      },
+      "ambient": {
+        "present": true,
+        "value": "id: "
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-SELECTOR: explicitly empty selector",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D10_ENV_MALFORMED",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true
+      },
+      "ambient": {
+        "present": true,
+        "value": "D01_CONSTRUCTION"
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-SELECTOR: environment requires id: prefix",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D11_DUPLICATE_CHANNEL",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true,
+        "OnlyCase": "D01_CONSTRUCTION"
+      },
+      "ambient": {
+        "present": true,
+        "value": "id:D01_CONSTRUCTION"
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-SELECTOR: duplicate parameter/environment channels",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D12_DUPLICATE_ARGUMENT",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 1,
+        "error": "PARAMETER_ALREADY_BOUND",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D13_PRESENT_EMPTY",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true
+      },
+      "ambient": {
+        "present": true,
+        "value": ""
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-SELECTOR: environment requires id: prefix",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy.",
+      "legacyExpected": {
+        "exit": 0,
+        "error": null,
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      }
+    },
+    {
+      "id": "D14_PROBE_SELFTEST",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true,
+        "SelfTestOnly": true
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-SELECTOR: incompatible modes",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D15_PROBE_STARTUP",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true,
+        "StartupOnly": true
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-SELECTOR: incompatible modes",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D16_STARTUP_SELFTEST",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "StartupOnly": true,
+        "SelfTestOnly": true
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-SELECTOR: incompatible modes",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D17_STARTUP_SELECTED",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "StartupOnly": true,
+        "OnlyCase": "D01_CONSTRUCTION"
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-SELECTOR: incompatible modes",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D18_SELFTEST_SELECTED",
+      "kind": "dependency",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelfTestOnly": true,
+        "OnlyCase": "D01_CONSTRUCTION"
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "mutation": null,
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-SELECTOR: incompatible modes",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D19_REGISTRY_MISSING_MIDDLE",
+      "kind": "dependency-registry",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "mutation": "missing-middle",
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-REGISTRY: exact nonempty case count required",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D20_REGISTRY_DUPLICATE_MIDDLE",
+      "kind": "dependency-registry",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "mutation": "duplicate-middle",
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-REGISTRY: missing, duplicate, unknown or reordered ID",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D21_REGISTRY_UNKNOWN_MIDDLE",
+      "kind": "dependency-registry",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "mutation": "unknown-middle",
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-REGISTRY: missing, duplicate, unknown or reordered ID",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    },
+    {
+      "id": "D22_REGISTRY_UNUSED_EDIT",
+      "kind": "dependency-registry",
+      "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+      "parameters": {
+        "SelectorProbeOnly": true
+      },
+      "ambient": {
+        "present": false,
+        "value": null
+      },
+      "mutation": "unused-edit",
+      "expected": {
+        "exit": 1,
+        "error": "LIFE1-REGISTRY: frozen normalized-byte SHA256 mismatch",
+        "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+      },
+      "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+      "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+    }
+  ]
+}

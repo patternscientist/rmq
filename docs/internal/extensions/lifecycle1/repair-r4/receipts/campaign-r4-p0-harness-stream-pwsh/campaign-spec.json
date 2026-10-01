@@ -1,0 +1,15 @@
+{
+  "name": "r4-p0-harness-stream-pwsh",
+  "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+  "arguments": [
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/docs/internal/extensions/lifecycle-native-p0/repair-r2/harness_stream_controls.ps1",
+    "-OutputRoot",
+    "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/repair-r2/r4-campaign-harness-stream-pwsh"
+  ],
+  "mutex": false,
+  "deadline": 3000
+}

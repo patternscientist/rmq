@@ -1,0 +1,40 @@
+{
+  "schema": "life1-r3-materialization-v1",
+  "head": "4a2a56d549bba6cfc94e742c73d9e503023367a6",
+  "files": [
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.json",
+      "beforeBytes": 76654,
+      "beforeSha256": "68ab24530878be76e030313ae4b3a17610b5bec6f70ae3fe83351e67435f1619",
+      "afterBytes": 74726,
+      "afterSha256": "385c9bc95ac09b3cc046a7049e954cdf19361330c31f99bd83c9da0c822423f2",
+      "written": true,
+      "indexBlob": "204d6c1d48268fdec3a3d369d9b3dacd38ecb8e1",
+      "workingHashObject": "204d6c1d48268fdec3a3d369d9b3dacd38ecb8e1"
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.frozen.json",
+      "beforeBytes": 76654,
+      "beforeSha256": "68ab24530878be76e030313ae4b3a17610b5bec6f70ae3fe83351e67435f1619",
+      "afterBytes": 74726,
+      "afterSha256": "385c9bc95ac09b3cc046a7049e954cdf19361330c31f99bd83c9da0c822423f2",
+      "written": true,
+      "indexBlob": "204d6c1d48268fdec3a3d369d9b3dacd38ecb8e1",
+      "workingHashObject": "204d6c1d48268fdec3a3d369d9b3dacd38ecb8e1"
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/finalizer_cases.json",
+      "beforeBytes": 4731,
+      "beforeSha256": "0f03f2ebef9efe9b8f305db58e8e8636daaccb063a3d87e6872cb0f88a939767",
+      "afterBytes": 4711,
+      "afterSha256": "1303ecf93c0a0c74e0a48023fe52258b7e847d020d009eb2f4deba7f084ab6df",
+      "written": true,
+      "indexBlob": "84c8df0b0339a48a60af93ad446532d2a186cb58",
+      "workingHashObject": "84c8df0b0339a48a60af93ad446532d2a186cb58"
+    }
+  ],
+  "statusBefore": " M docs/internal/extensions/lifecycle1/repair-r3/materialize_registries.py\n?? docs/internal/extensions/lifecycle1/repair-r3/__pycache__/materialize_registries.cpython-314.pyc\n",
+  "statusAfter": " M docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.frozen.json\n M docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.json\n M docs/internal/extensions/lifecycle1/repair-r1/finalizer_cases.json\n M docs/internal/extensions/lifecycle1/repair-r3/materialize_registries.py\n?? docs/internal/extensions/lifecycle1/repair-r3/__pycache__/materialize_registries.cpython-314.pyc\n",
+  "gitDiffExitCode": 0,
+  "scope": "Exact Git blob bytes of three LF-pinned frozen inputs; Git content unchanged."
+}

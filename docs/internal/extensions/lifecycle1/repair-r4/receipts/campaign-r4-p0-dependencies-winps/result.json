@@ -1,0 +1,210 @@
+{
+  "spec": {
+    "name": "r4-p0-dependencies-winps",
+    "file": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+    "arguments": [
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/docs/internal/extensions/lifecycle-native-p0/repair-r1/run_owned.ps1",
+      "-Kind",
+      "dependencies",
+      "-OutputRoot",
+      "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/repair-r1/r4-campaign-dependencies-winps"
+    ],
+    "mutex": false,
+    "deadline": 1500
+  },
+  "entrySources": {
+    "scripts/lifecycle_validator.ps1": "8135040DFB712CB81DD083DB8F4B58D42E333BC196DB3770F2B5C28E228F0CB3",
+    "scripts/lifecycle_validator_environment.ps1": "2FB2C4D95EAF3F6633FFAA60413D3D798B26E5BF8B4E712E6A254E293E4F9F19",
+    "scripts/lifecycle_dependency_replay.ps1": "4BF287CF5E0715DBE2413DE0E842E21781A38D51A94DA5873E1CF8A8972003FB",
+    "scripts/owned_process_tree.ps1": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+    "scripts/lifecycle_dependency_cases.json": "003343871E23C93DF874A960A8AF60AE7A8A2E615ADB05B6E581DC4407A1C84B",
+    "RMQ/Validation/PackedLifecycle.lean": "624236001FC72817441CC3DC536DA9C299CCB1DC9C050687B09896B7F1679C14",
+    "RMQ/Validation/LifecycleContract.lean": "F7022AC916813779745B9847B43D9091A90F4F2356615BDBF3B560F2861AD9EC",
+    "scripts/lifecycle_provenance_contract.lean": "767743A4DD79B34377F5F5550BAB88693DF4A966826B02DE7AEDDA78043FD020",
+    "lean-toolchain": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F",
+    "lakefile.toml": "B47C7ABE3955D1A2E9BA51A4C71FC2E7961423D2BF5F3856F79A24BEBC8BDD50",
+    ".lake/build/bin/rmq_lifecycle_validate.exe": "401E9D75E860C7010B528E17976E6B092AC8B4CC25C6ADB64545F2D874A1720C"
+  },
+  "absentSources": [],
+  "entryInvocation": {
+    "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+    "driverSha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+    "specSha256": "5C26C7F26771F1BF55577F6185613E2A6AF79FD37F92ABA5EC1AC12042EEE3D8",
+    "executableSha256": "8BB6FA8C283B4D92120B1EF249A9B311B0F804D4CABBE9981159976C8BE76A5E",
+    "hostSha256": "362A356CE7F0940EC74F73A8FC2C990A2CC24A38A11C90BBD8ECA947110AD139",
+    "argumentFilePins": {
+      "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/docs/internal/extensions/lifecycle-native-p0/repair-r1/run_owned.ps1": "7269C6500F6D04904A14F5C32E2AB000F702577BACFCC039DF5E4A24EAE5F3EA"
+    }
+  },
+  "shell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+  "version": "7.6.5",
+  "dotnet": "10.0.11",
+  "result": {
+    "Stage": "r4-p0-dependencies-winps",
+    "ExitCode": 0,
+    "Output": [
+      "OWNED dependencies exit=0 evidence=C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/repair-r1/r4-campaign-dependencies-winps"
+    ],
+    "StandardOutput": [
+      "OWNED dependencies exit=0 evidence=C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/repair-r1/r4-campaign-dependencies-winps"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 13.98,
+    "DeadlineSeconds": 1500,
+    "Ownership": "kill-on-close-job"
+  },
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "pass",
+    "stageError": null,
+    "childFailure": null,
+    "integrityErrors": [],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "scripts/lifecycle_validator.ps1",
+        "entrySha256": "8135040DFB712CB81DD083DB8F4B58D42E333BC196DB3770F2B5C28E228F0CB3",
+        "finalSha256": "8135040DFB712CB81DD083DB8F4B58D42E333BC196DB3770F2B5C28E228F0CB3",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/lifecycle_validator_environment.ps1",
+        "entrySha256": "2FB2C4D95EAF3F6633FFAA60413D3D798B26E5BF8B4E712E6A254E293E4F9F19",
+        "finalSha256": "2FB2C4D95EAF3F6633FFAA60413D3D798B26E5BF8B4E712E6A254E293E4F9F19",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/lifecycle_dependency_replay.ps1",
+        "entrySha256": "4BF287CF5E0715DBE2413DE0E842E21781A38D51A94DA5873E1CF8A8972003FB",
+        "finalSha256": "4BF287CF5E0715DBE2413DE0E842E21781A38D51A94DA5873E1CF8A8972003FB",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/owned_process_tree.ps1",
+        "entrySha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+        "finalSha256": "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/lifecycle_dependency_cases.json",
+        "entrySha256": "003343871E23C93DF874A960A8AF60AE7A8A2E615ADB05B6E581DC4407A1C84B",
+        "finalSha256": "003343871E23C93DF874A960A8AF60AE7A8A2E615ADB05B6E581DC4407A1C84B",
+        "status": "verified"
+      },
+      {
+        "path": "RMQ/Validation/PackedLifecycle.lean",
+        "entrySha256": "624236001FC72817441CC3DC536DA9C299CCB1DC9C050687B09896B7F1679C14",
+        "finalSha256": "624236001FC72817441CC3DC536DA9C299CCB1DC9C050687B09896B7F1679C14",
+        "status": "verified"
+      },
+      {
+        "path": "RMQ/Validation/LifecycleContract.lean",
+        "entrySha256": "F7022AC916813779745B9847B43D9091A90F4F2356615BDBF3B560F2861AD9EC",
+        "finalSha256": "F7022AC916813779745B9847B43D9091A90F4F2356615BDBF3B560F2861AD9EC",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/lifecycle_provenance_contract.lean",
+        "entrySha256": "767743A4DD79B34377F5F5550BAB88693DF4A966826B02DE7AEDDA78043FD020",
+        "finalSha256": "767743A4DD79B34377F5F5550BAB88693DF4A966826B02DE7AEDDA78043FD020",
+        "status": "verified"
+      },
+      {
+        "path": "lean-toolchain",
+        "entrySha256": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F",
+        "finalSha256": "AD3E6363C78908C80953282BAF57162702F1134173A5247AAD3DBFEA108A525F",
+        "status": "verified"
+      },
+      {
+        "path": "lakefile.toml",
+        "entrySha256": "B47C7ABE3955D1A2E9BA51A4C71FC2E7961423D2BF5F3856F79A24BEBC8BDD50",
+        "finalSha256": "B47C7ABE3955D1A2E9BA51A4C71FC2E7961423D2BF5F3856F79A24BEBC8BDD50",
+        "status": "verified"
+      },
+      {
+        "path": ".lake/build/bin/rmq_lifecycle_validate.exe",
+        "entrySha256": "401E9D75E860C7010B528E17976E6B092AC8B4CC25C6ADB64545F2D874A1720C",
+        "finalSha256": "401E9D75E860C7010B528E17976E6B092AC8B4CC25C6ADB64545F2D874A1720C",
+        "status": "verified"
+      },
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\docs\\internal\\extensions\\lifecycle1\\repair-r2\\run_check.ps1",
+        "entrySha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+        "finalSha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+        "status": "verified"
+      },
+      {
+        "path": "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/life1-r4/campaign-specs/r4-p0-dependencies-winps.json",
+        "entrySha256": "5C26C7F26771F1BF55577F6185613E2A6AF79FD37F92ABA5EC1AC12042EEE3D8",
+        "finalSha256": "5C26C7F26771F1BF55577F6185613E2A6AF79FD37F92ABA5EC1AC12042EEE3D8",
+        "status": "verified"
+      },
+      {
+        "path": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+        "entrySha256": "8BB6FA8C283B4D92120B1EF249A9B311B0F804D4CABBE9981159976C8BE76A5E",
+        "finalSha256": "8BB6FA8C283B4D92120B1EF249A9B311B0F804D4CABBE9981159976C8BE76A5E",
+        "status": "verified"
+      },
+      {
+        "path": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+        "entrySha256": "362A356CE7F0940EC74F73A8FC2C990A2CC24A38A11C90BBD8ECA947110AD139",
+        "finalSha256": "362A356CE7F0940EC74F73A8FC2C990A2CC24A38A11C90BBD8ECA947110AD139",
+        "status": "verified"
+      },
+      {
+        "path": "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/docs/internal/extensions/lifecycle-native-p0/repair-r1/run_owned.ps1",
+        "entrySha256": "7269C6500F6D04904A14F5C32E2AB000F702577BACFCC039DF5E4A24EAE5F3EA",
+        "finalSha256": "7269C6500F6D04904A14F5C32E2AB000F702577BACFCC039DF5E4A24EAE5F3EA",
+        "status": "verified"
+      },
+      {
+        "path": "git:HEAD",
+        "entrySha256": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+        "finalSha256": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+        "status": "verified"
+      }
+    ],
+    "entryPinCount": 17,
+    "verifiedPinCount": 17,
+    "gitProcesses": [
+      {
+        "label": "entry",
+        "file": "C:\\Program Files\\Git\\cmd\\git.exe",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdout": [
+          "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6"
+        ],
+        "stderr": [],
+        "durationSeconds": 0.57,
+        "deadlineSeconds": 60,
+        "ownership": "kill-on-close-job"
+      },
+      {
+        "label": "final",
+        "file": "C:\\Program Files\\Git\\cmd\\git.exe",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "stdout": [
+          "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6"
+        ],
+        "stderr": [],
+        "durationSeconds": 0.481,
+        "deadlineSeconds": 60,
+        "ownership": "kill-on-close-job"
+      }
+    ],
+    "exitCode": 0,
+    "exitSemantics": "child exit when the stage completed and integrity is intact; 2 timeout/output limit; 3 integrity or cleanup failure; 1 harness stage exception, malformed/unowned child result, or a durable-result write failure that would otherwise exit 0"
+  },
+  "streamRepresentation": "unchanged helper returned nonempty lines"
+}

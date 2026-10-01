@@ -1,0 +1,289 @@
+{
+  "schema": "lifecycle-native1-axioms-v1",
+  "reviewStatus": "FROZEN_ROOT_REVIEWED",
+  "consumerSourceSHA256": "82206b4cb35497ec19f92ae430fd23d812ed8ab43f5381a4b95a80b8149fa54a",
+  "consumedIdentitySHA256": "ba012458c4f3c7b379572beffbb7d9cda9aea7a8d9d4df2f8c4d9a39b95ddb76",
+  "leanSHA256": "9b5af669d8dc9b5826a1f5427584915eeca659e9bf34c7ee72667b93c0bfdcb0",
+  "declarations": [
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.cached_run",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.export_contract",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.query_contract",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.Repacked.eq",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.repack_transport",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.answer_packet_fits",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.nativeBuildFirst_packet",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.nativeQuery_packet",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.runAcc_exact",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.read_occurrence_output",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO02_firstCategories",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO06_queryCategories",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO04_firstRoutes",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO08_queryRoutes",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO10_queryReadPosition",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.runThin_eq_runOwner",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.runBoundaryThin_eq_runBoundaryOwner",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.requestProtocolThin_eq_requestProtocolOwner",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.runAccThin_eq_runAcc",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.boundaryAccThin_eq_boundaryAcc",
+    "RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.Stats.record_eq_recordBefore"
+  ],
+  "permittedTrustBase": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "inventory": [
+    {
+      "id": "AX01",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.cached_run",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 3,
+      "column": 0,
+      "messageSHA256": "003f9fc55ee9040580f0d49ad24b69a8798a2713f1404d96e0a71d1e6d3f216b"
+    },
+    {
+      "id": "AX02",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.export_contract",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 4,
+      "column": 0,
+      "messageSHA256": "b65acebd5e4f22f4bc5c7145d2d6f0465504dcfa8a85c19c922e480b3577648b"
+    },
+    {
+      "id": "AX03",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.query_contract",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 5,
+      "column": 0,
+      "messageSHA256": "006ffd9d1b20d4a962be8d647a7075de1b70a4b8f0196f4234b1ad74bed08354"
+    },
+    {
+      "id": "AX04",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.Repacked.eq",
+      "axioms": [],
+      "line": 6,
+      "column": 0,
+      "messageSHA256": "d926c8908653416182493b175ec3d1601f5ad79775a071bc99aeca4a11af4f5d"
+    },
+    {
+      "id": "AX05",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.repack_transport",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 7,
+      "column": 0,
+      "messageSHA256": "e6aff5079318b88c8c05d16bf957a58fc9ccbe8d5cf413d254745921c9359ffc"
+    },
+    {
+      "id": "AX06",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.answer_packet_fits",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 8,
+      "column": 0,
+      "messageSHA256": "b60b69c23e327cfbf04b1b916fc49b8f9e9f542a2d769f9b55ee7e109f336f87"
+    },
+    {
+      "id": "AX07",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.nativeBuildFirst_packet",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 9,
+      "column": 0,
+      "messageSHA256": "d6475bb6e8b7288ed81cc37274503c467b31a1caa17fd44127e167ee8f312699"
+    },
+    {
+      "id": "AX08",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.nativeQuery_packet",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 10,
+      "column": 0,
+      "messageSHA256": "7866a39261f939fef9593000e3c8eba8171e2b6f51029d2f4c82c3a96642b6bf"
+    },
+    {
+      "id": "AX09",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.runAcc_exact",
+      "axioms": [
+        "propext"
+      ],
+      "line": 11,
+      "column": 0,
+      "messageSHA256": "1edfe18f3992983efcf2ba94e0335d2f40685661659586fbfd81a89055cecfd1"
+    },
+    {
+      "id": "AX10",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.read_occurrence_output",
+      "axioms": [
+        "propext"
+      ],
+      "line": 12,
+      "column": 0,
+      "messageSHA256": "2a672013bd043c5472506526b2c1b60228328ef93180af469b27c86a7f013079"
+    },
+    {
+      "id": "AX11",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO02_firstCategories",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 13,
+      "column": 0,
+      "messageSHA256": "353e335c5b8e328dd1ddfb4929b2134b4b284319c12b26b763a8fc1f7f693ba1"
+    },
+    {
+      "id": "AX12",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO06_queryCategories",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 14,
+      "column": 0,
+      "messageSHA256": "c238276866bb970af83745bc60566dea84f016b60cff349d9b2c2241cb72f979"
+    },
+    {
+      "id": "AX13",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO04_firstRoutes",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 15,
+      "column": 0,
+      "messageSHA256": "0c1fd64890b25cf73f80e07dc48e696d973f3a6c5910dabb517e09a86a73efea"
+    },
+    {
+      "id": "AX14",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO08_queryRoutes",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 16,
+      "column": 0,
+      "messageSHA256": "975e7b7a05847434b661ef343b4cabced86cc934d46e972d2f04b2efa6bc3417"
+    },
+    {
+      "id": "AX15",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO10_queryReadPosition",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 17,
+      "column": 0,
+      "messageSHA256": "3ee3f75625e50966f6566af33c04a94797834625bfd6f71f2268bb227dd9f8a1"
+    },
+    {
+      "id": "AX16",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.runThin_eq_runOwner",
+      "axioms": [
+        "propext"
+      ],
+      "line": 18,
+      "column": 0,
+      "messageSHA256": "f2519a52f2ff9eb19de80edf9f7461d4ec4eaf039eecfd4d7b3d77c90227d793"
+    },
+    {
+      "id": "AX17",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.runBoundaryThin_eq_runBoundaryOwner",
+      "axioms": [
+        "propext"
+      ],
+      "line": 19,
+      "column": 0,
+      "messageSHA256": "c23d6af4a0b7f668dba1f388d14e3dd973a34a014494439110df054b487253a5"
+    },
+    {
+      "id": "AX18",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.requestProtocolThin_eq_requestProtocolOwner",
+      "axioms": [
+        "propext"
+      ],
+      "line": 20,
+      "column": 0,
+      "messageSHA256": "83d8bb8214fb5e07ba9fabc48b77530bb429346fb5612d0bff942e1e1ad3a8a2"
+    },
+    {
+      "id": "AX19",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.runAccThin_eq_runAcc",
+      "axioms": [
+        "propext"
+      ],
+      "line": 21,
+      "column": 0,
+      "messageSHA256": "82b2dddc1540034f8cc89329af5f7d29cc6f3a961f4c192c8a320d72ee48063f"
+    },
+    {
+      "id": "AX20",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.boundaryAccThin_eq_boundaryAcc",
+      "axioms": [
+        "propext"
+      ],
+      "line": 22,
+      "column": 0,
+      "messageSHA256": "359622acf74639f331303126cd7e4ec4a82d0809a533bac9518e70c6c44a9079"
+    },
+    {
+      "id": "AX21",
+      "declaration": "RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.Stats.record_eq_recordBefore",
+      "axioms": [
+        "propext"
+      ],
+      "line": 23,
+      "column": 0,
+      "messageSHA256": "169ae15563a862a0e300e028bf4adc2cbf0a2323b5f71f73a019385da203357e"
+    }
+  ],
+  "stdout": "{\"severity\":\"information\",\"pos\":{\"line\":3,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":3,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.cached_run' depends on axioms: [propext, Quot.sound]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":4,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":4,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.export_contract' depends on axioms: [propext, Classical.choice, Quot.sound]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":5,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":5,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.query_contract' depends on axioms: [propext, Classical.choice, Quot.sound]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":6,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":6,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.Repacked.eq' does not depend on any axioms\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":7,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":7,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.repack_transport' depends on axioms: [propext, Classical.choice, Quot.sound]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":8,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":8,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.answer_packet_fits' depends on axioms: [propext, Classical.choice, Quot.sound]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":9,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":9,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.nativeBuildFirst_packet' depends on axioms: [propext,\\n Classical.choice,\\n Quot.sound]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":10,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":10,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.nativeQuery_packet' depends on axioms: [propext, Classical.choice, Quot.sound]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":11,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":11,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.runAcc_exact' depends on axioms: [propext]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":12,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":12,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.read_occurrence_output' depends on axioms: [propext]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":13,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":13,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO02_firstCategories' depends on axioms: [propext,\\n Classical.choice,\\n Quot.sound]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":14,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":14,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO06_queryCategories' depends on axioms: [propext,\\n Classical.choice,\\n Quot.sound]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":15,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":15,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO04_firstRoutes' depends on axioms: [propext, Quot.sound]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":16,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":16,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO08_queryRoutes' depends on axioms: [propext, Quot.sound]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":17,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":17,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.ContractChecks.checkO10_queryReadPosition' depends on axioms: [propext,\\n Classical.choice,\\n Quot.sound]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":18,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":18,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.runThin_eq_runOwner' depends on axioms: [propext]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":19,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":19,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.runBoundaryThin_eq_runBoundaryOwner' depends on axioms: [propext]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":20,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":20,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.requestProtocolThin_eq_requestProtocolOwner' depends on axioms: [propext]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":21,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":21,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.runAccThin_eq_runAcc' depends on axioms: [propext]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":22,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":22,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.boundaryAccThin_eq_boundaryAcc' depends on axioms: [propext]\",\"caption\":\"\"}\n{\"severity\":\"information\",\"pos\":{\"line\":23,\"column\":0},\"kind\":\"[anonymous]\",\"keepFullRange\":false,\"isSilent\":false,\"fileName\":\"AxiomInventory.lean\",\"endPos\":{\"line\":23,\"column\":6},\"data\":\"'RMQ.SuccinctFinal.PackedNative.Lifecycle.Observations.Stats.record_eq_recordBefore' depends on axioms: [propext]\",\"caption\":\"\"}\n",
+  "stderr": "",
+  "stdoutBytes": 6693,
+  "stderrBytes": 0,
+  "stdoutSHA256": "83931a56f66839913be61bf11056389b09681e1ed3f23598c8df041451983e8a",
+  "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "review": {
+    "reviewedUtc": "2026-09-27T07:25:40.408652+00:00",
+    "reviewer": "root",
+    "discovery": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\lifecycle-native1\\axioms\\20260927T072200262\\RESULT.json",
+      "bytes": 1428124,
+      "sha256": "2c2c431209356be1e8df87c8a74d7da276b3531dde0e28ceb227cf1d2801250a"
+    },
+    "candidate": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\44d6\\RMQ\\.lake\\lifecycle-native1\\axioms\\20260927T072200262\\AXIOMS.candidate.json",
+      "bytes": 16868,
+      "sha256": "b816b3060ebf8da7424be5c2a1d94fbf5fc97acdc007ab399e7da4e5ba1f1eeb"
+    },
+    "all21ExactSetsReadAndChecked": true,
+    "rawCapturePinsRechecked": 8,
+    "conclusion": "The exact declared theorem roster uses only propext, Quot.sound and Classical.choice. Repacked.eq is axiom-free; the six thin-loop/record bridges use only propext. This inventory supplements fixed-type consumers and mutation replay; it does not prove the native C/runtime implementation."
+  }
+}

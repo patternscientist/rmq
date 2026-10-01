@@ -1709,6 +1709,7 @@ private def reviewerSingletonBeforeLCA : WholeQueryProgram :=
       (.sub .inputRight (.const 1))
   ]
 
+@[macro_inline]
 private def reviewerSingletonBeforeLCAState : WholeQueryState :=
   (WholeQueryProgram.evalGlobalWordTrace
     (Cartesian.shape reviewerSingletonInput) 0 1 reviewerSingletonBeforeLCA
@@ -1730,6 +1731,7 @@ private def reviewerSingletonBeforeRank : WholeQueryProgram :=
   , WholeQueryInstr.lcaClose .answerClose .leftClose .rightClose
   ]
 
+@[macro_inline]
 private def reviewerSingletonBeforeRankState : WholeQueryState :=
   (WholeQueryProgram.evalGlobalWordTrace
     (Cartesian.shape reviewerSingletonInput) 0 1 reviewerSingletonBeforeRank
@@ -2039,6 +2041,7 @@ private def reviewerIncreasingSixteenBeforeLCA : WholeQueryProgram :=
       (.sub .inputRight (.const 1))
   ]
 
+@[macro_inline]
 private def reviewerIncreasingSixteenBeforeLCAState : WholeQueryState :=
   (WholeQueryProgram.evalGlobalWordTrace
     (Cartesian.shape reviewerIncreasingSixteenInput) 0 16

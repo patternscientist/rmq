@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "controls": [
+    {
+      "id": "success-positive",
+      "kind": "harness",
+      "case": "intact-success",
+      "stream": "none",
+      "outcome": "accept",
+      "predicate": "Assert-LNOuterCapture",
+      "rationale": "Actual integrity_controls -> Assert-LNOuterCapture; exact evidence/PASS, empty stderr, runner exit0, native exit0, integrity true"
+    },
+    {
+      "id": "error-positive",
+      "kind": "harness",
+      "case": "intact-stage-error",
+      "stream": "none",
+      "outcome": "accept",
+      "predicate": "Assert-LNOuterCapture",
+      "rationale": "Actual integrity_controls -> Assert-LNOuterCapture; exact evidence and PROCESS stderr, runner exit1, native exit7, integrity true"
+    },
+    {
+      "id": "success-extra-stderr",
+      "kind": "harness",
+      "case": "intact-success",
+      "stream": "stderr",
+      "outcome": "reject",
+      "predicate": "Assert-LNOuterCapture",
+      "rationale": "Same actual integrity predicate and guards; extra derived-runner stderr"
+    },
+    {
+      "id": "error-extra-stderr",
+      "kind": "harness",
+      "case": "intact-stage-error",
+      "stream": "stderr",
+      "outcome": "reject",
+      "predicate": "Assert-LNOuterCapture",
+      "rationale": "Same actual integrity predicate and guards; extra derived-runner stderr alongside exact PROCESS error"
+    },
+    {
+      "id": "success-extra-stdout",
+      "kind": "harness",
+      "case": "intact-success",
+      "stream": "stdout",
+      "outcome": "reject",
+      "predicate": "Assert-LNOuterCapture",
+      "rationale": "Same actual integrity predicate and guards; extra derived-runner stdout"
+    },
+    {
+      "id": "error-extra-stdout",
+      "kind": "harness",
+      "case": "intact-stage-error",
+      "stream": "stdout",
+      "outcome": "reject",
+      "predicate": "Assert-LNOuterCapture",
+      "rationale": "Same actual integrity predicate and guards; extra derived-runner stdout alongside expected failure"
+    },
+    {
+      "id": "selector-empty",
+      "kind": "selector",
+      "stream": "empty",
+      "outcome": "reject",
+      "predicate": "command-selector",
+      "rationale": "Actual harness_stream_controls command binding rejects explicit empty before execution"
+    },
+    {
+      "id": "selector-unknown",
+      "kind": "selector",
+      "stream": "unknown",
+      "outcome": "reject",
+      "predicate": "command-selector",
+      "rationale": "Actual harness_stream_controls command binding rejects unknown before execution"
+    },
+    {
+      "id": "selector-duplicate",
+      "kind": "selector",
+      "stream": "duplicate",
+      "outcome": "reject",
+      "predicate": "command-selector",
+      "rationale": "Actual harness_stream_controls command binding rejects duplicate before execution"
+    },
+    {
+      "id": "launcher-blank-stdout",
+      "kind": "launcher",
+      "stream": "stdout",
+      "outcome": "reject",
+      "predicate": "Assert-LNOuterCapture",
+      "rationale": "Actual retained launcher emits blank stdout; same Assert-LNOuterCapture rejects despite normalized empty array"
+    },
+    {
+      "id": "launcher-blank-stderr",
+      "kind": "launcher",
+      "stream": "stderr",
+      "outcome": "reject",
+      "predicate": "Assert-LNOuterCapture",
+      "rationale": "Actual retained launcher emits blank stderr; same Assert-LNOuterCapture rejects despite normalized empty array"
+    }
+  ]
+}

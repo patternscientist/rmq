@@ -1,0 +1,16 @@
+{
+  "schema": "lifecycle-native1-client-registry-v1",
+  "orderedIds": ["LN1-CPP-WORD", "LN1-CPP-COMPARISON", "LN1-RUST-WORD", "LN1-RUST-COMPARISON", "LN1-RUST-OWNER-ERRORS", "LN1-RUST-POST-TAKE-FAILURE", "LN1-RUST-CONFLICT-NEW-FIRST", "LN1-RUST-CONFLICT-OLD-FIRST", "LN1-RUST-CONFLICT-NATIVE-FIRST", "LN1-RUST-INIT-FAILURE"],
+  "cases": [
+    {"id":"LN1-CPP-WORD","handler":"cpp-production","variant":"production","executable":"lifecycle-cpp.exe","mode":"word","expectedVerdict":"accept","expectedExit":0,"expectedStdout":"LIFE-NATIVE1 CPP word PASS\n","expectedStderr":""},
+    {"id":"LN1-CPP-COMPARISON","handler":"cpp-production","variant":"production","executable":"lifecycle-cpp.exe","mode":"comparison","expectedVerdict":"accept","expectedExit":0,"expectedStdout":"LIFE-NATIVE1 CPP comparison PASS\n","expectedStderr":""},
+    {"id":"LN1-RUST-WORD","handler":"rust-production","variant":"production","executable":"packed-rmq-lifecycle.exe","mode":"word","expectedVerdict":"accept","expectedExit":0,"expectedStdout":"LIFE-NATIVE1 RUST word PASS\n","expectedStderr":""},
+    {"id":"LN1-RUST-COMPARISON","handler":"rust-production","variant":"production","executable":"packed-rmq-lifecycle.exe","mode":"comparison","expectedVerdict":"accept","expectedExit":0,"expectedStdout":"LIFE-NATIVE1 RUST comparison PASS\n","expectedStderr":""},
+    {"id":"LN1-RUST-OWNER-ERRORS","handler":"rust-control","variant":"testing","executable":"lifecycle-rust-tests.exe","mode":"owner-errors","expectedVerdict":"accept","expectedExit":0,"expectedStdout":"LIFE-NATIVE1 RUST owner-errors PASS\n","expectedStderr":""},
+    {"id":"LN1-RUST-POST-TAKE-FAILURE","handler":"rust-control","variant":"testing","executable":"lifecycle-rust-tests.exe","mode":"post-take-failure","expectedVerdict":"accept","expectedExit":0,"expectedStdout":"LIFE-NATIVE1 RUST post-take-failure PASS\n","expectedStderr":""},
+    {"id":"LN1-RUST-CONFLICT-NEW-FIRST","handler":"rust-control","variant":"testing","executable":"lifecycle-rust-tests.exe","mode":"runtime-conflict-new-first","expectedVerdict":"accept","expectedExit":0,"expectedStdout":"LIFE-NATIVE1 RUST runtime-conflict-new-first PASS\n","expectedStderr":""},
+    {"id":"LN1-RUST-CONFLICT-OLD-FIRST","handler":"rust-control","variant":"testing","executable":"lifecycle-rust-tests.exe","mode":"runtime-conflict-old-first","expectedVerdict":"accept","expectedExit":0,"expectedStdout":"LIFE-NATIVE1 RUST runtime-conflict-old-first PASS\n","expectedStderr":""},
+    {"id":"LN1-RUST-CONFLICT-NATIVE-FIRST","handler":"rust-control","variant":"testing","executable":"lifecycle-rust-tests.exe","mode":"runtime-conflict-native-first","expectedVerdict":"accept","expectedExit":0,"expectedStdout":"LIFE-NATIVE1 RUST runtime-conflict-native-first PASS\n","expectedStderr":""},
+    {"id":"LN1-RUST-INIT-FAILURE","handler":"rust-control","variant":"testing","executable":"lifecycle-rust-tests.exe","mode":"initialization-failure","expectedVerdict":"accept","expectedExit":0,"expectedStdout":"LIFE-NATIVE1 RUST initialization-failure PASS\n","expectedStderr":""}
+  ]
+}

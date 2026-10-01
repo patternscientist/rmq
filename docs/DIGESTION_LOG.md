@@ -2067,3 +2067,82 @@ consumers are the coordinator's aggregate gate and a fresh blind audit. A
 skeptical reader should ask whether the linear bound is tight enough to matter
 in practice, how the temporary space compares to the output size, and whether
 a relocated in-place query execution can be proved as well.
+
+## 2026-09-20 — LIFE-1 continuous lifecycle candidate
+
+The builder's output now becomes the query's retained allocation through
+execution. The fixed program enters the existing builder body at PC 221239,
+copies its output register into the descriptor ABI, reads length and extent
+from the produced cells, and saves the request before the arena is compacted.
+Forward copy preserves overlapping source words; one scalar release per old
+prefix cell removes the stale suffix. The comparison route then releases its
+input-key cells and both key registers before jumping into query preparation.
+
+The first query and later requests use that same memory. Preparation reloads
+the length from retained address zero, transfers the bounded request slots,
+clears all scratch registers in the 8273-register bank, and jumps into the
+accepted compact query. Later requests enter through four visible charged
+events after a halted query. The theorem carries every real transition and
+its producing state, including reads, stores, releases and code-word fetches.
+An independent typed client checks the advertised conclusions; executable
+validation uses finite arrays and independently scanned expected answers.
+
+The conceptual advance is that construction, resource retirement and reusable
+queries now share one operational account. Retained bits include code,
+registers and controls as well as the packed data; temporary numeric space
+and arbitrary-integer comparison resources have separate bounds. The plain
+word view at the retained boundary follows from initialization, so a proof
+predicate is not an extra retained bitmap.
+
+Live assumptions are the stated unit-cost numeric primitives at the existing
+logarithmic width, signed representability for word inputs, represented request
+endpoints and the separately counted comparison channel for arbitrary Int
+keys. Input materialization occurs before execution. Array sizes describe
+logical ownership; native capacity and external aliases need the separately
+commissioned native evidence. The next skeptical checks are whether the native
+consuming adapter preserves this ownership boundary and whether independent
+exact-commit review reconstructs the public same-object joins and mutations.
+This entry records a candidate model result, not campaign acceptance.
+
+## Consuming the lifecycle owner in compiled clients
+
+The new native adapter carries the existing lifecycle owner across the language
+boundary. It constructs once, executes the caller's first query continuously,
+replaces all four backing arrays while preserving their entries, and accepts
+later requests through the four charged events on that produced owner. The
+export theorem derives its facts from the lifecycle capstone; final memory and
+answer equality are conclusions, not foreign-caller assumptions.
+
+Every later successful publication also replaces those arrays and copies the
+whole canonical memory. That physical copying is separate from the model's
+query work and does not support a native constant-time query claim.
+
+A runtime obstacle made the distinction between mathematical equality and
+physical behavior concrete. The original transition record retained the old
+owner while the primitive updated its arrays. Historical bounded 100-step
+probes measured 69 array copies before the consuming loop and one copy afterward;
+those probes were not repeated for the refreshed native recipe. The consuming
+loop has an unconditional proof of equality to the original runner for all
+programs, owners and fuel. The optional observer computes scalar diagnostics
+before primitive execution and has an unconditional equality for both owner and
+statistics. Neither refinement changes instruction semantics or uses a reference
+answer. Actual copy counts remain measurements of the pinned build.
+
+The main live assumptions are correct Lean/C/Rust compilation, the pinned
+runtime layout and allocation behavior, and valid exclusive foreign handles on
+the initializing thread. Safe Rust expresses unique mutation and runtime/result
+lifetimes; finite native controls cannot quantify over arbitrary C misuse.
+Logical owner equality proves preserved values and READY facts, while physical
+capacity, retired roots and failure cleanup need separate compiled evidence.
+The same distinction applies to fixed code globals, requested bytes and modeled
+payload bits.
+
+All required export mutations now replay at their independent consumers, and
+all transfer controls replay under the corrected complete source recipe. The
+native fixtures, Rust misuse checks, axiom inventory and default build also pass.
+The external delivery receipt binds the final report and committed source; the
+details are in `docs/internal/extensions/lifecycle-native1/ACCEPTANCE_MATRIX.md`.
+The next skeptical questions concern independent exact-commit reconstruction,
+coordinator acceptance and how a future native specialization can reduce the
+measured copying and initialization costs while preserving these same contracts.
+This entry records a local candidate, not coordinator acceptance.

@@ -1,0 +1,36 @@
+{
+    "id":  "D07_ENV_VALID",
+    "sourcePath":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\DC-C\\root\\scripts\\lifecycle_dependency_replay.ps1",
+    "sourceSha256":  "7E24595951BBC00202FDAC5D46D177263197A99B2EC620FB27144A413CDAA823",
+    "copiedSourceSha256":  "B249C1A1C7A2DC079F7F270BD52487577C7239C3B2842BD082603880B94A59B6",
+    "shell":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "version":  "5.1.26100.9444",
+    "dotnet":  "4.0.30319.42000",
+    "parameters":  {
+                       "SelectorProbeOnly":  true
+                   },
+    "ambient":  {
+                    "present":  true,
+                    "value":  "id:D01_CONSTRUCTION"
+                },
+    "actualEnvironmentPresent":  true,
+    "exit":  0,
+    "stdout":  [
+                   "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION"
+               ],
+    "stderr":  "",
+    "exception":  null,
+    "errorId":  null,
+    "restored":  true,
+    "passed":  false,
+    "positive":  {
+                     "exit":  0,
+                     "stdout":  [
+                                    "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION"
+                                ],
+                     "stderr":  "",
+                     "scriptPath":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r3-finally-integrity\\.lake\\life1-r3\\controls\\base-winps\\controls\\DC-C\\root\\scripts\\lifecycle_dependency_replay.ps1",
+                     "selector":  "id:D01_CONSTRUCTION"
+                 },
+    "stderrRepresentation":  "Exact Console.Error captured text, including all trailing newlines; no added filtering."
+}

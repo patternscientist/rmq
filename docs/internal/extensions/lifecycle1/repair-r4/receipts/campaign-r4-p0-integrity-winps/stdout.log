@@ -1,0 +1,16 @@
+CONTROL PASS intact-success
+CONTROL PASS intact-stage-error
+CONTROL PASS malformed-stdout-intact
+CONTROL PASS stage-error-and-pin-change
+CONTROL PASS stage-error-and-capture-error
+CONTROL PASS success-and-pin-change
+CONTROL PASS mixed-diagnostic-and-pin-change
+CONTROL PASS timeout-and-pin-change
+CONTROL PASS success-and-tracked-change
+CONTROL PASS success-and-index-change
+CONTROL PASS success-and-untracked-addition
+CONTROL PASS success-and-untracked-byte-change
+CONTROL PASS success-and-link-map-change
+CONTROL PASS partial-identity-and-pin-change
+CONTROL PASS missing-baseline
+INTEGRITY CONTROLS evidence=C:\Users\poin\Documents\RMQ\.claude\worktrees\life1-r4-run-check-verdict\.lake\repair-r1\controls-9998b31f6ff64535aaaffd7ca1649cc7

@@ -1,0 +1,42 @@
+{
+  "schema": "life1-r4-receipt-index-v1",
+  "receipt": "aux-candidate-attempt1-fixture-defect",
+  "files": [
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\r4-aux-candidate\\RESULT.json",
+      "sourceBytes": 3404,
+      "sourceSha256": "4cd64383e18c27261736aa6c5ea8c6b179f5a0f3f646e0e3292d8be1feea40ed",
+      "committed": "heavy-RESULT.json",
+      "committedBytes": 3316,
+      "committedSha256": "1d3ab1a59366beb201377b51d898b6de7d54ae236e8f8f97ae0799426fba401a",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\r4-aux-candidate\\stdout.returned-lines.txt",
+      "sourceBytes": 632,
+      "sourceSha256": "9c80da898eb34679e9b64d9669e325249aec1860facce3dbe11d51559f9d274b",
+      "committed": "heavy-stdout.returned-lines.txt",
+      "committedBytes": 632,
+      "committedSha256": "9c80da898eb34679e9b64d9669e325249aec1860facce3dbe11d51559f9d274b",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\r4-aux-candidate\\stderr.returned-lines.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "heavy-stderr.returned-lines.txt",
+      "committedBytes": 0,
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\aux\\candidate\\RESULT.json",
+      "sourceBytes": 10674,
+      "sourceSha256": "3ea32fa7c458d4ad83357f9aa425f4e5c3ae8a4b01701a5f5e86c85ddf8a8547",
+      "committed": "RESULT.json",
+      "committedBytes": 10366,
+      "committedSha256": "cb7bbaa7aa24238e9c6e2beddc26e85404bb8b97f1c5a9b3bc83ea5626342028",
+      "normalized": true
+    }
+  ]
+}

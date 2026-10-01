@@ -1,0 +1,22 @@
+{
+  "schema": "life1-r3-materialization-restore-v1",
+  "head": "2234de12541f699aa665e20b4a6dc9833c46d930",
+  "files": [
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.json",
+      "bytes": 76654,
+      "sha256": "68ab24530878be76e030313ae4b3a17610b5bec6f70ae3fe83351e67435f1619"
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.frozen.json",
+      "bytes": 76654,
+      "sha256": "68ab24530878be76e030313ae4b3a17610b5bec6f70ae3fe83351e67435f1619"
+    },
+    {
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/finalizer_cases.json",
+      "bytes": 4731,
+      "sha256": "0f03f2ebef9efe9b8f305db58e8e8636daaccb063a3d87e6872cb0f88a939767"
+    }
+  ],
+  "statusForPaths": ""
+}

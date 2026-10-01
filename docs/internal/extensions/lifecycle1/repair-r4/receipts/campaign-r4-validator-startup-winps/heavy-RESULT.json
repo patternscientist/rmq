@@ -1,0 +1,51 @@
+{
+  "schema": "life1-r3-heavy-v1",
+  "name": "r4-validator-startup-winps",
+  "spec": {
+    "name": "r4-validator-startup-winps",
+    "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+    "arguments": [
+      "-NoLogo",
+      "-NoProfile",
+      "-File",
+      "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/docs/internal/extensions/lifecycle1/repair-r2/run_check.ps1",
+      "-SpecPath",
+      "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/life1-r4/campaign-specs/r4-validator-startup-winps.json"
+    ],
+    "cwd": "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict",
+    "deadline": 900,
+    "mutexes": [
+      "global"
+    ],
+    "mutexWaitMilliseconds": 21600000,
+    "environment": {},
+    "out": "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/life1-r4/heavy/campaign-r4-validator-startup-winps"
+  },
+  "host": "POINPAD",
+  "shell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+  "psVersion": "7.6.5",
+  "startedUtc": "2026-09-30T10:53:33.1054614Z",
+  "finishedUtc": "2026-09-30T10:53:40.6631013Z",
+  "mutexWaitSeconds": {
+    "global": 0.003
+  },
+  "stageError": null,
+  "cleanupErrors": [],
+  "result": {
+    "Stage": "r4-validator-startup-winps",
+    "ExitCode": 0,
+    "Output": [
+      "r4-validator-startup-winps exit=0 seconds=4.061 timeout=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\checks\\r4-validator-startup-winps"
+    ],
+    "StandardOutput": [
+      "r4-validator-startup-winps exit=0 seconds=4.061 timeout=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r2\\checks\\r4-validator-startup-winps"
+    ],
+    "StandardError": [],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 6.979,
+    "DeadlineSeconds": 900,
+    "Ownership": "kill-on-close-job"
+  }
+}

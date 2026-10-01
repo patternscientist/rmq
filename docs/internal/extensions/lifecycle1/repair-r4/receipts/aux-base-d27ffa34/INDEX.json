@@ -1,0 +1,42 @@
+{
+  "schema": "life1-r4-receipt-index-v1",
+  "receipt": "aux-base-d27ffa34",
+  "files": [
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\r4-aux-base-2\\RESULT.json",
+      "sourceBytes": 3387,
+      "sourceSha256": "aa99cf3bb2f0ee31efe99b761877d51bae72f1220d75ba76bbff1b01666f9931",
+      "committed": "heavy-RESULT.json",
+      "committedBytes": 3299,
+      "committedSha256": "17eb45100dafd1aa24ab5052b1269fa3de66ea5b8de734902357b976ddafb822",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\r4-aux-base-2\\stdout.returned-lines.txt",
+      "sourceBytes": 631,
+      "sourceSha256": "52fdfec1972e2527c7fb16a5483f50d4e63eb2cf3b27c8d81e280b7f62028d0f",
+      "committed": "heavy-stdout.returned-lines.txt",
+      "committedBytes": 631,
+      "committedSha256": "52fdfec1972e2527c7fb16a5483f50d4e63eb2cf3b27c8d81e280b7f62028d0f",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\heavy\\r4-aux-base-2\\stderr.returned-lines.txt",
+      "sourceBytes": 0,
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committed": "heavy-stderr.returned-lines.txt",
+      "committedBytes": 0,
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized": false
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\aux\\r4-aux-base-2\\RESULT.json",
+      "sourceBytes": 9086,
+      "sourceSha256": "1a2427a514578529698cd59742658eaadcac08ca4f9360aa2eab7fd07f4ca432",
+      "committed": "RESULT.json",
+      "committedBytes": 8823,
+      "committedSha256": "08990e6153912df2d18d891e6233646821d407425b4d805aeecf6fcb80ed0a5a",
+      "normalized": true
+    }
+  ]
+}

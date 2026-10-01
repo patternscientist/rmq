@@ -1,0 +1,370 @@
+{
+  "schema": 1,
+  "base": "bf31f983205175481fcb659caa4dfb70ef43e361",
+  "sourceCommit": "299ec6527ca2fbcf73cfc34e9de75f4a1f34140c",
+  "toolchain": "leanprover/lean4:v4.22.0",
+  "platform": "Windows",
+  "interpretation": "workspace SHA-256/bytes are actual checked files; Git blob SHA-256/bytes/OID are exact committed bytes, independently read without newline normalization",
+  "files": [
+    {
+      "path": "lakefile.toml",
+      "bytes": 1170,
+      "sha256": "a82e092bfd4be06ff7dc3ceb2454b633b0141f7f2e09ca00c8060592c3475898",
+      "gitBlobSha256": "b28f9abbf9d42139f70036c1352d1ed245dc17053d4f5a0a62747d5c1234d597",
+      "gitBlobBytes": 1114,
+      "gitBlobOid": "b0e72516918125c22272b36c360db7f91182ade5"
+    },
+    {
+      "path": "lean-toolchain",
+      "bytes": 28,
+      "sha256": "ad3e6363c78908c80953282baf57162702f1134173a5247aad3dbfea108a525f",
+      "gitBlobSha256": "34d34f94186cfe3e1485485d9a46aff11d7dd2b8901e7622124d98413c6a3123",
+      "gitBlobBytes": 26,
+      "gitBlobOid": "b9994064fbbb081ca94a50384ff5951b50ea5b42"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Accounting.lean",
+      "bytes": 3426,
+      "sha256": "63a771d9cf3f1ebe936f4dbed3be6f954de623f3b050d41af2fc12f736362ab5",
+      "gitBlobSha256": "63a771d9cf3f1ebe936f4dbed3be6f954de623f3b050d41af2fc12f736362ab5",
+      "gitBlobBytes": 3426,
+      "gitBlobOid": "ff3d382804d84885409f7c072270bbf9a4929968"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Agreement.lean",
+      "bytes": 20171,
+      "sha256": "16cb10b2df2347286c7f1009609a839ae31f7c5ff776ad0743e322046f85df85",
+      "gitBlobSha256": "16cb10b2df2347286c7f1009609a839ae31f7c5ff776ad0743e322046f85df85",
+      "gitBlobBytes": 20171,
+      "gitBlobOid": "d6f7a480c8e604911d06ac611bb39b98b520fb2a"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/ArrayRun.lean",
+      "bytes": 33481,
+      "sha256": "cefbae0487001b8ea47ec1d770cd08a36e539abb379c4432a99d9800ba6b9667",
+      "gitBlobSha256": "cefbae0487001b8ea47ec1d770cd08a36e539abb379c4432a99d9800ba6b9667",
+      "gitBlobBytes": 33481,
+      "gitBlobOid": "58e7f35043be168daadb0230fbf8447df9e84a28"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/BoundarySafety.lean",
+      "bytes": 5839,
+      "sha256": "9742916bdb8b112f5d11f35969ec2cf71880962781be24fca5e4496231972ba4",
+      "gitBlobSha256": "9742916bdb8b112f5d11f35969ec2cf71880962781be24fca5e4496231972ba4",
+      "gitBlobBytes": 5839,
+      "gitBlobOid": "558706446150cab142e76a563b0fd8caaa2ffb64"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Builder.lean",
+      "bytes": 13586,
+      "sha256": "105b9f86b2b28e4cb92ccb433370da8cac8cf1f0373bb27aa177977b06187f6d",
+      "gitBlobSha256": "105b9f86b2b28e4cb92ccb433370da8cac8cf1f0373bb27aa177977b06187f6d",
+      "gitBlobBytes": 13586,
+      "gitBlobOid": "54bde55b848d829e9d30dfb9ccfb1fbfc765c193"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/BuilderProvenance.lean",
+      "bytes": 13400,
+      "sha256": "85347dab5645f021036c544cfc538e9a8f0deb05114096142bff491462d9c1db",
+      "gitBlobSha256": "85347dab5645f021036c544cfc538e9a8f0deb05114096142bff491462d9c1db",
+      "gitBlobBytes": 13400,
+      "gitBlobOid": "c81d6a1dbd4c2117caa4a7c9634dbd93bb5deefe"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Calculus.lean",
+      "bytes": 9864,
+      "sha256": "4e632755cf03544ee07c57197001873eb2a96b3a48f25a103fb4469b5a32c75e",
+      "gitBlobSha256": "4e632755cf03544ee07c57197001873eb2a96b3a48f25a103fb4469b5a32c75e",
+      "gitBlobBytes": 9864,
+      "gitBlobOid": "6fc1e652a2c20fe2393fdae68fbb580fb7703b8d"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Capstone.lean",
+      "bytes": 13383,
+      "sha256": "ba48ee2d9d0e845df5c642dbe08879da4a19c25ef54abc744c564b331dc68a69",
+      "gitBlobSha256": "ba48ee2d9d0e845df5c642dbe08879da4a19c25ef54abc744c564b331dc68a69",
+      "gitBlobBytes": 13383,
+      "gitBlobOid": "9cb036d133da1bbebdfb93943dc6c9ccec62d310"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/CodeFetch.lean",
+      "bytes": 3099,
+      "sha256": "787b39922d406f5bcd0477370d3781353d1a964ac8b82c20b47d41a0f8d21b38",
+      "gitBlobSha256": "787b39922d406f5bcd0477370d3781353d1a964ac8b82c20b47d41a0f8d21b38",
+      "gitBlobBytes": 3099,
+      "gitBlobOid": "1b4d2c82b171845216f1cbe58ef462d11ae32ad4"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Construction.lean",
+      "bytes": 14974,
+      "sha256": "ee5917bdf654d3bcfbb988f146aec81dbac52bfe904956481feb0d09742c063d",
+      "gitBlobSha256": "ee5917bdf654d3bcfbb988f146aec81dbac52bfe904956481feb0d09742c063d",
+      "gitBlobBytes": 14974,
+      "gitBlobOid": "bb8788cfb3ce643bfb1bd542445a1f91d6a4021f"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Continuous.lean",
+      "bytes": 12590,
+      "sha256": "aee06d642a9f89b4646428a6300d438d6d10548be7e453bd3714ce5b3bbc1f1a",
+      "gitBlobSha256": "aee06d642a9f89b4646428a6300d438d6d10548be7e453bd3714ce5b3bbc1f1a",
+      "gitBlobBytes": 12590,
+      "gitBlobOid": "c75d2790f3c9336a9bdf8cf632ee8ac3314051cc"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Controls.lean",
+      "bytes": 12870,
+      "sha256": "ddc5ed3b43c85c01e19d880ad3ebf95a0cca83f48f69396f784965d6e2956122",
+      "gitBlobSha256": "ddc5ed3b43c85c01e19d880ad3ebf95a0cca83f48f69396f784965d6e2956122",
+      "gitBlobBytes": 12870,
+      "gitBlobOid": "59f3749798a51b19adcc55cfae596d61b375c64a"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Descriptor.lean",
+      "bytes": 15407,
+      "sha256": "01de2666d0ad7dc9c6153ba52c20e08bbc8d115f469afa6032c9bb0589ff509b",
+      "gitBlobSha256": "01de2666d0ad7dc9c6153ba52c20e08bbc8d115f469afa6032c9bb0589ff509b",
+      "gitBlobBytes": 15407,
+      "gitBlobOid": "22db7d7e11e469c46f09a2032849529b8e92d6da"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Executable.lean",
+      "bytes": 42533,
+      "sha256": "24e93b80a5c57da7d1a7e162ab773ecc6ea0223f3129e1dc661ab77795f02ad6",
+      "gitBlobSha256": "24e93b80a5c57da7d1a7e162ab773ecc6ea0223f3129e1dc661ab77795f02ad6",
+      "gitBlobBytes": 42533,
+      "gitBlobOid": "5aea1c1267ec5c3d5e7cb12f56b17f797516b417"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Finalization.lean",
+      "bytes": 29373,
+      "sha256": "f361d8582b4afa8fd9f0e71e1e2c789a918b9b4cf918dbba3941714ce717e5e8",
+      "gitBlobSha256": "f361d8582b4afa8fd9f0e71e1e2c789a918b9b4cf918dbba3941714ce717e5e8",
+      "gitBlobBytes": 29373,
+      "gitBlobOid": "49e18b6e158ecfcd0c7247402a3502a4097a8630"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Finalizer.lean",
+      "bytes": 43151,
+      "sha256": "df48875b1e487b49c4d1474db776acaab8ef8cec97ab6549e446b5d8f6bcab07",
+      "gitBlobSha256": "df48875b1e487b49c4d1474db776acaab8ef8cec97ab6549e446b5d8f6bcab07",
+      "gitBlobBytes": 43151,
+      "gitBlobOid": "69ee3460aacba441914d77c1433eafd6ebfcd6c2"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Input.lean",
+      "bytes": 6697,
+      "sha256": "52e14ded73b5735c5fd5c5b93aed1306a05a31c0f222b6fe08a82fa0825b6a12",
+      "gitBlobSha256": "52e14ded73b5735c5fd5c5b93aed1306a05a31c0f222b6fe08a82fa0825b6a12",
+      "gitBlobBytes": 6697,
+      "gitBlobOid": "2df3df361dee8c9556de50a792de6d8ca903169d"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Machine.lean",
+      "bytes": 7249,
+      "sha256": "d581ff3713f9b078bfc8884599bb294122c1575494a74f4a2c75b211f814b335",
+      "gitBlobSha256": "d581ff3713f9b078bfc8884599bb294122c1575494a74f4a2c75b211f814b335",
+      "gitBlobBytes": 7249,
+      "gitBlobOid": "f4dca3838293d7f94d663045d2c13c4c44fd55f4"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Ownership.lean",
+      "bytes": 6098,
+      "sha256": "1c8eb8baabba9c9b30deb4a01a78cb970181540eceae72e62ef7a736e8187b74",
+      "gitBlobSha256": "1c8eb8baabba9c9b30deb4a01a78cb970181540eceae72e62ef7a736e8187b74",
+      "gitBlobBytes": 6098,
+      "gitBlobOid": "adbcae8fc33a4fa670f421e7198e5f421dcea345"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Physical.lean",
+      "bytes": 35825,
+      "sha256": "03394e149990b6be772f9060d94faa4a7475907d1bcbf20933bcc16d2e73b0be",
+      "gitBlobSha256": "03394e149990b6be772f9060d94faa4a7475907d1bcbf20933bcc16d2e73b0be",
+      "gitBlobBytes": 35825,
+      "gitBlobOid": "e6aa6e48bde045042b857da4a7c9383af37254c0"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Profile.lean",
+      "bytes": 4980,
+      "sha256": "06c175735707cfc18a2c0f9e1876d02a07fa66663f33522011b80ba1950df437",
+      "gitBlobSha256": "06c175735707cfc18a2c0f9e1876d02a07fa66663f33522011b80ba1950df437",
+      "gitBlobBytes": 4980,
+      "gitBlobOid": "7f876238f299df195f564015ade9a4b6fb91de86"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Program.lean",
+      "bytes": 8237,
+      "sha256": "31599891b0d559824aa3ec0776a908fea9dbb129881c4f0684f6cb421a93dd51",
+      "gitBlobSha256": "31599891b0d559824aa3ec0776a908fea9dbb129881c4f0684f6cb421a93dd51",
+      "gitBlobBytes": 8237,
+      "gitBlobOid": "02f4dc48ca2a2b7e6c053d3742ac4d0e2331f820"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Provenance.lean",
+      "bytes": 13499,
+      "sha256": "454ecb3a9615977aa2d5d52015771a187fada6e6f5ce1f90d5a125cd873d273e",
+      "gitBlobSha256": "454ecb3a9615977aa2d5d52015771a187fada6e6f5ce1f90d5a125cd873d273e",
+      "gitBlobBytes": 13499,
+      "gitBlobOid": "4c878fa3cbe5818bff3941de3f47f195e51bb7cb"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/QueryBridge.lean",
+      "bytes": 7842,
+      "sha256": "90352766b9c72598b54d4414120ed40dc384d1031ca2063b666a9dd20cf261e5",
+      "gitBlobSha256": "90352766b9c72598b54d4414120ed40dc384d1031ca2063b666a9dd20cf261e5",
+      "gitBlobBytes": 7842,
+      "gitBlobOid": "54b8e510b3417e75ac20a6b3a39cc2af8e8b6c28"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/QueryEntry.lean",
+      "bytes": 24643,
+      "sha256": "19660c6b09969c3af1ffdb4135def14e6eab5627ddfe019d6f33374547c9d3f4",
+      "gitBlobSha256": "19660c6b09969c3af1ffdb4135def14e6eab5627ddfe019d6f33374547c9d3f4",
+      "gitBlobBytes": 24643,
+      "gitBlobOid": "d385098fbb0938f83c7d6f37226b2569c8ecd856"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/QuerySafetyBridge.lean",
+      "bytes": 24060,
+      "sha256": "fe9f7eaec1a8a5f066974786e18f6865fe8eb8b3790fd94e2c498603ec17ff8e",
+      "gitBlobSha256": "fe9f7eaec1a8a5f066974786e18f6865fe8eb8b3790fd94e2c498603ec17ff8e",
+      "gitBlobBytes": 24060,
+      "gitBlobOid": "245e77ea37749b542b2a2db99ff9de33818fbd8c"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Resources.lean",
+      "bytes": 5820,
+      "sha256": "578010d4702f86403fc238c0ed48154348f248172f0ff2441f1002d0236f602b",
+      "gitBlobSha256": "578010d4702f86403fc238c0ed48154348f248172f0ff2441f1002d0236f602b",
+      "gitBlobBytes": 5820,
+      "gitBlobOid": "a23a9004547c96deb5e8384a3bc80da172177823"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Retained.lean",
+      "bytes": 4492,
+      "sha256": "7d44dc30376a0aa2617b3aaea946aa2c59e56ebf2fe7c65ebf436ecfda26068a",
+      "gitBlobSha256": "7d44dc30376a0aa2617b3aaea946aa2c59e56ebf2fe7c65ebf436ecfda26068a",
+      "gitBlobBytes": 4492,
+      "gitBlobOid": "154cedad80ea3feb1c53210581db8e5dab086fb7"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Retirement.lean",
+      "bytes": 23304,
+      "sha256": "f7f94f123151b45902b3bec15befdd18dd7aa543718b54de6320279fcdc248b9",
+      "gitBlobSha256": "f7f94f123151b45902b3bec15befdd18dd7aa543718b54de6320279fcdc248b9",
+      "gitBlobBytes": 23304,
+      "gitBlobOid": "08495761452e2dfbec9450c6041901eaa698861f"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Reusable.lean",
+      "bytes": 26378,
+      "sha256": "51aa192f34a22e07e19933c7750a2f4a7e7a3e2ceffe3d66cf384b545ebf3bc0",
+      "gitBlobSha256": "51aa192f34a22e07e19933c7750a2f4a7e7a3e2ceffe3d66cf384b545ebf3bc0",
+      "gitBlobBytes": 26378,
+      "gitBlobOid": "2d0de18da29bab15beb0a5e8a1b18b1aa0ae60ca"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Safety.lean",
+      "bytes": 5831,
+      "sha256": "c89da0a36eb474eac546c8eafc93f18e82ec685f2ed52fa3875f5112a28e1cc7",
+      "gitBlobSha256": "c89da0a36eb474eac546c8eafc93f18e82ec685f2ed52fa3875f5112a28e1cc7",
+      "gitBlobBytes": 5831,
+      "gitBlobOid": "38b82010e24f51fce11681ebc95680e92d20c97f"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/Service.lean",
+      "bytes": 7988,
+      "sha256": "c2602662f611160de321847147cd29691bc63d03fb7433124538b1e9b21acf89",
+      "gitBlobSha256": "c2602662f611160de321847147cd29691bc63d03fb7433124538b1e9b21acf89",
+      "gitBlobBytes": 7988,
+      "gitBlobOid": "2591a4f4b65519301bd05b9e2568a1b53bd4ff45"
+    },
+    {
+      "path": "RMQ/Core/WordRAM/Lifecycle/ServiceSafety.lean",
+      "bytes": 20214,
+      "sha256": "3672e208e550764c3e388fb96fe0e1098c8ad70a53851027b8027daddca09f13",
+      "gitBlobSha256": "3672e208e550764c3e388fb96fe0e1098c8ad70a53851027b8027daddca09f13",
+      "gitBlobBytes": 20214,
+      "gitBlobOid": "891afe0e832c8e22493afb3c882c3aa569a12c18"
+    },
+    {
+      "path": "RMQ/Headlines/Lifecycle.lean",
+      "bytes": 670,
+      "sha256": "d45b63b27d43f638ee4827f27cce7470456054e2bb8a255c07cad08cb1e6d7ab",
+      "gitBlobSha256": "d45b63b27d43f638ee4827f27cce7470456054e2bb8a255c07cad08cb1e6d7ab",
+      "gitBlobBytes": 670,
+      "gitBlobOid": "0ad61bd2b279519a254e2b4b412366eca6e5b7d1"
+    },
+    {
+      "path": "RMQ/Validation/LifecycleContract.lean",
+      "bytes": 12199,
+      "sha256": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+      "gitBlobSha256": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+      "gitBlobBytes": 12199,
+      "gitBlobOid": "cb87275bec76845642e33406c1c6496fc0379192"
+    },
+    {
+      "path": "RMQ/Validation/PackedLifecycle.lean",
+      "bytes": 14684,
+      "sha256": "9da6975799204debd1a92127e4b585339da7983a55ce9fa6510d857f0dbc93b2",
+      "gitBlobSha256": "9da6975799204debd1a92127e4b585339da7983a55ce9fa6510d857f0dbc93b2",
+      "gitBlobBytes": 14684,
+      "gitBlobOid": "69d6ade9d2ec84521c208b559af1912561b80316"
+    },
+    {
+      "path": "scripts/lifecycle_contract_integrity.ps1",
+      "bytes": 8613,
+      "sha256": "16ccb2e7c3dbbad3dd187d98325f11b72b36bf1b944cafa0d55d6018994511f3",
+      "gitBlobSha256": "16ccb2e7c3dbbad3dd187d98325f11b72b36bf1b944cafa0d55d6018994511f3",
+      "gitBlobBytes": 8613,
+      "gitBlobOid": "a75884897c856177f180e90c359c9d2d2ba0ed5f"
+    },
+    {
+      "path": "scripts/lifecycle_dependency_cases.json",
+      "bytes": 38490,
+      "sha256": "003343871e23c93df874a960a8af60ae7a8a2e615adb05b6e581dc4407a1c84b",
+      "gitBlobSha256": "4c9c7a4259808bb64c74656fd52559752e76f02834f2ac8567f5830968a5b80d",
+      "gitBlobBytes": 37911,
+      "gitBlobOid": "57f1d4427f09299814542172b93fe164c098fbea"
+    },
+    {
+      "path": "scripts/lifecycle_dependency_README.md",
+      "bytes": 5425,
+      "sha256": "e130bd803e53a3007a3b1ba244f421212e507db1ec4e21fcd10039501cb1b33c",
+      "gitBlobSha256": "e130bd803e53a3007a3b1ba244f421212e507db1ec4e21fcd10039501cb1b33c",
+      "gitBlobBytes": 5425,
+      "gitBlobOid": "76cb916bb762b33c16433e84c081f23205cac5f4"
+    },
+    {
+      "path": "scripts/lifecycle_dependency_replay.ps1",
+      "bytes": 20217,
+      "sha256": "a4acecafb1a639dd220ddf29d6586dbd907983f723070a153c6074382f31d9aa",
+      "gitBlobSha256": "a4acecafb1a639dd220ddf29d6586dbd907983f723070a153c6074382f31d9aa",
+      "gitBlobBytes": 20217,
+      "gitBlobOid": "ef6f0aa7ef13c519e047f48fd312741b5428f408"
+    },
+    {
+      "path": "scripts/lifecycle_inventory.lean",
+      "bytes": 3699,
+      "sha256": "21e123fcf97dab5c492ab22f6cf7e8eb9a7a0bbfc189281e0582a65668dcd2ec",
+      "gitBlobSha256": "21e123fcf97dab5c492ab22f6cf7e8eb9a7a0bbfc189281e0582a65668dcd2ec",
+      "gitBlobBytes": 3699,
+      "gitBlobOid": "aede16830f7cfcf79c8121fc354f31e2ebf0686d"
+    },
+    {
+      "path": "scripts/lifecycle_provenance_contract.lean",
+      "bytes": 5560,
+      "sha256": "d7d291fb45e376ef2be54cca1d1c93a603c69fbd41ade2a702836fc3a687bb4a",
+      "gitBlobSha256": "d7d291fb45e376ef2be54cca1d1c93a603c69fbd41ade2a702836fc3a687bb4a",
+      "gitBlobBytes": 5560,
+      "gitBlobOid": "f7962d23c57e778daf937a7280e48c5ce5518b64"
+    },
+    {
+      "path": "scripts/lifecycle_validator.ps1",
+      "bytes": 7768,
+      "sha256": "376beb1533ed020d17a796a40f6d8a20941ddd8da60dc39b7b4639bd67073b29",
+      "gitBlobSha256": "376beb1533ed020d17a796a40f6d8a20941ddd8da60dc39b7b4639bd67073b29",
+      "gitBlobBytes": 7768,
+      "gitBlobOid": "31f42ed578905bffa5799ac9a8e396df7de4d4fa"
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "stage": "single",
+  "case": "L01-W-EMPTY",
+  "completed": false,
+  "passed": false,
+  "processCount": 3,
+  "logRoot": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\LV-M\\root\\.lake\\lifecycle-validator\\c54f31fa99004157ae5756fa152dd699",
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "fail",
+    "stageError": "single exit 1, expected 0",
+    "integrityErrors": [
+      "Source/binary identity unreadable: lakefile.toml: Could not find file 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\LV-M\\root\\lakefile.toml'."
+    ],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "lakefile.toml",
+        "entrySha256": "b47c7abe3955d1a2e9ba51a4c71fc2e7961423d2bf5f3856f79a24bebc8bdd50",
+        "finalSha256": null,
+        "status": "unreadable-final"
+      },
+      {
+        "path": "RMQ/Validation/PackedLifecycle.lean",
+        "entrySha256": "624236001fc72817441cc3dc536da9c299ccb1dc9c050687b09896b7f1679c14",
+        "finalSha256": "624236001fc72817441cc3dc536da9c299ccb1dc9c050687b09896b7f1679c14",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/lifecycle_validator.ps1",
+        "entrySha256": "8135040dfb712cb81dd083db8f4b58d42e333bc196db3770f2b5c28e228f0cb3",
+        "finalSha256": "8135040dfb712cb81dd083db8f4b58d42e333bc196db3770f2b5c28e228f0cb3",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/lifecycle_validator_environment.ps1",
+        "entrySha256": "2fb2c4d95eaf3f6633ffaa60413d3d798b26e5bf8b4e712e6a254e293e4f9f19",
+        "finalSha256": "2fb2c4d95eaf3f6633ffaa60413d3d798b26e5bf8b4e712e6a254e293e4f9f19",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/owned_process_tree.ps1",
+        "entrySha256": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+        "finalSha256": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+        "status": "verified"
+      },
+      {
+        "path": "RMQ/Core/WordRAM/Lifecycle/Executable.lean",
+        "entrySha256": "7ed53fd5715a4ea1d6628ae52f626b1573b2f20bb4e6b9b983c0a2c32de41baf",
+        "finalSha256": "7ed53fd5715a4ea1d6628ae52f626b1573b2f20bb4e6b9b983c0a2c32de41baf",
+        "status": "verified"
+      },
+      {
+        "path": "RMQ/Core/WordRAM/Lifecycle/Controls.lean",
+        "entrySha256": "207f4d5ccaca1c33143c6e457c90129ad876672bdc0786e29face52f434e8828",
+        "finalSha256": "207f4d5ccaca1c33143c6e457c90129ad876672bdc0786e29face52f434e8828",
+        "status": "verified"
+      },
+      {
+        "path": "RMQ/Core/WordRAM/Lifecycle/ArrayRun.lean",
+        "entrySha256": "e9342577949ec6af15ece43ebaa742d30142f7b6769c8036b9e95f22d59dd0c7",
+        "finalSha256": "e9342577949ec6af15ece43ebaa742d30142f7b6769c8036b9e95f22d59dd0c7",
+        "status": "verified"
+      },
+      {
+        "path": "RMQ/Core/WordRAM/Lifecycle/Machine.lean",
+        "entrySha256": "bbc0e439fb2fa55ae75e440ac3a6c77e6203fc6f7b39b2cae8b95e1ed2b8d57b",
+        "finalSha256": "bbc0e439fb2fa55ae75e440ac3a6c77e6203fc6f7b39b2cae8b95e1ed2b8d57b",
+        "status": "verified"
+      },
+      {
+        "path": "RMQ/Core/WordRAM/Lifecycle/Program.lean",
+        "entrySha256": "bb40b5ab3b7532ea4f907bf1d174dd2de14013c5e022454cb7c3b99cc2707dfc",
+        "finalSha256": "bb40b5ab3b7532ea4f907bf1d174dd2de14013c5e022454cb7c3b99cc2707dfc",
+        "status": "verified"
+      },
+      {
+        "path": "RMQ/Core/WordRAM/Lifecycle/Service.lean",
+        "entrySha256": "f4157493517f232a6a83bb52c87b751f6a0c2c1f9ca9c98fb6cae036542a34e0",
+        "finalSha256": "f4157493517f232a6a83bb52c87b751f6a0c2c1f9ca9c98fb6cae036542a34e0",
+        "status": "verified"
+      },
+      {
+        "path": ".lake/build/bin/rmq_lifecycle_validate.exe",
+        "entrySha256": "abeaa01c0fbbad17da79b6ae9b4b060df11151d557378ca1f6f2084b2b36deaf",
+        "finalSha256": "abeaa01c0fbbad17da79b6ae9b4b060df11151d557378ca1f6f2084b2b36deaf",
+        "status": "verified"
+      }
+    ],
+    "entryPinCount": 12,
+    "verifiedPinCount": 11
+  }
+}

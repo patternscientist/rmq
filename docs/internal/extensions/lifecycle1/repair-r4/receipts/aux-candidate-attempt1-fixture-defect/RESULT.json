@@ -1,0 +1,309 @@
+{
+  "schema": "life1-r4-aux-controls-v1",
+  "harnessRef": "d9411a7dae909462218fb32e3bb84e555cfa042c",
+  "harnessSha": "d9411a7dae909462218fb32e3bb84e555cfa042c",
+  "expect": "candidate",
+  "runnerShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+  "psVersion": "7.6.5",
+  "expectedCount": 17,
+  "executedCount": 17,
+  "passedCount": 16,
+  "failedIds": [
+    "PRED-PIN-GOOD"
+  ],
+  "cases": [
+    {
+      "id": "ORD-K1",
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/run_check.ps1",
+      "blobSha256": "395bfff8570f0762742cb61a4caedf4f9060a18388ab0135d243a7d14a8a6580",
+      "observed": {
+        "ok": true,
+        "reason": "every integrity recording precedes release",
+        "blocks": [
+          {
+            "finallyLine": 52,
+            "firstReleaseLine": 70.0,
+            "lastIntegrityAddLine": 67.0,
+            "integrityAdds": 3,
+            "ok": true
+          }
+        ]
+      },
+      "expectedOk": true,
+      "passed": true
+    },
+    {
+      "id": "ORD-K2",
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/run_check.ps1",
+      "blobSha256": "f3ae2e4aea800c2f6cb094a3a74ca4fb380b9bf3aa8f61f8e79ae2717b0184cc",
+      "observed": {
+        "ok": true,
+        "reason": "every integrity recording precedes release",
+        "blocks": [
+          {
+            "finallyLine": 87,
+            "firstReleaseLine": 122.0,
+            "lastIntegrityAddLine": 119.0,
+            "integrityAdds": 7,
+            "ok": true
+          }
+        ]
+      },
+      "expectedOk": true,
+      "passed": true
+    },
+    {
+      "id": "ORD-RC",
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/run_controls.ps1",
+      "blobSha256": "2587c9d204555abf437b7a6e8cbf167cfc833b0eb4ff6319072d0177944e8f61",
+      "observed": {
+        "ok": true,
+        "reason": "every integrity recording precedes release",
+        "blocks": [
+          {
+            "finallyLine": 103,
+            "firstReleaseLine": 115.0,
+            "lastIntegrityAddLine": 111.0,
+            "integrityAdds": 2,
+            "ok": true
+          }
+        ]
+      },
+      "expectedOk": true,
+      "passed": true
+    },
+    {
+      "id": "ORD-LV",
+      "path": "scripts/lifecycle_validator.ps1",
+      "blobSha256": "8135040dfb712cb81dd083db8f4b58d42e333bc196db3770f2b5c28e228f0cb3",
+      "observed": {
+        "ok": true,
+        "reason": "every integrity recording precedes release",
+        "blocks": [
+          {
+            "finallyLine": 142,
+            "firstReleaseLine": 166.0,
+            "lastIntegrityAddLine": 159.0,
+            "integrityAdds": 2,
+            "ok": true
+          }
+        ]
+      },
+      "expectedOk": true,
+      "passed": true
+    },
+    {
+      "id": "HR-P",
+      "heavyRunSha256": "fc27eed3b8541cf3f0b193070a6cf789fedd246a17c41061e0e5bdb7d9405306",
+      "process": {
+        "Stage": "HR-P",
+        "ExitCode": 0,
+        "Output": [
+          "R3-HEAVY hr-p exit=0 seconds=0.978 timeout=False overflow=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\aux\\candidate\\cases\\HR-P\\root\\.lake\\hr-out"
+        ],
+        "StandardOutput": [
+          "R3-HEAVY hr-p exit=0 seconds=0.978 timeout=False overflow=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\aux\\candidate\\cases\\HR-P\\root\\.lake\\hr-out"
+        ],
+        "StandardError": [],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.807,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      },
+      "completedLaunch": true,
+      "successLine": true,
+      "writeFailureReported": false,
+      "resultFileWritten": true,
+      "defectShape": false,
+      "repairedShape": false,
+      "normalShape": true,
+      "passed": true
+    },
+    {
+      "id": "HR-W",
+      "heavyRunSha256": "fc27eed3b8541cf3f0b193070a6cf789fedd246a17c41061e0e5bdb7d9405306",
+      "process": {
+        "Stage": "HR-W",
+        "ExitCode": 1,
+        "Output": [
+          "R3-HEAVY: RESULT.json write failed: Exception calling \"WriteAllText\" with \"3\" argument(s): \"Access to the path 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\aux\\candidate\\cases\\HR-W\\root\\.lake\\hr-out\\RESULT.json' is denied.\"",
+          "R3-HEAVY: no durable result for hr-w; child exit=0 timeout=False"
+        ],
+        "StandardOutput": [],
+        "StandardError": [
+          "R3-HEAVY: RESULT.json write failed: Exception calling \"WriteAllText\" with \"3\" argument(s): \"Access to the path 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\aux\\candidate\\cases\\HR-W\\root\\.lake\\hr-out\\RESULT.json' is denied.\"",
+          "R3-HEAVY: no durable result for hr-w; child exit=0 timeout=False"
+        ],
+        "TimedOut": false,
+        "OutputLimitExceeded": false,
+        "TerminatedIds": [],
+        "DurationSeconds": 2.835,
+        "DeadlineSeconds": 120,
+        "Ownership": "kill-on-close-job"
+      },
+      "completedLaunch": true,
+      "successLine": false,
+      "writeFailureReported": true,
+      "resultFileWritten": false,
+      "defectShape": false,
+      "repairedShape": true,
+      "normalShape": false,
+      "passed": true
+    },
+    {
+      "id": "PRED-PIN-GOOD",
+      "predicatesAtRef": true,
+      "predicatesSha256": "767d01490c69f37d625fbc60502156ca4fcfaddef249f5029c158f739e990b67",
+      "r3PredicateAccepts": true,
+      "expectedR4": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "captured pin not re-verified: d status not-captured"
+      },
+      "passed": false
+    },
+    {
+      "id": "PRED-PIN-DROPPED",
+      "predicatesAtRef": true,
+      "predicatesSha256": "767d01490c69f37d625fbc60502156ca4fcfaddef249f5029c158f739e990b67",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "observedR4": {
+        "ok": false,
+        "reason": "captured pin not re-verified: d status not-captured"
+      },
+      "passed": true
+    },
+    {
+      "id": "PRED-PIN-UNVERIFIED",
+      "predicatesAtRef": true,
+      "predicatesSha256": "767d01490c69f37d625fbc60502156ca4fcfaddef249f5029c158f739e990b67",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "observedR4": {
+        "ok": false,
+        "reason": "captured pin not re-verified: c status not-captured"
+      },
+      "passed": true
+    },
+    {
+      "id": "PRED-PIN-COUNT",
+      "predicatesAtRef": true,
+      "predicatesSha256": "767d01490c69f37d625fbc60502156ca4fcfaddef249f5029c158f739e990b67",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "observedR4": {
+        "ok": false,
+        "reason": "captured rows 3 differ from the registry count 4"
+      },
+      "passed": true
+    },
+    {
+      "id": "PRED-PIN-DUP",
+      "predicatesAtRef": true,
+      "predicatesSha256": "767d01490c69f37d625fbc60502156ca4fcfaddef249f5029c158f739e990b67",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "observedR4": {
+        "ok": false,
+        "reason": "duplicate pinCheck path a"
+      },
+      "passed": true
+    },
+    {
+      "id": "PRED-PIN-ALLVERIFIED",
+      "predicatesAtRef": true,
+      "predicatesSha256": "767d01490c69f37d625fbc60502156ca4fcfaddef249f5029c158f739e990b67",
+      "r3PredicateAccepts": false,
+      "expectedR4": false,
+      "observedR4": {
+        "ok": false,
+        "reason": "captured pin not verified: b status changed"
+      },
+      "passed": true
+    },
+    {
+      "id": "PRED-LABEL-GOOD",
+      "predicatesAtRef": true,
+      "predicatesSha256": "767d01490c69f37d625fbc60502156ca4fcfaddef249f5029c158f739e990b67",
+      "r3PredicateAccepts": null,
+      "expectedR4": true,
+      "observedR4": {
+        "ok": true,
+        "reason": "labels helper consistent"
+      },
+      "passed": true
+    },
+    {
+      "id": "PRED-LABEL-ENTRY",
+      "predicatesAtRef": true,
+      "predicatesSha256": "767d01490c69f37d625fbc60502156ca4fcfaddef249f5029c158f739e990b67",
+      "r3PredicateAccepts": null,
+      "expectedR4": false,
+      "observedR4": {
+        "ok": false,
+        "reason": "no entry label entryHelper"
+      },
+      "passed": true
+    },
+    {
+      "id": "PRED-LABEL-STALE",
+      "predicatesAtRef": true,
+      "predicatesSha256": "767d01490c69f37d625fbc60502156ca4fcfaddef249f5029c158f739e990b67",
+      "r3PredicateAccepts": null,
+      "expectedR4": false,
+      "observedR4": {
+        "ok": false,
+        "reason": "helper is not the post-run pin"
+      },
+      "passed": true
+    },
+    {
+      "id": "PRED-VALUE-GOOD",
+      "predicatesAtRef": true,
+      "predicatesSha256": "767d01490c69f37d625fbc60502156ca4fcfaddef249f5029c158f739e990b67",
+      "r3PredicateAccepts": null,
+      "expectedR4": true,
+      "observedR4": {
+        "ok": true,
+        "reason": "all values present"
+      },
+      "passed": true
+    },
+    {
+      "id": "PRED-VALUE-TYPE",
+      "predicatesAtRef": true,
+      "predicatesSha256": "767d01490c69f37d625fbc60502156ca4fcfaddef249f5029c158f739e990b67",
+      "r3PredicateAccepts": null,
+      "expectedR4": false,
+      "observedR4": {
+        "ok": false,
+        "reason": "no value TimedOut=True"
+      },
+      "passed": true
+    }
+  ],
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "fail",
+    "stageError": null,
+    "integrityErrors": [],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\docs\\internal\\extensions\\lifecycle1\\repair-r4\\aux_controls.ps1",
+        "entrySha256": "ce10ee9b944880d77d79e48649f7b6de114cf9e117e148d4552c84db6f2ecfd8",
+        "finalSha256": "ce10ee9b944880d77d79e48649f7b6de114cf9e117e148d4552c84db6f2ecfd8",
+        "status": "verified"
+      },
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\scripts\\owned_process_tree.ps1",
+        "entrySha256": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+        "finalSha256": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+        "status": "verified"
+      }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "r4-validator-full-pwsh",
+  "file": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+  "arguments": [
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/scripts/lifecycle_validator.ps1",
+    "-Stage",
+    "full",
+    "-DeadlineSeconds",
+    "1800"
+  ],
+  "mutex": false,
+  "deadline": 2400
+}

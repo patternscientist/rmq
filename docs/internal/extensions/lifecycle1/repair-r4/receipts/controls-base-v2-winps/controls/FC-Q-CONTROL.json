@@ -1,0 +1,123 @@
+{
+  "id": "FC-Q",
+  "harness": "FC",
+  "shape": "Q",
+  "fault": "change-fail",
+  "mode": "base",
+  "profile": "winps",
+  "deadlineSeconds": 180,
+  "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-Q\\root",
+  "setupError": null,
+  "launchError": null,
+  "process": {
+    "Stage": "FC-Q",
+    "ExitCode": 1,
+    "Output": [
+      "L1R1-FINALIZER: production script changed during pair",
+      "L1R1-FINALIZER: P unexpected child exit: 1",
+      "At C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\contr",
+      "ols\\FC-Q\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\finalizer_control.ps1:35 char:23",
+      "+   if(-not $condition){throw ('L1R1-FINALIZER: '+$message)}",
+      "+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "    + CategoryInfo          : OperationStopped: (L1R1-FINALIZER:...d child exit: 1:String) [], RuntimeException",
+      "    + FullyQualifiedErrorId : L1R1-FINALIZER: P unexpected child exit: 1",
+      " "
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "L1R1-FINALIZER: production script changed during pair",
+      "L1R1-FINALIZER: P unexpected child exit: 1",
+      "At C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\contr",
+      "ols\\FC-Q\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\finalizer_control.ps1:35 char:23",
+      "+   if(-not $condition){throw ('L1R1-FINALIZER: '+$message)}",
+      "+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "    + CategoryInfo          : OperationStopped: (L1R1-FINALIZER:...d child exit: 1:String) [], RuntimeException",
+      "    + FullyQualifiedErrorId : L1R1-FINALIZER: P unexpected child exit: 1",
+      " "
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 2.844,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  },
+  "durable": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-Q\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-978660208bcf4be1b826398dee3604b6\\result.json",
+    "ambiguous": false,
+    "parseError": null,
+    "sha256": "14032dfb2611a67aa9f9efa08b9f30de0ed0b5daf629b2c13cc750ab68a8121b"
+  },
+  "core": {
+    "launchCompleted": true,
+    "exitClass": true,
+    "durablePresent": true,
+    "durableAsExpected": true,
+    "stageRecorded": true,
+    "integrityRecorded": true,
+    "cleanupRecorded": true,
+    "verdictAsExpected": true,
+    "values": null,
+    "labels": null,
+    "stderrAsExpected": true,
+    "absentFiles": true,
+    "stdoutWithoutSuccess": true
+  },
+  "structural": {
+    "applicable": false,
+    "finalizationPresent": true,
+    "verdictMatches": true,
+    "stageFieldMatches": true,
+    "integrityFieldMatches": true,
+    "cleanupEmpty": true,
+    "pinsVerified": true,
+    "pinCoverage": "captured 4 of 4 rows, all re-verified"
+  },
+  "restoration": {
+    "restored": [
+      "scripts/lifecycle_dependency_replay.ps1"
+    ],
+    "removed": [],
+    "errors": [],
+    "verified": true,
+    "gitClean": true,
+    "gitState": "271421097013e4134b5e21a40bfff52e496f2b6b\n--"
+  },
+  "verdict": "PASS",
+  "expected": "accept",
+  "lockWaitSeconds": 0.0,
+  "manifest": {
+    "docs/internal/extensions/lifecycle1/repair-r1/finalizer_control.ps1": "e194f13d517939481184a4ca71638a4ab17a6baf44396e030b180a8b0dc01549",
+    "docs/internal/extensions/lifecycle1/repair-r1/finalizer_cases.json": "1303ecf93c0a0c74e0a48023fe52258b7e847d020d009eb2f4deba7f084ab6df",
+    "scripts/owned_process_tree.ps1": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+    "scripts/lifecycle_dependency_replay.ps1": "ac21ed7fc218b1318111c0b9d54b4f474be497280a9b78d204a6ba0aa5ce332b",
+    ".gitignore": "fde850d24186b6e99c8c0debd641fb3ab85198b109eb66f71a1fea02bd6ea1b3"
+  },
+  "harnessSha256": "e194f13d517939481184a4ca71638a4ab17a6baf44396e030b180a8b0dc01549",
+  "arguments": [
+    "-NoLogo",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-Q\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\finalizer_control.ps1",
+    "-Case",
+    "F01_INTACT_SUCCESS",
+    "-Shell",
+    "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+    "-RepositoryRoot",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-Q\\root",
+    "-EvidenceRoot",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-Q\\root/.lake/r3-evidence"
+  ],
+  "environment": {
+    "R3_FAULT_MARKER": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-Q\\fault.marker",
+    "R3_FAULT_MODE": "change-fail",
+    "R3_FAULT_TARGET": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-Q\\root\\scripts\\lifecycle_dependency_replay.ps1",
+    "R3_FAULT_SCOPE": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\FC-Q\\root"
+  },
+  "coreAll": true,
+  "structuralAll": true,
+  "pairing": "P passed",
+  "predicateOutcome": true
+}

@@ -1,0 +1,12 @@
+warning: unable to access 'C:\Users\poin/.config/git/ignore': Permission denied
+warning: unable to access 'C:\Users\poin/.config/git/ignore': Permission denied
+warning: unable to access 'C:\Users\poin/.config/git/ignore': Permission denied
+SKILL-PREFLIGHT: governance=7b227c49ef2ec044b702126cc41c9add847eed01
+SKILL-PREFLIGHT: checkout=12bd7f0fc2c87f2c9bdef3825bd92477e48e3433
+SKILL-PREFLIGHT: expected=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint
+SKILL-PREFLIGHT: checkout_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint
+SKILL-PREFLIGHT: working_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint
+SKILL-PREFLIGHT: runtime_skills=rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint
+SKILL-PREFLIGHT: required=rmq-proof-sprint
+SKILL-PREFLIGHT: required_mode=role-skills
+SKILL-PREFLIGHT: PASS

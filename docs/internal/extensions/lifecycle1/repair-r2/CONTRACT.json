@@ -1,0 +1,254 @@
+{
+  "base": "0485a64920a273d0830b926ee46275085222819d",
+  "prompt": {
+    "bytes": 42538,
+    "sha256": "18ae1f54dcb8036416ef1b6b7ab2922a816698d22da514a02511653b7ff82873"
+  },
+  "originalFrozenGit": {
+    "bytes": 46220,
+    "sha256": "ae991367ef537d61d5af0ef738aad3b7ee1693e22a1ed27469d83a3de65f6417"
+  },
+  "frozen": {
+    "bytes": 49039,
+    "sha256": "ad03e9572fff3c630bae7b80f2235d03302d2ab48fadfcc2c6e180c489b975c2"
+  },
+  "orderedIds": [
+    "L1-01",
+    "L1-02",
+    "L1-03",
+    "L1-04",
+    "L1-05",
+    "L1-06",
+    "L1-07",
+    "L1-08",
+    "L1-09",
+    "L1-10",
+    "L1-11",
+    "L1-12",
+    "L1-13",
+    "L1-14",
+    "L1-15",
+    "L1-16",
+    "L1-17",
+    "L1-18",
+    "L1-19",
+    "L1-20",
+    "INV-STORE-IDENTITY",
+    "INV-VALUE-DEPENDENCY",
+    "INV-SEMANTIC-NONVACUITY",
+    "INV-TRACE-EXECUTION",
+    "INV-STORE-AGREEMENT",
+    "INV-READ-BACKING",
+    "INV-WORD-WIDTH",
+    "INV-ADDRESS-WIDTH",
+    "INV-INSTRUCTION-ATOMICITY",
+    "INV-PROGRAM-ACCOUNTING",
+    "INV-ORACLE-INDEPENDENCE",
+    "INV-VALIDATION-REACH",
+    "INV-ALL-SIZE",
+    "INV-PROOF-SEPARATION",
+    "INV-NO-SYNTHETIC",
+    "INV-CATEGORY-SEPARATION",
+    "INV-PUBLIC-COMPOSITION",
+    "INV-CERTIFICATE-ANTI-BYPASS",
+    "INV-MUTATION-REPRODUCIBILITY",
+    "INV-GLOBAL-PHYSICAL-MACHINE",
+    "INV-WIDTH-SCALING",
+    "CHK-FINAL",
+    "CHK-SCOPE",
+    "L1R1-SELECTOR",
+    "L1R1-CLEANUP",
+    "L1R2-CONTRACT-BYTES",
+    "L1R2-HASH"
+  ],
+  "requirements": [
+    {
+      "id": "L1-01",
+      "requirement": "Implement one conservative lifecycle machine extending the existing construction primitives with scalar release operations and an explicit charged external request-admission/control-entry boundary. Old instructions retain their exact semantics and ordered run simulation. Release of numeric memory revokes one tail cell and lowers extent by one; any comparison-key retirement changes at most one key cell or one key register per charged primitive. Boundary transitions perform only their declared scalar state changes, appear in the trace and per-query bound, and retain no unbounded future-request tape. State explicitly and check zero/invalid release behavior and separate cost categories."
+    },
+    {
+      "id": "L1-02",
+      "requirement": "Produce fixed input-independent word-input and comparison-input programs, sharing the existing builder template and accepted compact query implementation through proved adapters. Runtime values, descriptors and endpoints must reside in accounted inputs/state or be computed by charged instructions. Do not specialize code to xs, its shape, n or a query."
+    },
+    {
+      "id": "L1-03",
+      "requirement": "Execute the existing builder BODY at its real nonzero program offset and continue running into finalization. Derive actual entry and exit PCs, relocation, code-field fit, complete intermediate-state identity and ordered trace concatenation; do not resume a halted standalone builder by a meta-level reset."
+    },
+    {
+      "id": "L1-04",
+      "requirement": "Transfer output base B by a charged instruction from the builder-produced output register with positional provenance to its reservation, then load n and M from the actual produced metadata at B and B+7. Derive the output extent/length and address facts, rather than assuming a stored B field that canonical metadata does not contain. Read or transfer the represented request through charged instructions before its cells can be overwritten or released. Prove dependence of the relevant register/value/route on its actual producing transition; an unrelated source cell with the same value must not satisfy output provenance."
+    },
+    {
+      "id": "L1-05",
+      "requirement": "Execute scalar forward overlapping copy from the actual produced [B,B+M) into [0,M), then exactly B single-cell numeric releases. Prove the resulting whole memory function equals canonical buildMemory lookup, extent equals M, and every address at or above M is absent. Preserve ordered producing load/store/release occurrences, values and multiplicity on the actual whole run."
+    },
+    {
+      "id": "L1-06",
+      "requirement": "Operationally retire all retained construction input and temporary resources before the succinct READY boundary. In the word-input route the input words lie in the same owned numeric arena; in the arbitrary-Int comparison route account for separate input-key cells and key registers and retire them by charged scalar execution. READY requires zero owned extents for these key banks, reflected by empty executable containers; pointwise zero/none lookups alone do not establish retirement. The production retained owner has no hidden input, old arena suffix or observation history. Native backing capacity and external aliases remain separately assigned native obligations, not conclusions of extensional Lean equality."
+    },
+    {
+      "id": "L1-07",
+      "requirement": "Derive charged query initialization and the actual jump to the compact query prefix from the produced finalizer state. Establish the exact query ABI and finite register support, with n derived from the produced metadata. A 400-register initial clearing profile may be used only after proving its incoming frame through every handoff; no admitted finalizer/query state or answer premise may remain in the completed public theorem."
+    },
+    {
+      "id": "L1-08",
+      "requirement": "Prove one continuous construction-finalization-first-query execution whose query suffix uses exactly the resulting counted canonical memory. Preserve the complete accepted compact-query transition simulation, ordered attempted read/reply list including failures and repetitions, positional producing states and instruction identity, and the exact half-open leftmost answer or represented-invalid rejection packet."
+    },
+    {
+      "id": "L1-09",
+      "requirement": "Provide a reusable query-entry protocol on the same READY allocation, including after a previous query has dirtied the query register bank. Model the external request boundary explicitly and charge its machine-state changes, finite-bank clearing and control entry. Prove the result, unchanged retained allocation, restored reusable interface and a uniform per-query bound. Do not infer repeated-query readiness from the builder-only 400-register frame or silently reset a halted state for free."
+    },
+    {
+      "id": "L1-10",
+      "requirement": "Prove all-size word-input lifecycle correctness under the existing InputFits predicate at one query-independent width, and a separately labeled all-List-Int comparison-input lifecycle theorem. Representable valid, empty, reversed and out-of-range endpoint pairs share a coherent domain. Keep out-of-word Nat admission and pre-supplied input materialization boundaries explicit; do not claim bounded arbitrary-Int input bits."
+    },
+    {
+      "id": "L1-11",
+      "requirement": "Prove a uniform logarithmic word profile bounding all numeric input words, intermediate words, returned words, actual/dead/sentinel addresses, PCs and dormant encoded operands throughout the same lifecycle. Discharge bounds for the actual programs and consumers; the experiment W=32+K satisfiability witness cannot substitute for width scaling."
+    },
+    {
+      "id": "L1-12",
+      "requirement": "Derive linear construction-plus-finalization work and a uniform constant query budget from actual transitions and successful completion. Fix constants and cost functions outside per-instance certificates, count setup/branches/copy/releases/retirement/entry and separate comparison-oracle costs. Merely bounding steps by an arbitrary fuel parameter is insufficient without a proved completed run within it."
+    },
+    {
+      "id": "L1-13",
+      "requirement": "Prove peak owned numeric allocation is O(n) words from the actual run, including supplied input, request cells and overlap; give a separate explicit bound for comparison-key input resources. Prove complete retained READY data/code/register/control/descriptor capacity is at most 2*n+rho(n) for one fixed checked LittleOLinear rho. All components must be the ones used by the lifecycle and reusable queries; temporary and retained bounds must not be conflated."
+    },
+    {
+      "id": "L1-14",
+      "requirement": "Preserve supplied-store determinism and value dependency through the combined interpreter. State the read/transition agreement relation with complete guards and quantifiers. Derive reads from execution, not a second replay; constrain answer or route projections where claimed rather than only inequality of an enclosing logged record."
+    },
+    {
+      "id": "L1-15",
+      "requirement": "Connect a finite-container executable lifecycle runner to the abstract execution, including stores, reservations, scalar releases, key-bank extents and charged request entry; prove final values, actual ordered observations and cost-category refinement. Separate the production retained owner from optional validation observations and prove its executable projection excludes histories and retired logical resources. Validation must execute this new layer on representative input/query shapes, not call a predecessor validator or rebuild canonical output as its implementation. Logical container size is not a native backing-capacity bound."
+    },
+    {
+      "id": "L1-16",
+      "requirement": "Expose a small coherent theorem interface at RMQ.Core.WordRAM.Lifecycle.Capstone with continuousConstructionQuery_holds and a separately checked exact-type consumer. The final theorem derives every advertised execution, correctness, resource and cost fact; no structure field accepts the final advertised answer/equality as a premise. Signature choices and uniform family constants are reviewed early but remain implementation obligations, not a weaker alternate endpoint."
+    },
+    {
+      "id": "L1-17",
+      "requirement": "Commit replayable projection-specific negative controls covering wrong output source, skipped initialization, stale retained tail, absent source word, omitted release, backward overlapping copy, key retention, wrong program entry, field overflow, and a second-query dirty-bank failure. For controls inherited from experiments, use the same positive relation or a proved bridge. New proposed controls are evidence-producing tests, not pre-certified failures; do not require an unreal counterexample to pass a gate."
+    },
+    {
+      "id": "L1-18",
+      "requirement": "Pin the public contract with an independent expected-type consumer and a meaningful dependency-mutation suite that rejects weakened or bypassed load-bearing conclusions. Any runner must have a frozen exact case registry, focused selector boundaries, exact failure classification, positive controls, owned subprocess deadlines/cleanup and restoration checks; mixed expected and unrelated diagnostics must reject."
+    },
+    {
+      "id": "L1-19",
+      "requirement": "Keep the implementation maintainable: reuse existing builder/layout/query and generic execution lemmas, give one owner to machine/READY interfaces, separate reusable scalar lemmas from RMQ specialization, and document a short worked lifecycle and proof-dependency route. Avoid broad machine unification, cloned successor APIs, giant closed-program reductions and a certificate enlarged solely to mirror this checklist."
+    },
+    {
+      "id": "L1-20",
+      "requirement": "Produce a clean committed candidate with complete frozen requirement evidence, exact type/axiom inventories, targeted executable/negative checks, default build, per-commit and range design certification, and accurate candidate documentation. This closes the mathematical/executable model implementation rung only; native allocator ownership, publication-wide synchronization, complete aggregate certification and fresh-blind acceptance remain separate mandatory campaign phases."
+    },
+    {
+      "id": "INV-STORE-IDENTITY",
+      "requirement": "the exact payload/store executed is the payload/store counted by the public space theorem; a theorem about a sibling payload is insufficient;"
+    },
+    {
+      "id": "INV-VALUE-DEPENDENCY",
+      "requirement": "returned values and routing decisions depend on actual charged reads, not a semantic answer computed before the reads. When the requirement concerns the returned answer or route, evidence must constrain that value, state, or route; inequality of an enclosing trace record can be satisfied by its log alone and is insufficient;"
+    },
+    {
+      "id": "INV-SEMANTIC-NONVACUITY",
+      "requirement": "semantic coverage, liveness, ownership, and refinement predicates are derived from the operational construction they describe. A predicate defined to be `True`, an enumeration restated as membership, or a separately hand-written consumer label does not establish operational liveness by itself;"
+    },
+    {
+      "id": "INV-TRACE-EXECUTION",
+      "requirement": "traces and footprints are derived from the execution they describe;"
+    },
+    {
+      "id": "INV-STORE-AGREEMENT",
+      "requirement": "supplied-store agreement determines result, cost, and the relevant trace;"
+    },
+    {
+      "id": "INV-READ-BACKING",
+      "requirement": "every successful read is backed positionally by the counted store;"
+    },
+    {
+      "id": "INV-WORD-WIDTH",
+      "requirement": "stored and returned words fit one declared modeled machine word;"
+    },
+    {
+      "id": "INV-ADDRESS-WIDTH",
+      "requirement": "every executed address, dead/sentinel address, and encoded instruction operand fits the modeled machine word, not merely the host array bounds. Constructor-exhaustive evidence must include register identifiers, branch/jump targets, dormant code, and arithmetic operands;"
+    },
+    {
+      "id": "INV-INSTRUCTION-ATOMICITY",
+      "requirement": "each modeled small step performs the familiar primitive operation it advertises. A constructor whose evaluator body hides recursion, a variable-length scan, repeated rank/select work, decoding, or several arithmetic categories is a macro-step unless that work is expanded into charged transitions or bounded by an explicitly accepted primitive;"
+    },
+    {
+      "id": "INV-PROGRAM-ACCOUNTING",
+      "requirement": "input-dependent constants and metadata carried by executable code are counted machine data or are derived uniformly from counted/public inputs. Calling shape-specialized data \"program code\" does not remove it from the payload/state accounting obligation;"
+    },
+    {
+      "id": "INV-ORACLE-INDEPENDENCE",
+      "requirement": "executable fixtures and edge-case expected values come from an independent specification or a theorem already connected to it, never from the implementation result being tested;"
+    },
+    {
+      "id": "INV-VALIDATION-REACH",
+      "requirement": "executable validation imports and runs the new semantic layer. A validator for the predecessor implementation is regression evidence only and does not validate the new machine;"
+    },
+    {
+      "id": "INV-ALL-SIZE",
+      "requirement": "exactness covers all assigned sizes and edge cases without hidden readiness or compatibility dispatch;"
+    },
+    {
+      "id": "INV-PROOF-SEPARATION",
+      "requirement": "proof-only fields never carry answers or uncharged routing information;"
+    },
+    {
+      "id": "INV-NO-SYNTHETIC",
+      "requirement": "synthetic events, decorative rereads, and post-hoc replay do not support the execution claim;"
+    },
+    {
+      "id": "INV-CATEGORY-SEPARATION",
+      "requirement": "payload bits, proof fields, model ticks, machine state, Lean runtime, and measured performance remain distinct."
+    },
+    {
+      "id": "INV-PUBLIC-COMPOSITION",
+      "requirement": "a theorem combining space, exactness, cost, provenance, or machine claims proves them about the same construction and execution and over the same validity domain. Conjoining true theorems about different payloads or guarded and unguarded executions is not closure."
+    },
+    {
+      "id": "INV-CERTIFICATE-ANTI-BYPASS",
+      "requirement": "every mandatory field advertised by a public certificate is projected by a checked typed consumer at the exact proposition and object arguments required by the acceptance contract. Deleting or weakening a field, or replacing it with a sibling fact, must break that consumer rather than leave only constructor initializers and prose unchanged."
+    },
+    {
+      "id": "INV-MUTATION-REPRODUCIBILITY",
+      "requirement": "when acceptance relies on an exhaustive, production, or public-dependency mutation campaign, the candidate contains a versioned runner or fixtures that replay every claimed case, check the exact expected failure/acceptance surface, restore tracked state, and leave the tree clean. Report prose, copied terminal output, and dangling Git objects are not replayable evidence. A public theorem additionally has a checked exact-type consumer that fails when the advertised dependency is removed; `#print axioms` over the theorem's current type is not such a consumer."
+    },
+    {
+      "id": "INV-GLOBAL-PHYSICAL-MACHINE",
+      "requirement": "a physical-machine claim supplies one pre-execution store/word array and a checked address translation for every executed segment, including failed/dead accesses. A theorem for one suffix or component is not a whole-machine embedding."
+    },
+    {
+      "id": "INV-WIDTH-SCALING",
+      "requirement": "one query-independent word-width declaration bounds all stored words, addresses, sentinels, operands, and primitive results, and its capacity/width is related to input size in the form required by the public word-RAM claim. A standalone asymptotic fact about an unconstrained width function is insufficient."
+    },
+    {
+      "id": "CHK-FINAL",
+      "requirement": "Run the final-required checks on the final submitted content, with exact identities, complete outcomes and declared platform limits."
+    },
+    {
+      "id": "CHK-SCOPE",
+      "requirement": "Keep the assigned write scope, clean committed tree, exact base, full frozen row integrity and truthful local-versus-campaign status."
+    },
+    {
+      "id": "L1R1-SELECTOR",
+      "requirement": "The actual production lifecycle validator preserves omitted selector versus explicit environment selector semantics under both current bundled pwsh 7.6.5/.NET 10.0.11 and documented Windows PowerShell 5.1/.NET Framework. Registry/startup, argument-selected and full invocations that mean omission must launch the child with no LIFE1_VALIDATE_SELECTOR key, including when the caller has an inherited selector value; an intentional environment selection must reach the same child as the exact id: value. Restore the caller's prior process-environment state on success and failure, without persistent environment changes. Distinguish absent, representable present-empty, explicit id: empty, whitespace, valid, unknown, malformed, duplicate-argument and duplicate-channel inputs at the real command/child boundary. Preserve exact Lean selector rejection, no-semantic-case startup, ordered 16-case registry, independent semantic assertions and strict stdout/stderr/exit checks. Do not implement omission by an empty string or by passing null through the inherited helper's string cast. Commit a frozen exact control registry and actual child-process controls against the production adapter, including inherited ambient environments and failure restoration; component calls alone do not close process reach. Reproduce the immutable old wrapper's current-runtime failure with its same pinned executable, retain the legitimate old Windows PowerShell positive, then pass complete production full16 validation under both runtimes on repaired source. Missing runtime, timeout, wrong selector cardinality or extra/unexpected diagnostics is uncovered/failure, never success."
+    },
+    {
+      "id": "L1R1-CLEANUP",
+      "requirement": "The actual lifecycle dependency replay finally checks original-byte integrity and attempts removal of its disposable shadow in independent guarded operations, so a failed original-integrity check cannot skip safe cleanup. Keep the original stage failure, integrity failure and cleanup failure distinguishable; any failure remains nonzero with no terminal PASS, restored=false when integrity failed, and truthful shadowRemoved status. Do not restore, overwrite or erase changed original/tracked files automatically. Preserve the exact safe resolved-descendant and shadow-basename checks, process ownership/deadlines, mutex release, ordered 26-case registry, producer-before-client acceptance, unchanged expected types and strict mixed-diagnostic rejection. Commit source-bound controls reaching the production finalizer under real bounded child execution for intact success, intact prior failure, prior failure plus changed captured fixture pin, apparent success plus changed pin, partial captured baselines and safe cleanup rejection/failure. Mutate only owned scratch pins and shadows; invalid cleanup paths must remain untouched, and all fixture restoration must occur in their own finally. The exact old integrity-failure component must keep failing and exhibit its old retained shadow; the repaired finalizer must retain failure while removing the valid owned shadow. A count/summary-only imitation or an unrelated in-memory replacement predicate is insufficient. Replay all 26 production dependency cases through the changed script on frozen repaired content, including all positive and expected-reject clients, with final source identity and cleanup receipts."
+    },
+    {
+      "id": "L1R2-CONTRACT-BYTES",
+      "requirement": "Reproduce the immutable R1 original-contract failure with the actual unchanged original checker and exact reviewed CRLF input bytes, plus a legitimate positive using all three exact-base Git blobs. The actual successor checkout must pass that same unchanged checker against the exact external original LIFE-1_PROMPT.md after disclosed byte materialization. Original requirements, matrix prefixes and Git blobs stay unchanged; new47-row verification compares all45 inherited rows byte-for-byte. Preserve historical failure/source receipts and distinguish initial checkout bytes from Git bytes and the new protected live baseline. No normalization-as-equality, hash update, parser weakening, silent old-manifest rewrite or unrelated restoration is allowed."
+    },
+    {
+      "id": "L1R2-HASH",
+      "requirement": "Production Hash-Bytes computes the same lowercase SHA256 of the exact supplied byte array under current pwsh7.6.5/.NET10 and Windows PowerShell5.1/.NET Framework using available disposable cryptographic APIs. Preserve original registry, file-hash, diagnostic and finalizer callers and verdicts. Independently compare portable hashes with the old modern implementation and independently computed fixed vectors including empty, binary, Unicode-encoded and differing-line-ending bytes; changed bytes remain detectably unequal. Real file-pin finalizer P/Q and actual dependency selector/registry boundaries in both shells must reach the repaired production function. Failed pin capture and empty baselines do not count as intact-pin positives. Preserve nonzero stage/integrity/cleanup failures, exact guarded shadow behavior, mutex/process cleanup and full current-pwsh26 replay. Retain old Windows HashData failure as a correctly rejected positive at the exact old source; do not relabel it as success or patch the harness instead of production."
+    }
+  ]
+}

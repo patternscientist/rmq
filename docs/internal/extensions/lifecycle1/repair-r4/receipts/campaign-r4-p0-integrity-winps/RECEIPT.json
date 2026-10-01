@@ -1,0 +1,85 @@
+{
+    "streamValidation":  {
+                             "profile":  "integrity",
+                             "expectedStderr":  "",
+                             "validated":  true,
+                             "expectedStdout":  "CONTROL PASS intact-success\r\nCONTROL PASS intact-stage-error\r\nCONTROL PASS malformed-stdout-intact\r\nCONTROL PASS stage-error-and-pin-change\r\nCONTROL PASS stage-error-and-capture-error\r\nCONTROL PASS success-and-pin-change\r\nCONTROL PASS mixed-diagnostic-and-pin-change\r\nCONTROL PASS timeout-and-pin-change\r\nCONTROL PASS success-and-tracked-change\r\nCONTROL PASS success-and-index-change\r\nCONTROL PASS success-and-untracked-addition\r\nCONTROL PASS success-and-untracked-byte-change\r\nCONTROL PASS success-and-link-map-change\r\nCONTROL PASS partial-identity-and-pin-change\r\nCONTROL PASS missing-baseline\r\nINTEGRITY CONTROLS evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\controls-9998b31f6ff64535aaaffd7ca1649cc7\r\n",
+                             "expectedExit":  0
+                         },
+    "deadline":  2400,
+    "actual":  {
+                   "pid":  29476,
+                   "exitCode":  0,
+                   "durationSeconds":  168.396409
+               },
+    "kind":  "integrity",
+    "command":  "$mutex=[Threading.Mutex]::new($false,\u0027Local\\RMQLifecycleImplementationHeavy20260920\u0027)\n$held=$false\ntry {\n  try{$held=$mutex.WaitOne(600000)}catch [Threading.AbandonedMutexException]{$held=$true}\n  if(-not $held){throw \u0027host mutex unavailable\u0027}\n  \u0026 \u0027C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1/integrity_controls.ps1\u0027; exit $LASTEXITCODE\n} finally {if($held){$mutex.ReleaseMutex()};$mutex.Dispose()}",
+    "raw":  [
+                {
+                    "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-integrity-winps\\stdout.log",
+                    "sha256":  "1CD1F7EAC917E080884C1E3E49464FD52E051545212ECCFE84A67FB6CBC7031D",
+                    "bytes":  757
+                },
+                {
+                    "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-integrity-winps\\stderr.log",
+                    "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+                    "bytes":  0
+                },
+                {
+                    "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-integrity-winps\\exit.json",
+                    "sha256":  "6B100F38B951070652837560C03DBA37482B7005ECFF86B986CB7996B707A48B",
+                    "bytes":  55
+                },
+                {
+                    "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-integrity-winps\\child.ps1",
+                    "sha256":  "B6A51F95BA02FEF6889D9FA20F51ABE324D58231D6EF49D66E0C4FF3B616BC00",
+                    "bytes":  3023
+                },
+                {
+                    "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-integrity-winps\\inner.ps1",
+                    "sha256":  "B9D7EAE60293B6C5B128405EF8345F2128D377F7905E75E5FD10141D9E5E8F0D",
+                    "bytes":  613
+                },
+                {
+                    "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-integrity-winps\\spec.json",
+                    "sha256":  "DF0246BEA3D1CD849F673D98B7DCF9D79CAA40BACFF8F42EBC583CE9F796BBE5",
+                    "bytes":  1497
+                },
+                {
+                    "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-integrity-winps\\launcher\\retained.stdout",
+                    "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+                    "bytes":  0
+                },
+                {
+                    "path":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-integrity-winps\\launcher\\retained.stderr",
+                    "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+                    "bytes":  0
+                }
+            ],
+    "outer":  {
+                  "Stage":  "integrity",
+                  "ExitCode":  0,
+                  "Output":  [
+
+                             ],
+                  "StandardOutput":  [
+
+                                     ],
+                  "StandardError":  [
+
+                                    ],
+                  "TimedOut":  false,
+                  "OutputLimitExceeded":  false,
+                  "TerminatedIds":  [
+
+                                    ],
+                  "DurationSeconds":  169.022,
+                  "DeadlineSeconds":  2400,
+                  "Ownership":  "kill-on-close-job",
+                  "RawStandardOutput":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-integrity-winps\\launcher\\retained.stdout",
+                  "RawStandardError":  "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\repair-r1\\r4-campaign-integrity-winps\\launcher\\retained.stderr",
+                  "RetentionErrors":  [
+
+                                      ]
+              }
+}

@@ -1,0 +1,1928 @@
+{
+  "version": 1,
+  "components": [
+    {
+      "path": "selector_cases.json",
+      "sha256": "407e9f8455aec21ef6ecad8098c0fd0febaf557d7be423eccaa0af32f08fbe3b"
+    },
+    {
+      "path": "dependency_boundary_cases.json",
+      "sha256": "d9e56dc40888cfdb937f0acbd9ec945846a5cac585c99341d21daa9b793d9ecf"
+    },
+    {
+      "path": "finalizer_cases.json",
+      "sha256": "1303ecf93c0a0c74e0a48023fe52258b7e847d020d009eb2f4deba7f084ab6df"
+    }
+  ],
+  "cases": [
+    {
+      "id": "S01_ABSENT_REGISTRY",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S01_ABSENT_REGISTRY",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [
+          "--registry"
+        ],
+        "selector": {
+          "present": false,
+          "value": null
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 0,
+          "mode": "registry",
+          "error": null
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S02_ABSENT_STARTUP",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S02_ABSENT_STARTUP",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [
+          "--startup"
+        ],
+        "selector": {
+          "present": false,
+          "value": null
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 0,
+          "mode": "startup",
+          "error": null
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S03_ARGUMENT_SINGLE",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S03_ARGUMENT_SINGLE",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [
+          "L01-W-EMPTY"
+        ],
+        "selector": {
+          "present": false,
+          "value": null
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 0,
+          "mode": "single",
+          "error": null
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S04_PRESENT_EMPTY_REGISTRY",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S04_PRESENT_EMPTY_REGISTRY",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [
+          "--registry"
+        ],
+        "selector": {
+          "present": true,
+          "value": ""
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "mode": "registry",
+          "error": "LIFE1-FAIL|duplicate-selector-channel"
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate.",
+        "legacyExpected": {
+          "exit": 0,
+          "mode": "registry",
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "S05_EXPLICIT_ID_EMPTY",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S05_EXPLICIT_ID_EMPTY",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [],
+        "selector": {
+          "present": true,
+          "value": "id:"
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "mode": "registry",
+          "error": "LIFE1-FAIL|empty-selector"
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S06_ENV_WHITESPACE",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S06_ENV_WHITESPACE",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [],
+        "selector": {
+          "present": true,
+          "value": "id: "
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "mode": "registry",
+          "error": "LIFE1-FAIL|whitespace-selector"
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S07_ENV_VALID",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S07_ENV_VALID",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [],
+        "selector": {
+          "present": true,
+          "value": "id:L01-W-EMPTY"
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 0,
+          "mode": "single",
+          "error": null
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S08_ENV_UNKNOWN",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S08_ENV_UNKNOWN",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [],
+        "selector": {
+          "present": true,
+          "value": "id:UNKNOWN"
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "mode": "registry",
+          "error": "LIFE1-FAIL|unknown-selector"
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S09_ENV_MALFORMED",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S09_ENV_MALFORMED",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [],
+        "selector": {
+          "present": true,
+          "value": "L01-W-EMPTY"
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "mode": "registry",
+          "error": "LIFE1-FAIL|selector-environment-prefix"
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S10_ARGUMENT_UNKNOWN",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S10_ARGUMENT_UNKNOWN",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [
+          "UNKNOWN"
+        ],
+        "selector": {
+          "present": false,
+          "value": null
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "mode": "registry",
+          "error": "LIFE1-FAIL|unknown-selector"
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S11_DUPLICATE_ARGUMENT",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S11_DUPLICATE_ARGUMENT",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [
+          "L01-W-EMPTY",
+          "L01-W-EMPTY"
+        ],
+        "selector": {
+          "present": false,
+          "value": null
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "mode": "registry",
+          "error": "LIFE1-FAIL|duplicate-selector"
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S12_DUPLICATE_CHANNEL",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S12_DUPLICATE_CHANNEL",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [
+          "L01-W-EMPTY"
+        ],
+        "selector": {
+          "present": true,
+          "value": "id:L01-W-EMPTY"
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "mode": "registry",
+          "error": "LIFE1-FAIL|duplicate-selector-channel"
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S13_AMBIENT_VALID_OMITTED",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S13_AMBIENT_VALID_OMITTED",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [
+          "--registry"
+        ],
+        "selector": {
+          "present": false,
+          "value": null
+        },
+        "ambient": {
+          "present": true,
+          "value": "id:L01-W-EMPTY"
+        },
+        "expected": {
+          "exit": 0,
+          "mode": "registry",
+          "error": null
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S14_AMBIENT_MALFORMED_OMITTED",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S14_AMBIENT_MALFORMED_OMITTED",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [
+          "--startup"
+        ],
+        "selector": {
+          "present": false,
+          "value": null
+        },
+        "ambient": {
+          "present": true,
+          "value": "malformed"
+        },
+        "expected": {
+          "exit": 0,
+          "mode": "startup",
+          "error": null
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S15_AMBIENT_EMPTY_OMITTED",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S15_AMBIENT_EMPTY_OMITTED",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [
+          "--registry"
+        ],
+        "selector": {
+          "present": false,
+          "value": null
+        },
+        "ambient": {
+          "present": true,
+          "value": ""
+        },
+        "expected": {
+          "exit": 0,
+          "mode": "registry",
+          "error": null
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S16_AMBIENT_ID_EMPTY_ARGUMENT",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S16_AMBIENT_ID_EMPTY_ARGUMENT",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [
+          "L01-W-EMPTY"
+        ],
+        "selector": {
+          "present": false,
+          "value": null
+        },
+        "ambient": {
+          "present": true,
+          "value": "id:"
+        },
+        "expected": {
+          "exit": 0,
+          "mode": "single",
+          "error": null
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S17_AMBIENT_REPLACED_ENV",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S17_AMBIENT_REPLACED_ENV",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [],
+        "selector": {
+          "present": true,
+          "value": "id:L01-W-EMPTY"
+        },
+        "ambient": {
+          "present": true,
+          "value": "id:UNKNOWN"
+        },
+        "expected": {
+          "exit": 0,
+          "mode": "single",
+          "error": null
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S18_FAILURE_RESTORES_AMBIENT",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S18_FAILURE_RESTORES_AMBIENT",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [],
+        "selector": {
+          "present": true,
+          "value": "id:"
+        },
+        "ambient": {
+          "present": true,
+          "value": "id:L01-W-EMPTY"
+        },
+        "expected": {
+          "exit": 1,
+          "mode": "registry",
+          "error": "LIFE1-FAIL|empty-selector"
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S19_FAILURE_RESTORES_EMPTY",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S19_FAILURE_RESTORES_EMPTY",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [],
+        "selector": {
+          "present": true,
+          "value": "id: "
+        },
+        "ambient": {
+          "present": true,
+          "value": ""
+        },
+        "expected": {
+          "exit": 1,
+          "mode": "registry",
+          "error": "LIFE1-FAIL|whitespace-selector"
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S20_FAILURE_RESTORES_ABSENCE",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S20_FAILURE_RESTORES_ABSENCE",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [],
+        "selector": {
+          "present": true,
+          "value": "bad-prefix"
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "mode": "registry",
+          "error": "LIFE1-FAIL|selector-environment-prefix"
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S21_ARGUMENT_WHITESPACE",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S21_ARGUMENT_WHITESPACE",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [
+          " "
+        ],
+        "selector": {
+          "present": false,
+          "value": null
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "mode": "registry",
+          "error": "LIFE1-FAIL|whitespace-selector"
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S22_ENV_LEADING_SPACE",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S22_ENV_LEADING_SPACE",
+        "kind": "native",
+        "production": "Invoke-LifecycleValidatorProcess -> Invoke-RMQOwnedBoundedProcess -> rmq_lifecycle_validate.mainImpl/select",
+        "arguments": [],
+        "selector": {
+          "present": true,
+          "value": "id: L01-W-EMPTY"
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "mode": "registry",
+          "error": "LIFE1-FAIL|whitespace-selector"
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "S23_LAUNCH_FAILURE",
+      "kind": "native",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "S23_LAUNCH_FAILURE",
+        "kind": "native",
+        "production": "Production adapter -> unchanged owned helper -> owned shell child exit7; exact empty streams and restored ambient after failure.",
+        "arguments": [],
+        "selector": {
+          "present": false,
+          "value": null
+        },
+        "ambient": {
+          "present": true,
+          "value": "id:L01-W-EMPTY"
+        },
+        "expected": {
+          "exit": 7,
+          "mode": "child-exit-failure",
+          "error": null
+        },
+        "predicate": "Exact native exit/returned stdout/stderr/order plus identical caller process key presence/value after the actual child.",
+        "challenge": "Change selector channel/value/ambient while retaining the same executable, adapter, helper and bounded process predicate."
+      }
+    },
+    {
+      "id": "W01_STARTUP_AMBIENT",
+      "kind": "wrapper",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "W01_STARTUP_AMBIENT",
+        "kind": "wrapper",
+        "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+        "parameters": {
+          "Stage": "startup"
+        },
+        "ambient": {
+          "present": true,
+          "value": "id:UNKNOWN"
+        },
+        "expected": {
+          "exit": 0,
+          "error": null,
+          "pattern": "^LIFE1-VALIDATOR PASS stage=startup processes=2 logs="
+        },
+        "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+        "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+      }
+    },
+    {
+      "id": "W02_SINGLE_AMBIENT",
+      "kind": "wrapper",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "W02_SINGLE_AMBIENT",
+        "kind": "wrapper",
+        "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+        "parameters": {
+          "Stage": "single",
+          "Case": "L01-W-EMPTY"
+        },
+        "ambient": {
+          "present": true,
+          "value": "id:"
+        },
+        "expected": {
+          "exit": 0,
+          "error": null,
+          "pattern": "^LIFE1-VALIDATOR PASS stage=single processes=3 logs="
+        },
+        "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+        "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+      }
+    },
+    {
+      "id": "W03_BOUND_EMPTY",
+      "kind": "wrapper",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "W03_BOUND_EMPTY",
+        "kind": "wrapper",
+        "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+        "parameters": {
+          "Stage": "single",
+          "Case": ""
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "error": "Empty or whitespace Case selector",
+          "pattern": null
+        },
+        "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+        "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+      }
+    },
+    {
+      "id": "W04_BOUND_SPACE",
+      "kind": "wrapper",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "W04_BOUND_SPACE",
+        "kind": "wrapper",
+        "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+        "parameters": {
+          "Stage": "single",
+          "Case": " "
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "error": "Empty or whitespace Case selector",
+          "pattern": null
+        },
+        "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+        "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+      }
+    },
+    {
+      "id": "W05_UNKNOWN",
+      "kind": "wrapper",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "W05_UNKNOWN",
+        "kind": "wrapper",
+        "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+        "parameters": {
+          "Stage": "single",
+          "Case": "UNKNOWN"
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "error": "Unknown exact Case selector",
+          "pattern": null
+        },
+        "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+        "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+      }
+    },
+    {
+      "id": "W06_MISSING",
+      "kind": "wrapper",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "W06_MISSING",
+        "kind": "wrapper",
+        "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+        "parameters": {
+          "Stage": "single"
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "error": "Missing exact Case selector",
+          "pattern": null
+        },
+        "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+        "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+      }
+    },
+    {
+      "id": "W07_WRONG_STAGE",
+      "kind": "wrapper",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "W07_WRONG_STAGE",
+        "kind": "wrapper",
+        "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+        "parameters": {
+          "Stage": "startup",
+          "Case": "L01-W-EMPTY"
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "error": "Case selector requires Stage single",
+          "pattern": null
+        },
+        "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+        "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+      }
+    },
+    {
+      "id": "W08_FULL_BOUND_EMPTY",
+      "kind": "wrapper",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "W08_FULL_BOUND_EMPTY",
+        "kind": "wrapper",
+        "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+        "parameters": {
+          "Stage": "full",
+          "Case": ""
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "error": "Case selector requires Stage single",
+          "pattern": null
+        },
+        "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+        "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+      }
+    },
+    {
+      "id": "W09_DUPLICATE_CASE",
+      "kind": "wrapper",
+      "handler": "selector_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "W09_DUPLICATE_CASE",
+        "kind": "wrapper",
+        "production": "actual scripts/lifecycle_validator.ps1 Stage/Case -> production adapter -> actual native child",
+        "parameters": {
+          "Stage": "single",
+          "Case": "L01-W-EMPTY"
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "expected": {
+          "exit": 1,
+          "error": "PARAMETER_ALREADY_BOUND",
+          "pattern": null
+        },
+        "predicate": "Actual script parameter binding, exact expected error or terminal success, caller environment restored.",
+        "challenge": "Bound-empty, whitespace, unknown, missing, duplicate or incompatible Case is rejected before any semantic fixture; legitimate script selectors reach real children."
+      }
+    },
+    {
+      "id": "D01_OMITTED",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D01_OMITTED",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 0,
+          "error": null,
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D02_ARGUMENT_VALID",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D02_ARGUMENT_VALID",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true,
+          "OnlyCase": "D01_CONSTRUCTION"
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 0,
+          "error": null,
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D03_BOUND_EMPTY",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D03_BOUND_EMPTY",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true,
+          "OnlyCase": ""
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-SELECTOR: explicitly empty selector",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D04_BOUND_WHITESPACE",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D04_BOUND_WHITESPACE",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true,
+          "OnlyCase": " "
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-SELECTOR: explicitly empty selector",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D05_ARGUMENT_UNKNOWN",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D05_ARGUMENT_UNKNOWN",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true,
+          "OnlyCase": "D99_UNKNOWN"
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-SELECTOR: unknown selector",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D06_ARGUMENT_MALFORMED",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D06_ARGUMENT_MALFORMED",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true,
+          "OnlyCase": "wrong"
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-SELECTOR: malformed selector",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D07_ENV_VALID",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D07_ENV_VALID",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true
+        },
+        "ambient": {
+          "present": true,
+          "value": "id:D01_CONSTRUCTION"
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 0,
+          "error": null,
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D08_ENV_EMPTY_ID",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D08_ENV_EMPTY_ID",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true
+        },
+        "ambient": {
+          "present": true,
+          "value": "id:"
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-SELECTOR: explicitly empty selector",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D09_ENV_WHITESPACE",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D09_ENV_WHITESPACE",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true
+        },
+        "ambient": {
+          "present": true,
+          "value": "id: "
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-SELECTOR: explicitly empty selector",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D10_ENV_MALFORMED",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D10_ENV_MALFORMED",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true
+        },
+        "ambient": {
+          "present": true,
+          "value": "D01_CONSTRUCTION"
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-SELECTOR: environment requires id: prefix",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D11_DUPLICATE_CHANNEL",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D11_DUPLICATE_CHANNEL",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true,
+          "OnlyCase": "D01_CONSTRUCTION"
+        },
+        "ambient": {
+          "present": true,
+          "value": "id:D01_CONSTRUCTION"
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-SELECTOR: duplicate parameter/environment channels",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D12_DUPLICATE_ARGUMENT",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D12_DUPLICATE_ARGUMENT",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 1,
+          "error": "PARAMETER_ALREADY_BOUND",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D13_PRESENT_EMPTY",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D13_PRESENT_EMPTY",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true
+        },
+        "ambient": {
+          "present": true,
+          "value": ""
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-SELECTOR: environment requires id: prefix",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy.",
+        "legacyExpected": {
+          "exit": 0,
+          "error": null,
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        }
+      }
+    },
+    {
+      "id": "D14_PROBE_SELFTEST",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D14_PROBE_SELFTEST",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true,
+          "SelfTestOnly": true
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-SELECTOR: incompatible modes",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D15_PROBE_STARTUP",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D15_PROBE_STARTUP",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true,
+          "StartupOnly": true
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-SELECTOR: incompatible modes",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D16_STARTUP_SELFTEST",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D16_STARTUP_SELFTEST",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "StartupOnly": true,
+          "SelfTestOnly": true
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-SELECTOR: incompatible modes",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D17_STARTUP_SELECTED",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D17_STARTUP_SELECTED",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "StartupOnly": true,
+          "OnlyCase": "D01_CONSTRUCTION"
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-SELECTOR: incompatible modes",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D18_SELFTEST_SELECTED",
+      "kind": "dependency",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D18_SELFTEST_SELECTED",
+        "kind": "dependency",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelfTestOnly": true,
+          "OnlyCase": "D01_CONSTRUCTION"
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "mutation": null,
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-SELECTOR: incompatible modes",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D19_REGISTRY_MISSING_MIDDLE",
+      "kind": "dependency-registry",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D19_REGISTRY_MISSING_MIDDLE",
+        "kind": "dependency-registry",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "mutation": "missing-middle",
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-REGISTRY: exact nonempty case count required",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D20_REGISTRY_DUPLICATE_MIDDLE",
+      "kind": "dependency-registry",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D20_REGISTRY_DUPLICATE_MIDDLE",
+        "kind": "dependency-registry",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "mutation": "duplicate-middle",
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-REGISTRY: missing, duplicate, unknown or reordered ID",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D21_REGISTRY_UNKNOWN_MIDDLE",
+      "kind": "dependency-registry",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D21_REGISTRY_UNKNOWN_MIDDLE",
+        "kind": "dependency-registry",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "mutation": "unknown-middle",
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-REGISTRY: missing, duplicate, unknown or reordered ID",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "D22_REGISTRY_UNUSED_EDIT",
+      "kind": "dependency-registry",
+      "handler": "dependency_child.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "D22_REGISTRY_UNUSED_EDIT",
+        "kind": "dependency-registry",
+        "production": "Exact production lifecycle_dependency_replay.ps1 parameter binding / Select-Cases / Assert-Registry / mode guards before compiler work.",
+        "parameters": {
+          "SelectorProbeOnly": true
+        },
+        "ambient": {
+          "present": false,
+          "value": null
+        },
+        "mutation": "unused-edit",
+        "expected": {
+          "exit": 1,
+          "error": "LIFE1-REGISTRY: frozen normalized-byte SHA256 mismatch",
+          "output": "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION,D02_RETAINED,D03_SAFETY,D04_PHYSICAL,D05_EXECUTABLE,D06_REUSABLE,D07_UNIFORM,D08_DELETE_PHYSICAL,D09_SIBLING_PHYSICAL,D10_PUBLIC_TRUE,D11_WORD_TRUE,D12_COMPARISON_TRUE,D13_ALIAS_PHYSICAL,D14_RETAINED_COST,D15_CODE_FETCH_DROP,D16_PREFIX_RESOURCES,D17_READY_BANK,D18_STORE_TRUE,D19_ACCEPT_COMMENT,D20_ACCEPT_IDENTITY,P01_OUTPUT,P02_METADATA,P03_COPY,P04_RELEASES,P05_PUBLIC_TRUE,P06_ACCEPT_IDENTITY"
+        },
+        "predicate": "Actual script invocation; exact exit, Console stderr, output cardinality/ordered selected IDs and unchanged original source.",
+        "challenge": "Challenge real parameter/environment/registry/mode boundary, with exact script bytes; registry mutations affect only an owned scratch copy."
+      }
+    },
+    {
+      "id": "F00_OLD_CHANGED_PIN",
+      "kind": "finalizer",
+      "handler": "finalizer_control.ps1",
+      "profiles": [
+        "pwsh"
+      ],
+      "spec": {
+        "id": "F00_OLD_CHANGED_PIN",
+        "sourceVariant": "old",
+        "mode": "stage-and-pin",
+        "expectedExit": 1,
+        "stageFailure": true,
+        "integrityFailure": true,
+        "cleanupFailure": false,
+        "shadowRemoved": false,
+        "baselineCount": 2,
+        "minimumShellMajor": 7,
+        "challenge": "Historical coupled finalizer retains valid shadow after changed captured pin; exact base production functions and blocks"
+      }
+    },
+    {
+      "id": "F01_INTACT_SUCCESS",
+      "kind": "finalizer",
+      "handler": "finalizer_control.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "F01_INTACT_SUCCESS",
+        "sourceVariant": "repaired",
+        "mode": "success",
+        "expectedExit": 0,
+        "stageFailure": false,
+        "integrityFailure": false,
+        "cleanupFailure": false,
+        "shadowRemoved": true,
+        "baselineCount": 2,
+        "minimumShellMajor": 5,
+        "challenge": "Legitimate successful finalizer with two captured pins and actual held private mutex"
+      }
+    },
+    {
+      "id": "F02_STAGE_FAILURE",
+      "kind": "finalizer",
+      "handler": "finalizer_control.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "F02_STAGE_FAILURE",
+        "sourceVariant": "repaired",
+        "mode": "stage",
+        "expectedExit": 1,
+        "stageFailure": true,
+        "integrityFailure": false,
+        "cleanupFailure": false,
+        "shadowRemoved": true,
+        "baselineCount": 2,
+        "minimumShellMajor": 5,
+        "challenge": "Prior stage failure remains failure even when integrity and cleanup succeed"
+      }
+    },
+    {
+      "id": "F03_STAGE_AND_PIN_FAILURE",
+      "kind": "finalizer",
+      "handler": "finalizer_control.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "F03_STAGE_AND_PIN_FAILURE",
+        "sourceVariant": "repaired",
+        "mode": "stage-and-pin",
+        "expectedExit": 1,
+        "stageFailure": true,
+        "integrityFailure": true,
+        "cleanupFailure": false,
+        "shadowRemoved": true,
+        "baselineCount": 2,
+        "minimumShellMajor": 5,
+        "challenge": "Prior stage error and changed captured pin remain separately visible; safe shadow cleanup still runs"
+      }
+    },
+    {
+      "id": "F04_SUCCESS_AND_PIN_FAILURE",
+      "kind": "finalizer",
+      "handler": "finalizer_control.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "F04_SUCCESS_AND_PIN_FAILURE",
+        "sourceVariant": "repaired",
+        "mode": "success-and-pin",
+        "expectedExit": 1,
+        "stageFailure": false,
+        "integrityFailure": true,
+        "cleanupFailure": false,
+        "shadowRemoved": true,
+        "baselineCount": 2,
+        "minimumShellMajor": 5,
+        "challenge": "Apparent stage success cannot override changed captured pin; cleanup remains independent"
+      }
+    },
+    {
+      "id": "F05_PARTIAL_CAPTURE_FAILURE",
+      "kind": "finalizer",
+      "handler": "finalizer_control.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "F05_PARTIAL_CAPTURE_FAILURE",
+        "sourceVariant": "repaired",
+        "mode": "partial",
+        "expectedExit": 1,
+        "stageFailure": true,
+        "integrityFailure": false,
+        "cleanupFailure": false,
+        "shadowRemoved": true,
+        "baselineCount": 1,
+        "minimumShellMajor": 5,
+        "challenge": "Capture-stage failure with intact captured subset; restored pertains only to that subset"
+      }
+    },
+    {
+      "id": "F06_PARTIAL_CAPTURE_CHANGED",
+      "kind": "finalizer",
+      "handler": "finalizer_control.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "F06_PARTIAL_CAPTURE_CHANGED",
+        "sourceVariant": "repaired",
+        "mode": "partial-and-pin",
+        "expectedExit": 1,
+        "stageFailure": true,
+        "integrityFailure": true,
+        "cleanupFailure": false,
+        "shadowRemoved": true,
+        "baselineCount": 1,
+        "minimumShellMajor": 5,
+        "challenge": "Capture-stage failure with changed captured subset; subset integrity rejects and cleanup runs"
+      }
+    },
+    {
+      "id": "F07_EMPTY_BASELINE",
+      "kind": "finalizer",
+      "handler": "finalizer_control.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "F07_EMPTY_BASELINE",
+        "sourceVariant": "repaired",
+        "mode": "empty",
+        "expectedExit": 0,
+        "stageFailure": false,
+        "integrityFailure": false,
+        "cleanupFailure": false,
+        "shadowRemoved": true,
+        "baselineCount": 0,
+        "minimumShellMajor": 5,
+        "challenge": "Scoped positive for empty captured baseline; explicitly no whole-tree integrity inference"
+      }
+    },
+    {
+      "id": "F08_OUTSIDE_EVIDENCE",
+      "kind": "finalizer",
+      "handler": "finalizer_control.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "F08_OUTSIDE_EVIDENCE",
+        "sourceVariant": "repaired",
+        "mode": "outside",
+        "expectedExit": 1,
+        "stageFailure": false,
+        "integrityFailure": false,
+        "cleanupFailure": true,
+        "shadowRemoved": false,
+        "baselineCount": 2,
+        "minimumShellMajor": 5,
+        "challenge": "Owned scratch shadow outside production evidence root is rejected before removal and sentinel bytes stay intact"
+      }
+    },
+    {
+      "id": "F09_WRONG_BASENAME",
+      "kind": "finalizer",
+      "handler": "finalizer_control.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "F09_WRONG_BASENAME",
+        "sourceVariant": "repaired",
+        "mode": "basename",
+        "expectedExit": 1,
+        "stageFailure": false,
+        "integrityFailure": false,
+        "cleanupFailure": true,
+        "shadowRemoved": false,
+        "baselineCount": 2,
+        "minimumShellMajor": 5,
+        "challenge": "Owned scratch directory beneath evidence with non-shadow basename is rejected before removal and sentinel bytes stay intact"
+      }
+    },
+    {
+      "id": "F10_LOCKED_CLEANUP",
+      "kind": "finalizer",
+      "handler": "finalizer_control.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "F10_LOCKED_CLEANUP",
+        "sourceVariant": "repaired",
+        "mode": "locked",
+        "expectedExit": 1,
+        "stageFailure": false,
+        "integrityFailure": false,
+        "cleanupFailure": true,
+        "shadowRemoved": false,
+        "baselineCount": 2,
+        "minimumShellMajor": 5,
+        "challenge": "Actual Remove-Item failure from exclusive live FileStream leaves nonzero verdict, intact pin, and truthful retained shadow"
+      }
+    },
+    {
+      "id": "F11_PIN_AND_LOCKED_CLEANUP",
+      "kind": "finalizer",
+      "handler": "finalizer_control.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "id": "F11_PIN_AND_LOCKED_CLEANUP",
+        "sourceVariant": "repaired",
+        "mode": "pin-and-locked",
+        "expectedExit": 1,
+        "stageFailure": false,
+        "integrityFailure": true,
+        "cleanupFailure": true,
+        "shadowRemoved": false,
+        "baselineCount": 2,
+        "minimumShellMajor": 5,
+        "challenge": "Changed captured pin plus actual exclusive-lock removal failure preserves independent integrity and cleanup diagnostics"
+      }
+    },
+    {
+      "id": "T01_DESCENDANT_TIMEOUT",
+      "kind": "deadline",
+      "handler": "deadline_control.ps1",
+      "profiles": [
+        "pwsh",
+        "winps"
+      ],
+      "spec": {
+        "predicate": "Real owned root plus descendant timeout at6s, all observed PIDs absent; production adapter restores ambient selector.",
+        "production": "Invoke-LifecycleValidatorProcess -> unchanged Invoke-RMQOwnedBoundedProcess -> actual shell sleeper and descendant"
+      }
+    }
+  ]
+}

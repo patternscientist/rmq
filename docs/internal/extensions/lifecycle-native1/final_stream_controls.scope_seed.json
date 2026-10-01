@@ -1,0 +1,18 @@
+{
+  "schema": "lifecycle-native1-final-stream-scope-seed-v1",
+  "boundary": "A reduced helper-control receipt preserves this actual historical changed-file record. Replay relocates it into an owned temporary repository containing a copy of the current file; it does not run or certify the production scope checker.",
+  "origin": {
+    "receipt": ".lake/lifecycle-native1/scope/20260923T082034341/RESULT.json",
+    "sha256": "f77d57310120bcfe9b36961b2a110ded3ebfb3ee72773fe32399a74e86b59a3a",
+    "selectedRecord": "changes[path=docs/internal/DESIGN_DECISIONS.md]"
+  },
+  "base": "3dbdebedcc6ba6b2a864df0d46dcc09ccaaa7536",
+  "head": "3dbdebedcc6ba6b2a864df0d46dcc09ccaaa7536",
+  "branch": "codex/life-native-1-consuming-owner",
+  "checkedBaseFiles": 3844,
+  "change": {
+    "path": "docs/internal/DESIGN_DECISIONS.md",
+    "bytes": 841027,
+    "sha256": "bfdced40d152c4ca58b0800dcf70ed672330c86b920637846503b17b82fa796e"
+  }
+}

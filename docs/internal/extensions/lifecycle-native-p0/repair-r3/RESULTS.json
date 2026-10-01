@@ -1,0 +1,250 @@
+{
+  "status": "SOURCE_EVIDENCE_COMPLETE",
+  "base": "9519b2c1af5e2cf59536b311db5e8dc81376a32f",
+  "sourceCommit": "6bcd1fc50020482ab441723a1964eec0232d223f",
+  "worktree": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ",
+  "controls": 37,
+  "groups": [
+    {
+      "launch": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\source-tiny-success\\LAUNCH.json",
+        "bytes": 5696,
+        "sha256": "E071D623BDF29FDA98A63C0A3FDF2929D97586EF07FF613548FDC7802B9596D2"
+      },
+      "results": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\source-tiny-success\\controls\\RESULTS.json",
+        "bytes": 53796,
+        "sha256": "D75E0A6889A0B6C077A86EABE965285DD01CEB9613FB1CD90B4445554BF10DE6"
+      },
+      "selected": [
+        "literal-success-exact",
+        "literal-success-bom-stdout",
+        "literal-success-bom-stderr",
+        "literal-success-nul-stdout",
+        "literal-success-nul-stderr",
+        "literal-success-shy-stdout",
+        "literal-success-shy-stderr",
+        "literal-success-ascii-stdout",
+        "literal-success-ascii-stderr"
+      ],
+      "actual": {
+        "pid": 30884,
+        "exitCode": 0,
+        "durationSeconds": 44.5340132
+      },
+      "launcherExit": 0
+    },
+    {
+      "launch": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\source-tiny-error\\LAUNCH.json",
+        "bytes": 5622,
+        "sha256": "9BF265EFE0806657446BED269333BEAA0DAC8C3F1FCECDA9D5B06B4FB4988B35"
+      },
+      "results": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\source-tiny-error\\controls\\RESULTS.json",
+        "bytes": 53087,
+        "sha256": "7FCEB6DBB40F7576DDF8C6824B84D2385EEAC27858945100202E0FE87D586A56"
+      },
+      "selected": [
+        "literal-error-exact",
+        "literal-error-bom-stdout",
+        "literal-error-bom-stderr",
+        "literal-error-nul-stdout",
+        "literal-error-nul-stderr",
+        "literal-error-shy-stdout",
+        "literal-error-shy-stderr",
+        "literal-error-ascii-stdout",
+        "literal-error-ascii-stderr"
+      ],
+      "actual": {
+        "pid": 24700,
+        "exitCode": 0,
+        "durationSeconds": 108.0620985
+      },
+      "launcherExit": 0
+    },
+    {
+      "launch": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\source-tiny-holdouts-selectors\\LAUNCH.json",
+        "bytes": 6348,
+        "sha256": "CBFC83F25A7DF0F52D0A023BBC590FA2B6B4738BEDF4DE917B6579A7F0DC9278"
+      },
+      "results": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\source-tiny-holdouts-selectors\\controls\\RESULTS.json",
+        "bytes": 100723,
+        "sha256": "7AD29972239280B7D1C5A78DFBB6909118D6FA4F59A2B35B33340E536372B278"
+      },
+      "selected": [
+        "holdout-lf-crlf",
+        "holdout-normalization",
+        "holdout-zero-width",
+        "holdout-nonbreaking-space",
+        "holdout-invalid-utf8",
+        "holdout-overlong-utf8",
+        "holdout-literal-codepoints",
+        "selector-null",
+        "selector-empty-array",
+        "selector-empty-string",
+        "selector-whitespace",
+        "selector-unknown",
+        "selector-duplicate",
+        "selector-late-empty",
+        "selector-late-unknown",
+        "selector-unknown-bom",
+        "selector-unknown-nul"
+      ],
+      "actual": {
+        "pid": 27496,
+        "exitCode": 0,
+        "durationSeconds": 71.6867527
+      },
+      "launcherExit": 0
+    },
+    {
+      "launch": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\source-focused\\LAUNCH.json",
+        "bytes": 4937,
+        "sha256": "E8EEFAB4F1CC953CD95679543DEDF272214A8015CFD05F066441131B73927998"
+      },
+      "results": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\source-focused\\controls\\RESULTS.json",
+        "bytes": 9368,
+        "sha256": "BF514EAE811963A25383557608CB627A6E80FCC2CF766BE385D5BAD8EDAEE9E3"
+      },
+      "selected": [
+        "selector-focused"
+      ],
+      "actual": {
+        "pid": 25052,
+        "exitCode": 0,
+        "durationSeconds": 54.4175713
+      },
+      "launcherExit": 0
+    },
+    {
+      "launch": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\source-integrity\\LAUNCH.json",
+        "bytes": 4990,
+        "sha256": "5EAB4B90B2DAA02E5250288390AFC7433AEC3D5AB278963A7D37DDCB543F99BC"
+      },
+      "results": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\source-integrity\\controls\\RESULTS.json",
+        "bytes": 8598,
+        "sha256": "1ADB67CC95D96D462A3C1934C6E6E55D2D404EE613823C552349B09D5F921C50"
+      },
+      "selected": [
+        "integrity-caller-pair"
+      ],
+      "actual": {
+        "pid": 31016,
+        "exitCode": 0,
+        "durationSeconds": 81.9114243
+      },
+      "launcherExit": 0
+    }
+  ],
+  "registry": {
+    "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r3\\CONTROL_REGISTRY.json",
+    "bytes": 14326,
+    "sha256": "16E26C5B131BBE258B3813BCDB252414E8BED454EF6286EB2ED7F7EF3496261D"
+  },
+  "sourceContract": {
+    "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\SOURCE_CONTRACT.json",
+    "bytes": 479159,
+    "sha256": "CAA7444A0A6121E2A19F24DEA2805B7EC887DBD34BDCF89032E292771DD709D7"
+  },
+  "sourceContractCapture": {
+    "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\source-contract-capture\\CAPTURE.json",
+    "bytes": 3843,
+    "sha256": "EBAAE6FBDBD19A9AF3ABD9154F73EF393C6D62FC4A84F7CD6507534B210A9D15"
+  },
+  "retained": {
+    "cases": 40,
+    "registry": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r3\\retained_registry.json",
+      "bytes": 3340,
+      "sha256": "521BFA0CD6DEE84383AB41F8B7D6CC0F226EEFABFC96113EF5EBE835A48A20EB"
+    },
+    "results": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\source-retained\\RESULTS.json",
+      "bytes": 461957,
+      "sha256": "41487CC705A7E67CAFD7885EEC2DD387DCCA6F501EED7830325A4E6EC6DC261D"
+    },
+    "correctedSameCaptureValidation": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\source-retained-outer\\REVALIDATED_LAUNCH.json",
+      "bytes": 5983,
+      "sha256": "EA7E781829E2331359729C4CA277D9129163BAF4119586626A223E286FD7F428"
+    }
+  },
+  "excludedFailedAttempts": [
+    {
+      "reason": "300-second timeout; partial controls not credited; no actual ordinary enclosing-child exit",
+      "launch": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\source-tiny\\LAUNCH.json",
+        "bytes": 7155,
+        "sha256": "3ADCC447FD979CE2DF050836C61DE7934A223CDA738ED6803DCD264DD4A903A8"
+      },
+      "review": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\source-tiny\\TIMEOUT_REVIEW.json",
+        "bytes": 6775,
+        "sha256": "82886A69F4184A4897EE804A46CBDC2539F96FD4DF6FAA4BC83F629BF25BCEC9"
+      }
+    },
+    {
+      "reason": "Convenience driver expected noncanonical path; its failure remains preserved",
+      "launch": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\source-retained-outer\\LAUNCH.json",
+        "bytes": 4887,
+        "sha256": "25F627B18017038793BB1B98A287378B50DF5B66EB5D0377DA11CDE963062983"
+      }
+    },
+    {
+      "reason": "Elevated PATH resolved WinGet ripgrep before the exact pinned Codex ripgrep; existing identity guard rejected, final tree integrity intact",
+      "packageCommit": "a7b8566a44f9ff6d3e9c294f822937eaa76c3754",
+      "launch": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\final-current-outer\\LAUNCH.json",
+        "bytes": 5871,
+        "sha256": "E6B91DF1D690EB26C7B9D1A66DFB21F3D0A104B8D431ACF2CFBBCE5A50C2848A"
+      },
+      "finalIntegrity": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\final-current\\RESULTS.json",
+        "bytes": 2668559,
+        "sha256": "51D68E61435A088069AF64BD706FA7472A6E04F8CC017FA0A35B4B0CDFCEE97A"
+      }
+    },
+    {
+      "reason": "Checks passed but unchanged claim producer rejected duplicate/multiple discoverable rg applications; no final claims receipt",
+      "packageCommit": "9a15563f4231e79bb143ddbd885f6171811f94d2",
+      "launch": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\final-current-pinned-tools-outer\\LAUNCH.json",
+        "bytes": 6810,
+        "sha256": "46CA3C19F7B33A1DF7AAA44149C6C700A99CFCA970B24A596146489F012BD0E3"
+      },
+      "finalIntegrity": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\final-current-pinned-tools\\RESULTS.json",
+        "bytes": 2668950,
+        "sha256": "4ECAF6ECDA19633A41993FD7F70DBAF3986258782C99409687BF0235E225ABE7"
+      },
+      "producer": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r2\\claim-expectation-601656b494b34fe1ad49851c83eac203\\producer\\CAPTURE.json",
+        "bytes": 4692,
+        "sha256": "8B6B36D188F1AF85699081E187B75A1780C6EDD6F1831EE7D9334B5FD97F951F"
+      }
+    }
+  ],
+  "finalCertification": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\FINAL_CERTIFICATION.json",
+  "boundary": "Source evidence only. Final certificate records the clean package commit, report pin, fresh checks/claims, final retained pass and all six composed profiles. No coordinator acceptance or campaign closure.",
+  "toolDiscoveryDiagnostic": {
+    "scope": "Actual expectation producer only; final package checks/claims remain separate",
+    "result": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r3\\CLAIM_PRODUCER_DIAGNOSTIC.json",
+      "bytes": 196427,
+      "sha256": "9ACED0E8B6E374658AFF32C28179FE7F28ACB1B5134A1D712ADA33CB83021CBE"
+    },
+    "producer": {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\367c\\RMQ\\.lake\\repair-r2\\claim-expectation-042b2d5a1b6b4cb4a26681d312fa2cd3\\producer\\CAPTURE.json",
+      "bytes": 4690,
+      "sha256": "6A047D7560EEB836B820F77FF946C2F7789569FA6C7ED4157F2C963A578F3A7F"
+    }
+  }
+}

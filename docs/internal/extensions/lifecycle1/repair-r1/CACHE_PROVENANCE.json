@@ -1,0 +1,12 @@
+{
+  "source": "C:\\Users\\poin\\.codex\\worktrees\\8941\\RMQ",
+  "target": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ",
+  "base": "12bd7f0fc2c87f2c9bdef3825bd92477e48e3433",
+  "sourceCount": 1163,
+  "artifactCount": 5579,
+  "independentFiles": true,
+  "manifest": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ\\.lake\\repair-r1\\cache-manifest.json",
+  "manifestBytes": 1511502,
+  "manifestSha256": "3f04fa6b18c0ed5174b0ab7a01da0b416fee4a0d0f056cd13fc4d344c91bf375",
+  "scope": "Exact source identity and copy integrity; final bounded builds still required."
+}

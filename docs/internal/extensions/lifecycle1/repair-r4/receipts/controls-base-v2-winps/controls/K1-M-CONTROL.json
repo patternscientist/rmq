@@ -1,0 +1,113 @@
+{
+  "id": "K1-M",
+  "harness": "K1",
+  "shape": "M",
+  "fault": "delete-fail",
+  "mode": "base",
+  "profile": "winps",
+  "deadlineSeconds": 180,
+  "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\K1-M\\root",
+  "setupError": null,
+  "launchError": null,
+  "process": {
+    "Stage": "K1-M",
+    "ExitCode": 3,
+    "Output": [
+      "r3-control exit=7 seconds=0.667 timeout=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\K1-M\\root\\.lake\\repair-r1\\checks\\r3-control",
+      "R1-CHECK-INTEGRITY: final hash failed lakefile.toml: Cannot find path 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\K1-M\\root\\lakefile.toml' because it does not exist."
+    ],
+    "StandardOutput": [
+      "r3-control exit=7 seconds=0.667 timeout=False evidence=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\K1-M\\root\\.lake\\repair-r1\\checks\\r3-control"
+    ],
+    "StandardError": [
+      "R1-CHECK-INTEGRITY: final hash failed lakefile.toml: Cannot find path 'C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\K1-M\\root\\lakefile.toml' because it does not exist."
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 2.012,
+    "DeadlineSeconds": 180,
+    "Ownership": "kill-on-close-job"
+  },
+  "durable": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\K1-M\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+    "ambiguous": false,
+    "parseError": null,
+    "sha256": "72928a4f1ddd64ed838076ad66c79052f6e8640f9784c8059cc2eb2d5b820092"
+  },
+  "core": {
+    "launchCompleted": true,
+    "exitClass": true,
+    "durablePresent": true,
+    "durableAsExpected": true,
+    "stageRecorded": true,
+    "integrityRecorded": true,
+    "cleanupRecorded": true,
+    "verdictAsExpected": true,
+    "values": null,
+    "labels": null,
+    "stderrAsExpected": true,
+    "absentFiles": true,
+    "stdoutWithoutSuccess": true
+  },
+  "structural": {
+    "applicable": false,
+    "finalizationPresent": true,
+    "verdictMatches": true,
+    "stageFieldMatches": true,
+    "integrityFieldMatches": true,
+    "cleanupEmpty": true,
+    "pinsVerified": true,
+    "pinCoverage": "captured 10 of 11 rows, all re-verified"
+  },
+  "restoration": {
+    "restored": [
+      "lakefile.toml"
+    ],
+    "removed": [],
+    "errors": [],
+    "verified": true,
+    "gitClean": true,
+    "gitState": "d94f97be357fcf3c3a52fbc99a0b37d3886818b3\n--"
+  },
+  "verdict": "PASS",
+  "expected": "accept",
+  "lockWaitSeconds": 0.0,
+  "manifest": {
+    "docs/internal/extensions/lifecycle1/repair-r1/run_check.ps1": "f91c00bc8a6606c801a26356ec85d788fa13445d3d43b62d7c0f3925f28716b4",
+    "scripts/owned_process_tree.ps1": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+    "scripts/lifecycle_validator.ps1": "ed158afff57cb9b81e219ec138f2b5d6221dd048159120452650cb7b386059b3",
+    "scripts/lifecycle_validator_environment.ps1": "2fb2c4d95eaf3f6633ffaa60413d3d798b26e5bf8b4e712e6a254e293e4f9f19",
+    "scripts/lifecycle_dependency_replay.ps1": "4bf287cf5e0715dbe2413de0e842e21781a38d51a94da5873e1cf8a8972003fb",
+    "scripts/lifecycle_dependency_cases.json": "003343871e23c93df874a960a8af60ae7a8a2e615adb05b6e581dc4407a1c84b",
+    "RMQ/Validation/PackedLifecycle.lean": "624236001fc72817441cc3dc536da9c299ccb1dc9c050687b09896b7f1679c14",
+    "RMQ/Validation/LifecycleContract.lean": "f7022ac916813779745b9847b43d9091a90f4f2356615bdbf3b560f2861ad9ec",
+    "scripts/lifecycle_provenance_contract.lean": "767743a4dd79b34377f5f5550bab88693df4a966826b02de7aedda78043fd020",
+    "lean-toolchain": "ad3e6363c78908c80953282baf57162702f1134173a5247aad3dbfea108a525f",
+    "lakefile.toml": "b47c7abe3955d1a2e9ba51a4c71fc2e7961423d2bf5f3856f79a24bebc8bdd50",
+    "r3-stage.ps1": "1f27eb1d8641502fc362893877699b85fda753a1975e6e6fb6815cf1ed768b10",
+    "r3-spec.json": "ac49bcbaf9e61eab9ffb370d811aafead1e086848b8ee6ed8b721775a52eedbb",
+    ".gitignore": "fde850d24186b6e99c8c0debd641fb3ab85198b109eb66f71a1fea02bd6ea1b3"
+  },
+  "harnessSha256": "f91c00bc8a6606c801a26356ec85d788fa13445d3d43b62d7c0f3925f28716b4",
+  "arguments": [
+    "-NoLogo",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\K1-M\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\run_check.ps1",
+    "-SpecPath",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\K1-M\\root/r3-spec.json"
+  ],
+  "environment": {
+    "R3_FAULT_MARKER": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\K1-M\\fault.marker",
+    "R3_FAULT_MODE": "delete-fail",
+    "R3_FAULT_TARGET": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\K1-M\\root\\lakefile.toml",
+    "R3_FAULT_SCOPE": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\base-v2-winps\\controls\\K1-M\\root"
+  },
+  "coreAll": true,
+  "structuralAll": true,
+  "pairing": "P passed",
+  "predicateOutcome": true
+}

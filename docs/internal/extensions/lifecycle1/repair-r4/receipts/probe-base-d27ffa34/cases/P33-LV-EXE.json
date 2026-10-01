@@ -1,0 +1,43 @@
+{
+  "id": "P33-LV-EXE",
+  "finding": "P3-3",
+  "harness": "scripts/lifecycle_validator.ps1",
+  "harnessSha256": "ed158afff57cb9b81e219ec138f2b5d6221dd048159120452650cb7b386059b3",
+  "stage": null,
+  "deadline": null,
+  "process": {
+    "Stage": "P33-LV-EXE",
+    "ExitCode": 1,
+    "Output": [
+      "Exception: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\base-defect\\cases\\P33-LV-EXE\\root\\scripts\\lifecycle_validator.ps1:27",
+      "Line |",
+      "  27 |    throw 'Missing rmq_lifecycle_validate.exe; build the named Lake tar …",
+      "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | Missing rmq_lifecycle_validate.exe; build the named Lake target explicitly first"
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "Exception: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\base-defect\\cases\\P33-LV-EXE\\root\\scripts\\lifecycle_validator.ps1:27",
+      "Line |",
+      "  27 |    throw 'Missing rmq_lifecycle_validate.exe; build the named Lake tar …",
+      "     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | Missing rmq_lifecycle_validate.exe; build the named Lake target explicitly first"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 1.201,
+    "DeadlineSeconds": 120,
+    "Ownership": "kill-on-close-job"
+  },
+  "completedLaunch": true,
+  "durable": null,
+  "durableSha256": null,
+  "verdict": null,
+  "childFailure": null,
+  "resultTimedOut": null,
+  "defectPresent": true,
+  "repairedShape": false,
+  "expect": "defect",
+  "passed": true
+}

@@ -1,0 +1,10 @@
+{
+  "source": "C:/Users/poin/Documents/RMQ/.claude/worktrees/wf1-whole-project-audit/.lake/cold",
+  "sourceHead": "7b227c49ef2ec044b702126cc41c9add847eed01",
+  "target": "C:/Users/poin/.codex/worktrees/8941/RMQ",
+  "targetBase": "bf31f983205175481fcb659caa4dfb70ef43e361",
+  "sourceTrackedClean": true,
+  "sourceDelta": "Only .github/workflows/ci.yml, scripts/reproduce_artifact.sh and workflow ledger; Lean sources, toolchain and Lake definition identical",
+  "method": "Copy-Item recursive separate files, no shared mutable cache",
+  "scope": "Warm artifacts for development and subsequent Lake source/dependency checks, not independent cold certification"
+}

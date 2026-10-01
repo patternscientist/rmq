@@ -1,0 +1,69 @@
+{
+  "schema": "life1-r4-receipt-index-v1",
+  "receipt": "probe-base-d27ffa34",
+  "files": [
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\base-defect\\RESULT.json",
+      "sourceBytes": 12521,
+      "sourceSha256": "445b1d8c4baba907af7bfb5cb5f84a87e4bba83417d4583075a5a3e2e75c6343",
+      "committed": "RESULT.json",
+      "committedBytes": 12266,
+      "committedSha256": "c8ff26c4799f7c41f6535ce8eaec6fbe499c7114e7326f8c88420792a5bcce1b",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\base-defect\\cases\\P21-K1-EXIT\\CASE.json",
+      "sourceBytes": 1575,
+      "sourceSha256": "23c3c592a39b99c0b160cd093cc6c5b1a51d5d3a35ca4fc8db20cd286bdba229",
+      "committed": "cases/P21-K1-EXIT.json",
+      "committedBytes": 1541,
+      "committedSha256": "c42eb0aaf55732bd4f63d4003bb52d8947f966e081d411b95ae13410515fde53",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\base-defect\\cases\\P21-K2-EXIT\\CASE.json",
+      "sourceBytes": 1575,
+      "sourceSha256": "f9532114cac7bee8a7cc6cfb3f3022bd7252b88f96df8d395f125e97ed72b6c0",
+      "committed": "cases/P21-K2-EXIT.json",
+      "committedBytes": 1541,
+      "committedSha256": "b1aeedea55f4577ca4af51113daabcd641cdbfd93b703b961e9365c7bd16f131",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\base-defect\\cases\\P21-K1-TIMEOUT\\CASE.json",
+      "sourceBytes": 1643,
+      "sourceSha256": "d180149644a7f27ba455c95114bd33ebf0df224728c49d2c2477faefb7ccb66e",
+      "committed": "cases/P21-K1-TIMEOUT.json",
+      "committedBytes": 1609,
+      "committedSha256": "3993095a6d5259962aacc635fde1a65c69ac62567d545f0125cf2cc863a81874",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\base-defect\\cases\\P21-K2-TIMEOUT\\CASE.json",
+      "sourceBytes": 1645,
+      "sourceSha256": "6c42b888249ecde5c3d07bfb4fc24c6b6d7624c4076d03b47b0ead343c58ae85",
+      "committed": "cases/P21-K2-TIMEOUT.json",
+      "committedBytes": 1611,
+      "committedSha256": "57eeddf4ff6b65112f6a871bc6c607e26d0e1d60ff3580078f0881cb8e4a3ca6",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\base-defect\\cases\\P31-K2-WRITE\\CASE.json",
+      "sourceBytes": 1980,
+      "sourceSha256": "341f2853f17ac677c7ec445916395484b6d702393a0b05bcd009b21afc43a1e8",
+      "committed": "cases/P31-K2-WRITE.json",
+      "committedBytes": 1943,
+      "committedSha256": "6f76cd688d6c727f02478d804830917a055332b92ec35ff4e90bc0b147eadfcd",
+      "normalized": true
+    },
+    {
+      "source": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\probe\\base-defect\\cases\\P33-LV-EXE\\CASE.json",
+      "sourceBytes": 1790,
+      "sourceSha256": "69439e0c2f9bc4cc30f5bf8e08760999efd074ecbe5ac8513ec7bf1ddd7a018d",
+      "committed": "cases/P33-LV-EXE.json",
+      "committedBytes": 1748,
+      "committedSha256": "38b2f9b556119e5eac293a157f18f2245b1155cf91f695431b5bdf0e49ff9ec3",
+      "normalized": true
+    }
+  ]
+}

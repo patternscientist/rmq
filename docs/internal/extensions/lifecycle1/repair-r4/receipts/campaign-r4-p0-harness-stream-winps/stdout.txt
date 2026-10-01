@@ -1,0 +1,12 @@
+STREAM CONTROL PASS success-positive
+STREAM CONTROL PASS error-positive
+STREAM CONTROL PASS success-extra-stderr
+STREAM CONTROL PASS error-extra-stderr
+STREAM CONTROL PASS success-extra-stdout
+STREAM CONTROL PASS error-extra-stdout
+STREAM CONTROL PASS selector-empty
+STREAM CONTROL PASS selector-unknown
+STREAM CONTROL PASS selector-duplicate
+STREAM CONTROL PASS launcher-blank-stdout
+STREAM CONTROL PASS launcher-blank-stderr
+STREAM CONTROLS evidence=C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/repair-r2/r4-campaign-harness-stream-winps

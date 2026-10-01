@@ -1,0 +1,575 @@
+{
+  "schema": "life1-r4-campaign-summary-v1",
+  "materialization": {
+    "schema": "life1-r3-materialization-v1",
+    "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+    "files": [
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.json",
+        "beforeBytes": 76654,
+        "beforeSha256": "68ab24530878be76e030313ae4b3a17610b5bec6f70ae3fe83351e67435f1619",
+        "afterBytes": 74726,
+        "afterSha256": "385c9bc95ac09b3cc046a7049e954cdf19361330c31f99bd83c9da0c822423f2",
+        "written": true,
+        "indexBlob": "204d6c1d48268fdec3a3d369d9b3dacd38ecb8e1",
+        "workingHashObject": "204d6c1d48268fdec3a3d369d9b3dacd38ecb8e1"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.frozen.json",
+        "beforeBytes": 76654,
+        "beforeSha256": "68ab24530878be76e030313ae4b3a17610b5bec6f70ae3fe83351e67435f1619",
+        "afterBytes": 74726,
+        "afterSha256": "385c9bc95ac09b3cc046a7049e954cdf19361330c31f99bd83c9da0c822423f2",
+        "written": true,
+        "indexBlob": "204d6c1d48268fdec3a3d369d9b3dacd38ecb8e1",
+        "workingHashObject": "204d6c1d48268fdec3a3d369d9b3dacd38ecb8e1"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/finalizer_cases.json",
+        "beforeBytes": 4731,
+        "beforeSha256": "0f03f2ebef9efe9b8f305db58e8e8636daaccb063a3d87e6872cb0f88a939767",
+        "afterBytes": 4711,
+        "afterSha256": "1303ecf93c0a0c74e0a48023fe52258b7e847d020d009eb2f4deba7f084ab6df",
+        "written": true,
+        "indexBlob": "84c8df0b0339a48a60af93ad446532d2a186cb58",
+        "workingHashObject": "84c8df0b0339a48a60af93ad446532d2a186cb58"
+      }
+    ],
+    "statusBefore": "",
+    "statusAfter": " M docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.frozen.json\n M docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.json\n M docs/internal/extensions/lifecycle1/repair-r1/finalizer_cases.json\n",
+    "gitDiffExitCode": 0,
+    "scope": "Exact Git blob bytes of three LF-pinned frozen inputs; Git content unchanged."
+  },
+  "restore": {
+    "schema": "life1-r3-materialization-restore-v1",
+    "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+    "files": [
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.json",
+        "bytes": 76654,
+        "sha256": "68ab24530878be76e030313ae4b3a17610b5bec6f70ae3fe83351e67435f1619"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/CONTROL_REGISTRY.frozen.json",
+        "bytes": 76654,
+        "sha256": "68ab24530878be76e030313ae4b3a17610b5bec6f70ae3fe83351e67435f1619"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r1/finalizer_cases.json",
+        "bytes": 4731,
+        "sha256": "0f03f2ebef9efe9b8f305db58e8e8636daaccb063a3d87e6872cb0f88a939767"
+      }
+    ],
+    "statusForPaths": ""
+  },
+  "campaigns": [
+    {
+      "name": "r4-controls-pwsh",
+      "heavySeconds": 276.506,
+      "heavyDeadline": 3600,
+      "heavyExit": 0,
+      "mutexWaitSeconds": {
+        "global": 0.003
+      },
+      "childExit": 0,
+      "childSeconds": 273.397,
+      "childDeadline": 2700,
+      "timedOut": false,
+      "overflow": false,
+      "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+      "driverSha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "entryPinCount": 17,
+        "verifiedPinCount": 17,
+        "integrityErrors": 0,
+        "cleanupErrors": 0
+      },
+      "stdoutLast": "L1R1 CONTROLS PASS C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\campaign\\controls-pwsh",
+      "frozen": {
+        "expected": 67,
+        "executed": 67,
+        "inFrozenOrder": true,
+        "allPassed": true,
+        "registrySha256": "385c9bc95ac09b3cc046a7049e954cdf19361330c31f99bd83c9da0c822423f2",
+        "finalizationVerdict": "pass",
+        "pins": "12/12",
+        "caseSlotChecks": 67,
+        "caseSlotAllVerified": true
+      }
+    },
+    {
+      "name": "r4-controls-winps",
+      "heavySeconds": 207.318,
+      "heavyDeadline": 3600,
+      "heavyExit": 0,
+      "mutexWaitSeconds": {
+        "global": 0.005
+      },
+      "childExit": 0,
+      "childSeconds": 204.525,
+      "childDeadline": 2700,
+      "timedOut": false,
+      "overflow": false,
+      "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+      "driverSha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "entryPinCount": 17,
+        "verifiedPinCount": 17,
+        "integrityErrors": 0,
+        "cleanupErrors": 0
+      },
+      "stdoutLast": "L1R1 CONTROLS PASS C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\campaign\\controls-winps",
+      "frozen": {
+        "expected": 66,
+        "executed": 66,
+        "inFrozenOrder": true,
+        "allPassed": true,
+        "registrySha256": "385c9bc95ac09b3cc046a7049e954cdf19361330c31f99bd83c9da0c822423f2",
+        "finalizationVerdict": "pass",
+        "pins": "12/12",
+        "caseSlotChecks": 66,
+        "caseSlotAllVerified": true
+      }
+    },
+    {
+      "name": "r4-validator-startup-pwsh",
+      "heavySeconds": 8.434,
+      "heavyDeadline": 900,
+      "heavyExit": 0,
+      "mutexWaitSeconds": {
+        "global": 0.004
+      },
+      "childExit": 0,
+      "childSeconds": 5.399,
+      "childDeadline": 600,
+      "timedOut": false,
+      "overflow": false,
+      "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+      "driverSha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "entryPinCount": 17,
+        "verifiedPinCount": 17,
+        "integrityErrors": 0,
+        "cleanupErrors": 0
+      },
+      "stdoutLast": "LIFE1-VALIDATOR PASS stage=startup processes=2 logs=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\lifecycle-validator\\34d68da10faf4c88a0f18a18665572c1",
+      "validator": {
+        "stage": "startup",
+        "processCount": 2,
+        "passed": true,
+        "identityPreserved": true,
+        "pins": "12/12"
+      }
+    },
+    {
+      "name": "r4-validator-single-pwsh",
+      "heavySeconds": 11.501,
+      "heavyDeadline": 900,
+      "heavyExit": 0,
+      "mutexWaitSeconds": {
+        "global": 0.004
+      },
+      "childExit": 0,
+      "childSeconds": 8.197,
+      "childDeadline": 600,
+      "timedOut": false,
+      "overflow": false,
+      "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+      "driverSha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "entryPinCount": 17,
+        "verifiedPinCount": 17,
+        "integrityErrors": 0,
+        "cleanupErrors": 0
+      },
+      "stdoutLast": "LIFE1-VALIDATOR PASS stage=single processes=3 logs=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\lifecycle-validator\\69998de520bb48c88365a6d2fc24cac1",
+      "validator": {
+        "stage": "single",
+        "processCount": 3,
+        "passed": true,
+        "identityPreserved": true,
+        "pins": "12/12"
+      }
+    },
+    {
+      "name": "r4-validator-full-pwsh",
+      "heavySeconds": 50.22,
+      "heavyDeadline": 3000,
+      "heavyExit": 0,
+      "mutexWaitSeconds": {
+        "global": 0.004
+      },
+      "childExit": 0,
+      "childSeconds": 47.131,
+      "childDeadline": 2400,
+      "timedOut": false,
+      "overflow": false,
+      "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+      "driverSha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "entryPinCount": 17,
+        "verifiedPinCount": 17,
+        "integrityErrors": 0,
+        "cleanupErrors": 0
+      },
+      "stdoutLast": "LIFE1-VALIDATOR PASS stage=full processes=9 logs=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\lifecycle-validator\\e77a1ce739ec46f1ac0ed88413a38edc",
+      "validator": {
+        "stage": "full",
+        "processCount": 9,
+        "passed": true,
+        "identityPreserved": true,
+        "pins": "12/12"
+      }
+    },
+    {
+      "name": "r4-validator-startup-winps",
+      "heavySeconds": 6.979,
+      "heavyDeadline": 900,
+      "heavyExit": 0,
+      "mutexWaitSeconds": {
+        "global": 0.003
+      },
+      "childExit": 0,
+      "childSeconds": 4.061,
+      "childDeadline": 600,
+      "timedOut": false,
+      "overflow": false,
+      "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+      "driverSha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "entryPinCount": 17,
+        "verifiedPinCount": 17,
+        "integrityErrors": 0,
+        "cleanupErrors": 0
+      },
+      "stdoutLast": "LIFE1-VALIDATOR PASS stage=startup processes=2 logs=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\lifecycle-validator\\060c5724ad814bbd80a9394110d854c5",
+      "validator": {
+        "stage": "startup",
+        "processCount": 2,
+        "passed": true,
+        "identityPreserved": true,
+        "pins": "12/12"
+      }
+    },
+    {
+      "name": "r4-validator-single-winps",
+      "heavySeconds": 9.667,
+      "heavyDeadline": 900,
+      "heavyExit": 0,
+      "mutexWaitSeconds": {
+        "global": 0.004
+      },
+      "childExit": 0,
+      "childSeconds": 6.725,
+      "childDeadline": 600,
+      "timedOut": false,
+      "overflow": false,
+      "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+      "driverSha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "entryPinCount": 17,
+        "verifiedPinCount": 17,
+        "integrityErrors": 0,
+        "cleanupErrors": 0
+      },
+      "stdoutLast": "LIFE1-VALIDATOR PASS stage=single processes=3 logs=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\lifecycle-validator\\df4d92937ae64acfb3b58d464b29288c",
+      "validator": {
+        "stage": "single",
+        "processCount": 3,
+        "passed": true,
+        "identityPreserved": true,
+        "pins": "12/12"
+      }
+    },
+    {
+      "name": "r4-validator-full-winps",
+      "heavySeconds": 47.557,
+      "heavyDeadline": 3000,
+      "heavyExit": 0,
+      "mutexWaitSeconds": {
+        "global": 0.004
+      },
+      "childExit": 0,
+      "childSeconds": 44.48,
+      "childDeadline": 2400,
+      "timedOut": false,
+      "overflow": false,
+      "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+      "driverSha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "entryPinCount": 17,
+        "verifiedPinCount": 17,
+        "integrityErrors": 0,
+        "cleanupErrors": 0
+      },
+      "stdoutLast": "LIFE1-VALIDATOR PASS stage=full processes=9 logs=C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\lifecycle-validator\\1b42232f17744fe297a46c37d1e17f6e",
+      "validator": {
+        "stage": "full",
+        "processCount": 9,
+        "passed": true,
+        "identityPreserved": true,
+        "pins": "12/12"
+      }
+    },
+    {
+      "name": "r4-p0-integrity-pwsh",
+      "heavySeconds": 276.421,
+      "heavyDeadline": 3600,
+      "heavyExit": 0,
+      "mutexWaitSeconds": {
+        "global": 0.003
+      },
+      "childExit": 0,
+      "childSeconds": 273.475,
+      "childDeadline": 3000,
+      "timedOut": false,
+      "overflow": false,
+      "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+      "driverSha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "entryPinCount": 17,
+        "verifiedPinCount": 17,
+        "integrityErrors": 0,
+        "cleanupErrors": 0
+      },
+      "stdoutLast": "OWNED integrity exit=0 evidence=C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/repair-r1/r4-campaign-integrity-pwsh",
+      "p0": {
+        "controls": 15,
+        "verdict": "pass",
+        "pins": "7/7",
+        "retainedKeys": {
+          "fixtureRestoration": true,
+          "candidateUnchanged": true
+        },
+        "entryLabels": true
+      }
+    },
+    {
+      "name": "r4-p0-dependencies-pwsh",
+      "heavySeconds": 22.689,
+      "heavyDeadline": 1800,
+      "heavyExit": 0,
+      "mutexWaitSeconds": {
+        "global": 0.003
+      },
+      "childExit": 0,
+      "childSeconds": 20.006,
+      "childDeadline": 1500,
+      "timedOut": false,
+      "overflow": false,
+      "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+      "driverSha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "entryPinCount": 17,
+        "verifiedPinCount": 17,
+        "integrityErrors": 0,
+        "cleanupErrors": 0
+      },
+      "stdoutLast": "OWNED dependencies exit=0 evidence=C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/repair-r1/r4-campaign-dependencies-pwsh",
+      "p0": {
+        "controls": 19,
+        "verdict": "pass",
+        "pins": "13/13",
+        "retainedKeys": {
+          "installedToolsUnchanged": true,
+          "fixtureRestored": true
+        },
+        "entryLabels": null
+      }
+    },
+    {
+      "name": "r4-p0-harness-stream-pwsh",
+      "heavySeconds": 124.806,
+      "heavyDeadline": 3600,
+      "heavyExit": 0,
+      "mutexWaitSeconds": {
+        "global": 0.003
+      },
+      "childExit": 0,
+      "childSeconds": 121.734,
+      "childDeadline": 3000,
+      "timedOut": false,
+      "overflow": false,
+      "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+      "driverSha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "entryPinCount": 17,
+        "verifiedPinCount": 17,
+        "integrityErrors": 0,
+        "cleanupErrors": 0
+      },
+      "stdoutLast": "STREAM CONTROLS evidence=C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/repair-r2/r4-campaign-harness-stream-pwsh",
+      "p0": {
+        "controls": 11,
+        "verdict": "pass",
+        "pins": "9/9",
+        "ownedRootStatus": [
+          "verified",
+          "verified",
+          "verified",
+          "verified",
+          "verified",
+          "verified",
+          "verified",
+          "verified",
+          "verified",
+          "verified",
+          "verified",
+          "verified"
+        ],
+        "entryLabels": true
+      }
+    },
+    {
+      "name": "r4-p0-integrity-winps",
+      "heavySeconds": 173.76,
+      "heavyDeadline": 3600,
+      "heavyExit": 0,
+      "mutexWaitSeconds": {
+        "global": 0.006
+      },
+      "childExit": 0,
+      "childSeconds": 170.821,
+      "childDeadline": 3000,
+      "timedOut": false,
+      "overflow": false,
+      "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+      "driverSha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "entryPinCount": 17,
+        "verifiedPinCount": 17,
+        "integrityErrors": 0,
+        "cleanupErrors": 0
+      },
+      "stdoutLast": "OWNED integrity exit=0 evidence=C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/repair-r1/r4-campaign-integrity-winps",
+      "p0": {
+        "controls": 15,
+        "verdict": "pass",
+        "pins": "7/7",
+        "retainedKeys": {
+          "fixtureRestoration": true,
+          "candidateUnchanged": true
+        },
+        "entryLabels": true
+      }
+    },
+    {
+      "name": "r4-p0-dependencies-winps",
+      "heavySeconds": 16.8,
+      "heavyDeadline": 1800,
+      "heavyExit": 0,
+      "mutexWaitSeconds": {
+        "global": 0.004
+      },
+      "childExit": 0,
+      "childSeconds": 13.98,
+      "childDeadline": 1500,
+      "timedOut": false,
+      "overflow": false,
+      "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+      "driverSha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "entryPinCount": 17,
+        "verifiedPinCount": 17,
+        "integrityErrors": 0,
+        "cleanupErrors": 0
+      },
+      "stdoutLast": "OWNED dependencies exit=0 evidence=C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/repair-r1/r4-campaign-dependencies-winps",
+      "p0": {
+        "controls": 19,
+        "verdict": "pass",
+        "pins": "13/13",
+        "retainedKeys": {
+          "installedToolsUnchanged": true,
+          "fixtureRestored": true
+        },
+        "entryLabels": null
+      }
+    },
+    {
+      "name": "r4-p0-harness-stream-winps",
+      "heavySeconds": 97.528,
+      "heavyDeadline": 3600,
+      "heavyExit": 0,
+      "mutexWaitSeconds": {
+        "global": 0.003
+      },
+      "childExit": 0,
+      "childSeconds": 94.365,
+      "childDeadline": 3000,
+      "timedOut": false,
+      "overflow": false,
+      "head": "2802b84d77112fc0a65b3cdbe40876e9ca86f6a6",
+      "driverSha256": "F3AE2E4AEA800C2F6CB094A3A74CA4FB380B9BF3AA8F61F8E79AE2717B0184CC",
+      "checkFinalization": {
+        "verdict": "pass",
+        "stageError": null,
+        "childFailure": null,
+        "entryPinCount": 17,
+        "verifiedPinCount": 17,
+        "integrityErrors": 0,
+        "cleanupErrors": 0
+      },
+      "stdoutLast": "STREAM CONTROLS evidence=C:/Users/poin/Documents/RMQ/.claude/worktrees/life1-r4-run-check-verdict/.lake/repair-r2/r4-campaign-harness-stream-winps",
+      "p0": {
+        "controls": 11,
+        "verdict": "pass",
+        "pins": "9/9",
+        "ownedRootStatus": [
+          "verified",
+          "verified",
+          "verified",
+          "verified",
+          "verified",
+          "verified",
+          "verified",
+          "verified",
+          "verified",
+          "verified",
+          "verified",
+          "verified"
+        ],
+        "entryLabels": true
+      }
+    }
+  ]
+}

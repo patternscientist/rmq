@@ -1,0 +1,59 @@
+{
+  "id": "D07_ENV_VALID",
+  "sourcePath": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-P\\root\\scripts\\lifecycle_dependency_replay.ps1",
+  "sourceSha256": "DAB13E35338955FE709EDD8BF1187096FC65E8CE9B9E220CDB16EAF9FFB58F20",
+  "copiedSourceSha256": "DAB13E35338955FE709EDD8BF1187096FC65E8CE9B9E220CDB16EAF9FFB58F20",
+  "shell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+  "version": "7.6.5",
+  "dotnet": "10.0.11",
+  "parameters": {
+    "SelectorProbeOnly": true
+  },
+  "ambient": {
+    "present": true,
+    "value": "id:D01_CONSTRUCTION"
+  },
+  "actualEnvironmentPresent": true,
+  "exit": 0,
+  "stdout": [
+    "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION"
+  ],
+  "stderr": "",
+  "exception": null,
+  "errorId": null,
+  "restored": true,
+  "passed": true,
+  "positive": {
+    "exit": 0,
+    "stdout": [
+      "LIFE1-DEPENDENCY SELECT D01_CONSTRUCTION"
+    ],
+    "stderr": "",
+    "scriptPath": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-P\\root\\scripts\\lifecycle_dependency_replay.ps1",
+    "selector": "id:D01_CONSTRUCTION"
+  },
+  "stderrRepresentation": "Exact Console.Error captured text, including all trailing newlines; no added filtering.",
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "pass",
+    "stageError": null,
+    "integrityErrors": [],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-P\\root\\scripts\\lifecycle_dependency_replay.ps1",
+        "entrySha256": "DAB13E35338955FE709EDD8BF1187096FC65E8CE9B9E220CDB16EAF9FFB58F20",
+        "finalSha256": "DAB13E35338955FE709EDD8BF1187096FC65E8CE9B9E220CDB16EAF9FFB58F20",
+        "status": "verified"
+      },
+      {
+        "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v2-pwsh\\controls\\DC-P\\root\\scripts\\lifecycle_dependency_cases.json",
+        "entrySha256": "003343871E23C93DF874A960A8AF60AE7A8A2E615ADB05B6E581DC4407A1C84B",
+        "finalSha256": "003343871E23C93DF874A960A8AF60AE7A8A2E615ADB05B6E581DC4407A1C84B",
+        "status": "verified"
+      }
+    ],
+    "entryPinCount": 2,
+    "verifiedPinCount": 2
+  }
+}

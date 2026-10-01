@@ -1,0 +1,31 @@
+{
+  "base": "9519b2c1af5e2cf59536b311db5e8dc81376a32f",
+  "ids": [
+    "LN0-01",
+    "LN0-02",
+    "LN0-03",
+    "LN0-04",
+    "LN0-05",
+    "LN0-06",
+    "INV-SEMANTIC-NONVACUITY",
+    "INV-ORACLE-INDEPENDENCE",
+    "INV-CATEGORY-SEPARATION",
+    "INV-MUTATION-REPRODUCIBILITY",
+    "CHK-FINAL",
+    "CHK-SCOPE",
+    "NP0R1-INTEGRITY",
+    "NP0R1-TOOLCHAIN",
+    "NP0R2-STREAMS",
+    "NP0R2-REPORT",
+    "NP0R3-LITERAL",
+    "NP0R3-SELECTOR"
+  ],
+  "inherited": 16,
+  "rowsSha256": "d567ff2b9f861a6a910cc94a9e7abb44d2d559893cbbc7293cefbe798ce01abf",
+  "prompt": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\lifecycle-implementation-20260920\\LIFE-NATIVE-P0-R3_PROMPT.md",
+    "bytes": 28741,
+    "sha256": "901e5559c45a711b92bd686482934596d7259d0d21d7fa628b7c1851969c4172"
+  },
+  "template": "docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md"
+}

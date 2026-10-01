@@ -1,0 +1,1747 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "r2Base": "0485a64920a273d0830b926ee46275085222819d",
+  "historicalProductionCommit": "122a6bedb086d1de1df8dec167c890f887a72cc2",
+  "historicalControlCommit": "7c406b15bdc12333d323c92641ab6c6dad6af7a2",
+  "interpretation": "Historical receipt/source identities are resolved to immutable producers first. Actual current consumed inputs are checked separately. Distinct old/current raw bytes remain distinct.",
+  "inputs": [
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/docs/internal/extensions/lifecycle1/repair-r2/INITIAL_FILES.json",
+      "bytes": 1807644,
+      "sha256": "55b43f6fab8592d95c3cb9714fa6fca70546b4dcad2b679bab44ea584a81080f"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/docs/internal/extensions/lifecycle1/repair-r2/PROTECTED_BASELINE.json",
+      "bytes": 700447,
+      "sha256": "10adce9d9a3b5909a9feb710494f990f94abc17fe17c8b018ea3fc5cc3558b47"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/docs/internal/extensions/lifecycle1/repair-r2/MATERIALIZATION.json",
+      "bytes": 8448,
+      "sha256": "cbb6b5d3e9a6d922133a5da55163703dc1282567348273fce0b9b9d9a3b9308a"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/docs/internal/extensions/lifecycle1/repair-r1/SOURCE_FREEZE.json",
+      "bytes": 338110,
+      "sha256": "2be35602f79cce010ff8bff16e7cd367906c3cd8a107d99d1c6f857f19a66097"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/docs/internal/extensions/lifecycle1/repair-r1/EVIDENCE_INDEX.json",
+      "bytes": 2093336,
+      "sha256": "a22875c3db4fd447716c3d9e333a1b7d5c83b4ae8c4ecb106b86dac3e468c512"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/docs/internal/extensions/lifecycle1/repair-r1/REPORT.md",
+      "bytes": 22688,
+      "sha256": "94d6fb1403daacc5951607d0c4d05b5bf29e188678dbf22c172b353dc651a544"
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/.lake/repair-r1/delivery.json",
+      "bytes": 166974,
+      "sha256": "f2bca5f3a77b66f1b6186d325bc7abb212f4c3eaaa548e0e4603b6d44d512b8d"
+    },
+
+    {
+      "path": "C:/Users/poin/Documents/RMQ/lifecycle-implementation-20260920/life1-r1-review/DISPOSITION.md",
+      "bytes": 17832,
+      "sha256": "520d24e435ab007ee84a58ca6d0c36a93aca950ec998190d4e44535c89af4a79"
+    },
+
+    {
+      "path": "C:/Users/poin/Documents/RMQ/lifecycle-implementation-20260920/life1-r1-review/R2_PROMPT_REVIEW.md",
+      "bytes": 13569,
+      "sha256": "78b4a9f8304f4df0188112931d2ecc407b5b5e99ab83d6174b6638d7f5512ee8"
+    },
+
+    {
+      "path": "C:/Users/poin/Documents/RMQ/lifecycle-implementation-20260920/life1-r1-review/FINAL_REVIEW_VERIFIED.json",
+      "bytes": 22767,
+      "sha256": "b6028724fc21b56d559b60c3c8e515c9daf12df2ed15ed5a444954fc71b88d6f"
+    },
+
+    {
+      "path": "C:/Users/poin/Documents/RMQ/lifecycle-implementation-20260920/life1-r1-review/EVIDENCE_LEAF_PIN_MANIFEST.json",
+      "bytes": 5653285,
+      "sha256": "a14c74398f31afb7a19b4c5494b6e4d72ae43b964664d9f2d0afa4add65ca346"
+    }
+  ],
+  "historicalEvidenceBindings": {
+    "indexedRetainedFiles": 4875,
+    "indexedChecks": 54,
+    "indexedNativeRuns": 5,
+    "indexedCampaignSummaries": 132,
+    "reviewFiles": 8761,
+    "reviewReferences": 11034,
+    "originalProducerManifestFiles": 45,
+    "originalRetainedArtifacts": 230
+  },
+
+  "currentApplicability": {
+    "protectedStartupPaths": 3751,
+    "currentProtectedRawPathsChecked": 3749,
+    "formalAndBuildCacheSourceCount": 1163,
+    "copiedArtifactCount": 5579,
+    "namedConsumerArtifacts": 111,
+    "materializedContracts": [
+      {
+        "path": "docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.frozen.md",
+        "historicalRaw": {
+          "bytes": 43514,
+          "sha256": "bc596cd8a4866cf8db7bd06360d1c2e797e389c92237c9ac3a0b5e4145cd22ab"
+        },
+
+        "currentExactGit": {
+          "bytes": 43437,
+          "sha256": "8b08e2d7c7f284634d88bfa4262ee447f79a401c78b27dc346ea34d76ccba4a7"
+        },
+
+        "gitObject": "1aa9b2139c05574b6256fff28aa8c3035e105e04",
+        "rawEquality": false,
+        "classification": "authorized startup materialization; historical pin preserved, never normalized into current equality"
+      },
+
+      {
+        "path": "docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.md",
+        "historicalRaw": {
+          "bytes": 73177,
+          "sha256": "63b7eb6b7c01fcf9ca109be9cdcbf67141bb83c3927c2d7f707b06e2dc482cf1"
+        },
+
+        "currentExactGit": {
+          "bytes": 72806,
+          "sha256": "18bdb89a0d4873636d434effb9a8e6d4f8c1b13997deb3167159eb1da167ef8e"
+        },
+
+        "gitObject": "c6b2388371d564b24d9441f2a3489531012460c1",
+        "rawEquality": false,
+        "classification": "authorized startup materialization; historical pin preserved, never normalized into current equality"
+      },
+
+      {
+        "path": "docs/internal/extensions/lifecycle1/CONTRACT_REQUIREMENTS.json",
+        "historicalRaw": {
+          "bytes": 54250,
+          "sha256": "e47ab45acad51fe508ce9b8be9983a136f8c9267d4d8fdd7888195bd0419e488"
+        },
+
+        "currentExactGit": {
+          "bytes": 53962,
+          "sha256": "5bd95d24b6cffaf9fb39abb2aa04cca9743aed7884b3f87d03d7428e6b9cd8eb"
+        },
+
+        "gitObject": "d8271d9a796dbbd5fec02b4169dee3098357e9a8",
+        "rawEquality": false,
+        "classification": "authorized startup materialization; historical pin preserved, never normalized into current equality"
+      }
+    ],
+    "dependency": {
+      "path": "scripts/lifecycle_dependency_replay.ps1",
+      "historicalRaw": {
+        "bytes": 20877,
+        "sha256": "e2df09b1920691127c29eefc293700b7d046a7ddec7f78db18ea68a6b6c42b47"
+      },
+
+      "currentRaw": {
+        "bytes": 20972,
+        "sha256": "66d1d42b1c01288fcb362dd716493f3154cc3c606b49d65b9f1e5f8fbaed68e1"
+      },
+
+      "rawBytesChanged": true,
+      "outsideHashBytesBodyExact": true,
+      "historicalBody": {
+        "bytes": 100,
+        "sha256": "aac7eb3b06ea1c13ea7a1430fab9e57c5fa8d4d198987be8d6bf3c2096258d62"
+      },
+
+      "currentBody": {
+        "bytes": 195,
+        "sha256": "2c0decf8247b85d0522db1c94d12d6927f554ed44c0e4a6a005a9da39b0be51b"
+      },
+
+      "classification": "incidental capture for old validator/build receipts; load-bearing change for dependency/control receipts"
+    },
+
+    "typeAxiomInventory": {
+      "originalManifest": {
+        "path": "docs/internal/extensions/lifecycle1/SOURCE_MANIFEST.json",
+        "bytes": 16870,
+        "sha256": "2b8500dbf3573bd4f2f7e6a27bfb7dc46a682ed4e59de5411405a6bc60952ca0"
+      },
+
+      "originalFinalReceipts": {
+        "path": "docs/internal/extensions/lifecycle1/FINAL_RECEIPTS.json",
+        "bytes": 80207,
+        "sha256": "697397c8b6b06930393898099e226b576477ca1b1890cf9e5404093548139a5d"
+      },
+
+      "sourceCommit": "299ec6527ca2fbcf73cfc34e9de75f4a1f34140c",
+      "run": {
+        "mode": "inventory",
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "scripts/lifecycle_inventory.lean"
+        ],
+        "startedUtc": "2026-09-21T02:01:22.6582053Z",
+        "endedUtc": "2026-09-21T02:03:38.2852955Z",
+        "deadlineSeconds": 300,
+        "outputLimitBytes": 16777216,
+        "exitCode": 0,
+        "durationSeconds": 135.302,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "ownership": "kill-on-close-job",
+        "terminatedIds": []
+      },
+
+      "artifacts": [
+        {
+          "recorded": {
+            "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/inventory.result.json",
+            "bytes": 448,
+            "sha256": "ae8679e005d0834829a4971e1387f5af95d843ba9f9380395d74f774ce4fdbcb"
+          },
+
+          "actual": {
+            "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/inventory.result.json",
+            "bytes": 448,
+            "sha256": "ae8679e005d0834829a4971e1387f5af95d843ba9f9380395d74f774ce4fdbcb"
+          },
+
+          "exactMatch": true
+        },
+
+        {
+          "recorded": {
+            "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/inventory.stderr.txt",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+
+          "actual": {
+            "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/inventory.stderr.txt",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+
+          "exactMatch": true
+        },
+
+        {
+          "recorded": {
+            "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/inventory.stdout.txt",
+            "bytes": 47783,
+            "sha256": "76acd8fd09b7673e0d6a1682a418787a9252c44f48d60bcafb659c37c6c4f66b"
+          },
+
+          "actual": {
+            "path": "C:/Users/poin/.codex/worktrees/8941/RMQ/.lake/lifecycle-final/inventory.stdout.txt",
+            "bytes": 47783,
+            "sha256": "76acd8fd09b7673e0d6a1682a418787a9252c44f48d60bcafb659c37c6c4f66b"
+          },
+
+          "exactMatch": true
+        }
+      ],
+      "justification": "The inventory source, formal producers and checked consumer Git blobs are explicitly compared above. The two repaired wrappers are not theorem definitions. Historical compiler output is reused as original source-bound type/axiom evidence, not as a newly executed proof check."
+    },
+
+    "historicalBuilds": [
+      {
+        "name": "final-default-build-pinned",
+        "receipt": {
+          "path": ".lake/repair-r1/checks/final-default-build-pinned/result.json",
+          "bytes": 247086,
+          "sha256": "db4dc37d39b9d095f3044454a0633dc25ea1bfe2f35c2c092dbe1770bec0f46a"
+        },
+
+        "sourceCommit": "122a6bedb086d1de1df8dec167c890f887a72cc2",
+        "seconds": 1.637,
+        "actualCommand": {
+          "mutex": true,
+          "deadline": 7200,
+          "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+          "name": "final-default-build-pinned",
+          "arguments": [
+            "build"
+          ]
+        },
+
+        "historicalVerdict": "PASS",
+        "unchangedBuildInputsVerified": true,
+        "incidentalDependencyCapture": "scripts/lifecycle_dependency_replay.ps1",
+        "applicability": "retained build provenance only; R2 still requires its own final build"
+      },
+
+      {
+        "name": "final-named-build-pinned",
+        "receipt": {
+          "path": ".lake/repair-r1/checks/final-named-build-pinned/result.json",
+          "bytes": 205662,
+          "sha256": "e04c96ec1183dd0500ff5369987d1959c90336248a6c604348f42ae9ebbb1160"
+        },
+
+        "sourceCommit": "122a6bedb086d1de1df8dec167c890f887a72cc2",
+        "seconds": 1.661,
+        "actualCommand": {
+          "mutex": true,
+          "deadline": 7200,
+          "file": "C:/Users/poin/.elan/toolchains/leanprover--lean4---v4.22.0/bin/lake.exe",
+          "name": "final-named-build-pinned",
+          "arguments": [
+            "build",
+            "RMQ.Core.WordRAM.Lifecycle.Capstone",
+            "RMQ.Validation.LifecycleContract",
+            "rmq_lifecycle_validate",
+            "RMQ.Headlines.Lifecycle",
+            "RMQ.Core.WordRAM.Lifecycle.Provenance"
+          ]
+        },
+
+        "historicalVerdict": "PASS",
+        "unchangedBuildInputsVerified": true,
+        "incidentalDependencyCapture": "scripts/lifecycle_dependency_replay.ps1",
+        "applicability": "retained build provenance only; R2 still requires its own final build"
+      }
+    ],
+    "warmCacheLimit": "All copied artifacts and source identities are checked; this is not a cold rebuild or dynamic-loader attestation."
+  },
+
+  "reusedFull16": [
+    {
+      "check": "final-validator-pwsh-full",
+      "applicableToCurrentUnchangedValidator": true,
+      "producingProductionCommit": "122a6bedb086d1de1df8dec167c890f887a72cc2",
+      "producingPackageCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "receipt": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ\\.lake\\repair-r1\\checks\\final-validator-pwsh-full\\result.json",
+        "bytes": 2652,
+        "sha256": "65df72c58dcfbd3578bca936d81b66baf93e8f3a50ab0a5eee7bf1367845bbce"
+      },
+
+      "directory": "C:/Users/poin/.codex/worktrees/e993/RMQ/.lake/lifecycle-validator/1dc4e80c5e3847dd8ec965deea8abfda",
+      "seconds": 119.739,
+      "deadline": 2100,
+      "runtime": {
+        "path": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+        "bytes": 301368,
+        "sha256": "362a356ce7f0940ec74f73a8fc2c990a2cc24a38a11c90bbd8eca947110ad139",
+        "profile": "pwsh",
+        "observedVersion": "7.6.5",
+        "observedDotnet": "10.0.11",
+        "observationReceipt": {
+          "path": ".lake/repair-r1/old-environment-pwsh/summary.json",
+          "bytes": 3907,
+          "sha256": "0003bdb70c0e60fe77a24aaa631b52f4d145259e1bcd044523f111293c59986a"
+        }
+      },
+
+      "exactOrderedNativeIds": [
+        "L01-W-EMPTY",
+        "L02-C-EMPTY",
+        "L03-W-SINGLE",
+        "L04-C-SINGLE",
+        "L05-W-REPEAT",
+        "L06-C-REPEAT",
+        "L07-W-TIE",
+        "L08-C-TIE",
+        "L09-W-INVALID",
+        "L10-C-INVALID",
+        "L11-W-DIRTY",
+        "L12-C-DIRTY",
+        "L13-W-N24",
+        "L14-C-N24",
+        "L15-W-N83",
+        "L16-C-N83"
+      ],
+      "processes": 9,
+      "exactReturnedStreamsAndSelectorsVerified": true,
+      "actualConsumedInputs": [
+        {
+          "path": "lakefile.toml",
+          "historicalAndCurrentSha256": "b47c7abe3955d1a2e9ba51a4c71fc2e7961423d2bf5f3856f79a24bebc8bdd50",
+          "historicalProducerProfile": "lakefile.toml:b47c7abe3955d1a2e9ba51a4c71fc2e7961423d2bf5f3856f79a24bebc8bdd50"
+        },
+
+        {
+          "path": "RMQ/Validation/PackedLifecycle.lean",
+          "historicalAndCurrentSha256": "624236001fc72817441cc3dc536da9c299ccb1dc9c050687b09896b7f1679c14",
+          "historicalProducerProfile": "RMQ/Validation/PackedLifecycle.lean:624236001fc72817441cc3dc536da9c299ccb1dc9c050687b09896b7f1679c14"
+        },
+
+        {
+          "path": "scripts/lifecycle_validator.ps1",
+          "historicalAndCurrentSha256": "94dd5022a8161dbdff69bc8d0fa2d9140c874b3a4d8e8fa03662f71b38db5cb3",
+          "historicalProducerProfile": "scripts/lifecycle_validator.ps1:94dd5022a8161dbdff69bc8d0fa2d9140c874b3a4d8e8fa03662f71b38db5cb3"
+        },
+
+        {
+          "path": "scripts/lifecycle_validator_environment.ps1",
+          "historicalAndCurrentSha256": "d0faf0a59ecb26d931f4f4536b5bab0e7532eb01d367ee0d0ae8873124d4c1eb",
+          "historicalProducerProfile": "scripts/lifecycle_validator_environment.ps1:d0faf0a59ecb26d931f4f4536b5bab0e7532eb01d367ee0d0ae8873124d4c1eb"
+        },
+
+        {
+          "path": "scripts/owned_process_tree.ps1",
+          "historicalAndCurrentSha256": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+          "historicalProducerProfile": "scripts/owned_process_tree.ps1:6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e"
+        },
+
+        {
+          "path": "RMQ/Core/WordRAM/Lifecycle/Executable.lean",
+          "historicalAndCurrentSha256": "7ed53fd5715a4ea1d6628ae52f626b1573b2f20bb4e6b9b983c0a2c32de41baf",
+          "historicalProducerProfile": "RMQ/Core/WordRAM/Lifecycle/Executable.lean:7ed53fd5715a4ea1d6628ae52f626b1573b2f20bb4e6b9b983c0a2c32de41baf"
+        },
+
+        {
+          "path": "RMQ/Core/WordRAM/Lifecycle/Controls.lean",
+          "historicalAndCurrentSha256": "207f4d5ccaca1c33143c6e457c90129ad876672bdc0786e29face52f434e8828",
+          "historicalProducerProfile": "RMQ/Core/WordRAM/Lifecycle/Controls.lean:207f4d5ccaca1c33143c6e457c90129ad876672bdc0786e29face52f434e8828"
+        },
+
+        {
+          "path": "RMQ/Core/WordRAM/Lifecycle/ArrayRun.lean",
+          "historicalAndCurrentSha256": "e9342577949ec6af15ece43ebaa742d30142f7b6769c8036b9e95f22d59dd0c7",
+          "historicalProducerProfile": "RMQ/Core/WordRAM/Lifecycle/ArrayRun.lean:e9342577949ec6af15ece43ebaa742d30142f7b6769c8036b9e95f22d59dd0c7"
+        },
+
+        {
+          "path": "RMQ/Core/WordRAM/Lifecycle/Machine.lean",
+          "historicalAndCurrentSha256": "bbc0e439fb2fa55ae75e440ac3a6c77e6203fc6f7b39b2cae8b95e1ed2b8d57b",
+          "historicalProducerProfile": "RMQ/Core/WordRAM/Lifecycle/Machine.lean:bbc0e439fb2fa55ae75e440ac3a6c77e6203fc6f7b39b2cae8b95e1ed2b8d57b"
+        },
+
+        {
+          "path": "RMQ/Core/WordRAM/Lifecycle/Program.lean",
+          "historicalAndCurrentSha256": "bb40b5ab3b7532ea4f907bf1d174dd2de14013c5e022454cb7c3b99cc2707dfc",
+          "historicalProducerProfile": "RMQ/Core/WordRAM/Lifecycle/Program.lean:bb40b5ab3b7532ea4f907bf1d174dd2de14013c5e022454cb7c3b99cc2707dfc"
+        },
+
+        {
+          "path": "RMQ/Core/WordRAM/Lifecycle/Service.lean",
+          "historicalAndCurrentSha256": "f4157493517f232a6a83bb52c87b751f6a0c2c1f9ca9c98fb6cae036542a34e0",
+          "historicalProducerProfile": "RMQ/Core/WordRAM/Lifecycle/Service.lean:f4157493517f232a6a83bb52c87b751f6a0c2c1f9ca9c98fb6cae036542a34e0"
+        },
+
+        {
+          "path": ".lake/build/bin/rmq_lifecycle_validate.exe",
+          "historicalAndCurrentSha256": "4752591ec5a7d962e09440391aa38d0e2fc534b2f04775aab9c0c735e43ba99c",
+          "historicalProducerProfile": null
+        }
+      ],
+      "incidentalDependencyPin": {
+        "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/scripts/lifecycle_dependency_replay.ps1",
+        "origin": "final-validator-pwsh-full/outer-source-capture",
+        "expected": {
+          "sha256": "e2df09b1920691127c29eefc293700b7d046a7ddec7f78db18ea68a6b6c42b47"
+        },
+
+        "actual": {
+          "bytes": 20972,
+          "sha256": "66d1d42b1c01288fcb362dd716493f3154cc3c606b49d65b9f1e5f8fbaed68e1"
+        },
+
+        "disposition": "historical-producer-resolved-current-bytes-distinct",
+        "retainedRawSnapshotExact": false,
+        "producerProfileKey": "scripts/lifecycle_dependency_replay.ps1:e2df09b1920691127c29eefc293700b7d046a7ddec7f78db18ea68a6b6c42b47"
+      },
+
+      "incidentalJustification": "The immutable validator imports the adapter/helper and invokes the pinned native executable; it never executes the dependency replay script. Its own before/after identity set excludes that outer administrative capture."
+    },
+
+    {
+      "check": "final-validator-winps-full",
+      "applicableToCurrentUnchangedValidator": true,
+      "producingProductionCommit": "122a6bedb086d1de1df8dec167c890f887a72cc2",
+      "producingPackageCommit": "0485a64920a273d0830b926ee46275085222819d",
+      "receipt": {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\e993\\RMQ\\.lake\\repair-r1\\checks\\final-validator-winps-full\\result.json",
+        "bytes": 2614,
+        "sha256": "319851b371b6e86ec3f1944bf561d7f550275b945690845dba11e28df639f96f"
+      },
+
+      "directory": "C:/Users/poin/.codex/worktrees/e993/RMQ/.lake/lifecycle-validator/7b5b9878bc4d44f9aed16aedab2e83f9",
+      "seconds": 109.269,
+      "deadline": 2100,
+      "runtime": {
+        "path": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+        "bytes": 495616,
+        "sha256": "8bb6fa8c283b4d92120b1ef249a9b311b0f804d4cabbe9981159976c8be76a5e",
+        "profile": "winps",
+        "observedVersion": "5.1.26100.9444",
+        "observedDotnet": "4.0.30319.42000",
+        "observationReceipt": {
+          "path": ".lake/repair-r1/old-environment-winps/summary.json",
+          "bytes": 11018,
+          "sha256": "bb368a1fd33b9480b25f3e75b7f1dfce978ed355e89073920415356739763cac"
+        }
+      },
+
+      "exactOrderedNativeIds": [
+        "L01-W-EMPTY",
+        "L02-C-EMPTY",
+        "L03-W-SINGLE",
+        "L04-C-SINGLE",
+        "L05-W-REPEAT",
+        "L06-C-REPEAT",
+        "L07-W-TIE",
+        "L08-C-TIE",
+        "L09-W-INVALID",
+        "L10-C-INVALID",
+        "L11-W-DIRTY",
+        "L12-C-DIRTY",
+        "L13-W-N24",
+        "L14-C-N24",
+        "L15-W-N83",
+        "L16-C-N83"
+      ],
+      "processes": 9,
+      "exactReturnedStreamsAndSelectorsVerified": true,
+      "actualConsumedInputs": [
+        {
+          "path": "lakefile.toml",
+          "historicalAndCurrentSha256": "b47c7abe3955d1a2e9ba51a4c71fc2e7961423d2bf5f3856f79a24bebc8bdd50",
+          "historicalProducerProfile": "lakefile.toml:b47c7abe3955d1a2e9ba51a4c71fc2e7961423d2bf5f3856f79a24bebc8bdd50"
+        },
+
+        {
+          "path": "RMQ/Validation/PackedLifecycle.lean",
+          "historicalAndCurrentSha256": "624236001fc72817441cc3dc536da9c299ccb1dc9c050687b09896b7f1679c14",
+          "historicalProducerProfile": "RMQ/Validation/PackedLifecycle.lean:624236001fc72817441cc3dc536da9c299ccb1dc9c050687b09896b7f1679c14"
+        },
+
+        {
+          "path": "scripts/lifecycle_validator.ps1",
+          "historicalAndCurrentSha256": "94dd5022a8161dbdff69bc8d0fa2d9140c874b3a4d8e8fa03662f71b38db5cb3",
+          "historicalProducerProfile": "scripts/lifecycle_validator.ps1:94dd5022a8161dbdff69bc8d0fa2d9140c874b3a4d8e8fa03662f71b38db5cb3"
+        },
+
+        {
+          "path": "scripts/lifecycle_validator_environment.ps1",
+          "historicalAndCurrentSha256": "d0faf0a59ecb26d931f4f4536b5bab0e7532eb01d367ee0d0ae8873124d4c1eb",
+          "historicalProducerProfile": "scripts/lifecycle_validator_environment.ps1:d0faf0a59ecb26d931f4f4536b5bab0e7532eb01d367ee0d0ae8873124d4c1eb"
+        },
+
+        {
+          "path": "scripts/owned_process_tree.ps1",
+          "historicalAndCurrentSha256": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+          "historicalProducerProfile": "scripts/owned_process_tree.ps1:6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e"
+        },
+
+        {
+          "path": "RMQ/Core/WordRAM/Lifecycle/Executable.lean",
+          "historicalAndCurrentSha256": "7ed53fd5715a4ea1d6628ae52f626b1573b2f20bb4e6b9b983c0a2c32de41baf",
+          "historicalProducerProfile": "RMQ/Core/WordRAM/Lifecycle/Executable.lean:7ed53fd5715a4ea1d6628ae52f626b1573b2f20bb4e6b9b983c0a2c32de41baf"
+        },
+
+        {
+          "path": "RMQ/Core/WordRAM/Lifecycle/Controls.lean",
+          "historicalAndCurrentSha256": "207f4d5ccaca1c33143c6e457c90129ad876672bdc0786e29face52f434e8828",
+          "historicalProducerProfile": "RMQ/Core/WordRAM/Lifecycle/Controls.lean:207f4d5ccaca1c33143c6e457c90129ad876672bdc0786e29face52f434e8828"
+        },
+
+        {
+          "path": "RMQ/Core/WordRAM/Lifecycle/ArrayRun.lean",
+          "historicalAndCurrentSha256": "e9342577949ec6af15ece43ebaa742d30142f7b6769c8036b9e95f22d59dd0c7",
+          "historicalProducerProfile": "RMQ/Core/WordRAM/Lifecycle/ArrayRun.lean:e9342577949ec6af15ece43ebaa742d30142f7b6769c8036b9e95f22d59dd0c7"
+        },
+
+        {
+          "path": "RMQ/Core/WordRAM/Lifecycle/Machine.lean",
+          "historicalAndCurrentSha256": "bbc0e439fb2fa55ae75e440ac3a6c77e6203fc6f7b39b2cae8b95e1ed2b8d57b",
+          "historicalProducerProfile": "RMQ/Core/WordRAM/Lifecycle/Machine.lean:bbc0e439fb2fa55ae75e440ac3a6c77e6203fc6f7b39b2cae8b95e1ed2b8d57b"
+        },
+
+        {
+          "path": "RMQ/Core/WordRAM/Lifecycle/Program.lean",
+          "historicalAndCurrentSha256": "bb40b5ab3b7532ea4f907bf1d174dd2de14013c5e022454cb7c3b99cc2707dfc",
+          "historicalProducerProfile": "RMQ/Core/WordRAM/Lifecycle/Program.lean:bb40b5ab3b7532ea4f907bf1d174dd2de14013c5e022454cb7c3b99cc2707dfc"
+        },
+
+        {
+          "path": "RMQ/Core/WordRAM/Lifecycle/Service.lean",
+          "historicalAndCurrentSha256": "f4157493517f232a6a83bb52c87b751f6a0c2c1f9ca9c98fb6cae036542a34e0",
+          "historicalProducerProfile": "RMQ/Core/WordRAM/Lifecycle/Service.lean:f4157493517f232a6a83bb52c87b751f6a0c2c1f9ca9c98fb6cae036542a34e0"
+        },
+
+        {
+          "path": ".lake/build/bin/rmq_lifecycle_validate.exe",
+          "historicalAndCurrentSha256": "4752591ec5a7d962e09440391aa38d0e2fc534b2f04775aab9c0c735e43ba99c",
+          "historicalProducerProfile": null
+        }
+      ],
+      "incidentalDependencyPin": {
+        "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/scripts/lifecycle_dependency_replay.ps1",
+        "origin": "final-validator-winps-full/outer-source-capture",
+        "expected": {
+          "sha256": "e2df09b1920691127c29eefc293700b7d046a7ddec7f78db18ea68a6b6c42b47"
+        },
+
+        "actual": {
+          "bytes": 20972,
+          "sha256": "66d1d42b1c01288fcb362dd716493f3154cc3c606b49d65b9f1e5f8fbaed68e1"
+        },
+
+        "disposition": "historical-producer-resolved-current-bytes-distinct",
+        "retainedRawSnapshotExact": false,
+        "producerProfileKey": "scripts/lifecycle_dependency_replay.ps1:e2df09b1920691127c29eefc293700b7d046a7ddec7f78db18ea68a6b6c42b47"
+      },
+
+      "incidentalJustification": "The immutable validator imports the adapter/helper and invokes the pinned native executable; it never executes the dependency replay script. Its own before/after identity set excludes that outer administrative capture."
+    }
+  ],
+  "historicalRawProfilesDistinctFromCurrent": [
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Accounting.lean",
+      "expected": {
+        "bytes": 3426,
+        "sha256": "63a771d9cf3f1ebe936f4dbed3be6f954de623f3b050d41af2fc12f736362ab5"
+      },
+
+      "actual": {
+        "bytes": 3507,
+        "sha256": "f57e0758f80ebe6820648e1bf71a1f810fe1d65e9814b7351713d8d00e6a0d94"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Accounting.lean:63a771d9cf3f1ebe936f4dbed3be6f954de623f3b050d41af2fc12f736362ab5",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/16/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/2",
+        "review-reference/SOURCE_FREEZE/sources/16/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Agreement.lean",
+      "expected": {
+        "bytes": 20171,
+        "sha256": "16cb10b2df2347286c7f1009609a839ae31f7c5ff776ad0743e322046f85df85"
+      },
+
+      "actual": {
+        "bytes": 20605,
+        "sha256": "64ec32e23f112847053dccfa29503d6889cf8f757abee1076915c1eafc245146"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Agreement.lean:16cb10b2df2347286c7f1009609a839ae31f7c5ff776ad0743e322046f85df85",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/17/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/3",
+        "review-reference/SOURCE_FREEZE/sources/17/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/ArrayRun.lean",
+      "expected": {
+        "bytes": 33481,
+        "sha256": "cefbae0487001b8ea47ec1d770cd08a36e539abb379c4432a99d9800ba6b9667"
+      },
+
+      "actual": {
+        "bytes": 34169,
+        "sha256": "e9342577949ec6af15ece43ebaa742d30142f7b6769c8036b9e95f22d59dd0c7"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/ArrayRun.lean:cefbae0487001b8ea47ec1d770cd08a36e539abb379c4432a99d9800ba6b9667",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/18/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/4",
+        "review-reference/SOURCE_FREEZE/sources/18/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/BoundarySafety.lean",
+      "expected": {
+        "bytes": 5839,
+        "sha256": "9742916bdb8b112f5d11f35969ec2cf71880962781be24fca5e4496231972ba4"
+      },
+
+      "actual": {
+        "bytes": 5959,
+        "sha256": "ddd3151ae95f579bd8531df8c8b5d5e94f8f48501e4020e85565f1daa3fce49c"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/BoundarySafety.lean:9742916bdb8b112f5d11f35969ec2cf71880962781be24fca5e4496231972ba4",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/19/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/5",
+        "review-reference/SOURCE_FREEZE/sources/19/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Builder.lean",
+      "expected": {
+        "bytes": 13586,
+        "sha256": "105b9f86b2b28e4cb92ccb433370da8cac8cf1f0373bb27aa177977b06187f6d"
+      },
+
+      "actual": {
+        "bytes": 13873,
+        "sha256": "95e14947a06c81c42439666d59d5959b387e75ca38b8157b717e8caf6cd55383"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Builder.lean:105b9f86b2b28e4cb92ccb433370da8cac8cf1f0373bb27aa177977b06187f6d",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/20/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/6",
+        "review-reference/SOURCE_FREEZE/sources/20/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/BuilderProvenance.lean",
+      "expected": {
+        "bytes": 13400,
+        "sha256": "85347dab5645f021036c544cfc538e9a8f0deb05114096142bff491462d9c1db"
+      },
+
+      "actual": {
+        "bytes": 13651,
+        "sha256": "4290eda7e8eec442e1d823fc50a74f06ac85e6bf2c25b34e5815724c6cf81b93"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/BuilderProvenance.lean:85347dab5645f021036c544cfc538e9a8f0deb05114096142bff491462d9c1db",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/21/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/7",
+        "review-reference/SOURCE_FREEZE/sources/21/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Calculus.lean",
+      "expected": {
+        "bytes": 9864,
+        "sha256": "4e632755cf03544ee07c57197001873eb2a96b3a48f25a103fb4469b5a32c75e"
+      },
+
+      "actual": {
+        "bytes": 10079,
+        "sha256": "e962506395c90eeba73b070a18365449f93c27cd5719a37e1d679d64fd3df9b3"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Calculus.lean:4e632755cf03544ee07c57197001873eb2a96b3a48f25a103fb4469b5a32c75e",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/22/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/8",
+        "review-reference/SOURCE_FREEZE/sources/22/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Capstone.lean",
+      "expected": {
+        "bytes": 13383,
+        "sha256": "ba48ee2d9d0e845df5c642dbe08879da4a19c25ef54abc744c564b331dc68a69"
+      },
+
+      "actual": {
+        "bytes": 13580,
+        "sha256": "da6402bfbbd286831fe18237686bc01a535dba8a35abe92290194d15f20c3e3d"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Capstone.lean:ba48ee2d9d0e845df5c642dbe08879da4a19c25ef54abc744c564b331dc68a69",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/23/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/9",
+        "review-reference/SOURCE_FREEZE/sources/23/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/CodeFetch.lean",
+      "expected": {
+        "bytes": 3099,
+        "sha256": "787b39922d406f5bcd0477370d3781353d1a964ac8b82c20b47d41a0f8d21b38"
+      },
+
+      "actual": {
+        "bytes": 3157,
+        "sha256": "748474489f06988205a567f63474122bb0fe1d3dc59cb51fdecf75c2b95440c5"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/CodeFetch.lean:787b39922d406f5bcd0477370d3781353d1a964ac8b82c20b47d41a0f8d21b38",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/24/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/10",
+        "review-reference/SOURCE_FREEZE/sources/24/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Construction.lean",
+      "expected": {
+        "bytes": 14974,
+        "sha256": "ee5917bdf654d3bcfbb988f146aec81dbac52bfe904956481feb0d09742c063d"
+      },
+
+      "actual": {
+        "bytes": 15250,
+        "sha256": "bfff5ea62f452ff86ed80c0b22b781e3d538b8511fec9c54239a41dadb28bb76"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Construction.lean:ee5917bdf654d3bcfbb988f146aec81dbac52bfe904956481feb0d09742c063d",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/25/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/11",
+        "review-reference/SOURCE_FREEZE/sources/25/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Continuous.lean",
+      "expected": {
+        "bytes": 12590,
+        "sha256": "aee06d642a9f89b4646428a6300d438d6d10548be7e453bd3714ce5b3bbc1f1a"
+      },
+
+      "actual": {
+        "bytes": 12794,
+        "sha256": "dc52ea63307898e7d00511b1ce6ffde89641237bc94db0f0ca207b851a933207"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Continuous.lean:aee06d642a9f89b4646428a6300d438d6d10548be7e453bd3714ce5b3bbc1f1a",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/26/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/12",
+        "review-reference/SOURCE_FREEZE/sources/26/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Controls.lean",
+      "expected": {
+        "bytes": 12870,
+        "sha256": "ddc5ed3b43c85c01e19d880ad3ebf95a0cca83f48f69396f784965d6e2956122"
+      },
+
+      "actual": {
+        "bytes": 13170,
+        "sha256": "207f4d5ccaca1c33143c6e457c90129ad876672bdc0786e29face52f434e8828"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Controls.lean:ddc5ed3b43c85c01e19d880ad3ebf95a0cca83f48f69396f784965d6e2956122",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/27/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/13",
+        "review-reference/SOURCE_FREEZE/sources/27/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Descriptor.lean",
+      "expected": {
+        "bytes": 15407,
+        "sha256": "01de2666d0ad7dc9c6153ba52c20e08bbc8d115f469afa6032c9bb0589ff509b"
+      },
+
+      "actual": {
+        "bytes": 15700,
+        "sha256": "789b974b76e89264eed035defd97559d1e823031a19fa990ee35085436bcfd64"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Descriptor.lean:01de2666d0ad7dc9c6153ba52c20e08bbc8d115f469afa6032c9bb0589ff509b",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/28/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/14",
+        "review-reference/SOURCE_FREEZE/sources/28/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Executable.lean",
+      "expected": {
+        "bytes": 42533,
+        "sha256": "24e93b80a5c57da7d1a7e162ab773ecc6ea0223f3129e1dc661ab77795f02ad6"
+      },
+
+      "actual": {
+        "bytes": 43297,
+        "sha256": "7ed53fd5715a4ea1d6628ae52f626b1573b2f20bb4e6b9b983c0a2c32de41baf"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Executable.lean:24e93b80a5c57da7d1a7e162ab773ecc6ea0223f3129e1dc661ab77795f02ad6",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/29/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/15",
+        "review-reference/SOURCE_FREEZE/sources/29/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Finalization.lean",
+      "expected": {
+        "bytes": 29373,
+        "sha256": "f361d8582b4afa8fd9f0e71e1e2c789a918b9b4cf918dbba3941714ce717e5e8"
+      },
+
+      "actual": {
+        "bytes": 29881,
+        "sha256": "8288249ec0341d280b3b78a23a73a34bddae36b2dfa345d0fe097e0e15085865"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Finalization.lean:f361d8582b4afa8fd9f0e71e1e2c789a918b9b4cf918dbba3941714ce717e5e8",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/30/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/16",
+        "review-reference/SOURCE_FREEZE/sources/30/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Finalizer.lean",
+      "expected": {
+        "bytes": 43151,
+        "sha256": "df48875b1e487b49c4d1474db776acaab8ef8cec97ab6549e446b5d8f6bcab07"
+      },
+
+      "actual": {
+        "bytes": 43977,
+        "sha256": "0ae34dd1731d0d51af30fbaa0d26e27abb0fb63c2f8e5d19c5543c765812354b"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Finalizer.lean:df48875b1e487b49c4d1474db776acaab8ef8cec97ab6549e446b5d8f6bcab07",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/31/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/17",
+        "review-reference/SOURCE_FREEZE/sources/31/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Input.lean",
+      "expected": {
+        "bytes": 6697,
+        "sha256": "52e14ded73b5735c5fd5c5b93aed1306a05a31c0f222b6fe08a82fa0825b6a12"
+      },
+
+      "actual": {
+        "bytes": 6850,
+        "sha256": "3b54bfba5e08abef39f3c50991f2224debaad792418b329c8c6cf90b8a3f21d9"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Input.lean:52e14ded73b5735c5fd5c5b93aed1306a05a31c0f222b6fe08a82fa0825b6a12",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/32/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/18",
+        "review-reference/SOURCE_FREEZE/sources/32/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Machine.lean",
+      "expected": {
+        "bytes": 7249,
+        "sha256": "d581ff3713f9b078bfc8884599bb294122c1575494a74f4a2c75b211f814b335"
+      },
+
+      "actual": {
+        "bytes": 7428,
+        "sha256": "bbc0e439fb2fa55ae75e440ac3a6c77e6203fc6f7b39b2cae8b95e1ed2b8d57b"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Machine.lean:d581ff3713f9b078bfc8884599bb294122c1575494a74f4a2c75b211f814b335",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/33/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/19",
+        "review-reference/SOURCE_FREEZE/sources/33/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Ownership.lean",
+      "expected": {
+        "bytes": 6098,
+        "sha256": "1c8eb8baabba9c9b30deb4a01a78cb970181540eceae72e62ef7a736e8187b74"
+      },
+
+      "actual": {
+        "bytes": 6211,
+        "sha256": "094fd2aeb50dbf66c209fe9c52ed1352e8d413205c281246ff983dd4dff7197b"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Ownership.lean:1c8eb8baabba9c9b30deb4a01a78cb970181540eceae72e62ef7a736e8187b74",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/34/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/20",
+        "review-reference/SOURCE_FREEZE/sources/34/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Physical.lean",
+      "expected": {
+        "bytes": 35825,
+        "sha256": "03394e149990b6be772f9060d94faa4a7475907d1bcbf20933bcc16d2e73b0be"
+      },
+
+      "actual": {
+        "bytes": 36552,
+        "sha256": "22dcd8903f457a75c581d771c4804ca2e5375bc1f5d1afd539227494d6240c5e"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Physical.lean:03394e149990b6be772f9060d94faa4a7475907d1bcbf20933bcc16d2e73b0be",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/35/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/21",
+        "review-reference/SOURCE_FREEZE/sources/35/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Profile.lean",
+      "expected": {
+        "bytes": 4980,
+        "sha256": "06c175735707cfc18a2c0f9e1876d02a07fa66663f33522011b80ba1950df437"
+      },
+
+      "actual": {
+        "bytes": 5061,
+        "sha256": "9b2d904d9a585bc134e0d74e89e91f6fbc4b6f20f880d0ad718d9e86c7d5800b"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Profile.lean:06c175735707cfc18a2c0f9e1876d02a07fa66663f33522011b80ba1950df437",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/36/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/22",
+        "review-reference/SOURCE_FREEZE/sources/36/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Program.lean",
+      "expected": {
+        "bytes": 8237,
+        "sha256": "31599891b0d559824aa3ec0776a908fea9dbb129881c4f0684f6cb421a93dd51"
+      },
+
+      "actual": {
+        "bytes": 8412,
+        "sha256": "bb40b5ab3b7532ea4f907bf1d174dd2de14013c5e022454cb7c3b99cc2707dfc"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Program.lean:31599891b0d559824aa3ec0776a908fea9dbb129881c4f0684f6cb421a93dd51",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/37/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/23",
+        "review-reference/SOURCE_FREEZE/sources/37/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Provenance.lean",
+      "expected": {
+        "bytes": 13499,
+        "sha256": "454ecb3a9615977aa2d5d52015771a187fada6e6f5ce1f90d5a125cd873d273e"
+      },
+
+      "actual": {
+        "bytes": 13708,
+        "sha256": "c5aa67539106246d4461dac3d5617c01b24730f7348b44a95f046dc031fe3308"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Provenance.lean:454ecb3a9615977aa2d5d52015771a187fada6e6f5ce1f90d5a125cd873d273e",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/38/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/24",
+        "review-reference/SOURCE_FREEZE/sources/38/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/QueryBridge.lean",
+      "expected": {
+        "bytes": 7842,
+        "sha256": "90352766b9c72598b54d4414120ed40dc384d1031ca2063b666a9dd20cf261e5"
+      },
+
+      "actual": {
+        "bytes": 8004,
+        "sha256": "df9ab7e58c853fc33a047b0f01baafcc2bc40d359657cdd1fc824da6c0e78265"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/QueryBridge.lean:90352766b9c72598b54d4414120ed40dc384d1031ca2063b666a9dd20cf261e5",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/39/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/25",
+        "review-reference/SOURCE_FREEZE/sources/39/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/QueryEntry.lean",
+      "expected": {
+        "bytes": 24643,
+        "sha256": "19660c6b09969c3af1ffdb4135def14e6eab5627ddfe019d6f33374547c9d3f4"
+      },
+
+      "actual": {
+        "bytes": 25120,
+        "sha256": "5fe765c5ed664e87a9ffc43a4c00b9dc294ce6d2dd75fd6aeec51dbd469fe25e"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/QueryEntry.lean:19660c6b09969c3af1ffdb4135def14e6eab5627ddfe019d6f33374547c9d3f4",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/40/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/26",
+        "review-reference/SOURCE_FREEZE/sources/40/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/QuerySafetyBridge.lean",
+      "expected": {
+        "bytes": 24060,
+        "sha256": "fe9f7eaec1a8a5f066974786e18f6865fe8eb8b3790fd94e2c498603ec17ff8e"
+      },
+
+      "actual": {
+        "bytes": 24516,
+        "sha256": "b0324d42d7309664380842c74fbbab479b0f20146ac32c07cf78583c96d96043"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/QuerySafetyBridge.lean:fe9f7eaec1a8a5f066974786e18f6865fe8eb8b3790fd94e2c498603ec17ff8e",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/41/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/27",
+        "review-reference/SOURCE_FREEZE/sources/41/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Resources.lean",
+      "expected": {
+        "bytes": 5820,
+        "sha256": "578010d4702f86403fc238c0ed48154348f248172f0ff2441f1002d0236f602b"
+      },
+
+      "actual": {
+        "bytes": 5950,
+        "sha256": "bd931d49482d8af1bbec8e8dd78bb7d9dcdf6fa1f65e814856a099964055ec62"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Resources.lean:578010d4702f86403fc238c0ed48154348f248172f0ff2441f1002d0236f602b",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/42/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/28",
+        "review-reference/SOURCE_FREEZE/sources/42/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Retained.lean",
+      "expected": {
+        "bytes": 4492,
+        "sha256": "7d44dc30376a0aa2617b3aaea946aa2c59e56ebf2fe7c65ebf436ecfda26068a"
+      },
+
+      "actual": {
+        "bytes": 4593,
+        "sha256": "ff6ada49c394e940e68ece8bdc52dc39c436ca6299837bfd9ff639ef7ee95301"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Retained.lean:7d44dc30376a0aa2617b3aaea946aa2c59e56ebf2fe7c65ebf436ecfda26068a",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/43/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/29",
+        "review-reference/SOURCE_FREEZE/sources/43/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Retirement.lean",
+      "expected": {
+        "bytes": 23304,
+        "sha256": "f7f94f123151b45902b3bec15befdd18dd7aa543718b54de6320279fcdc248b9"
+      },
+
+      "actual": {
+        "bytes": 23754,
+        "sha256": "248106288060c2b3316a3fc133093385e498e3775c91bc73c005136db879fb4b"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Retirement.lean:f7f94f123151b45902b3bec15befdd18dd7aa543718b54de6320279fcdc248b9",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/44/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/30",
+        "review-reference/SOURCE_FREEZE/sources/44/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Reusable.lean",
+      "expected": {
+        "bytes": 26378,
+        "sha256": "51aa192f34a22e07e19933c7750a2f4a7e7a3e2ceffe3d66cf384b545ebf3bc0"
+      },
+
+      "actual": {
+        "bytes": 26810,
+        "sha256": "087d46afb3b9da6cfd7373cf8b3c7752fb7b538b4c20942775180b1957c8ff67"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Reusable.lean:51aa192f34a22e07e19933c7750a2f4a7e7a3e2ceffe3d66cf384b545ebf3bc0",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/45/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/31",
+        "review-reference/SOURCE_FREEZE/sources/45/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Safety.lean",
+      "expected": {
+        "bytes": 5831,
+        "sha256": "c89da0a36eb474eac546c8eafc93f18e82ec685f2ed52fa3875f5112a28e1cc7"
+      },
+
+      "actual": {
+        "bytes": 5960,
+        "sha256": "1c0f972965596dfbb631b7bd44aaea00b1178ee9b6c40ddb7d2bd45d95f4c490"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Safety.lean:c89da0a36eb474eac546c8eafc93f18e82ec685f2ed52fa3875f5112a28e1cc7",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/46/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/32",
+        "review-reference/SOURCE_FREEZE/sources/46/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/Service.lean",
+      "expected": {
+        "bytes": 7988,
+        "sha256": "c2602662f611160de321847147cd29691bc63d03fb7433124538b1e9b21acf89"
+      },
+
+      "actual": {
+        "bytes": 8157,
+        "sha256": "f4157493517f232a6a83bb52c87b751f6a0c2c1f9ca9c98fb6cae036542a34e0"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/Service.lean:c2602662f611160de321847147cd29691bc63d03fb7433124538b1e9b21acf89",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/47/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/33",
+        "review-reference/SOURCE_FREEZE/sources/47/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Core/WordRAM/Lifecycle/ServiceSafety.lean",
+      "expected": {
+        "bytes": 20214,
+        "sha256": "3672e208e550764c3e388fb96fe0e1098c8ad70a53851027b8027daddca09f13"
+      },
+
+      "actual": {
+        "bytes": 20576,
+        "sha256": "121a2bce2ed5bde35bfce6a8fe7180814531ca3c1487cc77f768993d5beb3a31"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Core/WordRAM/Lifecycle/ServiceSafety.lean:3672e208e550764c3e388fb96fe0e1098c8ad70a53851027b8027daddca09f13",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/48/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/34",
+        "review-reference/SOURCE_FREEZE/sources/48/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Headlines/Lifecycle.lean",
+      "expected": {
+        "bytes": 670,
+        "sha256": "d45b63b27d43f638ee4827f27cce7470456054e2bb8a255c07cad08cb1e6d7ab"
+      },
+
+      "actual": {
+        "bytes": 687,
+        "sha256": "989b80022d6286e66033a99462c28ac346312d4454a41fd1360f11a6ed269ae4"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Headlines/Lifecycle.lean:d45b63b27d43f638ee4827f27cce7470456054e2bb8a255c07cad08cb1e6d7ab",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/49/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/35",
+        "review-reference/SOURCE_FREEZE/sources/49/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Validation/LifecycleContract.lean",
+      "expected": {
+        "bytes": 12199,
+        "sha256": "0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b"
+      },
+
+      "actual": {
+        "bytes": 12403,
+        "sha256": "f7022ac916813779745b9847b43d9091a90f4f2356615bdbf3b560f2861ad9ec"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Validation/LifecycleContract.lean:0d3ddd1d4f4851c7c919900d5a6763591eb57d6aa8e3b49a8be8f7e0d04c5c1b",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/50/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/36",
+        "review-reference/SOURCE_FREEZE/sources/50/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/RMQ/Validation/PackedLifecycle.lean",
+      "expected": {
+        "bytes": 14684,
+        "sha256": "9da6975799204debd1a92127e4b585339da7983a55ce9fa6510d857f0dbc93b2"
+      },
+
+      "actual": {
+        "bytes": 14971,
+        "sha256": "624236001fc72817441cc3dc536da9c299ccb1dc9c050687b09896b7f1679c14"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "RMQ/Validation/PackedLifecycle.lean:9da6975799204debd1a92127e4b585339da7983a55ce9fa6510d857f0dbc93b2",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/51/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/37",
+        "review-reference/SOURCE_FREEZE/sources/51/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/lakefile.toml",
+      "expected": {
+        "bytes": 1170,
+        "sha256": "a82e092bfd4be06ff7dc3ceb2454b633b0141f7f2e09ca00c8060592c3475898"
+      },
+
+      "actual": {
+        "bytes": 1176,
+        "sha256": "b47c7abe3955d1a2e9ba51a4c71fc2e7961423d2bf5f3856f79a24bebc8bdd50"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "lakefile.toml:a82e092bfd4be06ff7dc3ceb2454b633b0141f7f2e09ca00c8060592c3475898",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/129/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/0",
+        "review-reference/SOURCE_FREEZE/sources/129/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/scripts/lifecycle_contract_integrity.ps1",
+      "expected": {
+        "bytes": 8613,
+        "sha256": "16ccb2e7c3dbbad3dd187d98325f11b72b36bf1b944cafa0d55d6018994511f3"
+      },
+
+      "actual": {
+        "bytes": 8781,
+        "sha256": "f582fdc21665307b946b41f17eeb95c9bbe96db7b025fde6cc0d7141f5c4a9df"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "scripts/lifecycle_contract_integrity.ps1:16ccb2e7c3dbbad3dd187d98325f11b72b36bf1b944cafa0d55d6018994511f3",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/150/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/38",
+        "review-reference/SOURCE_FREEZE/sources/150/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/scripts/lifecycle_dependency_README.md",
+      "expected": {
+        "bytes": 5425,
+        "sha256": "e130bd803e53a3007a3b1ba244f421212e507db1ec4e21fcd10039501cb1b33c"
+      },
+
+      "actual": {
+        "bytes": 5500,
+        "sha256": "e5a65e69e7d337b11906cf1a5f1a91c15e53d7bc0c1707757aeaa1a01c4a8105"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "scripts/lifecycle_dependency_README.md:e130bd803e53a3007a3b1ba244f421212e507db1ec4e21fcd10039501cb1b33c",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/151/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/40",
+        "review-reference/SOURCE_FREEZE/sources/151/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/scripts/lifecycle_dependency_replay.ps1",
+      "expected": {
+        "bytes": 20217,
+        "sha256": "a4acecafb1a639dd220ddf29d6586dbd907983f723070a153c6074382f31d9aa"
+      },
+
+      "actual": {
+        "bytes": 20972,
+        "sha256": "66d1d42b1c01288fcb362dd716493f3154cc3c606b49d65b9f1e5f8fbaed68e1"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "scripts/lifecycle_dependency_replay.ps1:a4acecafb1a639dd220ddf29d6586dbd907983f723070a153c6074382f31d9aa",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/153/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/41",
+        "review-reference/SOURCE_FREEZE/sources/153/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/scripts/lifecycle_inventory.lean",
+      "expected": {
+        "bytes": 3699,
+        "sha256": "21e123fcf97dab5c492ab22f6cf7e8eb9a7a0bbfc189281e0582a65668dcd2ec"
+      },
+
+      "actual": {
+        "bytes": 3790,
+        "sha256": "a6d2c6b8afa097ba21a5bbb11f529f375e4b1cc5a087f58ab0b143b924790001"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "scripts/lifecycle_inventory.lean:21e123fcf97dab5c492ab22f6cf7e8eb9a7a0bbfc189281e0582a65668dcd2ec",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/154/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/42",
+        "review-reference/SOURCE_FREEZE/sources/154/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/scripts/lifecycle_provenance_contract.lean",
+      "expected": {
+        "bytes": 5560,
+        "sha256": "d7d291fb45e376ef2be54cca1d1c93a603c69fbd41ade2a702836fc3a687bb4a"
+      },
+
+      "actual": {
+        "bytes": 5660,
+        "sha256": "767743a4dd79b34377f5f5550bab88693df4a966826b02de7aedda78043fd020"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "scripts/lifecycle_provenance_contract.lean:d7d291fb45e376ef2be54cca1d1c93a603c69fbd41ade2a702836fc3a687bb4a",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/155/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/43",
+        "review-reference/SOURCE_FREEZE/sources/155/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/scripts/lifecycle_validator.ps1",
+      "expected": {
+        "bytes": 7768,
+        "sha256": "376beb1533ed020d17a796a40f6d8a20941ddd8da60dc39b7b4639bd67073b29"
+      },
+
+      "actual": {
+        "bytes": 8062,
+        "sha256": "94dd5022a8161dbdff69bc8d0fa2d9140c874b3a4d8e8fa03662f71b38db5cb3"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "scripts/lifecycle_validator.ps1:376beb1533ed020d17a796a40f6d8a20941ddd8da60dc39b7b4639bd67073b29",
+      "origins": [
+        "R1_SOURCE_FREEZE/sources/156/historicalSourceManifestIdentity",
+        "original_SOURCE_MANIFEST/files/44",
+        "review-reference/SOURCE_FREEZE/sources/156/historicalSourceManifestIdentity"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+      "expected": {
+        "bytes": 905553,
+        "sha256": "6185e7907f116ea5b8d5895e661c8c99615b97ada9f20378c87e3021baf74768"
+      },
+
+      "actual": {
+        "bytes": 914008,
+        "sha256": "0500cfc4c5a9105aa6653d848ad1a72ce483f4d512a1707949c10ea029045de3"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "docs/internal/WORKFLOW_DESIGN_DECISIONS.md:6185e7907f116ea5b8d5895e661c8c99615b97ada9f20378c87e3021baf74768",
+      "origins": [
+        "R1_delivery/packageFilePins/0",
+        "review-index/recorded-current-profile",
+        "review-reference/delivery/packageFilePins/0"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/scripts/lifecycle_dependency_replay.ps1",
+      "expected": {
+        "bytes": 20877,
+        "sha256": "e2df09b1920691127c29eefc293700b7d046a7ddec7f78db18ea68a6b6c42b47"
+      },
+
+      "actual": {
+        "bytes": 20972,
+        "sha256": "66d1d42b1c01288fcb362dd716493f3154cc3c606b49d65b9f1e5f8fbaed68e1"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "scripts/lifecycle_dependency_replay.ps1:e2df09b1920691127c29eefc293700b7d046a7ddec7f78db18ea68a6b6c42b47",
+      "origins": [
+        "R1_delivery/packageFilePins/44",
+        "R1_SOURCE_FREEZE/recorded-working/scripts/lifecycle_dependency_replay.ps1",
+        "review-index/recorded-current-profile",
+        "review-reference/delivery/packageFilePins/44",
+        "review-reference/SOURCE_FREEZE/working/scripts/lifecycle_dependency_replay.ps1",
+        "R1-check-source/control-freeze-design",
+        "R1-check-source/control-range-diff-check",
+        "R1-check-source/controls-pwsh-development",
+        "R1-check-source/dev-D01_OMITTED-pwsh",
+        "R1-check-source/dev-D12_DUPLICATE_ARGUMENT-pwsh",
+        "R1-check-source/dev-S01_ABSENT_REGISTRY-pwsh",
+        "R1-check-source/dev-S04_PRESENT_EMPTY_REGISTRY-winps",
+        "R1-check-source/dev-S21_ARGUMENT_WHITESPACE-winps",
+        "R1-check-source/dev-W01_STARTUP_AMBIENT-pwsh",
+        "R1-check-source/dev-W09_DUPLICATE_CASE-pwsh",
+        "R1-check-source/dev-winps-receipt-array",
+        "R1-check-source/f2-controls-pwsh",
+        "R1-check-source/f2-controls-winps",
+        "R1-check-source/f2-registry-pwsh",
+        "R1-check-source/f2-registry-winps",
+        "R1-check-source/f2-winps-finalizer",
+        "R1-check-source/f2-winps-timeout",
+        "R1-check-source/final-claim-six-paths",
+        "R1-check-source/final-controls-pwsh",
+        "R1-check-source/final-controls-winps",
+        "R1-check-source/final-default-build",
+        "R1-check-source/final-default-build-pinned",
+        "R1-check-source/final-dependency-focused",
+        "R1-check-source/final-dependency-full",
+        "R1-check-source/final-dependency-selftest",
+        "R1-check-source/final-dependency-startup",
+        "R1-check-source/final-hygiene",
+        "R1-check-source/final-named-build-pinned",
+        "R1-check-source/final-native-trust",
+        "R1-check-source/final-original-contract",
+        "R1-check-source/final-registry-pwsh",
+        "R1-check-source/final-registry-winps",
+        "R1-check-source/final-validator-pwsh-full",
+        "R1-check-source/final-validator-pwsh-startup",
+        "R1-check-source/final-validator-winps-full",
+        "R1-check-source/final-validator-winps-startup",
+        "R1-check-source/final-winps-F01_INTACT_SUCCESS",
+        "R1-check-source/final-winps-T01_DESCENDANT_TIMEOUT",
+        "R1-check-source/old-environment-pwsh",
+        "R1-check-source/old-environment-winps",
+        "R1-check-source/old-full-pwsh",
+        "R1-check-source/old-full-winps",
+        "R1-check-source/package-working-design",
+        "R1-check-source/pinned-lake-version",
+        "R1-check-source/pinned-lean-version",
+        "R1-check-source/revised-focus-D22_REGISTRY_UNUSED_EDIT",
+        "R1-check-source/revised-focus-D22_UNUSED_EDIT",
+        "R1-check-source/revised-focus-S05_EXPLICIT_ID_EMPTY",
+        "R1-check-source/revised-focus-W09_DUPLICATE_CASE",
+        "R1-check-source/source-freeze-design",
+        "R1-check-source/winps-controls-final",
+        "R1-check-source/winps-finalizer-final",
+        "R1-check-source/winps-timeout-final",
+        "R1-check-source/working-diff-check",
+        "final-default-build-pinned/source",
+        "final-named-build-pinned/source",
+        "final-validator-pwsh-full/outer-source-capture",
+        "final-validator-winps-full/outer-source-capture"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.frozen.md",
+      "expected": {
+        "bytes": 43514,
+        "sha256": "bc596cd8a4866cf8db7bd06360d1c2e797e389c92237c9ac3a0b5e4145cd22ab"
+      },
+
+      "actual": {
+        "bytes": 43437,
+        "sha256": "8b08e2d7c7f284634d88bfa4262ee447f79a401c78b27dc346ea34d76ccba4a7"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.frozen.md:bc596cd8a4866cf8db7bd06360d1c2e797e389c92237c9ac3a0b5e4145cd22ab",
+      "origins": [
+        "R1_SOURCE_FREEZE/recorded-working/docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.frozen.md",
+        "review-index/recorded-current-profile",
+        "review-reference/initial-protected/docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.frozen.md",
+        "review-reference/SOURCE_FREEZE/working/docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.frozen.md"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.md",
+      "expected": {
+        "bytes": 73177,
+        "sha256": "63b7eb6b7c01fcf9ca109be9cdcbf67141bb83c3927c2d7f707b06e2dc482cf1"
+      },
+
+      "actual": {
+        "bytes": 72806,
+        "sha256": "18bdb89a0d4873636d434effb9a8e6d4f8c1b13997deb3167159eb1da167ef8e"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.md:63b7eb6b7c01fcf9ca109be9cdcbf67141bb83c3927c2d7f707b06e2dc482cf1",
+      "origins": [
+        "R1_SOURCE_FREEZE/recorded-working/docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.md",
+        "review-index/recorded-current-profile",
+        "review-reference/initial-protected/docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.md",
+        "review-reference/SOURCE_FREEZE/working/docs/internal/extensions/lifecycle1/ACCEPTANCE_MATRIX.md"
+      ]
+    },
+
+    {
+      "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/docs/internal/extensions/lifecycle1/CONTRACT_REQUIREMENTS.json",
+      "expected": {
+        "bytes": 54250,
+        "sha256": "e47ab45acad51fe508ce9b8be9983a136f8c9267d4d8fdd7888195bd0419e488"
+      },
+
+      "actual": {
+        "bytes": 53962,
+        "sha256": "5bd95d24b6cffaf9fb39abb2aa04cca9743aed7884b3f87d03d7428e6b9cd8eb"
+      },
+
+      "disposition": "historical-producer-resolved-current-bytes-distinct",
+      "retainedRawSnapshotExact": false,
+      "producerProfileKey": "docs/internal/extensions/lifecycle1/CONTRACT_REQUIREMENTS.json:e47ab45acad51fe508ce9b8be9983a136f8c9267d4d8fdd7888195bd0419e488",
+      "origins": [
+        "R1_SOURCE_FREEZE/recorded-working/docs/internal/extensions/lifecycle1/CONTRACT_REQUIREMENTS.json",
+        "review-index/recorded-current-profile",
+        "review-reference/initial-protected/docs/internal/extensions/lifecycle1/CONTRACT_REQUIREMENTS.json",
+        "review-reference/SOURCE_FREEZE/working/docs/internal/extensions/lifecycle1/CONTRACT_REQUIREMENTS.json"
+      ]
+    }
+  ],
+  "counts": {
+    "distinctFilesRehashed": 14464,
+    "bindingsVerified": 32638,
+    "historicalProducerProfiles": 1392,
+    "rawDifferenceProfiles": 48,
+    "rawDifferenceReferences": 207
+  },
+
+  "fullInventory": {
+    "path": "C:/Users/poin/.codex/worktrees/e993/RMQ/.lake/repair-r2/history-binding-inventory.json",
+    "bytes": 28736872,
+    "sha256": "4241a94fdfa0a68cf3ee17ce455864f9f8335de9dd181e33ee53768e6350ce69"
+  },
+
+  "notReusedForR2Closure": [
+    "R1 full26 and dependency/control results remain historical because Hash-Bytes is load-bearing there.",
+    "The R1 Windows positive failed before capture; an empty baseline is not an intact-pin positive.",
+    "The old contract failure remains valid for its exact CRLF source profile.",
+    "The R1 default/named builds retain historical validity, but R2 requires its own final default build."
+  ],
+  "limits": [
+    "Read-only identity and retained-verdict verification; no theorem reproof, semantic rerun, fresh process-lifetime observation or campaign acceptance.",
+    "Exact LF/CRLF historical profiles are reconstructed from immutable blobs and hash-compared; this is not normalization-as-equality.",
+    "Returned nonblank helper lines remain distinct from complete original raw process streams; exceptional overflow/output-loss limits remain.",
+    "Hashing installed runtime files is not dynamic-loader attestation; copied warm cache verification is not a cold build."
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "id": "IC-Q",
+  "harness": "IC",
+  "shape": "Q",
+  "fault": "change-fail",
+  "mode": "candidate",
+  "profile": "pwsh",
+  "deadlineSeconds": 600,
+  "root": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\IC-Q\\root",
+  "setupError": null,
+  "launchError": null,
+  "process": {
+    "Stage": "IC-Q",
+    "ExitCode": 1,
+    "Output": [
+      "INTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\IC-Q\\root\\lean-toolchain",
+      "real candidate changed",
+      "Exception: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\IC-Q\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1\\integrity_controls.ps1:115",
+      "Line |",
+      " 115 |  . n.OutputLimitExceeded){throw 'fixture outer deadline/output failure'}",
+      "     |                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | fixture outer deadline/output failure"
+    ],
+    "StandardOutput": [],
+    "StandardError": [
+      "INTEGRITY: changed captured pin: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\IC-Q\\root\\lean-toolchain",
+      "real candidate changed",
+      "Exception: C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\IC-Q\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1\\integrity_controls.ps1:115",
+      "Line |",
+      " 115 |  . n.OutputLimitExceeded){throw 'fixture outer deadline/output failure'}",
+      "     |                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+      "     | fixture outer deadline/output failure"
+    ],
+    "TimedOut": false,
+    "OutputLimitExceeded": false,
+    "TerminatedIds": [],
+    "DurationSeconds": 17.423,
+    "DeadlineSeconds": 600,
+    "Ownership": "kill-on-close-job"
+  },
+  "durable": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\IC-Q\\root\\.lake\\r3-out\\RESULTS.json",
+    "ambiguous": false,
+    "parseError": null,
+    "sha256": "368721cb67179dc5cdd9af301ee1949e4e55ecb476b3afb55a18f3bbdd37346d"
+  },
+  "core": {
+    "launchCompleted": true,
+    "exitClass": true,
+    "durablePresent": true,
+    "durableAsExpected": true,
+    "stageRecorded": true,
+    "integrityRecorded": true,
+    "cleanupRecorded": true,
+    "verdictAsExpected": true,
+    "values": null,
+    "labels": null,
+    "stderrAsExpected": true,
+    "absentFiles": true,
+    "stdoutWithoutSuccess": true
+  },
+  "structural": {
+    "applicable": true,
+    "finalizationPresent": true,
+    "verdictMatches": true,
+    "stageFieldMatches": true,
+    "integrityFieldMatches": true,
+    "cleanupEmpty": true,
+    "pinsVerified": true,
+    "pinCoverage": "captured 7 of 7 rows, all re-verified"
+  },
+  "restoration": {
+    "restored": [
+      "lean-toolchain"
+    ],
+    "removed": [],
+    "errors": [],
+    "verified": true,
+    "gitClean": true,
+    "gitState": "315e55ca66f1e6980a66eceec300934c8aa3b975\n--"
+  },
+  "verdict": "PASS",
+  "expected": "accept-all-predicates",
+  "lockWaitSeconds": 0.0,
+  "manifest": {
+    "docs/internal/extensions/lifecycle-native-p0/repair-r1/integrity_controls.ps1": "2ba6265f32b1bd039f7446f236ab7a4bdd3300cf41dd67d1f01ad8b78e5b9271",
+    "scripts/packed_native_lifecycle_storage_replay.ps1": "c35bb6d38eb54562cb1e650d437d0914de72852594dfdb865db04e24104ad345",
+    "scripts/packed_native_lifecycle_integrity_check.ps1": "4dbde3ff1b030829c89de70effd12d959404181a545117add11ac869be0e426a",
+    "scripts/owned_process_tree.ps1": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+    "scripts/packed_native_lifecycle_stream_check.ps1": "3f597a2b032ab45847eb18042bc92d5982bc33a44d1cc43347cb56a71f1cac40",
+    "native/packed-rmq/tests/lifecycle_storage_probe.c": "5f32f4a91b21697f86b4f2fea855cd050e59e330ce6c6ffda28898353b66d7b1",
+    "lean-toolchain": "ad3e6363c78908c80953282baf57162702f1134173a5247aad3dbfea108a525f",
+    "docs/internal/extensions/lifecycle-native-p0/REGISTRY.json": "6cd97f40e7c39d2212a8c8705d264d4832dcf2542815b72cd927906a01dc8b20",
+    ".gitignore": "fde850d24186b6e99c8c0debd641fb3ab85198b109eb66f71a1fea02bd6ea1b3"
+  },
+  "harnessSha256": "2ba6265f32b1bd039f7446f236ab7a4bdd3300cf41dd67d1f01ad8b78e5b9271",
+  "arguments": [
+    "-NoLogo",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\IC-Q\\root\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1\\integrity_controls.ps1",
+    "-OutputRoot",
+    "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\IC-Q\\root/.lake/r3-out",
+    "-ControlIds",
+    "intact-success"
+  ],
+  "environment": {
+    "R3_FAULT_SCOPE": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\IC-Q\\root",
+    "R3_FAULT_MODE": "change-fail",
+    "R3_FAULT_TARGET": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\IC-Q\\root\\lean-toolchain",
+    "R3_FAULT_MARKER": "C:\\Users\\poin\\Documents\\RMQ\\.claude\\worktrees\\life1-r4-run-check-verdict\\.lake\\life1-r4\\controls\\candidate-v1-pwsh\\controls\\IC-Q\\fault.marker"
+  },
+  "coreAll": true,
+  "structuralAll": true,
+  "predicateOutcome": true
+}
