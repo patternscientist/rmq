@@ -1,4 +1,5 @@
 import RMQ.Core.SuccinctSelect.TwoLevel.SelectSamples
+import RMQ.Core.GenericSelect.SelectFacts
 
 /-!
 # Select word exactness and descriptor obstructions
@@ -120,22 +121,7 @@ theorem rankPrefix_take_length_eq
     RMQ.Succinct.rankPrefix target (bits.take limit)
         (bits.take limit).length =
       RMQ.Succinct.rankPrefix target bits limit := by
-  by_cases hlimit : limit <= bits.length
-  · have hlen : (bits.take limit).length = limit := by
-      simp [List.length_take, Nat.min_eq_left hlimit]
-    have hlimitTake : limit <= (bits.take limit).length := by
-      rw [hlen]
-      exact Nat.le_refl limit
-    rw [hlen]
-    exact RMQ.Succinct.rankPrefix_take_eq_of_le
-      target bits hlimitTake
-  · have hlen_le : bits.length <= limit := Nat.le_of_not_ge hlimit
-    have htake : bits.take limit = bits := by
-      exact List.take_of_length_le hlen_le
-    rw [htake]
-    exact
-      (RMQ.Succinct.rankPrefix_eq_rankPrefix_length_of_length_le
-        target bits hlen_le).symm
+  exact RMQ.GenericSelect.rankPrefix_take_length_eq target bits limit
 
 /-- A successful select contributes exactly one target bit at `pos + 1`. -/
 theorem rankPrefix_succ_of_select

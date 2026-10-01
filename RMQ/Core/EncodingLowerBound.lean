@@ -32,39 +32,6 @@ theorem mem_bitStrings_of_length
     List.Mem bits (bitStrings n) := by
   exact LowerBound.mem_bitStrings_of_length hlen
 
-private theorem mem_erase_of_ne_of_mem
-    {alpha : Type} [BEq alpha] [LawfulBEq alpha]
-    {a b : alpha} {xs : List alpha}
-    (hne : Not (a = b)) (hmem : List.Mem a xs) :
-    List.Mem a (xs.erase b) := by
-  induction xs with
-  | nil =>
-      cases hmem
-  | cons x xs ih =>
-      by_cases hxb : x = b
-      case pos =>
-        subst x
-        rw [List.erase_cons_head]
-        have hmem' := List.mem_cons.mp hmem
-        rcases hmem' with hmem | hmem
-        case inl =>
-          exact False.elim (hne hmem)
-        case inr =>
-          exact hmem
-      case neg =>
-        have hbeq : Not ((x == b) = true) := by
-          intro h
-          apply hxb
-          exact eq_of_beq h
-        rw [List.erase_cons_tail hbeq]
-        have hmem' := List.mem_cons.mp hmem
-        apply List.mem_cons.mpr
-        rcases hmem' with hmem | hmem
-        case inl =>
-          exact Or.inl hmem
-        case inr =>
-          exact Or.inr (ih hmem)
-
 theorem length_le_of_nodup_injective_into
     {alpha : Type u} {beta : Type v} [BEq beta] [LawfulBEq beta]
     (xs : List alpha) (ys : List beta) (f : alpha -> beta)

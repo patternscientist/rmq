@@ -13476,3 +13476,53 @@ code and scratch, enlarge the public API, or replace kernel checking with a
 draft. The result is an examples-only consumer plus documentation and a frozen
 acceptance matrix. It changes no declaration under `RMQ/` and makes no claim
 about preprocessing, Lean wall-clock time, V1 acceptance, or release readiness.
+
+## DD-20261001-V1-PROOF - Consolidate proof ownership without changing contracts
+
+Date: 2026-10-01. Status: implementation decision; candidate verification
+pending.
+
+The shape-free rank/select facts in `RMQ.GenericSelect` are the canonical
+mathematical proofs. The historical `RMQ.SuccinctSelect` declarations remain
+at their existing names and types, but now delegate through direct imports.
+The preserved rank proposition is, for every `target`, `bits`, and `limit`,
+`rankPrefix target (bits.take limit) (bits.take limit).length = rankPrefix
+target bits limit`. The preserved select proposition takes
+`occurrence < rankPrefix target bits limit` and returns
+`exists pos, select target bits occurrence = some pos`. This keeps
+`GenericSelect.Primitives`, the legacy `BuiltRouting.RelativeEntries` and
+`BuiltRouting.LookupDense` clients, and the construction/specification clients
+on their old surfaces while leaving one proof of each mathematical fact.
+
+The reviewer interior simulation now names the definitional decomposition of an
+active `readNat (.read ...)` reference as the full
+`WordRAM.TraceResult.bind` of the remaining read and its continuation. The
+strong-induction proof consumes that equality once for exact trace
+concatenation and again for the splice reference. Full result equality was
+chosen because `PackedReviewerComponentRun.Simulates` fixes the returned
+value, terminal state, and exact trace; a trace-length lemma would be too weak.
+The boundary remains private and has no simp attribute, so it does not broaden
+the public API or rewrite unrelated reference terms. The existing chain through
+`packedReviewerDriveInterior_state_simulates_of_length`,
+`packedReviewerDriveInterior_state_simulates`,
+`packedReviewerDriveInterior_exact_simulates`,
+`packedReviewerDriveInterior_simulates`, and the downstream LCA simulation
+keeps the same statements and objects.
+
+The unused private
+`RMQ.EncodingLowerBound.mem_erase_of_ne_of_mem` copy is removed after a
+repository source search found no consumer. Public forwarding declarations in
+that module remain unchanged. Rejected alternatives were retaining parallel
+inductive proofs, renaming or moving the historical theorems, adding a generic
+bind-length wrapper already subsumed by `WordRAM.TraceResult.bind_trace`,
+marking the private decomposition as a global simp rule, expanding a giant simp
+set at the two simulation sites, and folding the nearby LCA layout aliases into
+this maintenance patch. Those choices would preserve duplication, weaken the
+needed equality, or enlarge the change beyond the two identified coupling
+sites.
+
+The exact frozen types, consumer chains, anti-vacuity checks, and verification
+ledger are recorded in `docs/internal/v1/V1_PROOF_MATRIX.md`. This decision
+changes no computational definition, machine program, constant, premise,
+payload account, cost model, runtime claim, or measured-performance claim.
+Coordinator integration and independent acceptance remain separate V1 work.

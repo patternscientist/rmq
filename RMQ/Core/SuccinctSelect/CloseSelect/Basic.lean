@@ -1,5 +1,6 @@
 import RMQ.Core.SuccinctSelect.DenseLocalTables
 import RMQ.Core.GenericSelect.DenseEntryTable
+import RMQ.Core.GenericSelect.SelectFacts
 
 /-!
 # Basic false-select routing helpers
@@ -128,26 +129,7 @@ theorem select_exists_of_lt_rankPrefix
     (hcount :
       occurrence < RMQ.Succinct.rankPrefix target bits limit) :
     exists pos, RMQ.Succinct.select target bits occurrence = some pos := by
-  have hcountMin :
-      occurrence <
-        RMQ.Succinct.rankPrefix target bits
-          (Nat.min limit bits.length) := by
-    simpa [RMQ.Succinct.rankPrefix_min_length_eq] using hcount
-  have htotal :
-      occurrence <
-        RMQ.Succinct.rankPrefix target bits bits.length := by
-    exact Nat.lt_of_lt_of_le hcountMin
-      (RMQ.Succinct.rankPrefix_mono_limit
-        target bits (Nat.min_le_right limit bits.length))
-  have hidx :
-      occurrence < (selectPositions target bits).length := by
-    simpa [selectPositions_length_eq_rankPrefix_length] using htotal
-  refine ⟨(selectPositions target bits)[occurrence], ?_⟩
-  have hget :
-      (selectPositions target bits)[occurrence]? =
-        some ((selectPositions target bits)[occurrence]) :=
-    List.getElem?_eq_getElem hidx
-  simpa [selectPositions_get?_eq_select] using hget
+  exact RMQ.GenericSelect.select_exists_of_lt_rankPrefix hcount
 
 theorem select_none_of_rankPrefix_length_le
     {target : Bool} {bits : List Bool} {occurrence : Nat}

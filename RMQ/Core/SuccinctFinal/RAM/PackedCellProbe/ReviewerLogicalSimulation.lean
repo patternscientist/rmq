@@ -2064,6 +2064,25 @@ private def packedReviewerInteriorStateReference
             (packedReviewerInteriorNatContinuationComputation value
               continuation))
 
+private theorem packedReviewerInteriorStateReference_readNat_read
+    (store : WordRAM.ReadStore)
+    (invocation childInvocation : PackedReviewerInvocation)
+    (n start next remaining : Nat)
+    (repliesRev : List (Option (List Bool)))
+    (continuation : PackedReviewerInteriorNatContinuation) :
+    packedReviewerInteriorStateReference store
+        (.readNat invocation
+          (.read childInvocation n start next remaining repliesRev)
+          continuation) =
+      WordRAM.TraceResult.bind
+        (packedReviewerInteriorNatReference store start next remaining
+          repliesRev)
+        (fun value =>
+          packedReviewerInteriorRunComputation store
+            (packedReviewerInteriorNatContinuationComputation value
+              continuation)) := by
+  rfl
+
 private theorem packedReviewerInteriorNatReference_trace_length
     (store : WordRAM.ReadStore) (start next remaining : Nat)
     (repliesRev : List (Option (List Bool))) :
@@ -2765,9 +2784,9 @@ private theorem packedReviewerDriveInterior_state_simulates_of_length
                 (.readNat invocation readState continuation)).trace.length =
                   readReference.trace.length +
                     continuationReference.trace.length := by
-            simp [packedReviewerInteriorStateReference,
-              packedReviewerInteriorNatStateReference, readState,
-              readReference, continuationReference, WordRAM.TraceResult.bind]
+            simp only [readState, readReference, continuationReference,
+              packedReviewerInteriorStateReference_readNat_read,
+              WordRAM.TraceResult.bind_trace, List.length_append]
           have hfuel' :
               (packedReviewerInteriorStateReference store
                 (.readNat invocation readState continuation)).trace.length =
@@ -2801,9 +2820,9 @@ private theorem packedReviewerDriveInterior_state_simulates_of_length
           have hfuelDecomp :
               fuel = remaining + continuationReference.trace.length := by
             rw [← hfuel', houterLength, hreadLength]
-          simpa [packedReviewerInteriorStateReference,
-            packedReviewerInteriorNatStateReference, readState, readReference,
-            continuationReference, WordRAM.TraceResult.bind, hreadLength,
+          simpa only [readState, readReference,
+            packedReviewerInteriorNatRemaining,
+            packedReviewerInteriorStateReference_readNat_read,
             hfuelDecomp] using hsplice
 
 private theorem packedReviewerDriveInterior_state_simulates

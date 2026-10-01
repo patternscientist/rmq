@@ -15570,3 +15570,40 @@ Consequences. The final strict design check must run with exact base
 `ee44f04a561f2194b3713f071c26b6faf9ba7fab`. This leaf can report only a
 candidate to the coordinator; integration, aggregate verification, fresh audit,
 and any V1 release decision remain separate.
+
+
+## WDD-20261001-V1-PROOF - Register the governed proof-acceptance matrix
+
+Date: 2026-10-01. Status: coordinator-approved scope correction; candidate
+verification pending.
+
+Context. The V1 proof-maintenance contract requires
+`docs/internal/v1/V1_PROOF_MATRIX.md` to freeze exact proof obligations,
+consumer chains, inherited invariants, and verification commands before Lean
+edits. The first strict design check correctly classified that new path as
+workflow/process-sensitive and required a workflow decision in addition to the
+Lean design decision `DD-20261001-V1-PROOF`. The original worker write scope
+owned the matrix and `DESIGN_DECISIONS.md`, but not this file. The coordinator
+therefore amended the contract explicitly and only for this entry.
+
+Decision. Keep the matrix at its required path and record this transitive scope
+effect. The matrix governs one proof-cleanup leaf: historical rank/select
+theorems delegate to existing generic facts without changing their types, one
+unused private lower-bound helper is removed, and two interior-simulation
+unfolding sites consume one private full-`TraceResult` decomposition. The
+matrix may update evidence and status as checks run; its requirements remain
+frozen except for an explicit coordinator-approved amendment such as this
+scope correction.
+
+Alternatives rejected. Moving the matrix outside `docs/internal/v1` would
+violate the frozen contract. Ignoring the strict failure, disabling strict
+mode, weakening the path classifier, or silently editing an unowned workflow
+file would bypass the repository's process boundary. A broad workflow-policy
+rewrite is unnecessary because no harness, replay registry, automation,
+permission rule, or acceptance authority changes.
+
+Consequences. The proof worker owns this single append and records `AMEND-01`
+in the matrix. `scripts/design_decision_check.ps1 -Strict -Base
+ee44f04a561f2194b3713f071c26b6faf9ba7fab` must pass on the final candidate.
+Coordinator integration, independent reconstruction, and V1 acceptance remain
+separate.
