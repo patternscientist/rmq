@@ -13600,3 +13600,56 @@ exclusions still hold. These are base counts, not a relabeled final-build result
 The V1 proof/client delta remains a separate verification obligation. Avoid
 silently replacing historical counts or presenting a source LOC total as a
 measure of proof quality.
+
+
+## DD-20261001-V1-PROOF-REVIEW - Complete adjacent generic-select proof ownership
+
+Date: 2026-10-01. Status: implementation decision; follow-up candidate
+verification pending.
+
+Source review found six more historical RMQ.SuccinctSelect proofs whose
+propositions, implicit binders, and hypothesis order exactly match existing
+RMQ.GenericSelect theorems already imported by their modules. The preserved
+facts are: a successful select makes the rank through pos + 1 equal
+occurrence + 1; a selected position below limit places the occurrence below
+the rank prefix at limit; monotonicity of selectFrom under lo <= hi;
+monotonicity and strict monotonicity of select; and failure of select when
+the total rank is at most the occurrence. The historical declarations retain
+their names and complete theorem headers and now prove those exact propositions
+with direct by-exact RMQ.GenericSelect delegation.
+
+Existing historical consumers therefore keep the same objects and assumptions.
+They include WordExact's own sample-order arguments, BuiltRouting
+RelativeEntries/SpanBudgets/LookupDense, sparse-exception data and exactness
+modules, and WordRAM construction specifications. GenericSelect clients
+continue to consume the canonical declarations directly. No recursive
+selectPositions definition is merged, and no theorem is renamed or made
+public.
+
+The private EncodingLowerBound.two_pow_sub_le_of_le_mul_pow compatibility
+wrapper had no source consumer: repository search found only its declaration
+and forwarding body. The same spelling in LowerBound.lean is the canonical
+public theorem and has a canonical lower-bound consumer. Likewise,
+docs/FAMILY_SUMMARY.md has separate owners: its public LowerBound inventory
+entry remains, while only the private EncodingLowerBound inventory entry is
+removed with the wrapper.
+
+Rejected alternatives were a broad tactic-style sweep, changing binder order
+to make delegation convenient, merging similar recursive helper definitions,
+publishing the unused wrapper, deleting the canonical theorem or its public
+inventory entry, and editing ReviewerLogicalSimulation again. Those changes
+would enlarge the API or alter unrelated proof boundaries. This follow-up
+changes no computational definition, payload account, model cost, runtime
+behavior, theorem premise, or public claim. The appended source-review matrix
+records exact evidence; coordinator integration, native/package verification,
+and fresh independent audit remain required before V1 acceptance.
+
+Proof digestion: the historical modules now act as compatibility surfaces while
+GenericSelect owns the mathematical proofs. In plain language, callers still
+ask the same six questions and receive the same answers; only the proof source
+is shared. The live assumptions are exactly the original select equations,
+order hypotheses, and rank bound. A skeptical reader should change one
+historical binder or argument order and confirm the direct delegation and its
+downstream client fail to elaborate, then separately verify that source search
+continues to distinguish the canonical lower-bound theorem from private
+inventory.

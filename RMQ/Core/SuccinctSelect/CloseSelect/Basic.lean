@@ -136,11 +136,7 @@ theorem select_none_of_rankPrefix_length_le
     (hcount :
       RMQ.Succinct.rankPrefix target bits bits.length <= occurrence) :
     RMQ.Succinct.select target bits occurrence = none := by
-  have hget :
-      (selectPositions target bits)[occurrence]? = none := by
-    exact List.getElem?_eq_none (by
-      simpa [selectPositions_length_eq_rankPrefix_length] using hcount)
-  simpa [selectPositions_get?_eq_select] using hget
+  exact RMQ.GenericSelect.select_none_of_rankPrefix_length_le hcount
 
 /--
 Dense local fallback for a sparse/dense select interval.

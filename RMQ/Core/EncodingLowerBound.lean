@@ -525,12 +525,6 @@ theorem odd_square_le_two_pow_log_slack (n : Nat) :
       2 ^ (2 * Nat.log2 (2 * n + 1) + 2) := by
   exact LowerBound.odd_square_le_two_pow_log_slack n
 
-private theorem two_pow_sub_le_of_le_mul_pow
-    {total slack count : Nat}
-    (hbound : 2 ^ total <= 2 ^ slack * count) :
-    2 ^ (total - slack) <= count := by
-  exact LowerBound.two_pow_sub_le_of_le_mul_pow hbound
-
 private def remyPositions : Cartesian.CartesianShape -> List (List Bool)
   | Cartesian.CartesianShape.empty => [[]]
   | Cartesian.CartesianShape.node left right =>

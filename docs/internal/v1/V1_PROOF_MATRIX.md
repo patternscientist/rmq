@@ -57,3 +57,39 @@ does not authorize any other process, harness, or policy change.
 No mutation campaign, executable replay, new public certificate, public symbol
 migration, or exhaustive campaign claim is used to close this leaf. The
 existing replay IDs above are preserved by path non-interference.
+
+
+## Coordinator-approved source-review follow-up
+
+Frozen before follow-up implementation on branch `codex/v1-proof-cleanup` at
+`71a4a65336af68dabaf19265b36c7564db8c8cec`. This append preserves every
+earlier frozen requirement and records the bounded source-review leaf. The
+coordinator confirmed that the public `LowerBound.lean` inventory entry for
+`two_pow_sub_le_of_le_mul_pow` remains; only the private
+`EncodingLowerBound.lean` inventory entry belongs to the deleted wrapper.
+
+`REVIEW-AMEND-01` (coordinator, 2026-10-01): use unique
+`REVIEW-INV-*` identifiers below and link each to its inherited invariant.
+The original inherited rows and all earlier matrix bytes remain unchanged.
+
+| Follow-up ID | Frozen follow-up requirement | Required evidence and anti-vacuity check | Evidence obtained / status |
+| --- | --- | --- | --- |
+| `REVIEW-P1` | Independently compare the propositions, implicit binder modes, and hypothesis order of historical `RMQ.SuccinctSelect.rankPrefix_succ_of_select`, `occurrence_lt_rankPrefix_of_select_lt`, `selectFrom_index_mono`, `select_index_mono`, and `select_index_strict_mono` in WordExact, plus `RMQ.SuccinctSelect.select_none_of_rankPrefix_length_le` in Basic, against the corresponding `RMQ.GenericSelect` declarations. Retain every historical name and type and replace only each proof body with direct generic delegation. Add no import, premise, computational definition, or public API. | Pre-edit source comparison must show exact binder and argument-order identity; a direct Lean type/axiom probe must print both namespaces; changed-module and downstream builds must pass. Changing a binder, hypothesis order, or result object fails this row even if a weaker proof elaborates. | Pending. |
+| `REVIEW-P2` | Confirm private `RMQ/Core/EncodingLowerBound.lean` wrapper `two_pow_sub_le_of_le_mul_pow` has no source consumer, then delete only that wrapper and its private EncodingLowerBound FAMILY_SUMMARY inventory entry. Preserve canonical `RMQ.LowerBound.two_pow_sub_le_of_le_mul_pow`, its public LowerBound inventory entry, its consumer, and all other wrappers. | Repository search must distinguish the private wrapper occurrence from the canonical declaration/consumer and the two documentation owners. The exact-base diff must show only wrapper deletion in EncodingLowerBound and only the private inventory-token deletion in FAMILY_SUMMARY. | Pending. |
+| `REVIEW-P3` | Append unique `DD-20261001-V1-PROOF-REVIEW` and `WDD-20261001-V1-PROOF-REVIEW` entries with exact types/consumers, proof digestion, the inventory-owner correction, and coordinator-only V1 acceptance. Preserve all earlier matrix requirements and decisions. | Unique-ID search, strict design check against the exact follow-up base, changed-prose claim scan, and final diff must pass. No public claim prose or ReviewerLogicalSimulation edit is allowed. | Pending. |
+| `REVIEW-INV-CATEGORY-SEPARATION` | Recheck inherited `INV-CATEGORY-SEPARATION`: the follow-up changes proof ownership and a stale private inventory only; payload bits, proof fields, model ticks, machine state, Lean runtime, and measured performance remain distinct. | Diff and claim scan must show no computational, cost, payload, runtime, or performance change or claim. | Pending. |
+| `REVIEW-INV-PUBLIC-COMPOSITION` | Recheck inherited `INV-PUBLIC-COMPOSITION`: historical propositions continue to state facts about the same target, bits, occurrences, positions, limits, and select/rank objects as the generic proofs and existing consumers. | Exact type probe and builds must reject any changed object, binder, hypothesis order, or validity domain. | Pending. |
+| `REVIEW-INV-PROOF-SEPARATION` | Recheck inherited `INV-PROOF-SEPARATION`: no proof-only field, answer-valued premise, routing premise, or uncharged data channel is added. | Final diff must contain proof-body delegation and private-wrapper/inventory deletion only in Lean/public surfaces; no structure or premise change. | Pending. |
+| `CHK-REVIEW-BUILD` | Build the three changed Lean modules with direct Lean 4.22 Lake settings, then run one final `lake build` on the frozen source tree. Preserve logs, timings, and cache; do not duplicate a live build. | Focused targets `RMQ.Core.SuccinctSelect.TwoLevel.WordExact`, `RMQ.Core.SuccinctSelect.CloseSelect.Basic`, and `RMQ.Core.EncodingLowerBound` all exit 0; final aggregate exits 0. | Pending. |
+| `CHK-REVIEW-HYGIENE` | Run required hygiene and native-decision scans, working-tree `git diff --check`, committed-range `git diff --check 71a4a65336af68dabaf19265b36c7564db8c8cec..HEAD`, strict design check at that exact base, scoped changed-prose claim scan, exact committed scope, and clean status. | Every command passes or a no-match scan returns expected exit 1; post-commit range evidence is recorded in the candidate report. | Pending. |
+
+### Follow-up verification ledger
+
+| Command | Purpose | Outcome |
+| --- | --- | --- |
+| Focused three-target `lake build` | Elaborate all changed Lean modules and immediate imported clients. | Pending. |
+| Final `lake build` | Verify full repository import closure and unchanged downstream public composition. | Pending. |
+| Direct six-pair Lean type/axiom probe | Pin historical/generic proposition identity and trust surface. | Pending. |
+| Required hygiene/native scans and `git diff --check` | Check trust tokens, native shortcuts, and whitespace. | Pending. |
+| Strict design check and changed-prose claim scan | Verify DD/WDD coverage and prevent claim drift. | Pending. |
+| Post-commit range/scope/status checks | Verify exact committed scope, range whitespace, and clean worktree. | Pending. |

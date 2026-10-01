@@ -15670,3 +15670,39 @@ the additional V1 inspected-reader inventory. Mark its dated tables historical
 and link the existing exact Git source inventory. The registered 18-path claim
 policy and all historical records remain unchanged. No new gate or compiler
 dependency is introduced.
+
+
+## WDD-20261001-V1-PROOF-REVIEW - Append reviewed proof-cleanup evidence
+
+Date: 2026-10-01. Status: coordinator-authorized bounded follow-up; candidate
+verification pending.
+
+Context. After the first V1 proof-cleanup candidate, coordinator source review
+identified six adjacent proof bodies and one unused private forwarding theorem.
+The returning worker was assigned the exact prior candidate commit and a
+restricted scope. The original V1 proof matrix is immutable as a record of that
+candidate, so the source-review requirements and command outcomes are appended
+in a new section rather than rewriting any earlier frozen row.
+
+Decision. Freeze REVIEW-P1, REVIEW-P2, REVIEW-P3, the three inherited
+invariants, and the two review check rows before implementation. The append
+requires exact binder/order comparison, direct generic delegation, actual
+consumer and no-consumer searches, focused and full builds, and exact-base
+policy/range checks. The coordinator clarified an ownership distinction found
+by the worker: the LowerBound.lean FAMILY_SUMMARY occurrence documents the
+canonical public theorem and remains; only the private EncodingLowerBound
+inventory occurrence follows the deleted wrapper. This correction narrows the
+review estimate without broadening write scope.
+
+Alternatives rejected. Rewriting the original closed rows would destroy their
+frozen evidence. Treating a text search hit as proof of namespace ownership
+would incorrectly remove the canonical public inventory. Skipping the second
+full build would leave downstream historical clients unverified. Expanding the
+follow-up into recursive-definition consolidation, public prose edits, replay
+work, or another reviewer-simulation edit is outside the authorized leaf.
+
+Consequences. The follow-up appends one commit after
+71a4a65336af68dabaf19265b36c7564db8c8cec, preserves all replay sources and
+acceptance authority, and reports only CANDIDATE_COMPLETE when every appended
+row closes. The coordinator still owns integration, native/package gates,
+fresh blind audit, and V1 acceptance.

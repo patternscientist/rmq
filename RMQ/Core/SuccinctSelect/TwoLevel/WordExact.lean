@@ -128,52 +128,7 @@ theorem rankPrefix_succ_of_select
     {target : Bool} {bits : List Bool} {occurrence pos : Nat}
     (hselect : RMQ.Succinct.select target bits occurrence = some pos) :
     RMQ.Succinct.rankPrefix target bits (pos + 1) = occurrence + 1 := by
-  induction bits generalizing occurrence pos with
-  | nil =>
-      simp [RMQ.Succinct.select, RMQ.Succinct.selectFrom] at hselect
-  | cons bit rest ih =>
-      unfold RMQ.Succinct.select at hselect
-      unfold RMQ.Succinct.selectFrom at hselect
-      by_cases hbit : bit = target
-      · rw [if_pos hbit] at hselect
-        by_cases hocc : occurrence = 0
-        · rw [if_pos hocc] at hselect
-          injection hselect with hpos
-          subst occurrence
-          subst pos
-          simp [RMQ.Succinct.rankPrefix, hbit]
-        · rw [if_neg hocc] at hselect
-          have hbase :=
-            RMQ.Succinct.selectFrom_base_eq
-              target rest 1 (occurrence - 1)
-          rw [hbase] at hselect
-          cases hsel :
-              RMQ.Succinct.select target rest (occurrence - 1) with
-          | none =>
-              simp [hsel] at hselect
-          | some inner =>
-              simp [hsel] at hselect
-              subst pos
-              have hrec := ih hsel
-              have hocc_pos : 0 < occurrence := Nat.pos_of_ne_zero hocc
-              have hinnerSucc : 1 + inner = inner + 1 := by omega
-              rw [hinnerSucc]
-              simp [RMQ.Succinct.rankPrefix, hbit, hrec]
-              omega
-      · rw [if_neg hbit] at hselect
-        have hbase :=
-          RMQ.Succinct.selectFrom_base_eq target rest 1 occurrence
-        rw [hbase] at hselect
-        cases hsel : RMQ.Succinct.select target rest occurrence with
-        | none =>
-            simp [hsel] at hselect
-        | some inner =>
-            simp [hsel] at hselect
-            subst pos
-            have hrec := ih hsel
-            have hinnerSucc : 1 + inner = inner + 1 := by omega
-            rw [hinnerSucc]
-            simpa [RMQ.Succinct.rankPrefix, hbit] using hrec
+  exact RMQ.GenericSelect.rankPrefix_succ_of_select hselect
 
 /--
 If a successful select answer lies before `limit`, then `limit` contains more
@@ -184,13 +139,7 @@ theorem occurrence_lt_rankPrefix_of_select_lt
     (hselect : RMQ.Succinct.select target bits occurrence = some pos)
     (hpos : pos < limit) :
     occurrence < RMQ.Succinct.rankPrefix target bits limit := by
-  have hsucc := rankPrefix_succ_of_select hselect
-  have hmono :
-      RMQ.Succinct.rankPrefix target bits (pos + 1) <=
-        RMQ.Succinct.rankPrefix target bits limit :=
-    RMQ.Succinct.rankPrefix_mono_limit
-      target bits (Nat.succ_le_of_lt hpos)
-  omega
+  exact RMQ.GenericSelect.occurrence_lt_rankPrefix_of_select_lt hselect hpos
 
 theorem rankPrefix_sub_le_span
     (target : Bool) (bits : List Bool) (start span : Nat) :
@@ -919,36 +868,7 @@ theorem selectFrom_index_mono
     (hlo : RMQ.Succinct.selectFrom target bits base lo = some posLo)
     (hhi : RMQ.Succinct.selectFrom target bits base hi = some posHi) :
     posLo <= posHi := by
-  induction bits generalizing base lo hi posLo posHi with
-  | nil =>
-      simp [RMQ.Succinct.selectFrom] at hlo
-  | cons bit rest ih =>
-      by_cases hbit : bit = target
-      · by_cases hlozero : lo = 0
-        · subst lo
-          simp [RMQ.Succinct.selectFrom, hbit] at hlo
-          subst posLo
-          exact (RMQ.Succinct.selectFrom_bounds hhi).left
-        · have hhizero : hi ≠ 0 := by omega
-          have htail : lo - 1 <= hi - 1 := by omega
-          have hloTail :
-              RMQ.Succinct.selectFrom target rest (base + 1) (lo - 1) =
-                some posLo := by
-            simpa [RMQ.Succinct.selectFrom, hbit, hlozero] using hlo
-          have hhiTail :
-              RMQ.Succinct.selectFrom target rest (base + 1) (hi - 1) =
-                some posHi := by
-            simpa [RMQ.Succinct.selectFrom, hbit, hhizero] using hhi
-          exact ih htail hloTail hhiTail
-      · have hloTail :
-            RMQ.Succinct.selectFrom target rest (base + 1) lo =
-              some posLo := by
-          simpa [RMQ.Succinct.selectFrom, hbit] using hlo
-        have hhiTail :
-            RMQ.Succinct.selectFrom target rest (base + 1) hi =
-              some posHi := by
-          simpa [RMQ.Succinct.selectFrom, hbit] using hhi
-        exact ih hle hloTail hhiTail
+  exact RMQ.GenericSelect.selectFrom_index_mono hle hlo hhi
 
 theorem select_index_mono
     {target : Bool} {bits : List Bool} {lo hi posLo posHi : Nat}
@@ -956,8 +876,7 @@ theorem select_index_mono
     (hlo : RMQ.Succinct.select target bits lo = some posLo)
     (hhi : RMQ.Succinct.select target bits hi = some posHi) :
     posLo <= posHi := by
-  unfold RMQ.Succinct.select at *
-  exact selectFrom_index_mono hle hlo hhi
+  exact RMQ.GenericSelect.select_index_mono hle hlo hhi
 
 theorem select_index_strict_mono
     {target : Bool} {bits : List Bool} {lo hi posLo posHi : Nat}
@@ -965,15 +884,7 @@ theorem select_index_strict_mono
     (hlo : RMQ.Succinct.select target bits lo = some posLo)
     (hhi : RMQ.Succinct.select target bits hi = some posHi) :
     posLo < posHi := by
-  have hle : posLo <= posHi :=
-    select_index_mono (Nat.le_of_lt hlt) hlo hhi
-  have hne : posLo ≠ posHi := by
-    intro heq
-    have hloRank := rankPrefix_succ_of_select hlo
-    have hhiRank := rankPrefix_succ_of_select hhi
-    rw [← heq] at hhiRank
-    omega
-  exact Nat.lt_of_le_of_ne hle hne
+  exact RMQ.GenericSelect.select_index_strict_mono hlt hlo hhi
 
 theorem selectSampleAt?_sample_ordered_of_occurrence_le
     {target : Bool} {bits : List Bool}
