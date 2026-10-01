@@ -4,6 +4,7 @@ import RMQExamples.BPNavigationImport
 import RMQExamples.UnionFindImport
 import RMQExamples.LowerBoundImport
 import RMQExamples.Concrete
+import RMQExamples.V1Clients
 
 /-!
 # Checked external import examples

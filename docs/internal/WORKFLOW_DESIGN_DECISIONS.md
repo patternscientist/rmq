@@ -15530,3 +15530,43 @@ directory root with two governed files and one ungoverned file. Enumeration
 counts now provide a direct fast-path witness, and the empty-scope fixture
 requires its diagnostic. Positive exit-0 controls are not claimed as coverage
 witnesses. The final 21-context registry is part of the integrated full gate.
+
+
+## WDD-20261001-V1-CLIENT - Classify the checked-client matrix as workflow evidence
+
+Date: 2026-10-01. Status: implementation candidate; coordinator acceptance and
+the V1 integrated audit remain required.
+
+Context. The V1 checked-client leaf adds one downstream Lean example module,
+its `RMQExamples` import, a goal-to-declaration guide, a proof/design decision,
+and `docs/internal/v1/V1_CLIENT_MATRIX.md`. The strict design classifier treats
+that new internal matrix path as workflow-sensitive. A sibling proof worker
+reproduced the resulting strict failure, and the coordinator explicitly amended
+this leaf's scope to include this one workflow-decision entry.
+
+Decision. Record the matrix as frozen workflow evidence for the checked-client
+leaf. It binds the verbatim requirements to exact intended theorem types,
+object-composition chains, anti-vacuity challenges, and a command ledger before
+implementation. The Lean module remains examples-only and imports a single
+headline surface; it changes no public declaration. The matrix may record
+implementation evidence and statuses after the freeze, while its requirements
+change only under an explicit coordinator amendment such as this scope repair.
+
+Transitive scope closure is: `RMQExamples/V1Clients.lean` is consumed by
+`RMQExamples.lean`; `docs/V1_CLIENTS.md` maps the client goals to exact checked
+declarations; `DD-20261001-V1-CLIENT` records the model-separation design; and
+the V1 client matrix records the acceptance/evidence chain. This WDD exists only
+because that matrix is workflow-sensitive. It does not expand the Lean API,
+claim an exhaustive mutation campaign, or alter the V1 release process.
+
+Alternatives rejected were moving the matrix outside the classified evidence
+tree, weakening the strict classifier, or leaving the workflow decision
+implicit. Those choices would respectively evade the governed artifact role,
+broaden policy for an examples leaf, or keep the branch uncertifiable. Existing
+workflow entries remain byte-identical; this append is the sole amended-path
+change.
+
+Consequences. The final strict design check must run with exact base
+`ee44f04a561f2194b3713f071c26b6faf9ba7fab`. This leaf can report only a
+candidate to the coordinator; integration, aggregate verification, fresh audit,
+and any V1 release decision remain separate.

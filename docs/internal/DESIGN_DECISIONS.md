@@ -13442,3 +13442,37 @@ and native storage. The paper keeps its historical query-theorem pin with an
 explicit source relationship, instead of moving line citations without checking
 them. Integrated builds, inventories and the later blind audit provide the
 candidate evidence; prior logs are not relabelled as new verification.
+
+## DD-20261001-V1-CLIENT - Keep checked clients model-specific and theorem-reusing
+
+Date: 2026-10-01. Status: implementation candidate; coordinator acceptance and
+the V1 integrated audit remain required.
+
+The V1 proof-maintenance examples use one downstream import,
+`RMQ.Headlines.RMQ`, but keep two existing query models in separate theorem
+families. The fully charged packed client projects primitive steps, valid-query
+halting/output, zero-based leftmost correctness, and complete data/code/scratch
+capacity from `succinctRMQFullyChargedPackedQuery`. The earlier paper client
+uses the existing named boundaries `SuccinctClassic.buildPayload_length`,
+`queryCosted_exact`, and `queryCosted_cost_le`, with the literal `210` supplied
+by `succinctRMQQueryCostEq`. A separate equality records that `queryCosted` is
+the `toCosted` projection of `queryTraceResult`. Named declarations are used
+instead of coupling a downstream proof to the conjunction layout of the larger
+paper profile.
+
+Supplied-store reuse consumes
+`listIntSuccinctRMQQueryTraceResultWithStoreEqOfOrderedReadFootprint` at its
+original arbitrary-list, arbitrary-store, arbitrary-endpoint domain. Complete
+trace equality is retained and answer/cost equality are projections, so the
+client does not reprove query semantics or substitute a sibling backend. Small
+valid and invalid examples go through specification and refinement theorems;
+they do not evaluate the large packed machine.
+
+Rejected alternatives were combining the packed primitive budget with the
+paper model's `210`, proving only retained-data capacity, adding convenience
+aliases to the public headline module, or using the unverified quality draft as
+evidence. Those choices would respectively conflate cost models, omit encoded
+code and scratch, enlarge the public API, or replace kernel checking with a
+draft. The result is an examples-only consumer plus documentation and a frozen
+acceptance matrix. It changes no declaration under `RMQ/` and makes no claim
+about preprocessing, Lean wall-clock time, V1 acceptance, or release readiness.
