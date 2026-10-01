@@ -15932,3 +15932,40 @@ Lean theorem, proof assumption, model-cost or native correctness claim. Covered
 paths: package_release.py, test_package_release.py, test_native_checkout.py,
 .github/workflows/ci.yml, ARTIFACT_REPRODUCIBILITY.md, V1 matrix, two source
 audit reports and V1_CHECKOUT_REGRESSION.json.
+
+
+## WDD-20261001-V1-PROOF-REVIEW-EVIDENCE - Cover the evidence-only checkpoint
+
+Date: 2026-10-01. Status: implemented workflow decision for candidate
+evidence closure.
+
+Context. The reviewed Lean source and its required focused checks were stable
+while the single full Windows build was still running. The coordinator
+authorized committing that exact source checkpoint so integration and Linux
+reproduction could overlap the remaining build, while withholding candidate
+completion until the build and every final check closed. That authorization
+changed the original one-follow-up-commit sequence into a source commit plus a
+second evidence-only commit.
+
+Decision. Keep source commit
+`ff479df6e83752f68026bc91ee9feaf520405c07` frozen. After its full build exits
+successfully, update only the appended review evidence in
+`docs/internal/v1/V1_PROOF_MATRIX.md` and this workflow record. Check the
+evidence commit independently with `design_decision_check.ps1 -Strict -Base
+HEAD^ -Head HEAD`, then check the complete assigned range from
+`71a4a65336af68dabaf19265b36c7564db8c8cec`. Preserve the original matrix
+prefix byte-for-byte and repeat the required scope, whitespace, hygiene,
+claim, and clean-status checks.
+
+Alternatives rejected. Waiting to create any source checkpoint would serialize
+independent integration and reproduction work after source review had already
+closed. Treating the matrix-only commit as covered solely by the earlier WDD
+would hide a workflow-sensitive change in a per-commit review. Amending Lean
+source after the checkpoint without a verification failure would invalidate
+the build/source identity.
+
+Consequences. The follow-up has two commits whose combined range implements
+the same bounded proof-cleanup contract. The second commit changes no Lean
+source and records evidence only after the preserved source passes the required
+full build. Coordinator integration, aggregate native/package gates, fresh
+audit, and V1 acceptance remain separate.
