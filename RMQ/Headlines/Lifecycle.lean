@@ -1,7 +1,8 @@
 import RMQ.Core.WordRAM.Lifecycle.Capstone
 
-/-! Additive candidate import for the continuous lifecycle model. Publication
-integration and independent coordinator acceptance are separate campaign steps. -/
+/-! Additive import for the continuous lifecycle model. The theorem below
+concerns modeled construction, retained capacity and reusable queries; native
+compiler, FFI and allocator behavior have separate evidence boundaries. -/
 
 namespace RMQ.Headlines
 

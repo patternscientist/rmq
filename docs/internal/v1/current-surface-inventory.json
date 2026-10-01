@@ -1,0 +1,86 @@
+{
+  "base": "ee44f04a561f2194b3713f071c26b6faf9ba7fab",
+  "registry_count": 18,
+  "registered_paths": [
+    "README.md",
+    "artifact/CLAIMS.md",
+    "artifact/README.md",
+    "docs/FAMILY_SUMMARY.md",
+    "docs/PAPER_CLAIM_CORRESPONDENCE.md",
+    "docs/PAPER_MAIN_THEOREM.md",
+    "docs/PAPER_MODEL_ADEQUACY.md",
+    "docs/PAPER_RELATED_WORK.md",
+    "docs/PAPER_THEOREM_MAP.md",
+    "docs/PUBLICATION_STRATEGY.md",
+    "docs/RELATED_WORK_AND_LIMITATIONS.md",
+    "docs/ROADMAP.md",
+    "docs/TRUST_AUDIT_PACKET.md",
+    "docs/WHAT_IS_PROVED.md",
+    "docs/WORD_RAM_REVIEW_PACKET.md",
+    "docs/digests/PROJECT_DIGESTION_CURRENT.md",
+    "docs/internal/CLAIM_DRIFT_POLICY.md",
+    "docs/internal/RMQ_FINAL_ROADMAP.md"
+  ],
+  "additional_inspected_paths": [
+    "docs/ARTIFACT_REPRODUCIBILITY.md",
+    "docs/CODE_MAP.md",
+    "docs/digests/LIFECYCLE_PROOF_GUIDE.md",
+    "native/packed-rmq/README.md",
+    "RMQPaper.lean",
+    "RMQ/Headlines/RMQ.lean",
+    "RMQ/Headlines/Lifecycle.lean",
+    "paper/README.md",
+    "paper/rmq.tex",
+    "paper/THEOREM_LEDGER.md"
+  ],
+  "searched_terms": "(?i)lifecycle|preprocess|construct|candidate|not yet accepted|provisional|pending|837.?572|160.?25[37]|1.?100.?000.?000|0\\.1\\.0|3849ecbb",
+  "expected_repair_paths": [
+    "README.md",
+    "artifact/CLAIMS.md",
+    "artifact/README.md",
+    "docs/FAMILY_SUMMARY.md",
+    "docs/PAPER_CLAIM_CORRESPONDENCE.md",
+    "docs/PAPER_MAIN_THEOREM.md",
+    "docs/PAPER_MODEL_ADEQUACY.md",
+    "docs/PAPER_RELATED_WORK.md",
+    "docs/PAPER_THEOREM_MAP.md",
+    "docs/PUBLICATION_STRATEGY.md",
+    "docs/RELATED_WORK_AND_LIMITATIONS.md",
+    "docs/ROADMAP.md",
+    "docs/TRUST_AUDIT_PACKET.md",
+    "docs/WHAT_IS_PROVED.md",
+    "docs/WORD_RAM_REVIEW_PACKET.md",
+    "docs/digests/PROJECT_DIGESTION_CURRENT.md",
+    "docs/internal/RMQ_FINAL_ROADMAP.md",
+    "docs/ARTIFACT_REPRODUCIBILITY.md",
+    "docs/CODE_MAP.md",
+    "native/packed-rmq/README.md",
+    "RMQPaper.lean",
+    "RMQ/Headlines/RMQ.lean",
+    "RMQ/Headlines/Lifecycle.lean",
+    "paper/README.md",
+    "paper/rmq.tex",
+    "paper/THEOREM_LEDGER.md"
+  ],
+  "current_source_comment_inventory": {
+    "searched_terms": "preprocess|construct|candidate|pending|accept|primitive|loop.free|837572|16025[37]",
+    "inspected_paths": [
+      "RMQPaper.lean",
+      "RMQ/Headlines/RMQ.lean",
+      "RMQ/Headlines/Lifecycle.lean",
+      "RMQ/Core/WordRAM/Lifecycle/Capstone.lean",
+      "RMQ/Core/WordRAM/Packed/Capstone.lean"
+    ],
+    "expected_repair_paths": [
+      "RMQPaper.lean",
+      "RMQ/Headlines/RMQ.lean",
+      "RMQ/Headlines/Lifecycle.lean",
+      "RMQ/Core/WordRAM/Lifecycle/Capstone.lean"
+    ]
+  },
+  "new_reader_surfaces": [
+    "docs/V1_GUIDE.md",
+    "docs/V1_CLIENTS.md",
+    "paper/V1_SOURCE_RELATION.md"
+  ]
+}

@@ -11,6 +11,29 @@ For the reviewer path through the artifact, see `../artifact/README.md`. For
 paper claim rows and exact theorem/check correspondence, see
 `PAPER_CLAIM_CORRESPONDENCE.md`.
 
+## V1 source bundle
+
+`scripts/package_release.py` uses only Python's standard library and Git. From
+a clean committed candidate tree, choose a new output path outside tracked
+source (for example under `.lake/release/`):
+
+```powershell
+python scripts/package_release.py --output .lake/release/rmq-1.0.0-rc.1-source.zip
+python scripts/package_release.py --verify .lake/release/rmq-1.0.0-rc.1-source.zip
+```
+
+The ZIP contains exact Git-derived source plus `RMQ-SOURCE-MANIFEST.json` with
+the commit, version, toolchain and each file's SHA256 digest. The command also
+prints the archive digest, rejects a dirty tree and refuses to overwrite an
+existing bundle. It does not publish, push or create a tag. Hash verification
+establishes integrity against the recorded manifest, not proof correctness.
+
+After unpacking, the Lean smoke path in [V1_GUIDE.md](V1_GUIDE.md) works without
+Git metadata. The full mutation campaigns below require a clean repository and
+the historical Git objects they inspect. A source-only ZIP deliberately does
+not replace that Git history. To reproduce the full gate, use the repository
+checkout at the exact manifest commit; preserve the command logs and timings.
+
 ## One-Command Paper Artifact Gate
 
 Run this command from the repository root:
@@ -60,15 +83,17 @@ powershell -ExecutionPolicy Bypass -File scripts\gate.ps1
 ```
 
 That gate builds the public roots, runs broader hygiene scans, checks the
-curated spoke axiom scripts, runs succinct cost/space lints, checks shim-import
+curated spoke and lifecycle axiom scripts, compiles the independent lifecycle
+contract/provenance clients, runs succinct cost/space lints, checks shim-import
 boundaries, and performs `git diff --check`. It also runs
 `scripts/packed_query_replay.ps1`, the committed replay campaign for the
-candidate primitive-machine query
+accepted primitive-machine query
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`: each certificate field is
 weakened in turn and must break its typed consumer, and the numeric-memory
 runtime fixtures run on the actual program. The replay requires a clean
-committed tree. Until that campaign, the aggregate gate and a fresh blind
-audit pass on an exact commit, the candidate is not accepted.
+committed tree. The earlier query campaign has coordinator acceptance in
+`internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md`; a new V1 candidate
+requires its own integrated verification and release audit.
 
 ## GitHub Actions
 

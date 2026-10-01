@@ -1,5 +1,10 @@
 # Final RMQ Model Adequacy
 
+For the V1 reader path and comparison of query and construction models, see
+[the V1 guide](V1_GUIDE.md). The additive lifecycle surface is scoped separately in
+[the claims packet](../artifact/CLAIMS.md); preprocessing exclusions below describe the
+query-only results, not an absence of construction theorems from the repository.
+
 ## Separate Accepted Primitive Machine
 
 This file is about the charged-trace model of the canonical reviewer route. A

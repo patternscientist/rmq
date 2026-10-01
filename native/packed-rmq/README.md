@@ -1,10 +1,11 @@
 # Packed RMQ native API
 
-This package calls the checked Lean byte-limb executor through generated C.
-The source capstone and its 42 independent field consumers pass. The binary
-build and exact startup checks pass for the DLL and both clients. The executable
-Lean validator passes 16 cases. Expanded replay and independent acceptance
-are still in progress.
+This optional Windows x64 supplement calls the checked Lean byte-limb
+executor through generated C. Its source capstone has 42 independent field
+consumers. Dated build receipts record the DLL/client startup checks and the
+16-case Lean validator; the larger campaigns below record additional coverage.
+The [V1 evidence record](../../docs/internal/v1/V1_RECONCILIATION.md) separates
+those historical results from current candidate verification and acceptance.
 
 The canonical image contains exactly the fixed PQ1 program and counted memory.
 The abstract theorem covers all sizes, all fuel values and representable
@@ -115,11 +116,11 @@ The executable source validator is `RMQ/Validation/PackedNative.lean`, built as
 `rmq_packed_native_validate`. The final native and certificate replay scripts
 are `scripts/packed_native_binary_replay.ps1`,
 `scripts/packed_native_binary_controls.ps1`, and
-`scripts/packed_native_contract_replay.ps1`. The final frozen campaigns passed:
+`scripts/packed_native_contract_replay.ps1`. The historical frozen campaigns passed at their recorded revisions:
 109 native cases expand to 214 client/source
 checks inside 128 controls, and 44 certificate cases run inside nine controls.
 The source validator also passed all 24 process and byte-format controls.
-Fresh independent acceptance and aggregate certification are coordinator-scheduled.
+These counts describe those recorded campaigns, not a new candidate replay.
 Development evidence, exact types, assumptions and retained
 failures are in `docs/internal/extensions/native1`. The earlier textual route
 experiment and its receipts remain available there as historical evidence.
@@ -157,4 +158,4 @@ Modeled retained bits are not a bound on allocator usable bytes, RSS or time.
 See the [worked guide](../../docs/internal/extensions/lifecycle-native1/GUIDE.md)
 for the theorem chain and error table, and the
 [evidence matrix](../../docs/internal/extensions/lifecycle-native1/ACCEPTANCE_MATRIX.md)
-for verification status and exact receipts. This is a locally certified candidate; coordinator acceptance remains separate.
+for verification status and exact receipts. Current candidate checks and coordinator acceptance are recorded separately in the V1 evidence record.

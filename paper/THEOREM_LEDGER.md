@@ -25,8 +25,9 @@ Status vocabulary (fixed):
   the RC-4 round), so this clause describes a shape available to a future
   target rather than anything in the manuscript now; there is no marked
   insertion point at this commit.
-- **OPEN** -- a statement the repository does not prove and the manuscript
-  asserts only as unproved/unclaimed.
+- **OPEN** -- a statement not established by the theorem subset at the
+  manuscript pin and asserted here only as unproved/unclaimed for that subset.
+  Later additive repository results are distinguished explicitly below.
 
 Worker prose, audit narratives, and rejected candidates are process
 evidence only; no row below cites them as proof. All file paths and line
@@ -711,9 +712,10 @@ references are at the base commit.
 
 #### L-OPEN-01
 - Status: OPEN
-- Statement: the construction's preprocessing complexity -- time and
-  workspace, in any model -- is unproved; no theorem bounds it and the
-  manuscript claims nothing about it.
+- Statement: the query theorems covered by this manuscript do not bound
+  preprocessing time or workspace. Later additive construction/lifecycle
+  theorems are outside the pinned paper subset; this row does not assert
+  their absence from the V1 repository. See `V1_SOURCE_RELATION.md`.
 - Manuscript location: Section 11, item 2.
 
 #### L-OPEN-02

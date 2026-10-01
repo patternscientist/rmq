@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use this Lean artifact, please cite it using this provisional metadata."
+message: "If you use this Lean artifact, cite this release-candidate version and the exact source commit. No V1 release has been published yet."
 title: "RMQ: A Lean 4 Artifact for Succinct Range Minimum Query Models"
 type: software
 authors:
@@ -13,5 +13,4 @@ keywords:
   - succinct data structures
   - formal verification
 license: Apache-2.0
-version: "provisional"
-date-released: "2026-07-06"
+version: 1.0.0-rc.1

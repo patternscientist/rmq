@@ -65,8 +65,8 @@ $constants = @(
     # PAPER_THEOREM_MAP and PAPER_CLAIM_CORRESPONDENCE without moving these
     # pins, which is why the gate stage failed before this change.
     surfaces = @(
-      # 9 -> 11: TL;DR contrast sentence (PQ1 export) and Model Scope sentence.
-      @{ path = 'README.md';                          count = 11; anchors = @('charged-trace cap is `{VALUE}`') },
+      # V1 landing-page condensation: 1 deliberate statements of the same bound.
+      @{ path = 'README.md';                          count = 1; anchors = @('charged-trace cap is `{VALUE}`') },
       # 10 -> 13: PQ1 section contrast, Scope bullet and Non-Claims bullet.
       @{ path = 'artifact/CLAIMS.md';                 count = 13; anchors = @('at most\*\* `{VALUE}`') },
       # 9 -> 10: Cost Model bullet scoping the uncharged controller to `210`.

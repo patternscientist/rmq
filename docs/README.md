@@ -9,6 +9,9 @@ This repository has two kinds of documentation:
 
 ## Public Artifact Docs
 
+- [`V1_GUIDE.md`](V1_GUIDE.md): contract, models, source tour and reproduction.
+- [`V1_CLIENTS.md`](V1_CLIENTS.md): checked clients of the existing public APIs.
+
 - [`digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](digests/DEEP_PROJECT_DIGESTION_2026_06_28.md):
   stress-tested first-contact explanation for a Lean club or mathematically
   mature audience without data-structures background.

@@ -13423,3 +13423,22 @@ theorem already supplies the intended declaration; no new proof architecture is
 needed. Build the actual headline target before testing its import, then require
 the unchanged linter and all topology regressions. Aggregate and independent
 blind audit remain acceptance prerequisites. There is no merge or push here.
+
+
+## DD-20261001-V1-COORDINATOR - Preserve theorem boundaries while finalizing V1
+
+Date: 2026-10-01. Status: candidate implementation, pending integrated verification.
+
+The V1 work preserves the reference half-open leftmost List Int contract, all
+public theorem types, the mathematical models and executable definitions.
+Source comments now scope preprocessing exclusions to the query-only theorem
+and describe the additive lifecycle interface without stale campaign labels.
+The paper root stays narrow; the broad root continues to expose lifecycle.
+These are comment changes, not stronger theorem statements or process acceptance.
+
+The proof and client leaves have separate DD entries. Public prose distinguishes
+logical payload bits, allocated word capacity, encoded code, proof-only fields
+and native storage. The paper keeps its historical query-theorem pin with an
+explicit source relationship, instead of moving line citations without checking
+them. Integrated builds, inventories and the later blind audit provide the
+candidate evidence; prior logs are not relabelled as new verification.

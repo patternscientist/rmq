@@ -30,7 +30,7 @@ abbrev SuccinctRMQFullyChargedPackedQuery :=
 half-open leftmost answers, representable invalid rejection, logarithmic word
 width and at most 837572 actual primitive instructions, which is the length of
 the fixed loop-free program. Out-of-word Nat endpoints are rejected by an
-uncharged value-level check, and preprocessing is not bounded. The 210 trace
+uncharged value-level check. This query theorem does not bound preprocessing. The 210 trace
 weight and 427 packed-probe bounds remain distinct model statements. -/
 abbrev succinctRMQFullyChargedPackedQuery : SuccinctRMQFullyChargedPackedQuery :=
   RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds

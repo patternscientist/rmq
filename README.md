@@ -2,415 +2,119 @@
 
 [![CI](https://github.com/patternscientist/rmq/actions/workflows/ci.yml/badge.svg)](https://github.com/patternscientist/rmq/actions/workflows/ci.yml)
 
-**TL;DR:** This project uses Lean to machine-check a classic optimal RMQ
-story: exact range-minimum queries can be answered at constant modeled query
-cost from a Cartesian-shape payload of at most
-`2*n + o(n)` bits,
-and any fixed-length payload-only exact RMQ encoding needs
-`2n - 1.5 log n - O(1)` bits. "Modeled cost" there counts charged probes into
-that payload, not machine instructions or wall-clock time. A separate
-accepted theorem, `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`,
-charges every primitive instruction of its own machine query; it is
-summarized in the next paragraph. The earlier **210** trace and **427** probe
-bounds keep their separate charge policies, and none of these bounds is a Lean
-wall-clock bound. The cost of building the payload -- preprocessing time and
-workspace, in any model -- is **unproved and excluded from every query
-bound**: no theorem here bounds it, and none is claimed.
-The same code base is now growing into a
-verified advanced-data-structures testbed, with standalone rank/select,
-balanced-parentheses navigation, and union-find spokes.
-
-**Fully charged packed query (accepted).** Import `RMQPaper` and use
-`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`. For every `xs : List Int`
-it fixes one numeric memory -- 174 counted metadata words followed by the
-existing packed allocation of the payload, densely repacked into `w(n)`-bit
-words with `log2(n+2)+1 <= w(n) <= 192*(log2(n+2)+1)` -- and one closed
-loop-free program of **837,572** primitive instructions that does not
-depend on `xs` or `n`. Each executed instruction is one step. Every valid
-half-open range returns its leftmost minimum, and for every representable
-endpoint pair the run halts within at most 837,572 steps, which is simply the
-program length; the committed valid-query fixtures observe 6,003 to 16,358
-steps. The memory, the literal program encoding and 8,271 registers plus three
-control words fit in `2n + o(n)` bits, but the code and scratch term exceeds
-`n` for every `n` below about `2^28`, so it is lower order only asymptotically.
-The word model assumes unit-cost multiplication, division, remainder, variable
-shifts and bitwise operations, and every executed operation is proved free of
-overflow, underflow, zero division and oversized shifts. Endpoints outside the
-word domain are rejected by an uncharged value-level check. Preprocessing is
-unbounded and unclaimed, and Lean runtime is a separate, unmeasured quantity.
-Status: **ACCEPTED**, following the replay campaign, both-host aggregate gates
-and independent audit; see the [coordinator acceptance record](docs/internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md). The
-[machine review packet](docs/WORD_RAM_REVIEW_PACKET.md) states the full model,
-allocation/run identity and validation contract.
-
 Range-minimum query (RMQ) asks for the leftmost position of the smallest value
-in a subarray. The surprising theorem is not that RMQ can be solved, but that
-the array values can be discarded: the Cartesian shape alone determines every
-answer. This repository verifies that story end to end, including correctness,
-modeled query cost, payload-bit accounting, a public succinct upper-bound
-surface with a numeric doubled-Catalan slack comparison, and a separately cited
-encoding-quantified information-theoretic lower-bound theorem.
+in a subarray. The classical surprise is that the values can be discarded: the
+Cartesian shape alone determines every answer. This repository machine-checks
+that story in Lean 4 -- correctness, payload-bit accounting, modeled query cost,
+and a matching information-theoretic lower bound -- with explicit Lean definitions for the
+mathematical models and separate statements of runtime assumptions.
 
-For the current publication-oriented explanation aimed at mathematically mature
-readers with little data-structures background, see
-[`docs/digests/PROJECT_DIGESTION_CURRENT.md`](docs/digests/PROJECT_DIGESTION_CURRENT.md).
-The deeper first-contact background note remains
-[`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md).
+**Start here:** [`docs/V1_GUIDE.md`](docs/V1_GUIDE.md) gives a worked half-open
+leftmost-tie example, a model-and-cost comparison table, a source-to-consumer
+tour, and the smoke versus full reproduction commands.
 
-## Why Care
+This tree is the **V1 release candidate `1.0.0-rc.1`**: a research artifact
+prepared for review; it has not been published as a release. It is
+Mathlib-free -- Lean 4 with `Std` plus `omega`, pinned by `lean-toolchain` to
+`leanprover/lean4:v4.22.0` -- with no `sorry`, custom `axiom`, `unsafe`,
+`partial`, or `noncomputable` definitions in the checked source.
 
-RMQ is a small-looking problem that sits under several core data-structure
-ideas: Cartesian trees, lowest-common-ancestor queries, Fischer-Heun
-preprocessing, succinct tree navigation, and rank/select-style bitvector
-indexing. A formally checked RMQ stack is therefore a good stress test for
-verified data-structure infrastructure.
+## The Reference Contract
 
-The main contribution here is not new paper mathematics. It is that the known
-theory is connected in Lean *with its modeling assumptions made explicit and
-audited* -- what counts as one stored bit, and what counts as one step, are Lean
-objects that are checked, not informal promises. Concretely:
+Value-level RMQ queries share one contract
+([`RMQ/Core/Spec.lean`](RMQ/Core/Spec.lean)): inputs are ordinary
+`xs : List Int`, a valid query is a nonempty half-open window `[left, right)`
+inside the list, and the answer is the *leftmost* index attaining the minimum.
+`RMQ.LeftmostArgMin` states it, `RMQ.leftmostArgMin_unique` proves the witness
+unique, and invalid or empty windows return `none`.
 
-- many RMQ implementations satisfy one shared leftmost-minimum contract;
-- RMQ and LCA are reduced to each other through verified tree/Euler/Cartesian
-  machinery;
-- the succinct upper bound has explicit payload accounting and constant modeled
-  query cost, with payload bits separated from proof-only fields so no answer can
-  be hidden in a free-to-read certificate; and
-- the lower bound proves that the leading `2*n` payload term is optimal.
+## Headline Results
 
-All of this is Mathlib-free: the project is pinned to Lean/Std plus `omega`,
-with no `sorry`, custom axioms, `unsafe`, `partial`, or `noncomputable`
-definitions in the checked source.
-
-## Headline Theorems
-
-The RMQ-only paper aliases live in
-[`RMQ/Headlines/RMQ.lean`](RMQ/Headlines/RMQ.lean) and are imported by
-`RMQPaper`. The aggregate full-repository alias barrel remains
-[`RMQ/Headlines.lean`](RMQ/Headlines.lean); it explicitly adds
-[`RMQ/Headlines/RMQCompatibility.lean`](RMQ/Headlines/RMQCompatibility.lean)
-for checked historical profiles under `Legacy`/`Compatibility` names.
-
-| Alias | Meaning |
+| Result | Public alias, available from `import RMQPaper` |
 | --- | --- |
-| `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` | Accepted primitive-machine theorem over ordinary `xs : List Int`, following the replay campaign, both-host aggregate gates and independent audit: one numeric memory and one closed loop-free program; exact leftmost answers for valid half-open ranges; the rejection packet `0` with no memory reads for representable invalid ranges; halting within at most 837,572 primitive instructions; every stored word, operand and prefix state within one logarithmic word width; and memory, literal program encoding and registers within `2n + o(n)` bits. Unit-cost multiplication, division, remainder, shifts and bitwise operations are model assumptions; preprocessing is unclaimed. |
-| `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Reader-facing theorem over ordinary `xs : List Int`: `buildPayload.length <= 2*n + overhead n` with `overhead = o(n)`; valid half-open queries return the exact leftmost RMQ answer, invalid or empty ranges return `none`, and modeled query cost is constant. |
-| `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Reader-facing no-synthetic execution story over ordinary `xs : List Int`, including the same public space inequality and range contract. Exact physical-word erasure is also conjoined directly in the paper main theorem; the construction is not padded to manufacture a size equality. |
-| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing theorem consuming the manifest packet, guarded reviewer-native certificate and independent 24-field required-facts projection, guarded list packet, literal same-execution `nonSyntheticWeight <= 210`, and complete supplied-store `TraceResult` equality under exact ordered dynamic-read agreement, together with the existing payload, answer, invalid-range, provenance, and no-synthetic clauses. |
-| `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint` | List-facing safe-footprint supplied-store equality, derived through agreement on the first execution's ordered dynamic read footprint and complete `TraceResult` equality before projection to `Costed`. |
-| `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | List-facing supplied-store exactness: if a caller-provided store agrees with `SuccinctClassic.globalReadStore xs` on the final checked footprint, valid half-open queries through `SuccinctClassic.queryCostedWithStore` erase to the exact leftmost `List Int` RMQ answer. |
-| `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` | List-facing supplied-store all-size cost transfer: under the same footprint agreement, the supplied-store query has modeled cost at most `SuccinctClassic.queryCost`. |
-| `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile` | Canonical construction-facing profile: doubled-Catalan space envelopes, the at-most `2*n + o(n)` canonical reviewer payload, exact physical-word erasure, direct positional physical backing for every successful read, exact queries through the same global trace, non-synthetic certificate weight equal to both trace length and its `Costed.cost`, and the uniform bound `210`. |
-| `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size execution-story theorem for the final succinct RMQ query: the costed query refines one globally segmented trace and every read agrees with one concrete global payload store. The stronger current event-vocabulary theorem is `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`: every emitted event is `readWord`. |
-| `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | Store-extensional all-size execution story: any read store agreeing with the concrete global store on the emitted payload-read events validates the same final-query trace. |
-| `RMQ.Headlines.succinctRMQCanonicalInteriorDirectoryProfileAllSize` | Canonical all-size interior profile: exactness, component store, execution footprint, successful-read backing, and reviewer-width guarantees. The current interior execution has the separate charged-trace cap `33`; `240` remains a conservative interface cap. |
-| `RMQ.Headlines.succinctRMQCanonicalReviewerMachineWordsComponentSlice` | Exact physical machine-word placement of the canonical component after the counted prefix. |
-| `RMQ.Headlines.succinctRMQCanonicalInteriorPhysicalFootprintFits` | Every physical address consumed by the canonical interior execution fits the pre-execution reviewer word width. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | Paper-facing theorem: the uniform canonical trace has charged-trace cost at most `210`. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength` | Exact accounting bridge: modeled cost equals emitted charged-event trace length. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` | Strong current vocabulary theorem: every event actually emitted by the canonical whole-query trace is `readWord`. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost` | For the canonical no-synthetic trace, the `WordRAM.TraceEvent.nonSyntheticWeight` certificate sum equals the `Costed` cost of the same execution. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe210` | The non-synthetic-weighted actual emitted trace is bounded by `210`. |
-| `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksNonSyntheticWeightLengthEquality` | Counterfactual check: a synthetic event anywhere in a trace makes its `nonSyntheticWeight` sum differ from its length. |
-| `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Component cap `2*select35 + (2*rank11 + 2*fringe37 + interior33) + rank11 = 210`; the actual-event bridge above connects it to execution. |
-| `RMQ.Headlines.succinctRMQReviewerMachineWellFormed` | Shape-level 24-field certificate tying the current canonical payload, 22 physical sources, store adapter, exact execution/footprint, backing, first-order controller, same-trace `<= 210` certificate, and width bounds to the same objects. |
-| `RMQ.Headlines.succinctRMQReviewerMachineRequiredFacts` | Independent typed 24-fact consumer populated only by literal projections from the certificate. |
-| `RMQ.Headlines.listIntSuccinctRMQReviewerNativeMachineAdequacy` | Guarded `List Int` packet connecting the public query, canonical costed trace, interpreted controller, and exact-agreement supplied physical execution while preserving coherent invalid semantics. |
-| `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | Uniform structural execution story with direct same-block decoding and canonical component-store cross-block replay. |
-| `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | No-synthetic all-size execution story: the same bounded global trace contains no dedicated synthetic cost-only marker events. |
-| `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Canonical reviewer-payload no-synthetic execution story: successful reads are counted in one exhaustive typed 22-source universe over logical segments `0..22`, including canonical close; BP roles `0` and `19` share one physical source, live segment `21` is present, segment `23` has no producer, and cross-block replay is uniform for all sizes. |
-| `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical` | Genuine supplied flat-physical execution: the existing supplied-store evaluator reads the caller's flat store through checked address translation and refines the canonical logical execution, preserving value, cost, ordered successes/failures, repeated reads, and footprint. |
-| `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint` | Agreement on the first physical execution's consumed ordered footprint determines the complete physical execution. |
-| `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore` | Projection theorem: the flat physical answer is exactly the existing translated supplied-store evaluator answer. |
-| `RMQ.Headlines.succinctRMQReviewerPhysicalValueDependency` | If translated supplied-store evaluator values differ, the corresponding flat-physical `.value` projections differ. |
-| `RMQ.Headlines.succinctRMQReviewerEveryReadOccurrenceProvenance` | Every indexed read in the closed global trace retains that same global occurrence, its program instruction occurrence, the prefix-folded pre-state, local position, exact component invocation parameters, source, and multiplicity-preserving offset. |
-| `RMQ.Headlines.succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence` | Every counted source is successfully read by some actual closed whole-query execution under a valid ordinary `List Int` query. |
-| `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence` | Select, rank, and canonical-close consumers each have a successful closed-valid occurrence through their exact invocation leaf. |
-| `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer` | Fresh segment `23` is rejected by the same common closed-valid-occurrence predicate used by accepted sources; the checked positive-to-mutation bridge accounts for successful versus arbitrary-result reads. |
-| `RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy` | Query-independent semantic-adequacy packet: every counted source and shared-BP consumer has some successful closed-valid execution witness, successful `P` implies the common mutation predicate `Q`, and fresh segment `23` fails `Q`. It does not say the current query reads every source. |
-| `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics` | Invalid public inputs have one guarded none/empty/zero logical and physical execution for every supplied store. |
-| `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid` | One public validity boundary rejects every invalid or empty range; specialized empty, reversed, and out-of-bounds aliases are exported beside it. |
-| `RMQ.Headlines.concreteBPCloseNavigationProfile` | Concrete payload-backed BP close-navigation profile: relative-split false-select/rank-close plus compact relative-rmM close/LCA, with `2*n + o(n)` payload, constant modeled query cost, exact Cartesian-shape RMQ answer semantics, and machine-word-bounded component payload reads. |
-| `RMQ.Headlines.concreteBPCloseNavigationGlobalPayloadStoreExecutionStory` | Concrete BP close-navigation execution story: the same query is represented by a globally segmented `WordRAM.TraceResult`, with payload reads matched against one concrete store and successful reads backed by counted component stores. |
-| `RMQ.Headlines.concreteBPCloseNavigationGlobalPayloadStoreBoundedExecutionStory` | Bounded concrete BP close-navigation execution story: the trace/store packet also has finite trace-local bounds for read addresses and word-primitive operands/results. |
-| `RMQ.Headlines.concreteSuccinctBPTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStoreObstruction` | Checked obstruction: the current concrete close/LCA store cannot be reused as the matching-open leg for a fuller succinct BP tree-navigation execution story. |
-| `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` | Conditional component-level interpreter-backed BP close-navigation profile, parameterized by a supplied word-bounded sampled encoded close-navigation family. |
-| `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` | Coefficient-correct Catalan lower-bound slack, stated in doubled integer form. |
-| `RMQ.Headlines.rankSelectNPlusOConstantQuery` | Standalone Jacobson/Clark-style plain-bitvector rank/select with `n + o(n)` payload and constant modeled query cost. |
-| `RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery` | The rank/select profile strengthened with machine-word-bounded concrete payload reads. |
-| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile` | Fixed-weight compressed/FID rank/select family with fixed-weight primary payload plus `o(n)` auxiliary payload and constant modeled access/rank/select. |
-| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile` | Interpreter-backed replay of the fixed-weight compressed/FID rank/select family: same payload/profile shape, with access/rank/select reads routed through `WordRAM` bridges. |
-| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile` | Fused fixed-weight compressed/FID rank/select capstone: compressed payload plus `o(n)`, exact constant-query access/rank/select, interpreted replay, one target-independent global payload store, and bounded trace-local event widths. |
-| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile` | Strengthened compressed/FID rank/select capstone: the fused global payload-store story also proves successful read events are backed by component stores and no synthetic cost-only events occur. |
-| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory` | Target-independent global-store execution story for compressed/FID rank/select: for fixed `bits`, shared access plus rank false/true and select false/true traces all read from one concrete payload store. |
-| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory` | Bounded target-independent global-store execution story for compressed/FID rank/select: the shared access/rank/select traces also carry trace-local finite widths bounding payload-read addresses and word-primitive operands/results. |
+| Succinct upper bound: `SuccinctClassic.buildPayload` has length at most `2*n + overhead n` with `overhead` proved `o(n)`; valid windows return the exact leftmost minimum, invalid or empty windows return `none`, and modeled query cost is bounded by a fixed constant. | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` |
+| Payload lower bound: every fixed-length, payload-only exact RMQ encoding needs `2n - 1.5 log n - O(1)` bits, stated in doubled integer form over Cartesian-shape counting. | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` |
+| Validity boundary: one guard rejects empty, reversed and out-of-bounds windows, with specialized aliases exported beside it. | `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid` |
 
-The provenance layer separates two semantic obligations: indexed occurrence
-provenance preserves invocation parameters for the exact current query, while
-a global packet proves every counted source has some actual successful
-closed-valid query witness under the same operational relation used to reject
-fresh segment `23`. The canonical reviewer route has one live public payload,
-`SuccinctClassic.buildPayload`. One pre-execution reviewer physical word list
-erases exactly to that payload. The existing supplied-store evaluator runs
-through a checked adapter that reads the supplied flat store at translated
-physical addresses; canonical execution refines the logical execution while
-preserving decoded result, modeled cost, ordered trace (including repeated and
-failed reads), and the execution-derived footprint. Its query-independent width is
-`machineWordBits (400000 * (n + 1))`, with a checked linear capacity bound and
-an explicit `O(log (n + 2))` inequality.
+**Primitive-machine query (accepted).** Preprocessing builds one numeric memory
+per input, `PackedWordRAM.buildMemory xs`. The closed loop-free program of
+837,572 primitive instructions is fixed for every list and every size. Running
+that program on that memory answers every representable endpoint pair: valid
+windows return the leftmost minimum, representable invalid windows return the
+rejection packet `0` with no memory reads, the run halts within at most 837,572 steps -- which is
+simply the program length, with no tightness claimed -- every stored word,
+operand and prefix state stays inside one logarithmic word width, and the
+memory, literal program encoding, 8,271-register bank and three control words
+fit in `2n + o(n)` bits of allocated word capacity.
+Each executed instruction costs one step; unit-cost multiplication, division,
+remainder, variable shifts and bitwise word operations are model assumptions,
+and every executed operation is proved free of overflow, underflow, zero
+division and oversized shifts. Alias
+`RMQ.Headlines.succinctRMQFullyChargedPackedQuery`; status **ACCEPTED**, with
+the [coordinator record](docs/internal/packed_query/PQ1_COORDINATOR_ACCEPTANCE.md)
+and the [machine review packet](docs/WORD_RAM_REVIEW_PACKET.md). The fixed
+code/register term can dominate moderate inputs; its lower-order bound is
+asymptotic, not a practical memory recommendation.
 
-The supplied-store theorem uses the execution's ordered read footprint, retaining
-repeated and failed reads. Agreement there determines the complete physical
-`TraceResult`. Answer dependency is separately stated at `.value`: physical
-execution returns the translated supplied-store evaluator value, and a checked
-decisive singleton corruption changes `some 0` to `none` while a
-trace-preserving value-ignore mutant does not. Operational checks also reject
-dead-source addition, used-source removal, and mismatched consumer labels.
-Occurrence evidence starts from a global `getElem?` witness and retains
-the same position through the program instruction, folded pre-state, local
-component occurrence, and exact select/rank/close parameters. A checked
-singleton regression keeps the equal events at global positions `0` and `15`,
-arising from producing instruction positions `0` and `1`,
-as distinct obligations. The source witnesses use actual successful closed
-valid executions, including symbolic large witnesses for sources `12`--`19`;
-component may-read and earlier event-value facts remain compatibility facts. The
-current charged-trace cap is `210`. Historical comparison: the retired silent-sparse-level cap is `207`, the silent in-word rank/select cap is `142`, and the earlier event-silent-fringe cap is `76`. <!-- CLAIM-HISTORY-A07-COST -->
-The public `canonicalTransitionalQueryCost = 328` statement is literal-pinned
-history, while the current raw expression is distinctly named
-`liveCompatibilityQueryCost = 352`; detailed earlier cost and dispatch
-chronology lives only in the
-[`compatibility history`](docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md)
-and has no reverse edge into the reviewer route.
+**Continuous lifecycle (merged; coordinator acceptance still open).** A
+separate fixed program per input model joins the builder body, metadata and
+request transfer, retirement and a first query into one continuous run, then
+serves further requests from the retained owner. Construction through query
+entry takes at most `1100000000 * (n + 1)` primitive transitions and owns at
+most `5000000 * (n + 1)` numeric arena cells at every prefix; arbitrary-Int
+comparison input has separately counted key cells and registers; the first service
+takes at most 160253 further transitions and each later request at most 160257;
+retained numeric capacity is at most `2*n + retainedRho n` bits with `retainedRho`
+proved `o(n)`, which is a different quantity from the peak construction
+workspace. Alias `RMQ.Headlines.succinctRMQContinuousLifecycle`, reachable from
+`import RMQ` but deliberately not from `RMQPaper`. The source, its independent
+frozen client propositions and its integration audits are in place; acceptance
+remains open pending the V1 evidence reconciliation, so this is not presented
+as an accepted result beside the packed query above.
 
-The construction-level theorem names are intentionally verbose, so that the
-model assumptions and dependency path remain inspectable. See
-[`docs/TRUST_AUDIT_PACKET.md`](docs/TRUST_AUDIT_PACKET.md) for the alias chain,
-the theorem shape, and curated `#print axioms` checks.
-
-For a concise repository orientation by import root, theorem spine, proof-core
-cluster, compatibility shim, archive, example, and validation code, see
-[`docs/CODE_MAP.md`](docs/CODE_MAP.md).
-
-## Public Import Roots
-
-```lean
-import RMQPaper         -- narrow RMQ paper theorem root
-import RMQ              -- RMQ/LCA family and succinct RMQ capstone
-import RMQHub           -- reusable cost/RAM/refinement/amortized/lower-bound hub
-import RMQRankSelect    -- standalone rank/select spoke
-import RMQBPNavigation  -- balanced-parentheses navigation spoke
-import RMQUnionFind     -- union-find specification and forest-refinement spoke
-import VerifiedDS       -- thin aggregate facade over the active public roots
-import VerifiedDS.Hub
-import VerifiedDS.RMQ
-import VerifiedDS.RankSelect
-import VerifiedDS.BPNavigation
-import VerifiedDS.UnionFind
-```
-
-`RMQPaper` is the reviewer-clean paper root: it imports the RMQ-only headline
-surface without standalone rank/select public spokes, standalone BP-navigation
-public spokes, union-find, archive roots, proposal/legacy/compat barrels, or
-old implementation roots. `RMQ` remains the stable artifact name for the
-broader current theorem inventory.
-`VerifiedDS` and its role modules are deliberately only facades for now: they
-signal the broader library direction without forcing a namespace or repository
-migration before the spoke APIs settle.
-
-## What Is Proved
-
-For external readers, start with [`docs/WHAT_IS_PROVED.md`](docs/WHAT_IS_PROVED.md).
-For the full theorem inventory and dependency map, see
-[`docs/FAMILY_SUMMARY.md`](docs/FAMILY_SUMMARY.md).
-For the measured paper-root import closure, see
-[`docs/RMQ_IMPORT_CLOSURE.md`](docs/RMQ_IMPORT_CLOSURE.md).
-For tiny checked examples of the public surfaces, see
-[`RMQExamples/Concrete.lean`](RMQExamples/Concrete.lean).
-
-At a high level, the repository currently includes:
-
-- exact RMQ backends: linear scan, plus-minus-one RMQ, sparse table, hybrid
-  block RMQ, recursive hybrid RMQ, certified microtables, Fischer-Heun-style
-  structures, and the final succinct Cartesian-shape RMQ profile, now with a
-  direct public theorem over ordinary `List Int` inputs;
-- RMQ/LCA reductions over rose trees, Euler tours, Cartesian trees, and
-  balanced-parentheses representations;
-- an information-theoretic RMQ lower-bound framework, including the sharpened
-  Catalan slack equivalent to `2n - 1.5 log n - O(1)`;
-- a payload-accounted BP-native succinct RMQ upper bound with payload length at
-  most `2*n + o(n)` and constant modeled query cost;
-- an accepted primitive-machine query,
-  `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, whose numeric memory,
-  literal program and finite register bank occupy `2n + o(n)` bits and whose
-  run charges every executed primitive instruction, within a fixed budget
-  equal to its loop-free program length (validated by replay, both-host aggregate gates and independent audit);
-- an interpreter-backed final succinct RMQ query surface whose all-size
-  execution story emits one global `WordRAM.TraceEvent` stream; every event is
-  a payload `readWord`, as checked by
-  `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`, and
-  every read agrees with one concrete payload store;
-- a standalone rank/select spoke with public Jacobson/Clark-style profiles, a
-  concrete fixed-weight compressed/FID capstone family surface, and an
-  interpreter-backed replay of that compressed/FID query path; and
-- a union-find spoke with finite-partition specs, parent-pointer forest
-  refinement, union-by-rank invariants, full-compression refinement, and early
-  amortized-analysis checkpoints on the path toward Tarjan-style bounds.
+Also checked, outside the paper root: RMQ/LCA reductions over rose trees, Euler
+tours, Cartesian trees and balanced parentheses; a standalone rank/select spoke
+(`RMQ.Headlines.rankSelectNPlusOConstantQuery`); a BP close-navigation spoke
+(`RMQ.Headlines.concreteBPCloseNavigationProfile`); and a union-find spoke that
+is still short of the Tarjan bound.
 
 ## Model Scope
 
-The cost statements are model-relative. They use a small `Costed` layer and a
-traced RAM substrate with unit-cost indexed reads, word operations, branches,
-comparisons, and table accesses where explicitly modeled. They are not claims
-about Lean's executable `List` runtime. The `210` charged-trace and `427`
-packed-probe theorems leave controller dispatch, decoding, arithmetic and
-branching uncharged. The separate accepted theorem
-`RMQ.Headlines.succinctRMQFullyChargedPackedQuery` uses a different execution:
-a register machine over numeric memory whose nine instruction forms (load,
-constant, move, arithmetic, comparison, jump, register jump, branch-if-zero,
-halt) each cost one step, with unit-cost multiplication, division, remainder,
-variable shifts and bitwise operations on `w(n)`-bit words.
+Cost statements are model-relative, and the models differ. The current
+charged-trace cap is `210` on the canonical reviewer query: modeled cost is
+the emitted trace length, and
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` proves
+every emitted event is a payload-word read, failed reads included. Controller
+dispatch, decoding, arithmetic, branching, local scanning and the validity
+guard are outside this event vocabulary. The packed cell-probe bound of `427` counts attempted aligned
+`w(n)`-bit probes and treats computation between probes as free. The accepted
+primitive-machine theorem above instead charges every executed instruction of
+its own register machine. Three executions, three charge policies; none of them
+is a wall-clock or compiled-code statement.
 
-The space statements count payload bits separately from proof-only fields and
-certificates. The succinct RMQ theorem counts the balanced-parentheses shape
-payload plus `o(n)` auxiliary payload; proof objects that certify correctness
-are not counted as data-structure storage. Its physical-erasure equality is an
-exact equality of flattened payload **bit contents** with the public payload.
-Empty sentinel cells and unused per-cell padding are not payload bits and are
-not charged by that theorem; it does not claim a bound on allocated cells or
-their padded capacity.
+Space statements exclude proof-only fields and certificates. The reference
+payload counts its bit list; complete packed capacity counts every allocated
+word at its full width, including padding, plus encoded code and registers.
 
-`scripts/paper_topology_lint.ps1` checks the identifier topology of the paper
-surface: required theorem names resolve and the curated composition anchors are
-present. It does not interpret prose numeric values. Numeric prose therefore
-requires separate source review and claim-drift checks; the lint alone cannot
-detect a stale component constant, source count, or segment number.
-
-For the trust base, non-claims, and exact verification commands, see
-[`docs/TRUST_BASE.md`](docs/TRUST_BASE.md) and
-[`docs/TRUST_AUDIT_PACKET.md`](docs/TRUST_AUDIT_PACKET.md).
+**Preprocessing.** The query theorems above bound queries only: none of them
+bounds the work or space needed to build the payload. The lifecycle theorem is
+the one surface that does bound construction, inside its own model and with the
+constants quoted above, and input materialization precedes its modeled run.
+The repository also proves image-codec and byte-limb refinements. General
+compiler correctness, FFI discipline and native allocator realization remain
+assumptions; modeled capacity does not bound native copying time or RSS.
 
 ## Build And Verify
 
-The project is pinned to Lean `leanprover/lean4:v4.22.0`.
+Install the toolchain named in `lean-toolchain`, then check the paper root and
+the worked clients:
 
 ```powershell
-lake build
+lake build RMQPaper RMQExamples.V1Clients
 ```
 
-Full repository gate, matching the GitHub Actions CI job:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\gate.ps1
-```
-
-Paper-artifact reproduction gate:
-
-```bash
-scripts/reproduce_artifact.sh
-```
-
-Concise public-headline check:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\headline_check.ps1
-```
-
-Standalone spoke checks:
-
-```powershell
-lake build RMQRankSelect
-lake env lean scripts\rank_select_axiom_check.lean
-
-lake build RMQBPNavigation
-lake env lean scripts\bp_navigation_axiom_check.lean
-
-lake build RMQUnionFind
-lake env lean scripts\union_find_axiom_check.lean
-```
-
-Useful proof-hygiene scan:
-
-```powershell
-rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQExamples RMQHub.lean RMQRankSelect.lean RMQArchive.lean RMQExamples.lean lakefile.toml
-```
-
-## Background And References
-
-The mathematics is classical; the contribution is the audited Lean connection.
-Classical sources behind each piece (the Lean code re-derives, rather than
-imports, this material):
-
-- **RMQ <-> LCA, constant-time RMQ:** Gabow-Bentley-Tarjan (1984); Bender &
-  Farach-Colton, *The LCA problem revisited* (2000).
-- **Cartesian trees:** Vuillemin (1980).
-- **Succinct trees / balanced parentheses:** Jacobson (1989); Munro & Raman
-  (2001).
-- **rank/select in `o(n)` extra bits:** Jacobson (1989); Clark (1996); Munro
-  (1996).
-- **Compressed bitvectors / FID:** Raman, Raman & Rao, "RRR" (2002) -- the
-  `log2 C(n,k) + o(n)` entropy bound behind the compressed rank/select frontier.
-- **Fischer-Heun RMQ:** Fischer & Heun (2011).
-- **Union-find / inverse Ackermann:** Tarjan (1975) -- the `O(alpha(n))` amortized
-  bound the union-find spoke is scaffolding toward.
-
-## Documentation Map
-
-- [`docs/CODE_MAP.md`](docs/CODE_MAP.md): concise orientation map for public
-  roots, final succinct RMQ theorem/model-adequacy spines, proof-core modules,
-  compatibility shims, archive files, examples, and validation code.
-- [`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md):
-  immutable historical Lean-club snapshot; exact frozen lines are marked and
-  remain outside the current paper surface.
-- [`docs/digests/PROJECT_DIGESTION_CURRENT.md`](docs/digests/PROJECT_DIGESTION_CURRENT.md):
-  current publication-oriented project digestion. Its documentary headline
-  identifiers are checked under both the broad and `RMQPaper` imports; dated
-  fast-regime discussion is explicitly labeled compatibility history.
-- [`docs/ADD_PROVENANCE.md`](docs/ADD_PROVENANCE.md): public provenance note for
-  the audit-driven development workflow; ADD is process evidence, not a proof
-  object or trust base.
-- [`docs/PAPER_CLAIM_CORRESPONDENCE.md`](docs/PAPER_CLAIM_CORRESPONDENCE.md):
-  reviewer-grade paper claim correspondence table with Lean aliases, source
-  theorem names, source files, and exact check commands.
-- [`docs/PAPER_RELATED_WORK.md`](docs/PAPER_RELATED_WORK.md): paper-ready
-  related-work draft and limitations framing for a formalization submission.
-- [`docs/WHAT_IS_PROVED.md`](docs/WHAT_IS_PROVED.md): compact scope summary.
-- [`docs/TRUST_AUDIT_PACKET.md`](docs/TRUST_AUDIT_PACKET.md): skeptical-review
-  packet for the headline theorem.
-- [`docs/WORD_RAM_REVIEW_PACKET.md`](docs/WORD_RAM_REVIEW_PACKET.md): focused
-  review packet for the accepted primitive-machine query and for the
-  first-order Word-RAM anti-oracle boundary of the charged-trace theorem.
-- [`docs/TRUST_BASE.md`](docs/TRUST_BASE.md): dependency policy, model
-  glossary, and verification commands.
-- [`docs/FAMILY_SUMMARY.md`](docs/FAMILY_SUMMARY.md): full theorem inventory,
-  dependency DAG, and per-structure status matrix.
-- [`docs/RANK_SELECT_FRONTIER.md`](docs/RANK_SELECT_FRONTIER.md): standalone
-  rank/select status and compressed/FID frontier.
-- [`docs/UNION_FIND_FRONTIER.md`](docs/UNION_FIND_FRONTIER.md): union-find
-  status and amortized-analysis frontier.
-- [`docs/REPOSITORY_STRATEGY.md`](docs/REPOSITORY_STRATEGY.md): why this repo
-  is still named `rmq`, why `VerifiedDS` is only a facade for now, and when a
-  future umbrella package would make sense.
-- [`docs/README.md`](docs/README.md): documentation index.
-
-## Current Development Docket
-
-The RMQ capstone is in place with the uniform canonical reviewer route and its
-principled all-size charged-trace cap `210`.
-Earlier cost and dispatch statements remain in the explicit
-[`compatibility history`](docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
-The development frontier is now to
-package, calibrate, and reuse the infrastructure:
-
-1. deepen balanced-parentheses navigation into a fuller tree-navigation API and
-   continue turning useful component traces into public store-backed execution
-   stories where that materially clarifies theorem surfaces;
-2. push the union-find spoke from the current sequence/event scorecard toward a
-   true inverse-Ackermann amortized theorem over strict residual events; and
-3. package the accepted primitive-machine query
-   `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` with its replay and audit
-   evidence; preprocessing cost, extraction and production serialization
-   remain separate targets; and
-4. promote shared cost, refinement, lower-bound, and amortized-analysis pieces
-   into a more neutral library surface only when concrete reuse demands it.
-
-License: Apache-2.0; see [`LICENSE`](LICENSE).
+The [V1 guide](docs/V1_GUIDE.md#reproduction) separates this smoke build from
+the complete repository gate, lifecycle checks and native supplement. Full
+reproduction needs a clean Git checkout with the historical objects used by
+mutation controls. The source bundle includes the pinned toolchain name,
+manuscript and a per-file hash manifest; it is not a precompiled library.

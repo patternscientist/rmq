@@ -62,8 +62,9 @@ remains a safe overapproximation.
   Its fixed budget is the length of its loop-free program, its word model
   assumes unit-cost multiplication, division, remainder, shifts and bitwise
   operations, its outer word-domain check is uncharged, and its code and
-  scratch storage is absorbed into `o(n)` only asymptotically. It is pending
-  audit and does not bound preprocessing.
+  scratch storage is absorbed into `o(n)` only asymptotically. It has passed
+  independent audit and does not itself bound preprocessing. The additive
+  lifecycle model has separate construction and runtime boundaries.
 - The auxiliary logical layout footprint is not claimed minimal; the reviewer
   flat-physical footprint is execution-derived and recorded exactly.
 - The current theorem gives component-wise **upper** caps and one exact

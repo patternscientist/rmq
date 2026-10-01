@@ -52,7 +52,8 @@ candidates, subject to the novelty search described below — are:
   with constant modeled query cost — a *charged-probe* bound, and deliberately
   not the word-RAM `O(1)` of the time-credit line above, since computation
   between charged probes is free in this model and payload construction is
-  unproved and excluded from the bound rather than separately accounted —
+  excluded from this query bound; the additive lifecycle model accounts for
+  construction separately —
   with any priority wording deferred until a referee-grade novelty search;
 - **(b)** a mechanized **matching lower bound** (rare: the three lines above are
   all upper-bound/correctness; a mechanized information-theoretic lower bound is
@@ -183,7 +184,7 @@ and a different execution, beside the `210` charged-trace result rather than
 replacing it. The step budget is the program
 length, not a tight constant; the code and scratch term is lower order only
 asymptotically; endpoints outside the word domain are rejected by an
-uncharged check; and preprocessing remains unclaimed. Remaining, in priority
+uncharged check; and this theorem does not bound preprocessing. Remaining, in priority
 order: **paper/artifact packaging with both cost models
 stated separately; novelty search; extraction + benchmarks.**
 

@@ -31,19 +31,20 @@ The integrated paper frontier already contains:
 - flat counted-payload backing for successful reads and a no-synthetic final
   trace;
 - list-facing supplied-store/footprint result, cost, and exactness theorems;
-- canonical transitional all-size cost `328`, with `4144`, Ready `118`,
-  zero-block, and `196727` retained only as compatibility/history surfaces;
+- the canonical all-size charged-trace bound `210`, with earlier constants
+  retained only in explicit compatibility/history surfaces;
 - differential validation and a theorem-adjacent executable cost harness;
 - a prepared Cartesian builder path with theorem-backed agreement;
 - paper/artifact correspondence, import-closure, trust, provenance, and
   reproduction documents.
 
-The remaining central weakness is architectural. The current canonical
-relative-summary `Active` predicate combines block geometry, payload readiness,
-and word-width facts. Inactive layouts therefore collapse several geometric
-parameters to zero, which creates a special zero-block structural replay and a
-larger all-size constant. The next campaign replaces that patchwork with total
-positive parameters and a uniform query route.
+The earlier geometry/activation coupling was closed by the uniform route
+recorded in U1-U3 below. The current task is V1 finalization: proof maintenance,
+checked downstream clients, current claim/paper alignment, lifecycle evidence
+reconciliation, integrated verification and an unpublished source bundle. The
+accepted primitive-query theorem remains the baseline; additive lifecycle and
+native results retain separately stated models and evidence status. See
+`v1/V1_FINALIZATION_MATRIX.md` for the frozen finalization contract.
 
 ## Dependency DAG
 
@@ -520,7 +521,10 @@ validator that is harder to audit than the Lean executable is not progress.
 
 ### V1. Independent Verification And Submission Freeze
 
-Status: final milestone.
+Status: finalization in progress on `codex/v1-finalization`, based on
+`ee44f04a561f2194b3713f071c26b6faf9ba7fab`; no V1 release is published. The
+frozen requirements and eventual verification/audit identities are recorded
+in `v1/V1_FINALIZATION_MATRIX.md`.
 
 - run Linux CI with pinned versions and stored logs/timings;
 - run an advisory independent checker (`nanoda`) and the project axiom/hygiene

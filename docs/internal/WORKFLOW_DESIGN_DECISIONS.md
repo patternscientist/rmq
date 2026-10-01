@@ -15461,3 +15461,30 @@ without its contracted artifact; editing it would break the handoff hash.
 
 Consequences. The branch tip carries the report whose identity matches the
 worker handoff; the delta scope is unchanged (repair-r4/** plus this append).
+
+
+## WDD-20261001-V1-COORDINATOR - Candidate packaging and lifecycle gate coverage
+
+Date: 2026-10-01. Status: implementation decision; final gate and audit pending.
+
+Trigger: V1 review found an overlong entry point, contradictory preprocessing
+and acceptance prose, provisional metadata, and lifecycle expected-type clients
+and trust inventory outside the aggregate gate. Add their existing module builds,
+the direct provenance client and the existing axiom inventory to the gate. The
+shared whitelist checker rejects nonstandard axioms; no whitelist is weakened.
+Native runtime replays remain separate and must carry their own evidence.
+
+The local-only Python packager obtains source from the exact committed Git object,
+requires a clean tree, checks package/citation versions, adds a SHA256 file
+manifest and reports the archive hash. It never creates a tag, uploads or
+publishes. Four focused tests cover reproducibility, commit identity, dirty-tree
+and overwrite rejection, tampered/extra content and unsafe names. The source
+ZIP supports the documented Lean smoke path; full mutation reproduction requires
+the Git history, and the guide states that boundary.
+
+The README's repeated constant count is intentionally reduced with its shorter
+content; the Lean-derived value and claim anchor remain checked. Stable
+requirement matrices and exact source inventories live under internal/v1.
+Frozen prior evidence is not rewritten. Transitive workflow-ledger scope for
+worker matrices was corrected before certification, a reusable scope omission
+already covered by STRICT-DESIGN-CHECK-WRITE-SCOPE-CLOSURE.
