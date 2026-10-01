@@ -2153,8 +2153,9 @@ The cleanup centralizes two existing rank/select proofs in GenericSelect while
 preserving the older theorem names and propositions. An unused private list
 lemma is gone. The reviewer simulation now names one private full-result
 decomposition at the active-read/continuation boundary; both proof sites use
-that equality. It preserves returned values, terminal state and ordered events,
-not only trace length. Computation and public premises are unchanged.
+that equality. It fixes the returned candidate and the ordered events, not
+only trace length. The consuming simulation also fixes termination and final
+state through that candidate. Computation and public premises are unchanged.
 
 The new `RMQExamples.V1Clients` module imports one public headline module. Its
 packed client derives a uniform primitive-step bound, valid-query halting and

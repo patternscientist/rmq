@@ -13537,3 +13537,9 @@ and adds a digestion note explaining the common objects and live assumptions.
 A client comment explicitly names the three control words already included in
 its checked capacity expression; the guide labels the unit as bits. This is
 prose clarification only, with no change to that proposition or proof.
+
+The integration digest distinguishes the `TraceResult` fields (candidate and
+trace) from the consuming `PackedReviewerComponentRun.Simulates` relation,
+which additionally fixes terminal value and `done reference.value` state.
+The private equality has no separate terminal-state field. No proof changes
+were needed for this explanatory clarification.
