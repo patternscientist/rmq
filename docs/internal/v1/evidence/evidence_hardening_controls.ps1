@@ -76,6 +76,7 @@ $sources=@(
   'scripts/owned_process_tree.ps1'
 )
 foreach($relative in $sources){$absolute=Join-Path $repo $relative;$sourcePins[$absolute]=Get-V1Hash $absolute}
+$sourcePins[[IO.Path]::GetFullPath($PSCommandPath)]=Get-V1Hash $PSCommandPath
 
 try {
   # EH1: independently stated roster fixtures exercise the predicate directly.
@@ -91,22 +92,54 @@ try {
   $roster=[pscustomobject]@{rows=@('a','b','c');stages=[pscustomobject]@{complete=[pscustomobject]@{capturedIndexes=@(0,1,2)}}}
   $fileRoster=[pscustomobject]@{rows=@('a');stages=[pscustomobject]@{complete=[pscustomobject]@{capturedIndexes=@(0)}}}
   $gitRoster=[pscustomobject]@{rows=@('git:HEAD');identityKinds=[pscustomobject]@{'0'='git-sha1'};stages=[pscustomobject]@{complete=[pscustomobject]@{capturedIndexes=@(0)}}}
+  $projectionRoster=[pscustomobject]@{rows=@('a','git:HEAD');identityKinds=[pscustomobject]@{'1'='git-sha1'};stages=[pscustomobject]@{partial=[pscustomobject]@{rows=@('a');capturedIndexes=@(0)}}}
+  $outOfBoundsKindRoster=[pscustomobject]@{rows=@('a');identityKinds=[pscustomobject]@{'1'='git-sha1'};stages=[pscustomobject]@{complete=[pscustomobject]@{capturedIndexes=@(0)}}}
+  $fixtureRoster=[pscustomobject]@{rows=@('fixture:bin/tool.exe');stages=[pscustomobject]@{complete=[pscustomobject]@{capturedIndexes=@(0)}}}
+  $shellRoster=[pscustomobject]@{rows=@('shell:child','shell:host');stages=[pscustomobject]@{complete=[pscustomobject]@{capturedIndexes=@(0,1)}}}
+  $toolchainRoster=[pscustomobject]@{rows=@('toolchain:lean.exe');stages=[pscustomobject]@{complete=[pscustomobject]@{capturedIndexes=@(0)}}}
+  $historyRoster=[pscustomobject]@{rows=@('history:raw-summary');stages=[pscustomobject]@{complete=[pscustomobject]@{capturedIndexes=@(0)}}}
+  $fixtureContext=[pscustomobject]@{fixtureRoot='C:/trusted/v1-fixture'}
+  $shellContext=[pscustomobject]@{childShell='C:/trusted/shell/pwsh.exe';hostShell='C:\trusted\shell\pwsh.exe'}
+  $toolchainContext=[pscustomobject]@{toolchainBin='C:/trusted/toolchain/bin'}
+  $historyContext=[pscustomobject]@{historicalSummary='C:/trusted/history/SUMMARY.json'}
   $predicateCases=@(
-    [pscustomobject]@{id='intact';ok=$true;prefix='captured 3 of 3 rows, all re-verified, exact roster stage complete';fin=(New-V1Fin @((New-V1Row a $h1 $h1 verified),(New-V1Row b $h2 $h2 verified),(New-V1Row c $h3 $h3 verified)) 3)},
-    [pscustomobject]@{id='git-intact';ok=$true;prefix='captured 1 of 1 rows, all re-verified, exact roster stage complete';roster=$gitRoster;fin=(New-V1Fin @((New-V1Row 'git:HEAD' $git40 $git40 verified)) 1)},
+    [pscustomobject]@{id='intact';ok=$true;prefix='captured 3 of 3 rows, all verified, exact roster stage complete';fin=(New-V1Fin @((New-V1Row a $h1 $h1 verified),(New-V1Row b $h2 $h2 verified),(New-V1Row c $h3 $h3 verified)) 3)},
+    [pscustomobject]@{id='git-intact';ok=$true;prefix='captured 1 of 1 rows, all verified, exact roster stage complete';roster=$gitRoster;fin=(New-V1Fin @((New-V1Row 'git:HEAD' $git40 $git40 verified)) 1)},
     [pscustomobject]@{id='file-sha1';ok=$false;prefix='malformed captured SHA256: a';roster=$fileRoster;fin=(New-V1Fin @((New-V1Row a $git40 $git40 verified)) 1)},
     [pscustomobject]@{id='git-sha256';ok=$false;prefix='malformed captured Git SHA1: git:HEAD';roster=$gitRoster;fin=(New-V1Fin @((New-V1Row 'git:HEAD' $h1 $h1 verified)) 1)},
-    [pscustomobject]@{id='legacy-git-intact';ok=$true;prefix='captured 1 of 1 rows, all re-verified';roster=$null;fin=(New-V1Fin @((New-V1Row 'git:HEAD' $git40 $git40 verified)) 1)},
+    [pscustomobject]@{id='legacy-git-intact';ok=$true;prefix='captured 1 of 1 rows, all verified';roster=$null;fin=(New-V1Fin @((New-V1Row 'git:HEAD' $git40 $git40 verified)) 1)},
     [pscustomobject]@{id='legacy-file-sha1';ok=$false;prefix='malformed captured SHA256: a';roster=$null;fin=(New-V1Fin @((New-V1Row a $git40 $git40 verified)) 1)},
+    [pscustomobject]@{id='typed-projection-good';ok=$true;prefix='captured 1 of 1 rows, all verified, exact roster stage partial';roster=$projectionRoster;stage='partial';fin=(New-V1Fin @((New-V1Row a $h1 $h1 verified)) 1)},
+    [pscustomobject]@{id='typed-index-out-of-bounds';ok=$false;prefix='invalid identity-kind index 1';roster=$outOfBoundsKindRoster;fin=(New-V1Fin @((New-V1Row a $h1 $h1 verified)) 1)},
+    [pscustomobject]@{id='fixture-path-good';ok=$true;prefix='captured 1 of 1 rows, all verified, exact roster stage complete';roster=$fixtureRoster;context=$fixtureContext;fin=(New-V1Fin @((New-V1Row 'C:\TRUSTED\v1-fixture\bin\tool.exe' $h1 $h1 verified)) 1)},
+    [pscustomobject]@{id='fixture-wrong-root';ok=$false;prefix='pinCheck path at roster index 0 differs from trusted expected path: C:/wrong/v1-fixture/bin/tool.exe';roster=$fixtureRoster;context=$fixtureContext;fin=(New-V1Fin @((New-V1Row 'C:/wrong/v1-fixture/bin/tool.exe' $h1 $h1 verified)) 1)},
+    [pscustomobject]@{id='shell-aliases-good';ok=$true;prefix='captured 2 of 2 rows, all verified, exact roster stage complete';roster=$shellRoster;context=$shellContext;fin=(New-V1Fin @((New-V1Row 'C:\TRUSTED\shell\pwsh.exe' $h1 $h1 verified),(New-V1Row 'C:/trusted/shell/pwsh.exe' $h1 $h1 verified)) 2)},
+    [pscustomobject]@{id='shell-same-basename-wrong';ok=$false;prefix='pinCheck path at roster index 0 differs from trusted expected path: C:/unrelated/shell/pwsh.exe';roster=$shellRoster;context=$shellContext;fin=(New-V1Fin @((New-V1Row 'C:/unrelated/shell/pwsh.exe' $h1 $h1 verified),(New-V1Row 'C:/trusted/shell/pwsh.exe' $h1 $h1 verified)) 2)},
+    [pscustomobject]@{id='toolchain-path-good';ok=$true;prefix='captured 1 of 1 rows, all verified, exact roster stage complete';roster=$toolchainRoster;context=$toolchainContext;fin=(New-V1Fin @((New-V1Row 'C:/trusted/toolchain/bin/lean.exe' $h1 $h1 verified)) 1)},
+    [pscustomobject]@{id='toolchain-wrong-root';ok=$false;prefix='pinCheck path at roster index 0 differs from trusted expected path: C:/wrong/toolchain/bin/lean.exe';roster=$toolchainRoster;context=$toolchainContext;fin=(New-V1Fin @((New-V1Row 'C:/wrong/toolchain/bin/lean.exe' $h1 $h1 verified)) 1)},
+    [pscustomobject]@{id='history-path-good';ok=$true;prefix='captured 1 of 1 rows, all verified, exact roster stage complete';roster=$historyRoster;context=$historyContext;fin=(New-V1Fin @((New-V1Row 'C:\TRUSTED\history\SUMMARY.json' $h1 $h1 verified)) 1)},
+    [pscustomobject]@{id='history-wrong-root';ok=$false;prefix='pinCheck path at roster index 0 differs from trusted expected path: C:/wrong/history/SUMMARY.json';roster=$historyRoster;context=$historyContext;fin=(New-V1Fin @((New-V1Row 'C:/wrong/history/SUMMARY.json' $h1 $h1 verified)) 1)},
+    [pscustomobject]@{id='missing-context';ok=$false;prefix='missing trusted path context fixtureRoot for fixture:bin/tool.exe';roster=$fixtureRoster;context=$null;fin=(New-V1Fin @((New-V1Row 'C:/trusted/v1-fixture/bin/tool.exe' $h1 $h1 verified)) 1)},
+    [pscustomobject]@{id='verified-final-null';ok=$false;prefix='missing final identity for verified pin: a';roster=$fileRoster;fin=(New-V1Fin @((New-V1Row a $h1 $null verified)) 1);all=$false},
+    [pscustomobject]@{id='verified-final-empty';ok=$false;prefix='malformed final SHA256 for verified pin: a';roster=$fileRoster;fin=(New-V1Fin @((New-V1Row a $h1 '' verified)) 1);all=$false},
+    [pscustomobject]@{id='verified-final-nonhex';ok=$false;prefix='malformed final SHA256 for verified pin: a';roster=$fileRoster;fin=(New-V1Fin @((New-V1Row a $h1 ('g'*64) verified)) 1);all=$false},
+    [pscustomobject]@{id='verified-final-mismatch';ok=$false;prefix='verified final identity differs from entry: a';roster=$fileRoster;fin=(New-V1Fin @((New-V1Row a $h1 $h2 verified)) 1);all=$false},
+    [pscustomobject]@{id='changed-final-good';ok=$true;prefix='captured 1 of 1 rows, status/final identities consistent';roster=$fileRoster;fin=(New-V1Fin @((New-V1Row a $h1 $h2 changed)) 1);all=$false},
+    [pscustomobject]@{id='changed-final-same';ok=$false;prefix='changed final identity equals entry: a';roster=$fileRoster;fin=(New-V1Fin @((New-V1Row a $h1 $h1 changed)) 1);all=$false},
+    [pscustomobject]@{id='unreadable-final-good';ok=$true;prefix='captured 1 of 1 rows, status/final identities consistent';roster=$fileRoster;fin=(New-V1Fin @((New-V1Row a $h1 $null 'unreadable-final')) 1);all=$false},
+    [pscustomobject]@{id='unreadable-final-nonnull';ok=$false;prefix='unreadable-final pin has a final identity: a';roster=$fileRoster;fin=(New-V1Fin @((New-V1Row a $h1 $h2 'unreadable-final')) 1);all=$false},
     [pscustomobject]@{id='missing-pin';ok=$false;prefix='required pin not captured at roster index 2: c';fin=(New-V1Fin @((New-V1Row a $h1 $h1 verified),(New-V1Row b $h2 $h2 verified),(New-V1Row c $null $null 'not-captured')) 2)},
     [pscustomobject]@{id='coordinated-count';ok=$false;prefix='pinCheck roster count 2 differs from expected 3';fin=(New-V1Fin @((New-V1Row a $h1 $h1 verified),(New-V1Row b $h2 $h2 verified)) 2)},
     [pscustomobject]@{id='empty-hash';ok=$false;prefix='malformed captured SHA256: a';fin=(New-V1Fin @((New-V1Row a '' $h1 verified),(New-V1Row b $h2 $h2 verified),(New-V1Row c $h3 $h3 verified)) 3)},
     [pscustomobject]@{id='nonhex-hash';ok=$false;prefix='malformed captured SHA256: a';fin=(New-V1Fin @((New-V1Row a ('g'*64) $h1 verified),(New-V1Row b $h2 $h2 verified),(New-V1Row c $h3 $h3 verified)) 3)},
-    [pscustomobject]@{id='wrong-order';ok=$false;prefix='pinCheck path at roster index 0 differs: b';fin=(New-V1Fin @((New-V1Row b $h2 $h2 verified),(New-V1Row a $h1 $h1 verified),(New-V1Row c $h3 $h3 verified)) 3)}
+    [pscustomobject]@{id='wrong-order';ok=$false;prefix='pinCheck path at roster index 0 differs from trusted expected path: b';fin=(New-V1Fin @((New-V1Row b $h2 $h2 verified),(New-V1Row a $h1 $h1 verified),(New-V1Row c $h3 $h3 verified)) 3)}
   )
   foreach($case in $predicateCases){
     $caseRoster=if($null -ne $case.PSObject.Properties['roster']){$case.roster}else{$roster}
-    $observed=Test-R4PinCoverage $case.fin $null $true $caseRoster 'complete'
+    $caseStage=if($null -ne $case.PSObject.Properties['stage']){[string]$case.stage}else{'complete'}
+    $caseAll=if($null -ne $case.PSObject.Properties['all']){[bool]$case.all}else{$true}
+    $caseContext=if($null -ne $case.PSObject.Properties['context']){$case.context}else{$null}
+    $observed=Test-R4PinCoverage $case.fin $null $caseAll $caseRoster $caseStage $caseContext
     Assert-V1 ([bool]$observed.ok -eq [bool]$case.ok) ('EH1 predicate verdict differs for '+$case.id)
     Assert-V1 ([string]$observed.reason).StartsWith($case.prefix,[StringComparison]::Ordinal) ('EH1 predicate clause differs for '+$case.id+': '+$observed.reason)
     $records.Add([ordered]@{id=('EH1-PRED-'+$case.id);passed=$true;expected=$case.ok;observed=$observed})
@@ -149,14 +182,27 @@ try {
     [pscustomobject]@{mode='unknown';exit=1;stdout=$null;stderr='R3-SELECTOR: unknown selector'},
     [pscustomobject]@{mode='duplicate';exit=1;stdout=$null;stderr='R3-SELECTOR: duplicate selector'}
   )
-  $pwsh=$shells.pwsh
+  # The failure-control runner itself has an explicit PowerShell 7 runtime
+  # contract even when -Profile selects WinPS for the harness children. Exercise
+  # that boundary under the selected shell, then record the actual pwsh process
+  # used for selector/registry semantics instead of attributing it to WinPS.
+  $runtimeProbe=Invoke-V1Child 'eh1-consumer-runtime-contract' $shell @('-NoLogo','-NoProfile','-File',$probeWrapper,'-Driver',$failureDriver,'-Registry',$failureRegistry,'-HarnessRef','worktree','-Profile',$Profile,'-Mode','exact','-Id',$available[0]) $repo 30
+  if($Profile -ceq 'pwsh'){
+    Assert-V1 ($runtimeProbe.ExitCode -eq 0 -and @($runtimeProbe.StandardOutput).Count -eq 1 -and $runtimeProbe.StandardOutput[0] -ceq ('R3 SELECT '+$available[0]) -and @($runtimeProbe.StandardError).Count -eq 0) 'EH1 pwsh runner runtime contract differs'
+  }else{
+    Assert-V1 ($runtimeProbe.ExitCode -eq 1 -and @($runtimeProbe.StandardOutput).Count -eq 0 -and @($runtimeProbe.StandardError).Count -eq 1 -and $runtimeProbe.StandardError[0] -ceq 'R3-RUNTIME: the runner itself requires PowerShell 7') 'EH1 WinPS runner restriction differs'
+  }
+  $records.Add([ordered]@{id='EH1-CONSUMER-RUNTIME-CONTRACT';passed=$true;executingShell=$shell;targetProfile=$Profile
+    runnerSupported=($Profile -ceq 'pwsh');childExit=$runtimeProbe.ExitCode;deadlineSeconds=30;process='processes/eh1-consumer-runtime-contract/process.json'})
+  $probeShell=$shells.pwsh
   foreach($case in $probeCases){
-    $r=Invoke-V1Child ('eh1-probe-'+$case.mode) $pwsh @('-NoLogo','-NoProfile','-File',$probeWrapper,'-Driver',$failureDriver,'-Registry',$failureRegistry,'-HarnessRef','worktree','-Profile',$Profile,'-Mode',$case.mode,'-Id',$available[0]) $repo 30
+    $r=Invoke-V1Child ('eh1-probe-'+$case.mode) $probeShell @('-NoLogo','-NoProfile','-File',$probeWrapper,'-Driver',$failureDriver,'-Registry',$failureRegistry,'-HarnessRef','worktree','-Profile',$Profile,'-Mode',$case.mode,'-Id',$available[0]) $repo 30
     Assert-V1 ($r.ExitCode -eq $case.exit) ('EH1 '+$case.mode+' exit differs')
     $actualOut=if(@($r.StandardOutput).Count -eq 1){[string]$r.StandardOutput[0]}else{$null}
     $actualErr=if(@($r.StandardError).Count -eq 1){[string]$r.StandardError[0]}else{$null}
     Assert-V1 ($actualOut -ceq $case.stdout -and $actualErr -ceq $case.stderr) ('EH1 '+$case.mode+' exact stream differs')
-    $records.Add([ordered]@{id=('EH1-CONSUMER-'+$case.mode);passed=$true;exit=$r.ExitCode;deadlineSeconds=30;process=('processes/eh1-probe-'+$case.mode+'/process.json')})
+    $records.Add([ordered]@{id=('EH1-CONSUMER-'+$case.mode);passed=$true;exit=$r.ExitCode;executingShell=$probeShell;selectedShell=$shell
+      targetProfile=$Profile;runnerRuntime='PowerShell 7 only';deadlineSeconds=30;process=('processes/eh1-probe-'+$case.mode+'/process.json')})
   }
   foreach($mutation in @('missing','duplicate')){
     $copy=[IO.File]::ReadAllText($failureRegistry,$utf8)|ConvertFrom-Json
@@ -164,10 +210,11 @@ try {
     if($mutation -ceq 'missing'){$copy.controls=@($copy.controls|Select-Object -Skip 1)}else{$copy.controls[1].id=$copy.controls[0].id}
     $path=Join-Path $evidence ('eh1-registry-'+$mutation+'.json')
     Write-V1Json $path $copy
-    $r=Invoke-V1Child ('eh1-registry-'+$mutation) $pwsh @('-NoLogo','-NoProfile','-File',$probeWrapper,'-Driver',$failureDriver,'-Registry',$path,'-HarnessRef','worktree','-Profile',$Profile,'-Mode','omitted','-Id',$available[0]) $repo 30
+    $r=Invoke-V1Child ('eh1-registry-'+$mutation) $probeShell @('-NoLogo','-NoProfile','-File',$probeWrapper,'-Driver',$failureDriver,'-Registry',$path,'-HarnessRef','worktree','-Profile',$Profile,'-Mode','omitted','-Id',$available[0]) $repo 30
     $expected=if($mutation -ceq 'missing'){'R3-REGISTRY: missing ID '+$registryIds[0]}else{'R3-REGISTRY: duplicate ID '+$registryIds[0]}
     Assert-V1 ($r.ExitCode -eq 1 -and @($r.StandardOutput).Count -eq 0 -and @($r.StandardError).Count -eq 1 -and $r.StandardError[0] -ceq $expected) ('EH1 '+$mutation+' registry guard differs')
-    $records.Add([ordered]@{id=('EH1-REGISTRY-'+$mutation);passed=$true;expectedError=$expected;deadlineSeconds=30;process=('processes/eh1-registry-'+$mutation+'/process.json')})
+    $records.Add([ordered]@{id=('EH1-REGISTRY-'+$mutation);passed=$true;expectedError=$expected;executingShell=$probeShell;selectedShell=$shell
+      targetProfile=$Profile;runnerRuntime='PowerShell 7 only';deadlineSeconds=30;process=('processes/eh1-registry-'+$mutation+'/process.json')})
   }
 
   # EH2: derive a repository-shaped fixture, copy the exact native dependency
@@ -262,6 +309,14 @@ $v1MutationEntryBytes=[IO.File]::ReadAllBytes($v1MutationPath)
   # after the fixture's owned .lake evidence root exists and must emit summary.
   $runRel='docs/internal/extensions/lifecycle1/repair-r1'
   $runFiles=@('run_controls.ps1','runtime_profile.ps1','CONTROL_REGISTRY.json','CONTROL_REGISTRY.frozen.json','selector_cases.json','dependency_boundary_cases.json','finalizer_cases.json')
+  $runStagePatterns=[ordered]@{
+    'frozen-registry-missing'='^Exception calling "ReadAllBytes".*CONTROL_REGISTRY\.frozen\.json'
+    'frozen-registry-drift'='^L1R1-REGISTRY: frozen registry identity changed$'
+    'registry-missing'='^Exception calling "ReadAllBytes".*CONTROL_REGISTRY\.json'
+    'registry-drift'='^L1R1-REGISTRY: exact mapping bytes mismatch$'
+    'component-missing'='^Exception calling "ReadAllBytes".*selector_cases\.json'
+    'component-drift'='^L1R1-REGISTRY: component mapping identity changed$'
+  }
   foreach($mutation in @('frozen-registry-missing','frozen-registry-drift','registry-missing','registry-drift','component-missing','component-drift')){
     $fixtureRoot=New-V1FixtureRoot ('eh3-run-'+$mutation)
     foreach($file in $runFiles){
@@ -288,12 +343,21 @@ $v1MutationEntryBytes=[IO.File]::ReadAllBytes($v1MutationPath)
     Assert-V1 (Test-Path -LiteralPath $summaryPath -PathType Leaf) ('EH3 run_controls '+$mutation+' omitted durable summary')
     $summary=[IO.File]::ReadAllText($summaryPath,$utf8)|ConvertFrom-Json
     Assert-V1 (-not [bool]$summary.passed -and $summary.finalization.verdict -ceq 'fail' -and -not [string]::IsNullOrWhiteSpace([string]$summary.finalization.stageError)) ('EH3 run_controls '+$mutation+' summary is not fail-closed')
+    $expectedStagePattern=[string]$runStagePatterns[$mutation]
+    Assert-V1 ([regex]::IsMatch([string]$summary.finalization.stageError,$expectedStagePattern,[Text.RegularExpressions.RegexOptions]::CultureInvariant)) ('EH3 run_controls '+$mutation+' stage error differs: '+$summary.finalization.stageError)
     Assert-V1 (@([IO.Directory]::EnumerateFiles($fixtureRoot,'summary.json',[IO.SearchOption]::AllDirectories)).Count -eq 1) ('EH3 run_controls '+$mutation+' record cardinality differs')
-    $records.Add([ordered]@{id=('EH3-RUN-'+$mutation);passed=$true;childExit=$r.ExitCode;stageError=$summary.finalization.stageError;record=$summaryPath;deadlineSeconds=45;process=('processes/eh3-run-'+$mutation+'/process.json')})
+    $records.Add([ordered]@{id=('EH3-RUN-'+$mutation);passed=$true;childExit=$r.ExitCode;stageError=$summary.finalization.stageError;expectedStagePattern=$expectedStagePattern
+      executingShell=$shell;record=$summaryPath;deadlineSeconds=45;process=('processes/eh3-run-'+$mutation+'/process.json')})
   }
 
   # EH3 finalizer_control: its per-run result directory precedes registry/helper
   # validation, so the same four challenges leave exactly one durable result.
+  $finalizerStagePatterns=[ordered]@{
+    'registry-missing'='^Exception calling "ReadAllBytes".*finalizer_cases\.json'
+    'registry-drift'='^L1R1-FINALIZER: frozen registry bytes differ$'
+    'component-missing'='^Exception calling "ReadAllBytes".*owned_process_tree\.ps1'
+    'component-drift'='^L1R1-FINALIZER: protected owned-process helper hash differs$'
+  }
   foreach($mutation in @('registry-missing','registry-drift','component-missing','component-drift')){
     $fixtureRoot=New-V1FixtureRoot ('eh3-finalizer-'+$mutation)
     Copy-V1Relative ($runRel+'/finalizer_control.ps1') $fixtureRoot
@@ -314,7 +378,10 @@ $v1MutationEntryBytes=[IO.File]::ReadAllBytes($v1MutationPath)
     Assert-V1 ($resultPaths.Count -eq 1) ('EH3 finalizer '+$mutation+' durable record cardinality differs')
     $summary=[IO.File]::ReadAllText($resultPaths[0],$utf8)|ConvertFrom-Json
     Assert-V1 (-not [bool]$summary.passed -and $summary.finalization.verdict -ceq 'fail' -and -not [string]::IsNullOrWhiteSpace([string]$summary.finalization.stageError)) ('EH3 finalizer '+$mutation+' result is not fail-closed')
-    $records.Add([ordered]@{id=('EH3-FINALIZER-'+$mutation);passed=$true;childExit=$r.ExitCode;stageError=$summary.finalization.stageError;record=$resultPaths[0];deadlineSeconds=45;process=('processes/eh3-finalizer-'+$mutation+'/process.json')})
+    $expectedStagePattern=[string]$finalizerStagePatterns[$mutation]
+    Assert-V1 ([regex]::IsMatch([string]$summary.finalization.stageError,$expectedStagePattern,[Text.RegularExpressions.RegexOptions]::CultureInvariant)) ('EH3 finalizer '+$mutation+' stage error differs: '+$summary.finalization.stageError)
+    $records.Add([ordered]@{id=('EH3-FINALIZER-'+$mutation);passed=$true;childExit=$r.ExitCode;stageError=$summary.finalization.stageError;expectedStagePattern=$expectedStagePattern
+      executingShell=$shell;record=$resultPaths[0];deadlineSeconds=45;process=('processes/eh3-finalizer-'+$mutation+'/process.json')})
   }
   # A legitimate SourceVariant mismatch remains a pre-root argument rejection.
   $fixtureRoot=New-V1FixtureRoot 'eh3-finalizer-sourcevariant'
@@ -326,7 +393,7 @@ $v1MutationEntryBytes=[IO.File]::ReadAllBytes($v1MutationPath)
   Assert-V1 ($r.ExitCode -ne 0 -and -not (Test-Path -LiteralPath $childEvidence)) 'EH3 SourceVariant mismatch did not reject before root creation'
   Assert-V1 (@($r.StandardError|Where-Object {([string]$_).Contains('source variant differs from frozen case mapping')}).Count -gt 0) 'EH3 SourceVariant mismatch surface differs'
   $records.Add([ordered]@{id='EH3-FINALIZER-SOURCEVARIANT-PRE-ROOT';passed=$true;childExit=$r.ExitCode;evidenceRootCreated=$false;deadlineSeconds=45;process='processes/eh3-finalizer-sourcevariant/process.json'})
-  Assert-V1 ($records.Count -eq 32) ('focused control roster differs: '+$records.Count)
+  Assert-V1 ($records.Count -eq 52) ('focused control roster differs: '+$records.Count)
   $completed=$true
 } catch {$stageError=$_.Exception.Message;$stageRecord=$_}
 finally {
@@ -338,7 +405,7 @@ finally {
   $result=[ordered]@{
     schema='v1-evidence-hardening-controls-v1';profile=$Profile;runtime=$runtime;scope='Focused fixture controls only; not an old semantic-campaign replay.'
     category='host/runtime evidence only; no theorem, payload-bit, proof-field, model-tick, Lean-runtime, or performance implication'
-    passed=$passed;expectedCount=32;executedCount=$records.Count;records=@($records.ToArray());sourcePins=$sourcePins
+    passed=$passed;expectedCount=52;executedCount=$records.Count;records=@($records.ToArray());sourcePins=$sourcePins
     finalization=[ordered]@{verdict=$(if($passed){'pass'}else{'fail'});stageError=$stageError;integrityErrors=@($integrityErrors.ToArray())}
   }
   try{Write-V1Json (Join-Path $evidence 'RESULT.json') $result}

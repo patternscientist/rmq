@@ -12,8 +12,8 @@
     "scope":  "Focused fixture controls only; not an old semantic-campaign replay.",
     "category":  "host/runtime evidence only; no theorem, payload-bit, proof-field, model-tick, Lean-runtime, or performance implication",
     "passed":  true,
-    "expectedCount":  32,
-    "executedCount":  32,
+    "expectedCount":  52,
+    "executedCount":  52,
     "records":  [
                     {
                         "id":  "EH1-PRED-intact",
@@ -21,7 +21,7 @@
                         "expected":  true,
                         "observed":  {
                                          "ok":  true,
-                                         "reason":  "captured 3 of 3 rows, all re-verified, exact roster stage complete"
+                                         "reason":  "captured 3 of 3 rows, all verified, exact roster stage complete"
                                      }
                     },
                     {
@@ -30,7 +30,7 @@
                         "expected":  true,
                         "observed":  {
                                          "ok":  true,
-                                         "reason":  "captured 1 of 1 rows, all re-verified, exact roster stage complete"
+                                         "reason":  "captured 1 of 1 rows, all verified, exact roster stage complete"
                                      }
                     },
                     {
@@ -57,7 +57,7 @@
                         "expected":  true,
                         "observed":  {
                                          "ok":  true,
-                                         "reason":  "captured 1 of 1 rows, all re-verified"
+                                         "reason":  "captured 1 of 1 rows, all verified"
                                      }
                     },
                     {
@@ -67,6 +67,177 @@
                         "observed":  {
                                          "ok":  false,
                                          "reason":  "malformed captured SHA256: a"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-typed-projection-good",
+                        "passed":  true,
+                        "expected":  true,
+                        "observed":  {
+                                         "ok":  true,
+                                         "reason":  "captured 1 of 1 rows, all verified, exact roster stage partial"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-typed-index-out-of-bounds",
+                        "passed":  true,
+                        "expected":  false,
+                        "observed":  {
+                                         "ok":  false,
+                                         "reason":  "invalid identity-kind index 1"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-fixture-path-good",
+                        "passed":  true,
+                        "expected":  true,
+                        "observed":  {
+                                         "ok":  true,
+                                         "reason":  "captured 1 of 1 rows, all verified, exact roster stage complete"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-fixture-wrong-root",
+                        "passed":  true,
+                        "expected":  false,
+                        "observed":  {
+                                         "ok":  false,
+                                         "reason":  "pinCheck path at roster index 0 differs from trusted expected path: C:/wrong/v1-fixture/bin/tool.exe"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-shell-aliases-good",
+                        "passed":  true,
+                        "expected":  true,
+                        "observed":  {
+                                         "ok":  true,
+                                         "reason":  "captured 2 of 2 rows, all verified, exact roster stage complete"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-shell-same-basename-wrong",
+                        "passed":  true,
+                        "expected":  false,
+                        "observed":  {
+                                         "ok":  false,
+                                         "reason":  "pinCheck path at roster index 0 differs from trusted expected path: C:/unrelated/shell/pwsh.exe"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-toolchain-path-good",
+                        "passed":  true,
+                        "expected":  true,
+                        "observed":  {
+                                         "ok":  true,
+                                         "reason":  "captured 1 of 1 rows, all verified, exact roster stage complete"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-toolchain-wrong-root",
+                        "passed":  true,
+                        "expected":  false,
+                        "observed":  {
+                                         "ok":  false,
+                                         "reason":  "pinCheck path at roster index 0 differs from trusted expected path: C:/wrong/toolchain/bin/lean.exe"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-history-path-good",
+                        "passed":  true,
+                        "expected":  true,
+                        "observed":  {
+                                         "ok":  true,
+                                         "reason":  "captured 1 of 1 rows, all verified, exact roster stage complete"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-history-wrong-root",
+                        "passed":  true,
+                        "expected":  false,
+                        "observed":  {
+                                         "ok":  false,
+                                         "reason":  "pinCheck path at roster index 0 differs from trusted expected path: C:/wrong/history/SUMMARY.json"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-missing-context",
+                        "passed":  true,
+                        "expected":  false,
+                        "observed":  {
+                                         "ok":  false,
+                                         "reason":  "missing trusted path context fixtureRoot for fixture:bin/tool.exe"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-verified-final-null",
+                        "passed":  true,
+                        "expected":  false,
+                        "observed":  {
+                                         "ok":  false,
+                                         "reason":  "missing final identity for verified pin: a"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-verified-final-empty",
+                        "passed":  true,
+                        "expected":  false,
+                        "observed":  {
+                                         "ok":  false,
+                                         "reason":  "malformed final SHA256 for verified pin: a"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-verified-final-nonhex",
+                        "passed":  true,
+                        "expected":  false,
+                        "observed":  {
+                                         "ok":  false,
+                                         "reason":  "malformed final SHA256 for verified pin: a"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-verified-final-mismatch",
+                        "passed":  true,
+                        "expected":  false,
+                        "observed":  {
+                                         "ok":  false,
+                                         "reason":  "verified final identity differs from entry: a"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-changed-final-good",
+                        "passed":  true,
+                        "expected":  true,
+                        "observed":  {
+                                         "ok":  true,
+                                         "reason":  "captured 1 of 1 rows, status/final identities consistent, exact roster stage complete"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-changed-final-same",
+                        "passed":  true,
+                        "expected":  false,
+                        "observed":  {
+                                         "ok":  false,
+                                         "reason":  "changed final identity equals entry: a"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-unreadable-final-good",
+                        "passed":  true,
+                        "expected":  true,
+                        "observed":  {
+                                         "ok":  true,
+                                         "reason":  "captured 1 of 1 rows, status/final identities consistent, exact roster stage complete"
+                                     }
+                    },
+                    {
+                        "id":  "EH1-PRED-unreadable-final-nonnull",
+                        "passed":  true,
+                        "expected":  false,
+                        "observed":  {
+                                         "ok":  false,
+                                         "reason":  "unreadable-final pin has a final identity: a"
                                      }
                     },
                     {
@@ -111,13 +282,27 @@
                         "expected":  false,
                         "observed":  {
                                          "ok":  false,
-                                         "reason":  "pinCheck path at roster index 0 differs: b"
+                                         "reason":  "pinCheck path at roster index 0 differs from trusted expected path: b"
                                      }
+                    },
+                    {
+                        "id":  "EH1-CONSUMER-RUNTIME-CONTRACT",
+                        "passed":  true,
+                        "executingShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "targetProfile":  "winps",
+                        "runnerSupported":  false,
+                        "childExit":  1,
+                        "deadlineSeconds":  30,
+                        "process":  "processes/eh1-consumer-runtime-contract/process.json"
                     },
                     {
                         "id":  "EH1-CONSUMER-omitted",
                         "passed":  true,
                         "exit":  0,
+                        "executingShell":  "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+                        "selectedShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "targetProfile":  "winps",
+                        "runnerRuntime":  "PowerShell 7 only",
                         "deadlineSeconds":  30,
                         "process":  "processes/eh1-probe-omitted/process.json"
                     },
@@ -125,6 +310,10 @@
                         "id":  "EH1-CONSUMER-exact",
                         "passed":  true,
                         "exit":  0,
+                        "executingShell":  "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+                        "selectedShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "targetProfile":  "winps",
+                        "runnerRuntime":  "PowerShell 7 only",
                         "deadlineSeconds":  30,
                         "process":  "processes/eh1-probe-exact/process.json"
                     },
@@ -132,6 +321,10 @@
                         "id":  "EH1-CONSUMER-empty",
                         "passed":  true,
                         "exit":  1,
+                        "executingShell":  "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+                        "selectedShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "targetProfile":  "winps",
+                        "runnerRuntime":  "PowerShell 7 only",
                         "deadlineSeconds":  30,
                         "process":  "processes/eh1-probe-empty/process.json"
                     },
@@ -139,6 +332,10 @@
                         "id":  "EH1-CONSUMER-whitespace",
                         "passed":  true,
                         "exit":  1,
+                        "executingShell":  "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+                        "selectedShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "targetProfile":  "winps",
+                        "runnerRuntime":  "PowerShell 7 only",
                         "deadlineSeconds":  30,
                         "process":  "processes/eh1-probe-whitespace/process.json"
                     },
@@ -146,6 +343,10 @@
                         "id":  "EH1-CONSUMER-zero",
                         "passed":  true,
                         "exit":  1,
+                        "executingShell":  "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+                        "selectedShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "targetProfile":  "winps",
+                        "runnerRuntime":  "PowerShell 7 only",
                         "deadlineSeconds":  30,
                         "process":  "processes/eh1-probe-zero/process.json"
                     },
@@ -153,6 +354,10 @@
                         "id":  "EH1-CONSUMER-unknown",
                         "passed":  true,
                         "exit":  1,
+                        "executingShell":  "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+                        "selectedShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "targetProfile":  "winps",
+                        "runnerRuntime":  "PowerShell 7 only",
                         "deadlineSeconds":  30,
                         "process":  "processes/eh1-probe-unknown/process.json"
                     },
@@ -160,6 +365,10 @@
                         "id":  "EH1-CONSUMER-duplicate",
                         "passed":  true,
                         "exit":  1,
+                        "executingShell":  "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+                        "selectedShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "targetProfile":  "winps",
+                        "runnerRuntime":  "PowerShell 7 only",
                         "deadlineSeconds":  30,
                         "process":  "processes/eh1-probe-duplicate/process.json"
                     },
@@ -167,6 +376,10 @@
                         "id":  "EH1-REGISTRY-missing",
                         "passed":  true,
                         "expectedError":  "R3-REGISTRY: missing ID RC-P",
+                        "executingShell":  "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+                        "selectedShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "targetProfile":  "winps",
+                        "runnerRuntime":  "PowerShell 7 only",
                         "deadlineSeconds":  30,
                         "process":  "processes/eh1-registry-missing/process.json"
                     },
@@ -174,6 +387,10 @@
                         "id":  "EH1-REGISTRY-duplicate",
                         "passed":  true,
                         "expectedError":  "R3-REGISTRY: duplicate ID RC-P",
+                        "executingShell":  "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+                        "selectedShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "targetProfile":  "winps",
+                        "runnerRuntime":  "PowerShell 7 only",
                         "deadlineSeconds":  30,
                         "process":  "processes/eh1-registry-duplicate/process.json"
                     },
@@ -187,15 +404,17 @@
                         "oldSummaryState":  "verified",
                         "childExit":  1,
                         "deadlineSeconds":  180,
-                        "result":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\winps-b88de4b7892747a6ac9e418fb43c6a19\\fixtures\\eh2-entry-final\\root\\.lake\\dependency-result\\RESULTS.json",
+                        "result":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-focused-winps-20261001\\fixtures\\eh2-entry-final\\root\\.lake\\dependency-result\\RESULTS.json",
                         "process":  "processes/eh2-entry-final/process.json"
                     },
                     {
                         "id":  "EH3-RUN-frozen-registry-missing",
                         "passed":  true,
                         "childExit":  1,
-                        "stageError":  "Exception calling \"ReadAllBytes\" with \"1\" argument(s): \"Could not find file \u0027C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\winps-b88de4b7892747a6ac9e418fb43c6a19\\fixtures\\eh3-run-frozen-registry-missing\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\CONTROL_REGISTRY.frozen.json\u0027.\"",
-                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\winps-b88de4b7892747a6ac9e418fb43c6a19\\fixtures\\eh3-run-frozen-registry-missing\\root\\.lake\\frozen-registry-missing\\summary.json",
+                        "stageError":  "Exception calling \"ReadAllBytes\" with \"1\" argument(s): \"Could not find file \u0027C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-focused-winps-20261001\\fixtures\\eh3-run-frozen-registry-missing\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\CONTROL_REGISTRY.frozen.json\u0027.\"",
+                        "expectedStagePattern":  "^Exception calling \"ReadAllBytes\".*CONTROL_REGISTRY\\.frozen\\.json",
+                        "executingShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-focused-winps-20261001\\fixtures\\eh3-run-frozen-registry-missing\\root\\.lake\\frozen-registry-missing\\summary.json",
                         "deadlineSeconds":  45,
                         "process":  "processes/eh3-run-frozen-registry-missing/process.json"
                     },
@@ -204,7 +423,9 @@
                         "passed":  true,
                         "childExit":  1,
                         "stageError":  "L1R1-REGISTRY: frozen registry identity changed",
-                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\winps-b88de4b7892747a6ac9e418fb43c6a19\\fixtures\\eh3-run-frozen-registry-drift\\root\\.lake\\frozen-registry-drift\\summary.json",
+                        "expectedStagePattern":  "^L1R1-REGISTRY: frozen registry identity changed$",
+                        "executingShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-focused-winps-20261001\\fixtures\\eh3-run-frozen-registry-drift\\root\\.lake\\frozen-registry-drift\\summary.json",
                         "deadlineSeconds":  45,
                         "process":  "processes/eh3-run-frozen-registry-drift/process.json"
                     },
@@ -212,8 +433,10 @@
                         "id":  "EH3-RUN-registry-missing",
                         "passed":  true,
                         "childExit":  1,
-                        "stageError":  "Exception calling \"ReadAllBytes\" with \"1\" argument(s): \"Could not find file \u0027C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\winps-b88de4b7892747a6ac9e418fb43c6a19\\fixtures\\eh3-run-registry-missing\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\CONTROL_REGISTRY.json\u0027.\"",
-                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\winps-b88de4b7892747a6ac9e418fb43c6a19\\fixtures\\eh3-run-registry-missing\\root\\.lake\\registry-missing\\summary.json",
+                        "stageError":  "Exception calling \"ReadAllBytes\" with \"1\" argument(s): \"Could not find file \u0027C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-focused-winps-20261001\\fixtures\\eh3-run-registry-missing\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\CONTROL_REGISTRY.json\u0027.\"",
+                        "expectedStagePattern":  "^Exception calling \"ReadAllBytes\".*CONTROL_REGISTRY\\.json",
+                        "executingShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-focused-winps-20261001\\fixtures\\eh3-run-registry-missing\\root\\.lake\\registry-missing\\summary.json",
                         "deadlineSeconds":  45,
                         "process":  "processes/eh3-run-registry-missing/process.json"
                     },
@@ -222,7 +445,9 @@
                         "passed":  true,
                         "childExit":  1,
                         "stageError":  "L1R1-REGISTRY: exact mapping bytes mismatch",
-                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\winps-b88de4b7892747a6ac9e418fb43c6a19\\fixtures\\eh3-run-registry-drift\\root\\.lake\\registry-drift\\summary.json",
+                        "expectedStagePattern":  "^L1R1-REGISTRY: exact mapping bytes mismatch$",
+                        "executingShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-focused-winps-20261001\\fixtures\\eh3-run-registry-drift\\root\\.lake\\registry-drift\\summary.json",
                         "deadlineSeconds":  45,
                         "process":  "processes/eh3-run-registry-drift/process.json"
                     },
@@ -230,8 +455,10 @@
                         "id":  "EH3-RUN-component-missing",
                         "passed":  true,
                         "childExit":  1,
-                        "stageError":  "Exception calling \"ReadAllBytes\" with \"1\" argument(s): \"Could not find file \u0027C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\winps-b88de4b7892747a6ac9e418fb43c6a19\\fixtures\\eh3-run-component-missing\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\selector_cases.json\u0027.\"",
-                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\winps-b88de4b7892747a6ac9e418fb43c6a19\\fixtures\\eh3-run-component-missing\\root\\.lake\\component-missing\\summary.json",
+                        "stageError":  "Exception calling \"ReadAllBytes\" with \"1\" argument(s): \"Could not find file \u0027C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-focused-winps-20261001\\fixtures\\eh3-run-component-missing\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\selector_cases.json\u0027.\"",
+                        "expectedStagePattern":  "^Exception calling \"ReadAllBytes\".*selector_cases\\.json",
+                        "executingShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-focused-winps-20261001\\fixtures\\eh3-run-component-missing\\root\\.lake\\component-missing\\summary.json",
                         "deadlineSeconds":  45,
                         "process":  "processes/eh3-run-component-missing/process.json"
                     },
@@ -240,7 +467,9 @@
                         "passed":  true,
                         "childExit":  1,
                         "stageError":  "L1R1-REGISTRY: component mapping identity changed",
-                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\winps-b88de4b7892747a6ac9e418fb43c6a19\\fixtures\\eh3-run-component-drift\\root\\.lake\\component-drift\\summary.json",
+                        "expectedStagePattern":  "^L1R1-REGISTRY: component mapping identity changed$",
+                        "executingShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-focused-winps-20261001\\fixtures\\eh3-run-component-drift\\root\\.lake\\component-drift\\summary.json",
                         "deadlineSeconds":  45,
                         "process":  "processes/eh3-run-component-drift/process.json"
                     },
@@ -248,8 +477,10 @@
                         "id":  "EH3-FINALIZER-registry-missing",
                         "passed":  true,
                         "childExit":  1,
-                        "stageError":  "Exception calling \"ReadAllBytes\" with \"1\" argument(s): \"Could not find file \u0027C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\winps-b88de4b7892747a6ac9e418fb43c6a19\\fixtures\\eh3-finalizer-registry-missing\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\finalizer_cases.json\u0027.\"",
-                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\winps-b88de4b7892747a6ac9e418fb43c6a19\\fixtures\\eh3-finalizer-registry-missing\\root\\.lake\\v1-finalizer\\F01_INTACT_SUCCESS-ad3bd9c9ed9141549e8100fb46dabd05\\result.json",
+                        "stageError":  "Exception calling \"ReadAllBytes\" with \"1\" argument(s): \"Could not find file \u0027C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-focused-winps-20261001\\fixtures\\eh3-finalizer-registry-missing\\root\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\finalizer_cases.json\u0027.\"",
+                        "expectedStagePattern":  "^Exception calling \"ReadAllBytes\".*finalizer_cases\\.json",
+                        "executingShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-focused-winps-20261001\\fixtures\\eh3-finalizer-registry-missing\\root\\.lake\\v1-finalizer\\F01_INTACT_SUCCESS-e4d51dc922f74556ade17d330863ae53\\result.json",
                         "deadlineSeconds":  45,
                         "process":  "processes/eh3-finalizer-registry-missing/process.json"
                     },
@@ -258,7 +489,9 @@
                         "passed":  true,
                         "childExit":  1,
                         "stageError":  "L1R1-FINALIZER: frozen registry bytes differ",
-                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\winps-b88de4b7892747a6ac9e418fb43c6a19\\fixtures\\eh3-finalizer-registry-drift\\root\\.lake\\v1-finalizer\\F01_INTACT_SUCCESS-8739cf88ce47456986e841f5cb6bfd5f\\result.json",
+                        "expectedStagePattern":  "^L1R1-FINALIZER: frozen registry bytes differ$",
+                        "executingShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-focused-winps-20261001\\fixtures\\eh3-finalizer-registry-drift\\root\\.lake\\v1-finalizer\\F01_INTACT_SUCCESS-f492b18506e6499da9484307082c0c60\\result.json",
                         "deadlineSeconds":  45,
                         "process":  "processes/eh3-finalizer-registry-drift/process.json"
                     },
@@ -266,8 +499,10 @@
                         "id":  "EH3-FINALIZER-component-missing",
                         "passed":  true,
                         "childExit":  1,
-                        "stageError":  "Exception calling \"ReadAllBytes\" with \"1\" argument(s): \"Could not find a part of the path \u0027C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\winps-b88de4b7892747a6ac9e418fb43c6a19\\fixtures\\eh3-finalizer-component-missing\\root\\scripts\\owned_process_tree.ps1\u0027.\"",
-                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\winps-b88de4b7892747a6ac9e418fb43c6a19\\fixtures\\eh3-finalizer-component-missing\\root\\.lake\\v1-finalizer\\F01_INTACT_SUCCESS-d090bcb0a5724d98a721adbfd38069d3\\result.json",
+                        "stageError":  "Exception calling \"ReadAllBytes\" with \"1\" argument(s): \"Could not find a part of the path \u0027C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-focused-winps-20261001\\fixtures\\eh3-finalizer-component-missing\\root\\scripts\\owned_process_tree.ps1\u0027.\"",
+                        "expectedStagePattern":  "^Exception calling \"ReadAllBytes\".*owned_process_tree\\.ps1",
+                        "executingShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-focused-winps-20261001\\fixtures\\eh3-finalizer-component-missing\\root\\.lake\\v1-finalizer\\F01_INTACT_SUCCESS-aa47cf1e6087458ebea56003a7fb9621\\result.json",
                         "deadlineSeconds":  45,
                         "process":  "processes/eh3-finalizer-component-missing/process.json"
                     },
@@ -276,7 +511,9 @@
                         "passed":  true,
                         "childExit":  1,
                         "stageError":  "L1R1-FINALIZER: protected owned-process helper hash differs",
-                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\winps-b88de4b7892747a6ac9e418fb43c6a19\\fixtures\\eh3-finalizer-component-drift\\root\\.lake\\v1-finalizer\\F01_INTACT_SUCCESS-e8b052b0e9624a89afaba9a34ba41417\\result.json",
+                        "expectedStagePattern":  "^L1R1-FINALIZER: protected owned-process helper hash differs$",
+                        "executingShell":  "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+                        "record":  "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-focused-winps-20261001\\fixtures\\eh3-finalizer-component-drift\\root\\.lake\\v1-finalizer\\F01_INTACT_SUCCESS-ba5eec4d9712421f9927a42c2e078a48\\result.json",
                         "deadlineSeconds":  45,
                         "process":  "processes/eh3-finalizer-component-drift/process.json"
                     },
@@ -290,13 +527,14 @@
                     }
                 ],
     "sourcePins":  {
-                       "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\docs\\internal\\extensions\\lifecycle1\\repair-r4\\predicates.ps1":  "17C7CF261E5A1C7EF4BEC83CB9A4401E2F5D0AF05A19A1E0F7C30D1CD0E266C8",
-                       "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\docs\\internal\\extensions\\lifecycle1\\repair-r4\\FAILURE_CONTROL_REGISTRY.json":  "E6189A3FE96A0630C66AC50B9805A29E980AE688AF9E3102ABFE904F3A763857",
-                       "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\docs\\internal\\extensions\\lifecycle1\\repair-r3\\failure_controls.ps1":  "79B2D5C1BCA6441B968589FC7DD793E8C6B6354D9958626801C713188D3FF6F4",
+                       "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\docs\\internal\\extensions\\lifecycle1\\repair-r4\\predicates.ps1":  "31DF2B17F0465F74F370C40C4888B75FCE15DF5E3A474D0AF3ADA25D86C01091",
+                       "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\docs\\internal\\extensions\\lifecycle1\\repair-r4\\FAILURE_CONTROL_REGISTRY.json":  "9BF8D0AC1406E67233601C42CB1C4A57A0B28212365B72712393F3A4C66C6E51",
+                       "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\docs\\internal\\extensions\\lifecycle1\\repair-r3\\failure_controls.ps1":  "F8D4413826BA9C8CB2447223F79CF899B4FCB8A2E09715D06A9DA63439949B45",
                        "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\run_controls.ps1":  "CE2895641BF4B335DA7646C7A5FCD7F9A0B986860D8E9F3ECCA29D81CB852FE8",
                        "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\docs\\internal\\extensions\\lifecycle1\\repair-r1\\finalizer_control.ps1":  "62C1D4D6542BE2FDAC0BAC2EBD7ABDE90239F3472DB7F506C0BE157E7D49B822",
                        "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\docs\\internal\\extensions\\lifecycle-native-p0\\repair-r1\\dependency_controls.ps1":  "CA8D6FEA28041D4DADA873A15771F0E4300E54DA2A549F38B8D9063756FB044A",
                        "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\scripts\\owned_process_tree.ps1":  "6690AD4F9E3AEE9596E53E89D3D242E4BE59C0A04733BC50184AE35B292FF90E",
+                       "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\docs\\internal\\v1\\evidence\\evidence_hardening_controls.ps1":  "66DF1391F9E4A9339560833ECD2E47BF97F02DBDA4985480C1226046C492E322",
                        "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\lean.exe":  "9B5AF669D8DC9B5826A1F5427584915EECA659E9BF34C7EE72667B93C0BFDCB0",
                        "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\leanc.exe":  "DE2FDFEA989B9A771DA37E44EFD0BD50C00A2E2835EF9A2408F44E2385EA7618",
                        "C:\\Users\\poin\\.elan\\toolchains\\leanprover--lean4---v4.22.0\\bin\\clang.exe":  "64B1E469B15149BD23039F1D121DE6E14F4AEC84BFF000952CA85968E56CE391",

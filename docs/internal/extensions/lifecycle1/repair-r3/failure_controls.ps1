@@ -42,7 +42,7 @@ $registryVersions=@{
   2=@{schema='life1-r4-failure-controls-v2';sha='cf5ef090543773ef0a4fa473164e56633fabeef140301aad737bb2a7a3226dbc'
     base='d27ffa341f4ed8ceccc46817455eb26c73b319a1'
     ids=$r3Ids+@('K1-F','K2-F','K1-T','K2-T','K1-W','K2-W','LV-W','IC-U','LV-E','IC-L','HS-L','K2-G','HS-G')}
-  3=@{schema='life1-v1-evidence-failure-controls-v3';sha='68e21990d3d30b0f5c2c6f06ca8ec671f45da49ad4d451bd34846b6dde2b805c'
+  3=@{schema='life1-v1-evidence-failure-controls-v3';sha='6b4734e9cbd36955636452f9b3b93089062481de52b2cf1e9bdd37e50d17db5d'
     base='ee44f04a561f2194b3713f071c26b6faf9ba7fab'
     ids=$r3Ids+@('K1-F','K2-F','K1-T','K2-T','K1-W','K2-W','LV-W','IC-U','LV-E','IC-L','HS-L','K2-G','HS-G')}
 }
@@ -90,9 +90,32 @@ if($registryVersion -eq 3){
   $rosterKeys=@($rosterProp.Value.PSObject.Properties|ForEach-Object {$_.Name})
   $harnessKeys=@($registry.harnessKeys.PSObject.Properties|ForEach-Object {$_.Name})
   if(($rosterKeys -join ',') -cne ($harnessKeys -join ',')){throw 'R3-REGISTRY: v3 pin roster keys differ from harness keys'}
+  $contextProp=$registry.PSObject.Properties['trustedPathContexts']
+  if($null -eq $contextProp -or $null -eq $contextProp.Value.PSObject.Properties['DP']){throw 'R3-REGISTRY: v3 trusted path contexts absent'}
+  $dpToolchain=[string](Get-R4Field $contextProp.Value.DP 'toolchainBin')
+  if([string]::IsNullOrWhiteSpace($dpToolchain) -or -not [IO.Path]::IsPathRooted($dpToolchain)){throw 'R3-REGISTRY: DP toolchain path context invalid'}
+  $declaredNoReceipt=@($registry.receiptSemantics.guardedNoReceiptControlIds|ForEach-Object {[string]$_})
+  $actualNoReceipt=@($registry.controls|Where-Object {[bool](Get-R4Field $_.expect 'durableAbsent')}|ForEach-Object {[string]$_.id})
+  if(($declaredNoReceipt -join ',') -cne 'K1-W,K2-W,LV-W' -or ($actualNoReceipt -join ',') -cne ($declaredNoReceipt -join ',') -or
+     [int]$registry.receiptSemantics.receiptBearingControlCount -ne ($registry.controls.Count-$actualNoReceipt.Count)){
+    throw 'R3-REGISTRY: v3 receipt-bearing/no-receipt partition differs'
+  }
   foreach($control in $registry.controls){
     $roster=$rosterProp.Value.PSObject.Properties[[string]$control.harness]
     if($null -eq $roster){throw ('R3-REGISTRY: no pin roster for '+$control.id)}
+    $rules=[Collections.Generic.List[string]]::new()
+    foreach($row in @($roster.Value.rows)){$rules.Add([string]$row)}
+    foreach($stageProperty in $roster.Value.stages.PSObject.Properties){
+      $stageRows=$stageProperty.Value.PSObject.Properties['rows']
+      if($null -ne $stageRows){foreach($row in @($stageRows.Value)){$rules.Add([string]$row)}}
+    }
+    foreach($rule in $rules){
+      if([string]::IsNullOrWhiteSpace($rule) -or $rule.StartsWith('suffix:',[StringComparison]::Ordinal) -or $rule.StartsWith('regex:',[StringComparison]::Ordinal)){
+        throw ('R3-REGISTRY: broad or empty v3 roster rule '+$rule+' for '+$control.harness)
+      }
+      if($rule.StartsWith('shell:',[StringComparison]::Ordinal) -and @('shell:child','shell:host') -cnotcontains $rule){throw ('R3-REGISTRY: unknown shell roster rule '+$rule)}
+      if($rule.StartsWith('history:',[StringComparison]::Ordinal) -and $rule -cne 'history:raw-summary'){throw ('R3-REGISTRY: unknown history roster rule '+$rule)}
+    }
     $kinds=$roster.Value.PSObject.Properties['identityKinds']
     if($null -ne $kinds){
       $baseRows=@($roster.Value.rows)
@@ -400,11 +423,22 @@ if($LASTEXITCODE){throw 'git commit failed'}
     $pristine=Join-Path $ctl 'pristine'
     $record=[ordered]@{id=$id;harness=[string]$control.harness;shape=[string]$control.shape;fault=[string]$control.fault
       mode=$mode;profile=$Profile;deadlineSeconds=[int]$control.deadlineSeconds;root=$root;setupError=$null;launchError=$null
-      process=$null;durable=$null;core=$null;structural=$null;restoration=$null;verdict='FAIL';expected=$null;lockWaitSeconds=$null}
+      process=$null;durable=$null;core=$null;structural=$null;restoration=$null;verdict='FAIL';expected=$null;lockWaitSeconds=$null;trustedPinContext=$null}
     $lane=$null;$laneHeld=$false
     try {
       [void][IO.Directory]::CreateDirectory($root)
       $shellPath=$shells[$Profile]
+      $trustedPinContext=[ordered]@{
+        fixtureRoot=[IO.Path]::GetFullPath($root)
+        childShell=[IO.Path]::GetFullPath($shellPath)
+        hostShell=[IO.Path]::GetFullPath($shellPath)
+        toolchainBin=$null
+        historicalSummary=$null
+        historicalSummarySource=$null
+      }
+      if($registryVersion -eq 3 -and [string]$control.harness -ceq 'DP'){
+        $trustedPinContext.toolchainBin=[IO.Path]::GetFullPath([string]$registry.trustedPathContexts.DP.toolchainBin)
+      }
       $manifestPaths=[Collections.Generic.List[string]]::new()
       foreach($f in $recipe.files){
         $rel=[string]$f[0];$source=[string]$f[1]
@@ -440,6 +474,18 @@ if($LASTEXITCODE){throw 'git commit failed'}
         [IO.File]::WriteAllBytes($dest,$bytes)
         $manifestPaths.Add($rel)
       }
+      if($registryVersion -eq 3 -and [string]$control.harness -ceq 'DP'){
+        # Read the pinned copied input before the child runs. The returned
+        # pinChecks never define their own expected historical-summary path.
+        $resultsInput=[IO.Path]::GetFullPath((Join-Path $root 'docs/internal/extensions/lifecycle-native-p0/RESULTS.json'))
+        $trustedResults=[IO.File]::ReadAllText($resultsInput,$utf8)|ConvertFrom-Json
+        $rawSummary=$trustedResults.PSObject.Properties['rawSummary']
+        $rawPath=if($null -ne $rawSummary){[string](Get-R4Field $rawSummary.Value 'path')}else{$null}
+        if([string]::IsNullOrWhiteSpace($rawPath) -or -not [IO.Path]::IsPathRooted($rawPath)){throw 'R3-SETUP: trusted DP historical summary path unavailable'}
+        $trustedPinContext.historicalSummary=[IO.Path]::GetFullPath($rawPath)
+        $trustedPinContext.historicalSummarySource=$resultsInput
+      }
+      $record.trustedPinContext=$trustedPinContext
       [IO.File]::WriteAllText((Join-Path $root '.gitignore'),".lake/`n",$utf8)
       $manifestPaths.Add('.gitignore')
       if([bool]$control.removeAtSetup){
@@ -546,11 +592,14 @@ if($LASTEXITCODE){throw 'git commit failed'}
         ($null -eq $valuesCheck -or $valuesCheck.ok) -and ($null -eq $labelsCheck -or $labelsCheck.ok) -and $stderrOk -and $absentOk -and $stdoutOk
       # Structural predicates of the repaired finalization contract.
       $structural=[ordered]@{applicable=($mode -cne 'base');finalizationPresent=$false;verdictMatches=$false
-        stageFieldMatches=$false;integrityFieldMatches=$false;cleanupEmpty=$false;pinsVerified=$false}
+        stageFieldMatches=$false;integrityFieldMatches=$false;cleanupEmpty=$false;pinCoverageApplicable=$true;pinsVerified=$false;pinCoverage=$null}
       if($durableAbsentWanted){
-        # A W control has no durable result by construction; its surface is the core predicate.
+        # A W control has no durable result by construction. Its failed
+        # exit/diagnostics are guarded by the core predicate; pin coverage is
+        # inapplicable, never represented as a positive verification result.
         $structural=[ordered]@{applicable=$false;reason='no durable result by construction (durable-write failure)';finalizationPresent=$true;verdictMatches=$true
-          stageFieldMatches=$true;integrityFieldMatches=$true;cleanupEmpty=$true;pinsVerified=$true}
+          stageFieldMatches=$true;integrityFieldMatches=$true;cleanupEmpty=$true;pinCoverageApplicable=$false;pinsVerified=$null
+          pinCoverage='not applicable: guarded durable-write failure has no finalization receipt'}
       }
       elseif($null -ne $fin -and $fin.schema -ceq 'life1-r3-finalization-v1'){
         $structural.finalizationPresent=$true
@@ -574,12 +623,13 @@ if($LASTEXITCODE){throw 'git commit failed'}
           if([string]::IsNullOrWhiteSpace($pinStage)){$pinStage='complete'}
           $legacyCaptured=$null
         }
-        $coverage=Test-R4PinCoverage $fin $legacyCaptured ($isP -or [string](Get-R4Field $expect 'pins') -ceq 'all-verified') $pinRoster $pinStage
+        $coverage=Test-R4PinCoverage $fin $legacyCaptured ($isP -or [string](Get-R4Field $expect 'pins') -ceq 'all-verified') $pinRoster $pinStage $trustedPinContext
         $structural.pinsVerified=$coverage.ok
         $structural.pinCoverage=$coverage.reason
       }
       $record.structural=$structural
-      $structuralAll=$structural.finalizationPresent -and $structural.verdictMatches -and $structural.stageFieldMatches -and $structural.integrityFieldMatches -and $structural.cleanupEmpty -and $structural.pinsVerified
+      $pinStructureOk=(-not [bool]$structural.pinCoverageApplicable) -or [bool]$structural.pinsVerified
+      $structuralAll=$structural.finalizationPresent -and $structural.verdictMatches -and $structural.stageFieldMatches -and $structural.integrityFieldMatches -and $structural.cleanupEmpty -and $pinStructureOk
       $record.coreAll=$coreAll;$record.structuralAll=$structuralAll
       if($mode -cne 'base'){$record.expected='accept-all-predicates';$observed=$coreAll -and $structuralAll}
       else{
@@ -644,12 +694,15 @@ finally {
     catch{$integrityErrors.Add('R3-INTEGRITY: real worktree Git state unavailable: '+$_.Exception.Message)}
   }
   $failed=@($results|Where-Object {$_.verdict -cne 'PASS'})
+  $selectedNoReceipt=@($selected|Where-Object {[bool](Get-R4Field $_.expect 'durableAbsent')}|ForEach-Object {[string]$_.id})
   $verdict=if($completed -and $null -eq $stageError -and $integrityErrors.Count -eq 0 -and $cleanupErrors.Count -eq 0 -and $failed.Count -eq 0){'pass'}else{'fail'}
   $summary=[ordered]@{schema='life1-r3-failure-control-run-v1';mode=$mode;harnessRef=$HarnessRef;harnessSha=$refSha;profile=$Profile
     registryVersion=$registryVersion;registryPath=[IO.Path]::GetFullPath($RegistryPath);registryNormalizedSha256=$registryNormalizedSha256;baseRef=$baseSha
     shell=$shells[$Profile];runnerShell=(Get-Process -Id $PID).Path;startedUtc=$startedUtc.ToString('o');finishedUtc=[DateTime]::UtcNow.ToString('o')
     selected=@($selected|ForEach-Object {$_.id});expectedCount=$selected.Count;executedCount=$results.Count
     passedCount=($results.Count-$failed.Count);failedIds=@($failed|ForEach-Object {$_.id})
+    pinCoverage=[ordered]@{receiptBearingCount=($selected.Count-$selectedNoReceipt.Count);guardedNoReceiptCount=$selectedNoReceipt.Count
+      guardedNoReceiptIds=$selectedNoReceipt;meaning='No-receipt guards validate failed durable writes; pin coverage is inapplicable for those controls.'}
     worktreeStateBefore=$worktreeBefore;worktreeStateAfter=$worktreeAfter
     controls=@($results.ToArray())
     finalization=[ordered]@{schema='life1-r3-finalization-v1';verdict=$verdict;stageError=$stageError

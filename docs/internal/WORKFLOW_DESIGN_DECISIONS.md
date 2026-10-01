@@ -16090,3 +16090,68 @@ this evidence commit instead.
 
 Consequences. The worker evidence is reviewable and reproducible without a
 claim of coordinator acceptance, release or native runtime performance.
+
+
+## WDD-20261001-V1-EVIDENCE-05 - Bind current pin evidence to trusted paths and final identities
+
+Date: 2026-10-01. Status: V1-EVIDENCE worker decision; coordinator acceptance pending.
+
+Context. Independent review of the first V1 source checkpoint constructed a
+K2 receipt with the right row count, capture statuses and hashes but unrelated
+same-basename shell paths; broad suffix and basename rules accepted it. The
+predicate also accepted a captured `verified` pin with a null final identity.
+Those are production-consumer gaps even though the source producers themselves
+record the intended paths and final hashes. Follow-up review also found that
+typed identity bounds were applied to a partial stage rather than the full base
+roster, nine focused selector/registry subprocesses always used PowerShell 7
+without disclosing that fact in the WinPS aggregate, and ten EH3 negatives
+accepted any nonempty stage error.
+
+Decision. Replace broad dynamic roster rules with typed `fixture:`, `shell:`,
+`toolchain:`, and `history:` declarations. The failure-control parent resolves
+them from its independently known fixture root, selected child/host shell,
+registry-pinned toolchain directory, and the `rawSummary.path` of the pinned
+copied `RESULTS.json` input before child execution. Compare the resulting
+canonical Windows paths exactly, allowing slash/case spellings of one path but
+rejecting another root with the same leaf or suffix. Validate identity-kind
+metadata against the full base roster, then project kinds by ordered declared
+row identity onto a partial stage; K2's setup prefix may omit the valid
+base-roster `git:HEAD` row at index 16, while an index outside the base roster
+fails closed.
+
+For every captured row, require `verified` to have a well-formed final identity
+of the declared kind equal to entry, `changed` to have a well-formed different
+final identity, and `unreadable-final` to have null final identity. Uncaptured
+producer statuses retain null final identity. Hash value comparisons are
+case-insensitive, while file SHA-256 and the typed Git SHA-1 stay distinct.
+Keep the unchanged 60 IDs and semantic mappings, and state the existing
+partition explicitly: 57 controls have finalization receipts; the required
+durable output is absent for `K1-W`, `K2-W`, and `LV-W`, so their pin-coverage
+field is inapplicable rather than a positive verification.
+
+Controls. Expand focused and auxiliary predicates with every trusted-context
+class, wrong-root and same-basename substitutions, missing context, all final
+identity relations, a valid partial typed projection, and an out-of-base kind
+index. The focused runner executes shell-capable children with the selected
+shell, records actual executing shell and target profile when the production
+failure runner deliberately requires PowerShell 7, and matches each EH3
+negative to its mutation-specific error. Preserve the earlier aggregates as
+superseded observations. Commit source before ref-exported auxiliary and final
+60-case runs, then append those exact final receipts in a separate evidence
+commit with its own WDD entry.
+
+Alternatives rejected. Deriving expected paths from the receipt would make the
+receipt self-authenticating. Basename or suffix matching cannot distinguish an
+unrelated root. Rejecting a full-roster kind index merely because a legitimate
+stage projects fewer rows would break the existing K2 setup stage. Treating a
+no-receipt W guard as verified pin coverage would overstate its operational
+evidence. A generic nonempty error assertion could pass for the wrong failure.
+
+Consequences. The current production caller supplies the expected dynamic
+identities and the predicate validates exact paths, types, capture stages and
+entry/final relations. The source checkpoint remains a worker candidate;
+final both-shell focused, auxiliary and complete 60-case evidence plus
+coordinator acceptance remain separate obligations. This decision covers
+`repair-r4/predicates.ps1`, `repair-r4/FAILURE_CONTROL_REGISTRY.json`,
+`repair-r3/failure_controls.ps1`, `repair-r4/aux_controls.ps1`, the V1 focused
+controls, matrix, command ledger and historical-reader guide.

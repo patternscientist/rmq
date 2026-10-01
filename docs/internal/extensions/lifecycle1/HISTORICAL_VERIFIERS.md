@@ -1,10 +1,13 @@
 # Historical lifecycle verifier scope
 
-This guide classifies the retained lifecycle evidence readers at the V1
-evidence-hardening source checkpoint. It is a source trace, not a replay. None
-of the scripts below is invoked by `scripts/gate.ps1`, `lakefile.toml`, or a
+This guide classifies the retained lifecycle evidence readers as inspected at
+V1 evidence-hardening source checkpoint
+`7e3a1d086d81eee924036afc3f84b1447ac503cb` in managed worktree
+`C:/Users/poin/.codex/worktrees/v1-evidence-hardening/RMQ`. It is a source
+trace, not a replay or a claim about every later integrated checkout. None of
+the scripts below is invoked by `scripts/gate.ps1`, `lakefile.toml`, or a
 workflow under `.github/workflows`; a bounded exact-name search over those
-surfaces returned no match.
+surfaces at that checkpoint returned no match.
 
 The current file identities used for this trace are:
 
@@ -50,9 +53,10 @@ and lines 49-60 enumerate the old owned campaign directories. Lines 61-75
 stamp the old production/source freeze identities and write the committed
 `repair-r1/EVIDENCE_INDEX.json`, currently 2,136,062 bytes with SHA-256
 `af8a32126da5f24ce5d43adfa2e4e8593bd2f6941480172c20a4fe62d9cf1ce6`.
-The required `.lake/repair-r1` root is absent in this managed V1 worktree. A
-fresh index generated from another root would be a different product and must
-not be described as replaying the retained R1 index.
+The required `.lake/repair-r1` root was absent when this managed V1 worktree was
+inspected at checkpoint `7e3a1d086d81eee924036afc3f84b1447ac503cb`.
+A fresh index generated from another root would be a different product and
+must not be described as replaying the retained R1 index.
 
 ## R2 evidence verifier
 
@@ -67,8 +71,11 @@ their production Git blobs; lines 293-301 require the old executable and every
 named `.lake/repair-r2` evidence folder before writing its packet and index.
 
 The required `.lake/repair-r2` root and
-`.lake/build/bin/rmq_lifecycle_validate.exe` are absent in this worktree. The
-committed outputs remain historical: `repair-r2/EVIDENCE_INDEX.json` is
+`.lake/build/bin/rmq_lifecycle_validate.exe` were absent when this managed V1
+worktree was inspected at checkpoint
+`7e3a1d086d81eee924036afc3f84b1447ac503cb`. This does not describe the
+coordinator's later integrated build checkout. The committed outputs remain
+historical: `repair-r2/EVIDENCE_INDEX.json` is
 808,355 bytes, SHA-256
 `50f0b1329e91f542ee822cee2955eba136456da9bdd4d4b2192d69c62bd736ab`;
 `repair-r2/RESULTS.json` is 303,999 bytes, SHA-256
