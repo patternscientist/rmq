@@ -15488,3 +15488,45 @@ requirement matrices and exact source inventories live under internal/v1.
 Frozen prior evidence is not rewritten. Transitive workflow-ledger scope for
 worker matrices was corrected before certification, a reusable scope omission
 already covered by STRICT-DESIGN-CHECK-WRITE-SCOPE-CLOSURE.
+
+
+## WDD-20261001-V1-SCAN - Restrict expensive rules to their governed inputs
+
+Date: 2026-10-01. Status: implementation decision; differential verification pending.
+
+The V1 draft scan spent more than 25 minutes in ripgrep's multiline PQ1
+attribution regex across all docs, including historical JSON receipts. Its
+production classifier unconditionally allowed every result outside the exact
+current-fact registry. The new source-identity inventory made that unnecessary
+search larger. Enumerate files with ripgrep's own ignore/hidden/path semantics,
+then apply the existing normalized current-fact path regex before those scoped
+terms run. Other terms, predicates, allowances and required attributions stay
+unchanged. An enumeration error fails; an empty scoped set never reads stdin.
+
+The exhaustive diagnostic mode, ShowAllowed, retains the original scan inputs.
+Default summary counts now describe the actually searched inputs, rather than
+including out-of-scope matches that are hidden anyway. Historical recorded
+counts are not updated. Compare the old and new production policy regression,
+run the scanner self-test on both PowerShell families, and independently review
+the selection logic before acceptance. No pattern, registry or allowance is
+weakened to improve runtime.
+
+Claude's source review found that the production policy regression deliberately
+passes ShowAllowed for allowance witnesses, so its original 130 fixtures did
+not cover the optimized path. Four additional ordered context fixtures now
+exercise default relative/absolute rejection, a clean current surface, and an
+empty current-surface set. Both negative fixtures require the named fail line,
+not merely a nonzero exit. Existing allowance witnesses remain unchanged.
+The scanner explicitly reports an empty scope and documents the changed hit
+count consumer and exclusion-self-test scope. Duplicate overlapping roots retain
+the original behavior. Old and new diagnostic regressions both passed all
+88 reject, 42 accept and 16 original context fixtures before this extension;
+scanner self-tests passed in Windows PowerShell and PowerShell 7. Final extended
+regression and strict design checks are recorded with the integration evidence.
+
+The extended Windows PowerShell regression passed 88 reject, 42 accept and
+20 ordered contexts. A second Claude review led to one more context using a
+directory root with two governed files and one ungoverned file. Enumeration
+counts now provide a direct fast-path witness, and the empty-scope fixture
+requires its diagnostic. Positive exit-0 controls are not claimed as coverage
+witnesses. The final 21-context registry is part of the integrated full gate.

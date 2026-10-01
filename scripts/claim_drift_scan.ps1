@@ -335,7 +335,37 @@ if (-not $IncludeProcessRecords) {
   )
 }
 
+# Current-surface rules previously ran their multiline regex over every
+# historical receipt and JSON inventory, only to mark those matches allowed.
+# Enumerate with rg itself so ignore, hidden-file and explicit-path behavior is
+# unchanged for the registered ASCII Markdown paths. -ShowAllowed retains the
+# exhaustive diagnostic enumeration. Scoped terms cannot match process-record
+# paths, so the self-test exclusion delta is now carried by non-scoped terms.
+# make_audit_packet.ps1 archives the narrower default hit count; old packet
+# totals therefore need not match on otherwise identical source.
+$currentTermPaths = $null
 foreach ($term in $policy.terms) {
+  $termRoots = @($roots)
+  if (-not $ShowAllowed -and [string]$term.scope -eq "current-fact-surface") {
+    if ($null -eq $currentTermPaths) {
+      $candidatePaths = @(& rg --files @processRecordExcludeGlobs -- @roots 2>$null)
+      $enumerationExit = $LASTEXITCODE
+      if ($enumerationExit -gt 1) {
+        Write-Host "CLAIM-DRIFT: rg failed while enumerating current surfaces"
+        exit $enumerationExit
+      }
+      $currentTermPaths = @($candidatePaths | Where-Object {
+        (ConvertTo-PolicyPath $_) -match $currentFactSurfacePathRegex
+      })
+      Write-Host ("CLAIM-DRIFT: scoped terms scanned {0} of {1} enumerated files" -f $currentTermPaths.Count, $candidatePaths.Count)
+      if ($currentTermPaths.Count -eq 0) {
+        Write-Host "CLAIM-DRIFT: no current-fact surface under the requested roots; scoped terms scanned 0 files"
+      }
+    }
+    $termRoots = @($currentTermPaths)
+    # Passing no paths to rg would read stdin; there is no scoped input here.
+    if ($termRoots.Count -eq 0) { continue }
+  }
   $pattern = [string]$term.pattern
   $rgArguments = @("--json", "--pcre2")
   if ($term.multiline -eq $true) {
@@ -343,7 +373,7 @@ foreach ($term in $policy.terms) {
   }
   $rgArguments += $processRecordExcludeGlobs
   $rgArguments += @("--", $pattern)
-  $rgArguments += @($roots)
+  $rgArguments += @($termRoots)
   $matches = @(& rg @rgArguments 2>$null)
   $code = $LASTEXITCODE
   if ($code -gt 1) {
@@ -424,8 +454,8 @@ foreach ($term in $policy.terms) {
     #
     # `allowed` hits are by definition matches OUTSIDE the governed surfaces:
     # scan bookkeeping, not findings. `-ShowAllowed` restores the old output for
-    # policy debugging. Counts below are unaffected, so the summary line still
-    # reports the true total.
+    # policy debugging, including out-of-scope matches of current-surface
+    # rules. The summary counts matches in the inputs actually searched.
     if ($label -ne "allowed" -or $ShowAllowed) {
       Write-Host ("CLAIM-DRIFT[{0}][{1}][{2}] {3}:{4}: {5}" -f $term.id, $term.status, $label, $file, $lineNo, $line.Trim())
     }

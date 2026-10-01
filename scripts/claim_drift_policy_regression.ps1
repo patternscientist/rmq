@@ -481,8 +481,13 @@ wordram-pq1-at-most-bound-accepted
 
 $expectedRejectCount = 88
 $expectedAcceptCount = 42
-$expectedContextCount = 16
+$expectedContextCount = 21
 $expectedContextFixtureIds = @(
+  "default-current-relative-rejected",
+  "default-current-absolute-rejected",
+  "default-current-accepted",
+  "default-no-current-surface-accepted",
+  "default-current-directory-rejected",
   "policy-path-allowance",
   "matrix-marked-row-allowance",
   "absolute-windows-single-file",
@@ -816,10 +821,12 @@ function New-ShadowFileRoot {
 function Invoke-StrictClaimScan {
   param(
     [string]$Path,
-    [string]$WorkingDirectory = $repoRoot
+    [string]$WorkingDirectory = $repoRoot,
+    [bool]$ShowAllowed = $true
   )
 
-  # `-ShowAllowed` is REQUIRED here; it is not a debugging convenience.
+  # `-ShowAllowed` is REQUIRED for allowance witnesses; it is not merely
+  # a debugging convenience. Default-path contexts deliberately turn it off.
   #
   # On 2026-08-16 the scanner stopped printing `[allowed]` lines by default, to
   # close a contamination channel: a required strict run was emitting prior audit
@@ -832,12 +839,16 @@ function Invoke-StrictClaimScan {
   # would be a silent downgrade: each would decay into "the scanner exited 0",
   # which all 23 satisfy vacuously, and this file would go green having stopped
   # testing the thing it exists to test.
-  return Invoke-BoundedProcess -FilePath $shellPath `
-    -Arguments @(
-      "-NoLogo", "-NoProfile", "-ExecutionPolicy", "Bypass",
-      "-File", $resolvedScannerPath, "-Strict", "-ShowAllowed",
-      "-PolicyPath", $resolvedPolicyPath, "-Path", $Path
-    ) -WorkingDirectory $WorkingDirectory -TimeoutMs $scannerStageTimeoutMs
+  # Allowance witnesses keep the diagnostic mode; explicit default-path
+  # contexts below exercise the production scoped-file enumeration as well.
+  $scanArguments = @(
+    "-NoLogo", "-NoProfile", "-ExecutionPolicy", "Bypass",
+    "-File", $resolvedScannerPath, "-Strict"
+  )
+  if ($ShowAllowed) { $scanArguments += "-ShowAllowed" }
+  $scanArguments += @("-PolicyPath", $resolvedPolicyPath, "-Path", $Path)
+  return Invoke-BoundedProcess -FilePath $shellPath -Arguments $scanArguments `
+    -WorkingDirectory $WorkingDirectory -TimeoutMs $scannerStageTimeoutMs
 }
 
 function Test-FinalVerdict {
@@ -849,7 +860,9 @@ function Test-FinalVerdict {
     [string]$TermId = "forbidden-2pow128-canonical-activation",
     [string]$WorkingDirectory = $repoRoot,
     [bool]$CheckTrackedState = $false,
-    [bool]$ContextCase = $false
+    [bool]$ContextCase = $false,
+    [bool]$ShowAllowed = $true,
+    [string]$RequireOutputPattern = ""
   )
 
   if ($ContextCase) {
@@ -860,7 +873,7 @@ function Test-FinalVerdict {
     Assert-TrackedStateUnchanged -Context "before-$Id"
   }
 
-  $result = Invoke-StrictClaimScan -Path $Path -WorkingDirectory $WorkingDirectory
+  $result = Invoke-StrictClaimScan -Path $Path -WorkingDirectory $WorkingDirectory -ShowAllowed $ShowAllowed
 
   if ($CheckTrackedState) {
     Assert-TrackedStateUnchanged -Context "after-$Id"
@@ -878,6 +891,10 @@ function Test-FinalVerdict {
       $passed = $passed -and $termAllowed
     }
     $expected = "ACCEPT"
+  }
+
+  if ($RequireOutputPattern -ne "") {
+    $passed = $passed -and [bool]($result.Output -match $RequireOutputPattern)
   }
 
   if (-not $passed) {
@@ -951,6 +968,51 @@ try {
     }
 
     if ($OnlyCase -eq '') {
+      # These must use the production default. A missing enumeration match
+      # cannot pass either negative: Test-FinalVerdict requires the term's fail
+      # line as well as a nonzero exit. Cover relative and absolute inputs,
+      # a directory tree, an in-scope positive and an empty current-surface set.
+      # The negative term failures carry coverage; exit-0 positives control
+      # false alarms. Explicit output witnesses pin the optimized enumeration.
+      $defaultReject = New-ShadowFileRoot -RelativePath 'README.md' `
+        -Content '207 is the current charged-trace cap.'
+      Test-FinalVerdict -Id 'default-current-relative-rejected' `
+        -RequireOutputPattern '^CLAIM-DRIFT: scoped terms scanned 1 of 1 enumerated files$' `
+        -Path $defaultReject.RelativePath -WorkingDirectory $defaultReject.Root `
+        -Reject $true -TermId 'forbidden-retired-current-cost-bound' `
+        -ShowAllowed $false -CheckTrackedState $true -ContextCase $true
+      $defaultAbsolute = New-ShadowFileRoot -RelativePath 'docs/PAPER_MODEL_ADEQUACY.md' `
+        -Content 'There is no event-silent computation left on the accepted route.'
+      Test-FinalVerdict -Id 'default-current-absolute-rejected' `
+        -Path $defaultAbsolute.AbsolutePath -WorkingDirectory $defaultAbsolute.Root `
+        -Reject $true -TermId 'forbidden-unqualified-no-event-silent-computation' `
+        -ShowAllowed $false -CheckTrackedState $true -ContextCase $true
+      $defaultAccept = New-ShadowFileRoot -RelativePath 'README.md' `
+        -Content 'This guide describes the half-open RMQ contract.'
+      Test-FinalVerdict -Id 'default-current-accepted' `
+        -Path $defaultAccept.RelativePath -WorkingDirectory $defaultAccept.Root `
+        -Reject $false -ShowAllowed $false -CheckTrackedState $true -ContextCase $true
+      $defaultOutside = New-ShadowFileRoot -RelativePath 'notes.txt' `
+        -Content '207 is the current charged-trace cap.'
+      Test-FinalVerdict -Id 'default-no-current-surface-accepted' `
+        -RequireOutputPattern 'scoped terms scanned 0 files' `
+        -Path $defaultOutside.RelativePath -WorkingDirectory $defaultOutside.Root `
+        -Reject $false -ShowAllowed $false -CheckTrackedState $true -ContextCase $true
+
+      $defaultDirectory = New-ShadowFileRoot -RelativePath 'docs/WHAT_IS_PROVED.md' `
+        -Content '207 is the current charged-trace cap.'
+      [System.IO.File]::WriteAllText(
+        (Join-Path $defaultDirectory.Root 'docs/PAPER_MODEL_ADEQUACY.md'),
+        'This guide describes the model.' + [Environment]::NewLine)
+      [System.IO.File]::WriteAllText(
+        (Join-Path $defaultDirectory.Root 'docs/INTERNAL_NOTES.md'),
+        '207 is the current charged-trace cap.' + [Environment]::NewLine)
+      Test-FinalVerdict -Id 'default-current-directory-rejected' `
+        -Path 'docs' -WorkingDirectory $defaultDirectory.Root `
+        -Reject $true -TermId 'forbidden-retired-current-cost-bound' `
+        -RequireOutputPattern '^CLAIM-DRIFT: scoped terms scanned 2 of 3 enumerated files$' `
+        -ShowAllowed $false -CheckTrackedState $true -ContextCase $true
+
       Test-FinalVerdict -Id "policy-path-allowance" -Path "docs/internal/CLAIM_DRIFT_POLICY.md" -Reject $false -RequireAllowed $true -ContextCase $true
 
       $markedShadow = New-ShadowMatrixRoot -Content '| `POLICY-R3` | The canonical execution requires 2^128. |'
