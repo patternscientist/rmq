@@ -15660,3 +15660,13 @@ unchanged. The current guide names its actual limited run and avoids converting
 a failed advisory check into a success or a required Lean-gate failure. The
 inventory continues to distinguish the 18 registered current-fact paths from
 additional linked readers. No scanner policy or gate exemption changes.
+
+## WDD-20261001-V1-CLOSURE-READER — Inventory the actual audit-packet reader
+
+Date: 2026-10-01. Status: reader reconciliation.
+
+Add `docs/RMQ_IMPORT_CLOSURE.md`, linked by CODE_MAP and make_audit_packet, to
+the additional V1 inspected-reader inventory. Mark its dated tables historical
+and link the existing exact Git source inventory. The registered 18-path claim
+policy and all historical records remain unchanged. No new gate or compiler
+dependency is introduced.

@@ -13587,3 +13587,16 @@ in the claims introduction. State the attempted payload-word read vocabulary
 and excluded controller work beside the classic client's trace-length theorem.
 These repeat the existing source-backed boundaries where readers need them;
 they change no theorem, number, claim domain or verification requirement.
+
+## DD-20261001-V1-CLOSURE-READER — Label historical import measurements
+
+Date: 2026-10-01. Status: reader reconciliation.
+
+The linked import-closure note contains two old measurement tables. Preserve
+them with explicit historical headings and lead with the exact V1-base inventory:
+262 local paper modules, 368 for the specified lifecycle-root union. Inspecting
+the paper path list confirms that its stated unrelated-spoke/legacy/obstruction
+exclusions still hold. These are base counts, not a relabeled final-build result.
+The V1 proof/client delta remains a separate verification obligation. Avoid
+silently replacing historical counts or presenting a source LOC total as a
+measure of proof quality.
