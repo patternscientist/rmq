@@ -15607,3 +15607,23 @@ in the matrix. `scripts/design_decision_check.ps1 -Strict -Base
 ee44f04a561f2194b3713f071c26b6faf9ba7fab` must pass on the final candidate.
 Coordinator integration, independent reconstruction, and V1 acceptance remain
 separate.
+
+## WDD-20261001-V1-VERIFICATION — Freeze source, then record current evidence
+
+Date: 2026-10-01. Status: verification plan.
+
+The private integration candidate receives one full Linux reproduction using
+the committed advertised script, plus a Windows Lean build/trust check and a
+fresh scoped Windows native supplement. The latter comprises the full 16-case
+lifecycle executable validator, current native producer, startup, all 13 native
+fixtures in both modes, 23 ABI boundaries and four production C++/Rust clients.
+It does not recertify every historical LIFE-NATIVE-1 mutation or foreign-runtime
+conflict fixture. The separate evidence leaf replays its 60 exact failure
+controls under both Windows shell families. Record each command's exact source,
+tools, log, receipt and duration without relabeling historical outputs.
+
+The fresh source audit and verification record identify their target commits.
+Later documentation-only dispositions require report-sensitive scans; they
+do not change the identity of earlier checked source. Local Linux verification
+is explicitly distinct from a hosted CI run. The unmodified original checkout
+and all worker evidence remain available. Publication is not performed here.

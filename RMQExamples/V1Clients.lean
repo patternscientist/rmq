@@ -50,7 +50,7 @@ theorem packedQuery_returnedIndex_isLeftmost
     xs left right index hanswer
 
 /-- Eventually the complete packed allocation -- data, encoded fixed program,
-and scratch registers -- occupies at most `3 * n` bits. -/
+and scratch registers and control words -- occupies at most `3 * n` bits. -/
 theorem packedQuery_eventuallyCompleteCapacity_le_threeN :
     ∃ threshold : Nat, ∀ xs : List Int, threshold ≤ xs.length →
       ((buildMemory xs).length +

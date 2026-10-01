@@ -10,7 +10,7 @@ The packed and earlier paper clients use different models:
 | --- | --- | --- |
 | Uniform primitive bound plus valid-query halting and correct packet | `RMQExamples.V1Clients.packedQuery_uniformPrimitiveBound_halts_and_isCorrect` | `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` -> `buildMemory` / fixed `queryProgram` / `run` |
 | Returned packed query index is the leftmost minimum | `RMQExamples.V1Clients.packedQuery_returnedIndex_isLeftmost` | The same packed capstone's `queryNat` and `leftmost` field |
-| Eventual complete capacity at most `3*n` | `RMQExamples.V1Clients.packedQuery_eventuallyCompleteCapacity_le_threeN` | The same packed capstone's `completeCapacity` and `completeResidualLittleO`; the expression includes data, encoded code, and scratch |
+| Eventual complete capacity at most `3*n` bits | `RMQExamples.V1Clients.packedQuery_eventuallyCompleteCapacity_le_threeN` | The same packed capstone's `completeCapacity` and `completeResidualLittleO`; the expression includes data, encoded code, scratch registers and control words |
 | Earlier paper payload capacity | `RMQExamples.V1Clients.paperQuery_payloadCapacity` | Named `SuccinctClassic.buildPayload_length` -> public `SuccinctClassic.buildPayload` |
 | Earlier paper exact answer | `RMQExamples.V1Clients.paperQuery_exact` | Named `SuccinctClassic.queryCosted_exact` -> guarded `SuccinctClassic.queryCosted` -> independent `scanWindow` |
 | Earlier paper cost at most `210` | `RMQExamples.V1Clients.paperQuery_cost_le_210` | Named `SuccinctClassic.queryCosted_cost_le`, then `RMQ.Headlines.succinctRMQQueryCostEq` |

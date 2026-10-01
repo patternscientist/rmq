@@ -2146,3 +2146,36 @@ The next skeptical questions concern independent exact-commit reconstruction,
 coordinator acceptance and how a future native specialization can reduce the
 measured copying and initialization costs while preserving these same contracts.
 This entry records a local candidate, not coordinator acceptance.
+
+## V1 maintenance and checked clients — 2026-10-01
+
+The cleanup centralizes two existing rank/select proofs in GenericSelect while
+preserving the older theorem names and propositions. An unused private list
+lemma is gone. The reviewer simulation now names one private full-result
+decomposition at the active-read/continuation boundary; both proof sites use
+that equality. It preserves returned values, terminal state and ordered events,
+not only trace length. Computation and public premises are unchanged.
+
+The new `RMQExamples.V1Clients` module imports one public headline module. Its
+packed client derives a uniform primitive-step bound, valid-query halting and
+the specified answer from the same program and built memory. It also derives
+leftmost correctness for a returned index and an eventual complete capacity of
+at most three bits per input element, counting data, encoded code, scratch
+registers and control words. The last claim instantiates the existing little-o
+residual at scale one; it is an eventual statement, not a small-input estimate.
+
+Separate clients expose the earlier paper construction's payload bound,
+exactness and modeled cost, and show how ordered supplied-store agreement
+determines an entire guarded result, its value and its cost projection. A
+duplicate-minimum example returns the leftmost index; compiled invalid-range
+examples retain the public rejection behavior. None equates the paper trace
+cost with packed primitive transitions or measured execution time.
+
+The proof leaf at `71a4a65336af68dabaf19265b36c7564db8c8cec` and client leaf at
+`61d0a5cdf1ed32a10378e3824d90b81b9c37312d` passed their full Lean builds and
+scoped checks. Their integration remains subject to the V1 candidate's final
+verification and independent audit. A skeptical reader should check the exact
+objects in each conclusion, the complete-capacity summands, and why removing a
+capstone field or weakening the store-agreement premise breaks these clients.
+The source tour and evidence record distinguish those checks from native
+compiler, allocation and FFI assumptions.

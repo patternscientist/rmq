@@ -13526,3 +13526,14 @@ ledger are recorded in `docs/internal/v1/V1_PROOF_MATRIX.md`. This decision
 changes no computational definition, machine program, constant, premise,
 payload account, cost model, runtime claim, or measured-performance claim.
 Coordinator integration and independent acceptance remain separate V1 work.
+
+## DD-20261001-V1-INTEGRATION — Preserve checked clients and proof boundaries
+
+Date: 2026-10-01. Status: candidate integration.
+
+The proof and client leaves preserve all production computational definitions
+and theorem contracts. Integration keeps their append-only decision records
+and adds a digestion note explaining the common objects and live assumptions.
+A client comment explicitly names the three control words already included in
+its checked capacity expression; the guide labels the unit as bits. This is
+prose clarification only, with no change to that proposition or proof.
