@@ -15969,3 +15969,35 @@ the same bounded proof-cleanup contract. The second commit changes no Lean
 source and records evidence only after the preserved source passes the required
 full build. Coordinator integration, aggregate native/package gates, fresh
 audit, and V1 acceptance remain separate.
+
+## WDD-20261001-V1-GUARDS-01 - Extend current reader guards and synchronize the primitive budget
+
+Date: 2026-10-01. Status: worker implementation; coordinator acceptance pending.
+
+Context. The two V1 reader guides already received generic claim scanning,
+but were absent from the current-fact scope and constant rosters. The packed
+primitive budget was attribution-guarded without numeric synchronization to
+the Lean capstone. Existing frozen V1 matrices record their original contract.
+
+Decision. Explicitly amend the current registry from 18 to 20 paths by adding
+only V1_GUIDE and V1_CLIENTS. Preserve the original ordered 130 policy fixtures
+and all 21 context consumers, append two guide accept/reject pairs and update
+the independent registry pins. Extend the constant rosters with the exact
+guide occurrences, and extract the third budget from the actual capstone's
+`budgetExact` field. Use one shared whole-numeral parser and claim predicate
+for plain and comma-grouped literals, exact counts and conflicting claims.
+Malformed grouping remains a whole conflicting token. Add production-path
+controls for each new surface, both formats, surviving correct occurrences,
+added conflicts, model swaps and unrelated numeral boundaries.
+
+Alternatives rejected. A file-wide budget presence check misses corruption
+when another occurrence survives. Stripping commas in prose avoids testing
+the public format. Independent fixture-only predicates do not establish the
+production guard. Widening unrelated attribution patterns or editing Lean
+would exceed the bounded repair. The old frozen requirement text is retained.
+
+Consequences. These guards compare declared quantities with the pinned Lean
+statements while preserving trace ticks, probes, primitive transitions and
+runtime as separate categories. Finite fixtures do not cover arbitrary prose
+outside the declared claim shapes. The scripts, policy and new guard matrix
+are the owned change; final two-shell evidence remains to be collected.

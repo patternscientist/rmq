@@ -26,7 +26,9 @@ if (-not (Test-Path -LiteralPath $resolvedScannerPath)) {
 
 $policyObject = Get-Content -Raw -LiteralPath $resolvedPolicyPath | ConvertFrom-Json
 $currentSurfaceRegex = [string]$policyObject.currentFactSurfacePathRegex
-$expectedCurrentSurfaceRegex = '^(?:README\.md|artifact/(?:CLAIMS|README)\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\.md|docs/digests/PROJECT_DIGESTION_CURRENT\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\.md|RMQ_FINAL_ROADMAP\.md))$'
+# V1-GUARDS explicitly amends the current registry from 18 to 20 paths;
+# V1-02's original frozen requirements retain their historical identity.
+$expectedCurrentSurfaceRegex = '^(?:README\.md|artifact/(?:CLAIMS|README)\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|V1_CLIENTS|V1_GUIDE|WORD_RAM_REVIEW_PACKET)\.md|docs/digests/PROJECT_DIGESTION_CURRENT\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\.md|RMQ_FINAL_ROADMAP\.md))$'
 if ($currentSurfaceRegex -cne $expectedCurrentSurfaceRegex) {
   Write-Host "CLAIM-POLICY-REGRESSION: FAIL [p1r1-exact-current-surface-registry] regex drift"
   exit 1
@@ -47,6 +49,8 @@ $requiredCurrentSurfaces = @(
   'docs/RELATED_WORK_AND_LIMITATIONS.md',
   'docs/ROADMAP.md',
   'docs/TRUST_AUDIT_PACKET.md',
+  'docs/V1_CLIENTS.md',
+  'docs/V1_GUIDE.md',
   'docs/WHAT_IS_PROVED.md',
   'docs/WORD_RAM_REVIEW_PACKET.md',
   'README.md'
@@ -57,7 +61,7 @@ foreach ($requiredCurrentSurface in $requiredCurrentSurfaces) {
     exit 1
   }
 }
-if ($requiredCurrentSurfaces.Count -ne 18 -or
+if ($requiredCurrentSurfaces.Count -ne 20 -or
     @($requiredCurrentSurfaces | Group-Object | Where-Object Count -ne 1).Count -ne 0) {
   Write-Host "CLAIM-POLICY-REGRESSION: FAIL [p1r1-exact-current-surface-registry] path registry drift"
   exit 1
@@ -146,7 +150,7 @@ if ($wordRamCountTerm.Count -ne 1 -or
 }
 Write-Host "CLAIM-POLICY-REGRESSION: PASS [pq1-policy-config] attribution, attachment and rescoped instruction-count terms"
 Write-Host "CLAIM-POLICY-REGRESSION: PASS [r1r2-48147cb-current-surface-registry]"
-Write-Host "CLAIM-POLICY-REGRESSION: PASS [p1r1-exact-current-surface-registry] 18 exact paths"
+Write-Host "CLAIM-POLICY-REGRESSION: PASS [p1r1-exact-current-surface-registry] 20 exact paths"
 
 $sourceManifestTerm = @($policyObject.terms | Where-Object id -eq 'typed-reviewer-source-manifest')
 if ($sourceManifestTerm.Count -ne 1 -or
@@ -343,7 +347,14 @@ $fixtures = @(
   @{ id = "pq1-budget-on-trace-alias-cross-line-rejected"; relativePath = "artifact/CLAIMS.md"; reject = $true; termId = "forbidden-pq1-charge-on-trace-or-probe-theorem"; text = "RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe gives the`n837,572 instruction budget of RMQ.Headlines.succinctRMQFullyChargedPackedQuery." },
   @{ id = "pq1-contrasted-numerals-accepted"; relativePath = "README.md"; reject = $false; termId = "forbidden-pq1-charge-on-trace-or-probe-theorem"; text = "RMQ.Headlines.succinctRMQFullyChargedPackedQuery bounds its own packed run by at most 837,572 primitive instructions; the 210 trace and 427 probe bounds are separate quantities." },
   @{ id = "wordram-count-on-trace-rejected"; relativePath = "README.md"; reject = $true; termId = "forbidden-wordram-instruction-count"; text = "The canonical query executes in 210 word-RAM instructions." },
-  @{ id = "wordram-pq1-at-most-bound-accepted"; relativePath = "README.md"; reject = $false; termId = "forbidden-wordram-instruction-count"; text = "RMQ.Headlines.succinctRMQFullyChargedPackedQuery: the packed run halts within at most 837,572 primitive instructions." }
+  @{ id = "wordram-pq1-at-most-bound-accepted"; relativePath = "README.md"; reject = $false; termId = "forbidden-wordram-instruction-count"; text = "RMQ.Headlines.succinctRMQFullyChargedPackedQuery: the packed run halts within at most 837,572 primitive instructions." },
+
+  # Each guide must reach a current-fact-scope term in the production scanner.
+  # Its negative cannot pass on a generic term or on an unscanned path.
+  @{ id = "v1-guide-current-cost-207-rejected"; relativePath = "docs/V1_GUIDE.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "The current charged-trace cap is 207." },
+  @{ id = "v1-guide-current-cost-210-accepted"; relativePath = "docs/V1_GUIDE.md"; reject = $false; termId = "forbidden-retired-current-cost-bound"; text = "The current charged-trace cap is 210." },
+  @{ id = "v1-clients-current-cost-207-rejected"; relativePath = "docs/V1_CLIENTS.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "207 is the current charged-trace cap." },
+  @{ id = "v1-clients-current-cost-210-accepted"; relativePath = "docs/V1_CLIENTS.md"; reject = $false; termId = "forbidden-retired-current-cost-bound"; text = "210 is the current charged-trace cap." }
 )
 
 $expectedFixtureIds = @'
@@ -477,10 +488,14 @@ pq1-budget-on-trace-alias-cross-line-rejected
 pq1-contrasted-numerals-accepted
 wordram-count-on-trace-rejected
 wordram-pq1-at-most-bound-accepted
+v1-guide-current-cost-207-rejected
+v1-guide-current-cost-210-accepted
+v1-clients-current-cost-207-rejected
+v1-clients-current-cost-210-accepted
 '@ -split "\r?\n" | Where-Object { $_ }
 
-$expectedRejectCount = 88
-$expectedAcceptCount = 42
+$expectedRejectCount = 90
+$expectedAcceptCount = 44
 $expectedContextCount = 21
 $expectedContextFixtureIds = @(
   "default-current-relative-rejected",
