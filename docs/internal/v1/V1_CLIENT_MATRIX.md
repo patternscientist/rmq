@@ -47,3 +47,39 @@ their transitive scope closure. Existing workflow entries remain unchanged.
 | claim scan of owned prose | Final-required | CHK-CLAIM, category/roadmap boundary | Model conflation or release overclaim | Final source/docs tree; seconds | Strict exit 0; 389 review hits, 0 strict failures. |
 | `lake build` | Final-required | CHK-BUILD, all rows | Repository-wide integration failure not seen by focused target | Frozen pre-commit tree; lead-authorized single heavy process; allow cold-build margin | Exit 0; 227.547s; full native log retained under `.lake/`. |
 | `git diff --check ee44f04a561f2194b3713f071c26b6faf9ba7fab..HEAD` | Final-required after commit | CHK-DIFF | Whitespace defect hidden by clean worktree | Exact committed candidate range; seconds | Exit 0 on the immutable candidate tip; exact commit identity is recorded in the handoff. |
+
+## Coordinator source-review amendment — 2026-10-01
+
+The original frozen requirements above are unchanged. Fresh source review adds
+one checked client, `paperQuery_cost_eq_trace_length`, using the existing named
+`WordRAM.TraceResult.toCosted_cost_eq_trace_length` on the same guarded trace.
+The original `paperQuery_trace_toCosted` retains its exact type and definitional
+proof. Its docstring now describes that projection literally. REQ-C2's numeric
+calculation now uses the directly matching `SuccinctClassic.queryCost_eq`
+instead of the headline abbreviation; this changes no proposition. The earlier
+evidence above describes the original leaf at `61d0a5c`; integrated follow-up
+checks are recorded separately below.
+
+| ID | Added review requirement | Evidence | State |
+| --- | --- | --- | --- |
+| REVIEW-C1 | Preserve the exact fixed-budget run, valid-query halt and result conjunction; explain successful packet index+1 and rejection packet0. | Source and guide explicitly retain and explain these objects. | Focused and full builds passed; final aggregate gate pending |
+| REVIEW-C2 | Keep the definitional projection theorem and add explicit cost-equals-trace-length reuse from the named generic theorem. | `paperQuery_trace_toCosted` unchanged; `paperQuery_cost_eq_trace_length` added. | Focused and full builds passed; final aggregate gate pending |
+| REVIEW-C3 | Use the directly matching classic numeric lemma and Nat.one_pos; preserve all original client types and model boundaries. | Proof terms and reader map updated; no production library declaration changed. | Focused and full builds passed; final aggregate gate pending |
+
+The reviewer suggestion to replace canonical `queryBudget` fuel by the outer
+existential budget was not adopted: the frozen contract deliberately binds the
+same canonical run as the public capstone. The conjunction already requires
+halting and exact output; the bound alone is not presented as sufficient.
+Redundant projections remain convenient client conclusions and are not counted
+as independent correctness proofs.
+
+Follow-up verification on 2026-10-01, working tree based on
+`58ae51396d9d3b9f9ba1fc7c35d3e8507ce1eedc`: focused
+`lake build RMQExamples.V1Clients RMQExamples` passed in 7.358 seconds. The
+subsequent `lake build`, both required hygiene/native-decision scans (including
+the examples), scoped strict claim scan, strict design check against HEAD and
+`git diff --check` passed. Logs are retained in the coordinator implementation
+directory as `client-review-build.log`, `client-review-build.json`,
+`client-review-full-build.log`, `client-review-hygiene.log`,
+`client-review-native-decision.log` and `client-review-claims.log`. These are
+current follow-up checks, not replacements for the pending final aggregate run.

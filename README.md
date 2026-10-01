@@ -40,8 +40,8 @@ unique, and invalid or empty windows return `none`.
 per input, `PackedWordRAM.buildMemory xs`. The closed loop-free program of
 837,572 primitive instructions is fixed for every list and every size. Running
 that program on that memory answers every representable endpoint pair: valid
-windows return the leftmost minimum, representable invalid windows return the
-rejection packet `0` with no memory reads, the run halts within at most 837,572 steps -- which is
+windows return a packet encoding the leftmost index plus one, representable
+invalid windows return the rejection packet `0` with no memory reads, the run halts within at most 837,572 steps -- which is
 simply the program length, with no tightness claimed -- every stored word,
 operand and prefix state stays inside one logarithmic word width, and the
 memory, literal program encoding, 8,271-register bank and three control words
@@ -94,7 +94,8 @@ is a wall-clock or compiled-code statement.
 
 Space statements exclude proof-only fields and certificates. The reference
 payload counts its bit list; complete packed capacity counts every allocated
-word at its full width, including padding, plus encoded code and registers.
+word at its full width, including padding, plus encoded code, registers and
+control words.
 
 **Preprocessing.** The query theorems above bound queries only: none of them
 bounds the work or space needed to build the payload. The lifecycle theorem is

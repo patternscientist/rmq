@@ -15635,3 +15635,16 @@ declaration input error; the checker then failed on an omega-generated proof in
 the unchanged reference specification. Its cause is not established here. This
 is a failed advisory check, not independent theorem acceptance or evidence of a
 Lean kernel defect. Required Lean axiom/hygiene checks remain separate.
+
+## WDD-20261001-V1-CLIENT-REVIEW — Preserve original client requirements
+
+Date: 2026-10-01. Status: candidate refinement.
+
+Append three bounded review rows to `docs/internal/v1/V1_CLIENT_MATRIX.md`
+without rewriting the original leaf requirements or relabeling its checks.
+The follow-up explains the packet encoding and fixed-fuel conjunction, adds a
+cost-equals-trace-length example, and uses directly matching existing lemmas.
+Require a focused client build now and the frozen integrated aggregate checks
+after both remaining leaves finish. Source review records the rejected fuel
+reparameterization explicitly. No replay registry, selector, deadline,
+acceptance authority or publication policy changes.

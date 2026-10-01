@@ -19,6 +19,10 @@ and out of bounds. All three return `none`. These are checked in
 `RMQ.Headlines.RMQ`. `scanWindow` takes a length, so `scanWindow xs left len`
 specifies the range `[left, left + len)`.
 
+At the packed primitive interface, success is encoded as `index + 1` and packet
+`0` denotes rejection. Thus the first example's primitive packet is `2`; the
+value-level query decodes it to `some 1`.
+
 The [client guide](V1_CLIENTS.md) maps practical goals to existing named APIs:
 packed-query halting and correctness, leftmost answers, eventual complete
 capacity at most `3*n` bits, classic payload and trace-cost bounds, and reuse of the

@@ -13543,3 +13543,23 @@ trace) from the consuming `PackedReviewerComponentRun.Simulates` relation,
 which additionally fixes terminal value and `done reference.value` state.
 The private equality has no separate terminal-state field. No proof changes
 were needed for this explanatory clarification.
+
+## DD-20261001-V1-CLIENT-REVIEW — State the exact client accounting fact
+
+Date: 2026-10-01. Status: candidate refinement.
+
+Fresh source review found that the projection client's docstring implied more
+than its literal equality. Keep its existing theorem and add a separate client
+of `WordRAM.TraceResult.toCosted_cost_eq_trace_length`, instantiated with the
+same guarded `SuccinctClassic.queryTraceResult`. Use the directly matching
+`SuccinctClassic.queryCost_eq` in the numeric cost calculation. The eventual
+capacity proof supplies `Nat.one_pos` directly. These changes affect examples
+only; no production definition, premise or theorem type changes.
+
+Explain that the primitive result packet is index+1, with zero reserved for
+rejection. Retain the canonical `queryBudget` run in the packed client: its
+conjunction proves halting and correctness of that run, while the isolated fuel
+bound is merely structural. Replacing its fuel with a fresh existential would
+depart from the frozen object contract. Keep convenient value/cost projections
+without presenting them as independent correctness facts. Public prose also
+names the three control words already included in complete packed capacity.

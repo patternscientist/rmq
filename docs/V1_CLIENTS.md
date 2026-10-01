@@ -13,9 +13,17 @@ The packed and earlier paper clients use different models:
 | Eventual complete capacity at most `3*n` bits | `RMQExamples.V1Clients.packedQuery_eventuallyCompleteCapacity_le_threeN` | The same packed capstone's `completeCapacity` and `completeResidualLittleO`; the expression includes data, encoded code, scratch registers and control words |
 | Earlier paper payload capacity | `RMQExamples.V1Clients.paperQuery_payloadCapacity` | Named `SuccinctClassic.buildPayload_length` -> public `SuccinctClassic.buildPayload` |
 | Earlier paper exact answer | `RMQExamples.V1Clients.paperQuery_exact` | Named `SuccinctClassic.queryCosted_exact` -> guarded `SuccinctClassic.queryCosted` -> independent `scanWindow` |
-| Earlier paper cost at most `210` | `RMQExamples.V1Clients.paperQuery_cost_le_210` | Named `SuccinctClassic.queryCosted_cost_le`, then `RMQ.Headlines.succinctRMQQueryCostEq` |
+| Earlier paper cost at most `210` | `RMQExamples.V1Clients.paperQuery_cost_le_210` | Named `SuccinctClassic.queryCosted_cost_le`, then `SuccinctClassic.queryCost_eq` |
 | Trace-to-costed correspondence | `RMQExamples.V1Clients.paperQuery_trace_toCosted` | Existing definition `queryCosted = queryTraceResult.toCosted` |
+| Cost equals guarded trace length | `RMQExamples.V1Clients.paperQuery_cost_eq_trace_length` | Named `WordRAM.TraceResult.toCosted_cost_eq_trace_length` applied to this same `SuccinctClassic.queryTraceResult` |
 | Supplied-store result and cost reuse | `RMQExamples.V1Clients.suppliedStore_orderedAgreement_reusesExecution` | `RMQ.Headlines.listIntSuccinctRMQQueryTraceResultWithStoreEqOfOrderedReadFootprint` gives equality of the exact two guarded executions; value and `toCosted` equality are projections |
+
+The packed primitive result encodes a successful zero-based index as `index + 1`,
+reserving packet `0` for rejection. The value-level `queryNat` wrapper decodes
+that packet to `some index`. The uniform step bound alone follows from the
+fixed fuel; the first client also proves that the same fixed-budget run halts
+and returns the correct packet for every valid query. Its halting and answer
+conclusions are the substantive completion guarantee.
 
 The module also checks `[4,1,1,3]` on `[0,4)`, where the leftmost minimum is
 index `1`.  That example first applies `paperQuery_exact` and reduces only the

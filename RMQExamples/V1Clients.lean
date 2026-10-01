@@ -18,7 +18,10 @@ open RMQ.SuccinctFinal.PackedWordRAM
 /-! ## Fully charged packed-query client -/
 
 /-- One budget bounds every primitive run, and every valid query both halts and
-returns the independently specified leftmost scan result. -/
+returns the independently specified leftmost scan result. The step bound alone
+is structural; the conjunction also establishes successful termination of this
+fixed-budget run. A successful packet is the zero-based index plus one, reserving
+packet zero for rejection. -/
 theorem packedQuery_uniformPrimitiveBound_halts_and_isCorrect :
     ∃ budget : Nat, ∀ (xs : List Int) left right,
       (run (buildMemory xs) queryProgram queryBudget
@@ -58,7 +61,7 @@ theorem packedQuery_eventuallyCompleteCapacity_le_threeN :
           (queryRegisterCount + 3)) * wordWidth xs.length ≤
         3 * xs.length := by
   let contract := RMQ.Headlines.succinctRMQFullyChargedPackedQuery
-  obtain ⟨threshold, hresidual⟩ := contract.completeResidualLittleO 1 (by decide)
+  obtain ⟨threshold, hresidual⟩ := contract.completeResidualLittleO 1 Nat.one_pos
   refine ⟨threshold, ?_⟩
   intro xs hlarge
   have hrho : queryCompleteRho xs.length ≤ xs.length := by
@@ -91,15 +94,23 @@ theorem paperQuery_cost_le_210
   calc
     (RMQ.SuccinctClassic.queryCosted xs left right).cost ≤
         RMQ.SuccinctClassic.queryCost := hcost
-    _ = 210 := RMQ.Headlines.succinctRMQQueryCostEq
+    _ = 210 := RMQ.SuccinctClassic.queryCost_eq
 
-/-- `queryCosted` is exactly the costed projection of the guarded public trace,
-so its modeled cost counts that trace rather than packed primitive steps. -/
+/-- `queryCosted` is definitionally the `toCosted` projection of the guarded
+public trace result. -/
 theorem paperQuery_trace_toCosted
     (xs : List Int) (left right : Nat) :
     (RMQ.SuccinctClassic.queryTraceResult xs left right).toCosted =
       RMQ.SuccinctClassic.queryCosted xs left right :=
   rfl
+
+/-- The earlier paper query's modeled cost is the length of its guarded trace. -/
+theorem paperQuery_cost_eq_trace_length
+    (xs : List Int) (left right : Nat) :
+    (RMQ.SuccinctClassic.queryCosted xs left right).cost =
+      (RMQ.SuccinctClassic.queryTraceResult xs left right).trace.length :=
+  RMQ.WordRAM.TraceResult.toCosted_cost_eq_trace_length
+    (RMQ.SuccinctClassic.queryTraceResult xs left right)
 
 /-! ## Supplied-store theorem reuse -/
 
