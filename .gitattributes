@@ -29,3 +29,16 @@ docs/internal/extensions/bv1/COORDINATOR_ROUTE_DISPOSITION.md whitespace=blank-a
 docs/internal/extensions/bv1/controls/public_mutations/fixtures/B39CFA73CEAA05B8D0E8E803CACF0696529FDBF7F2BD3BEFB5A8805045127618/*.constructor.lean whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol
 docs/internal/extensions/bv1/controls/public_mutations/snapshots/97405C70ED3B60CED72874D6DF622D2E9BBA0BD8F04808A3F98ED34EE1CEB770/Capstone.lean whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol
 scripts/packed_bitvector_validation_controls.ps1 whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol
+
+# LIFE-NATIVE-1 checks these two frozen artifacts as exact Git bytes (LF).
+# Preserve the contract and complete matrix rows.
+docs/internal/extensions/lifecycle-native1/CONTRACT_REQUIREMENTS.json -text
+docs/internal/extensions/lifecycle-native1/ACCEPTANCE_MATRIX.frozen.md -text
+scripts/lifecycle_native_cases.json text eol=crlf
+
+# The semantic fixture registry and startup amendment use historical CRLF hashes.
+# The startup amendment compares against historical Windows raw-source hashes.
+# These two source files must retain that explicit CRLF representation even
+# when a checkout has core.autocrlf disabled. The Lean text is unchanged.
+RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/SparseLevelWidth.lean text eol=crlf
+RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean text eol=crlf

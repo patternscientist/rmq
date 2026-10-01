@@ -15863,3 +15863,31 @@ decision covers `docs/internal/extensions/lifecycle1/HISTORICAL_VERIFIERS.md`,
 `docs/internal/v1/V1_EVIDENCE_MATRIX.md`,
 `docs/internal/v1/evidence/evidence_hardening_controls.ps1`, the four committed
 checkpoint aggregates, and `docs/internal/v1/evidence/COMMAND_LOG.md`.
+
+## WDD-20261001-V1-NATIVE-CHECKOUT - Preserve frozen native byte representations
+
+Date: 2026-10-01. Status: implemented; current native replay pending.
+
+Context. The V1 native attempt at 447751d203a4 passed the lifecycle validator
+but Assert-LN1FrozenContract rejected the checkout's CRLF-converted contract.
+The exact Git blob has the required SHA256 736ff55b84516d1b0c7e45f5dbf8193df98846ea259f0ef5b3caefbe7cd6bc5f.
+The frozen matrix has the same LF requirement; the semantic fixture registry
+has a historical CRLF raw hash.
+Startup separately compares two amended source files with historical raw
+Windows CRLF hashes after removing exactly five macro_inline annotations.
+
+Decision. Pin only those two frozen data paths with -text and the fixture registry plus
+two startup source paths with text eol=crlf in .gitattributes. Restore the two data files
+from their unchanged Git blobs. Test fresh checkout materialization with both
+core.autocrlf settings, then rerun the actual unchanged byte predicates and
+native campaign. Preserve the failed attempt and exact old/new identities.
+
+Alternatives rejected. Normalizing or weakening the predicate would change its
+exact-byte guarantee. Changing frozen hashes would rewrite historical evidence.
+Requiring a global user Git setting would make reproduction depend on hidden
+host configuration. These per-path attributes leave all other files alone.
+
+Consequences. This is checkout reproducibility, not a Lean proof or runtime
+correctness change. The source ZIP remains Git-derived; its advertised path is
+the Lean smoke build, while the native supplement uses a Windows Git checkout.
+This entry covers .gitattributes and the appended REVIEW-NATIVE-CHECKOUT row.

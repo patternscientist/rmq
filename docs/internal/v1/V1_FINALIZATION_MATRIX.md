@@ -39,3 +39,14 @@ and DD entry. Coordinator owns reconciliation, public prose, metadata, packaging
 integration and final gate. Claude drafts/reviews read-only within the explicitly
 approved RMQ materials. Worker proofs require focused checks before integration;
 the integrated tree receives one final aggregate gate after edits stabilize.
+
+## Checkout-byte repair amendment
+
+| ID | Requirement and actual consumer | Planned evidence | State |
+| --- | --- | --- | --- |
+| REVIEW-NATIVE-CHECKOUT | Preserve the two LF-frozen native contract/matrix files and the three historical CRLF fixture/startup representations across Git checkout settings, without weakening raw hash comparisons. | Fresh checkout fixtures with core.autocrlf true/false; exact hashes and actual native rerun. | OPEN |
+
+The first current native attempt passed the 16-case lifecycle validator but
+failed before compilation because Git converted the frozen contract to CRLF.
+Its Git blob still matched the frozen hash. The failed receipt remains evidence;
+the repair changes checkout attributes, not any historical file or predicate.
