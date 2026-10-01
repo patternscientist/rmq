@@ -16064,3 +16064,29 @@ controls then passed (2 parameterized tests, 19.404 seconds). The earlier failed
 log is retained separately. All ten package tests passed (16.973 seconds).
 These are measured local Windows results; Linux and actual source-bundle checks
 remain separate obligations.
+
+## WDD-20261001-V1-GUARDS-03 - Record the completed source-bound guard evidence
+
+Date: 2026-10-01. Status: worker evidence closure; coordinator acceptance pending.
+
+Context. Both supported Windows shells completed the production constant and
+policy suites at source 72c09db1f99f360ea199b62c2c3402c5c5280be9. The
+evidence needs to distinguish that unchanged source from this evidence-only
+record, retain the failed command attempt, and preserve the frozen contract.
+
+Decision. Close the guard matrix with the exact source identities, nine frozen
+requirements, shell paths/versions, command arguments, durations, output hashes,
+88 constant-control IDs and 134 policy fixture plus 21 context verdicts per shell.
+Retain the argument-binding failure and source-review roster repair. Keep raw
+stdout/stderr and structured command records under .lake/v1-guards. Certify the
+final evidence commit separately; source-bound results do not certify future
+runs. Preserve every original frozen V1 matrix and the new requirement text.
+
+Alternatives rejected. Reporting only a passing aggregate count would lose
+which negative and positive controls ran. Repeating the full production suites
+for changes confined to evidence prose would not validate a changed consumer;
+the scoped claim, design, whitespace, scope and clean-state checks apply to
+this evidence commit instead.
+
+Consequences. The worker evidence is reviewable and reproducible without a
+claim of coordinator acceptance, release or native runtime performance.
