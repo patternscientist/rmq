@@ -12,29 +12,66 @@ $ErrorActionPreference='Stop'
 $root=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../../../..'))
 $utf8=[Text.UTF8Encoding]::new($false,$true)
 if(-not $PSBoundParameters.ContainsKey('RegistryPath')){$RegistryPath=Join-Path $PSScriptRoot 'CONTROL_REGISTRY.json'}
-. (Join-Path $PSScriptRoot 'runtime_profile.ps1')
-$runtime=Assert-LifecycleRepairRuntime $Shell $Profile
+$onlyCaseBound=$PSBoundParameters.ContainsKey('OnlyCase')
 $frozenPath=Join-Path $PSScriptRoot 'CONTROL_REGISTRY.frozen.json'
 $frozenHash='385c9bc95ac09b3cc046a7049e954cdf19361330c31f99bd83c9da0c822423f2'
-if((Get-FileHash -LiteralPath $frozenPath).Hash.ToLowerInvariant() -cne $frozenHash){throw 'L1R1-REGISTRY: frozen registry identity changed'}
-$frozen=$utf8.GetString([IO.File]::ReadAllBytes($frozenPath))|ConvertFrom-Json
-$bytes=[IO.File]::ReadAllBytes($RegistryPath)
-$registry=$utf8.GetString($bytes)|ConvertFrom-Json
-if(@($registry.cases).Count -ne @($frozen.cases).Count){throw 'L1R1-REGISTRY: exact count mismatch'}
-for($i=0;$i -lt @($frozen.cases).Count;$i++) {
-  if($registry.cases[$i].id -cne $frozen.cases[$i].id){throw 'L1R1-REGISTRY: missing duplicate unknown or reordered ID'}
+
+function Get-L1R1Sha256([byte[]]$Bytes){
+  $algorithm=[Security.Cryptography.SHA256]::Create()
+  try{return ([BitConverter]::ToString($algorithm.ComputeHash($Bytes))).Replace('-','').ToLowerInvariant()}
+  finally{$algorithm.Dispose()}
 }
-if([Convert]::ToBase64String($bytes) -cne [Convert]::ToBase64String([IO.File]::ReadAllBytes($frozenPath))){throw 'L1R1-REGISTRY: exact mapping bytes mismatch'}
-foreach($component in $frozen.components) {
-  if((Get-FileHash -LiteralPath (Join-Path $PSScriptRoot $component.path)).Hash.ToLowerInvariant() -cne $component.sha256){throw 'L1R1-REGISTRY: component mapping identity changed'}
+function Test-L1R1TextIdentity([byte[]]$Bytes,[string]$Expected){
+  $normalized=$utf8.GetBytes($utf8.GetString($Bytes).Replace("`r`n","`n"))
+  return (Get-L1R1Sha256 $Bytes) -ceq $Expected -or (Get-L1R1Sha256 $normalized) -ceq $Expected
 }
-$selected=@($registry.cases|Where-Object {$_.profiles -ccontains $Profile})
-if($PSBoundParameters.ContainsKey('OnlyCase')) {
-  if([string]::IsNullOrWhiteSpace($OnlyCase)){throw 'L1R1-SELECTOR: explicitly empty selector'}
-  $selected=@($selected|Where-Object {$_.id -ceq $OnlyCase})
-  if($selected.Count -ne 1){throw 'L1R1-SELECTOR: unknown or unavailable exact ID'}
+function Get-L1R1Selection([object]$Frozen) {
+  $chosen=@($Frozen.cases|Where-Object {$_.profiles -ccontains $Profile})
+  if($onlyCaseBound) {
+    $chosen=@($chosen|Where-Object {$_.id -ceq $OnlyCase})
+    if($chosen.Count -ne 1){throw 'L1R1-SELECTOR: unknown or unavailable exact ID'}
+  }
+  return $chosen
 }
-if($ProbeOnly){Write-Output ('L1R1 SELECT '+($selected.id -join ','));exit 0}
+
+function Get-L1R1RegistryState([byte[]]$FrozenBytes,[object]$Frozen,[object[]]$Chosen) {
+  $bytes=[IO.File]::ReadAllBytes($RegistryPath)
+  $registry=$utf8.GetString($bytes)|ConvertFrom-Json
+  if(@($registry.cases).Count -ne @($Frozen.cases).Count){throw 'L1R1-REGISTRY: exact count mismatch'}
+  for($i=0;$i -lt @($Frozen.cases).Count;$i++) {
+    if($registry.cases[$i].id -cne $Frozen.cases[$i].id){throw 'L1R1-REGISTRY: missing duplicate unknown or reordered ID'}
+  }
+  if([Convert]::ToBase64String($bytes) -cne [Convert]::ToBase64String($FrozenBytes)){throw 'L1R1-REGISTRY: exact mapping bytes mismatch'}
+  foreach($component in $Frozen.components) {
+    $componentBytes=[IO.File]::ReadAllBytes((Join-Path $PSScriptRoot $component.path))
+    if(-not (Test-L1R1TextIdentity $componentBytes $component.sha256)){throw 'L1R1-REGISTRY: component mapping identity changed'}
+  }
+  return [pscustomobject]@{registry=$registry;selected=$Chosen}
+}
+
+. (Join-Path $PSScriptRoot 'runtime_profile.ps1')
+$runtime=Assert-LifecycleRepairRuntime $Shell $Profile
+if($onlyCaseBound -and [string]::IsNullOrWhiteSpace($OnlyCase)){throw 'L1R1-SELECTOR: explicitly empty selector'}
+$frozenBytes=$null;$frozen=$null;$frozenReferenceError=$null;$selected=@()
+try{$frozenBytes=[IO.File]::ReadAllBytes($frozenPath)}catch{$frozenReferenceError=$_.Exception.Message}
+if($null -ne $frozenBytes){
+  try{$frozen=$utf8.GetString($frozenBytes)|ConvertFrom-Json}catch{$frozenReferenceError=$_.Exception.Message}
+}
+if($null -ne $frozen -and $null -eq $frozenReferenceError){
+  if(-not (Test-L1R1TextIdentity $frozenBytes $frozenHash)){
+    $frozenReferenceError='L1R1-REGISTRY: frozen registry identity changed'
+  }else{
+    # Only the identity-verified canonical mapping may decide a selector at the
+    # pre-root command boundary. Structurally valid drift is durable below.
+    $selected=@(Get-L1R1Selection $frozen)
+  }
+}
+if($ProbeOnly){
+  if($null -ne $frozenReferenceError){throw $frozenReferenceError}
+  $registryState=Get-L1R1RegistryState $frozenBytes $frozen @($selected)
+  Write-Output ('L1R1 SELECT '+($registryState.selected.id -join ','))
+  exit 0
+}
 if([string]::IsNullOrWhiteSpace($EvidenceRoot)){$EvidenceRoot=Join-Path $root ('.lake/repair-r1/controls-'+$Profile+'-'+[Guid]::NewGuid().ToString('N'))}
 $evidence=[IO.Path]::GetFullPath($EvidenceRoot)
 $allowed=[IO.Path]::GetFullPath((Join-Path $root '.lake')).TrimEnd('\','/')+[IO.Path]::DirectorySeparatorChar
@@ -58,7 +95,16 @@ $cleanupErrors=[Collections.Generic.List[string]]::new()
 $pinChecks=[Collections.Generic.List[object]]::new()
 $caseSlotChecks=[Collections.Generic.List[object]]::new()
 $durableFailed=$false
+$registry=$null
 try {
+  # V1 REQ-EH3: a missing/drifted frozen reference, active registry, or
+  # registered component fails only after the owned root exists and therefore
+  # passes through this finally. Runtime and parseable exact-selector rejection
+  # retain the historical pre-root command boundary, as does ProbeOnly.
+  if($null -ne $frozenReferenceError){throw $frozenReferenceError}
+  $registryState=Get-L1R1RegistryState $frozenBytes $frozen @($selected)
+  $registry=$registryState.registry
+  $selected=@($registryState.selected)
   foreach($path in $pinPaths){$pins[$path]=(Get-FileHash -LiteralPath (Join-Path $root $path)).Hash}
   . (Join-Path $root 'scripts/owned_process_tree.ps1')
   foreach($case in $selected) {
@@ -140,7 +186,7 @@ finally {
     caseSlotChecks=@($caseSlotChecks.ToArray())}
   try {
     [IO.File]::WriteAllText((Join-Path $evidence 'summary.json'),([ordered]@{passed=$passed;profile=$Profile;shell=$Shell;runtime=$runtime;
-      shellSha256=$shellHash;registrySha256=$frozenHash;selected=@($selected.id);results=@($results.ToArray());entrySourcePins=$pins;
+      shellSha256=$shellHash;registrySha256=$frozenHash;selected=@($selected|ForEach-Object {$_.id});results=@($results.ToArray());entrySourcePins=$pins;
       finalization=$finalization;
       streamLimit='Inherited helper returned nonempty lines; overflow/exception may prevent output recovery.'}|ConvertTo-Json -Depth 40),$utf8)
   } catch {$durableFailed=$true;$passed=$false;[Console]::Error.WriteLine('L1R1-SUMMARY: durable summary write failed: '+$_.Exception.Message)}

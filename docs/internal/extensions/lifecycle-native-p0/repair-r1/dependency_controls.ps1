@@ -20,6 +20,7 @@ $stageError=$null;$stageRecord=$null;$completed=$false
 $integrityErrors=[Collections.Generic.List[string]]::new()
 $cleanupErrors=[Collections.Generic.List[string]]::new()
 $pinChecks=[Collections.Generic.List[object]]::new()
+$finalPins=[ordered]@{}
 $fixtureCheck=$null
 $durableFailed=$false
 try {
@@ -102,6 +103,8 @@ finally {
       $final=Get-LNRawPin $pin.path
       if($final.sha256 -cne $pin.sha256 -or $final.bytes -ne $pin.bytes){$status='changed';$integrityErrors.Add('INTEGRITY: changed captured pin: '+$pin.path)}
     } catch {$status='unreadable-final';$integrityErrors.Add($_.Exception.Message)}
+    $finalPins[$pin.path]=if($null -ne $final){[ordered]@{path=$final.path;bytes=$final.bytes;sha256=$final.sha256;state=$status}}
+      else{[ordered]@{path=$pin.path;bytes=$null;sha256=$null;state='unreadable-final'}}
     $pinChecks.Add([ordered]@{path=$pin.path;entrySha256=$pin.sha256;finalSha256=$(if($null -ne $final){$final.sha256}else{$null});status=$status})
   }
   if(@($inputPins|Where-Object {$_.path -ieq [IO.Path]::GetFullPath($resultsInput)}).Count -eq 0){
@@ -118,7 +121,12 @@ finally {
     integrityErrors=@($integrityErrors.ToArray());cleanupErrors=@($cleanupErrors.ToArray());pinChecks=@($pinChecks.ToArray())
     fixtureCheck=$fixtureCheck;entryPinCount=($captured.Count+$inputPins.Count);verifiedPinCount=@($pinChecks|Where-Object {$_.status -ceq 'verified'}).Count}
   try {
-    $record=@{closure=$closure;pins=$pins;oldSummary=$oldPin;oldMissing=$missing;controls=@($results.ToArray());
+    # V1 REQ-EH2: entry* keys retain the entry snapshots. The unprefixed keys
+    # are reconstructed from the same final reads recorded by pinChecks; an
+    # unreadable final state is explicit instead of silently presenting entry.
+    $finalClosurePins=@(foreach($pin in @($pins)){$finalPins[$pin.path]})
+    $finalOldSummary=if($null -ne $oldPin){$finalPins[$oldPin.path]}else{$null}
+    $record=@{closure=$closure;entryPins=$pins;pins=$finalClosurePins;entryOldSummary=$oldPin;oldSummary=$finalOldSummary;oldMissing=$missing;controls=@($results.ToArray());
       installedToolsUnchanged=($integrityErrors.Count -eq 0 -and $captured.Count -gt 0);fixtureRestored=($null -ne $fixtureCheck -and $fixtureCheck.success);
       finalization=$finalization}
     [IO.File]::WriteAllText((Join-Path $OutputRoot 'RESULTS.json'),($record|ConvertTo-Json -Depth 30),$utf8)

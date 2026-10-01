@@ -18,14 +18,14 @@ param(
 # bytes of the audited candidate and checks the predicted base outcome; any other
 # ref runs that commit's harness bytes and requires every control to pass.
 #
-# LIFE-1-R4 versioning. The runner accepts exactly two pinned registries: the R3
+# LIFE-1-R4/V1 versioning. The runner accepts exactly three pinned registries: the R3
 # v1 registry (repair-r3/FAILURE_CONTROL_REGISTRY.json, 47 controls, base
 # eb8e4f25; still the default and replayable unchanged) and the R4 v2 registry
 # (repair-r4/FAILURE_CONTROL_REGISTRY.json, the 47 R3 controls plus 13 R4
-# controls, base d27ffa34), chosen by the registry's schema and version and
-# pinned by normalized SHA-256. The R4 predicate fields are optional, so v1
-# controls are evaluated as before, except that the pin-coverage predicate is
-# the stronger repair-r4/predicates.ps1 Test-R4PinCoverage for every control.
+# controls, base d27ffa34). V1 v3 keeps the same 60 IDs/mappings and adds the
+# independent ordered pin rosters consumed by Test-R4PinCoverage. Registry
+# generation is chosen by schema/version and pinned by normalized SHA-256; v1
+# and v2 remain replayable from their frozen bytes.
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 $utf8=[Text.UTF8Encoding]::new($false,$true)
@@ -41,6 +41,9 @@ $registryVersions=@{
     base='eb8e4f250ee13eaf378f4a42028ce32e7cf0b94a';ids=$r3Ids}
   2=@{schema='life1-r4-failure-controls-v2';sha='cf5ef090543773ef0a4fa473164e56633fabeef140301aad737bb2a7a3226dbc'
     base='d27ffa341f4ed8ceccc46817455eb26c73b319a1'
+    ids=$r3Ids+@('K1-F','K2-F','K1-T','K2-T','K1-W','K2-W','LV-W','IC-U','LV-E','IC-L','HS-L','K2-G','HS-G')}
+  3=@{schema='life1-v1-evidence-failure-controls-v3';sha='68e21990d3d30b0f5c2c6f06ca8ec671f45da49ad4d451bd34846b6dde2b805c'
+    base='ee44f04a561f2194b3713f071c26b6faf9ba7fab'
     ids=$r3Ids+@('K1-F','K2-F','K1-T','K2-T','K1-W','K2-W','LV-W','IC-U','LV-E','IC-L','HS-L','K2-G','HS-G')}
 }
 $r4Dir=Join-Path $repo 'docs/internal/extensions/lifecycle1/repair-r4'
@@ -68,7 +71,7 @@ if(-not $PSBoundParameters.ContainsKey('RegistryPath')){$RegistryPath=Join-Path 
 $registryBytes=[IO.File]::ReadAllBytes($RegistryPath)
 $registry=$utf8.GetString($registryBytes)|ConvertFrom-Json
 $registryVersion=$null
-foreach($k in @(1,2)){if($registry.version -eq $k -and $registry.schema -ceq $registryVersions[$k].schema){$registryVersion=$k}}
+foreach($k in @(1,2,3)){if($registry.version -eq $k -and $registry.schema -ceq $registryVersions[$k].schema){$registryVersion=$k}}
 if($null -eq $registryVersion){throw 'R3-REGISTRY: unsupported registry version'}
 $expectedIds=$registryVersions[$registryVersion].ids
 $registryNormalizedSha256=$registryVersions[$registryVersion].sha
@@ -81,6 +84,30 @@ foreach($id in $expectedIds){if(-not $seen.Contains($id)){throw ('R3-REGISTRY: m
 foreach($id in $ids){if($expectedIds -cnotcontains $id){throw ('R3-REGISTRY: unknown ID '+$id)}}
 if(($ids -join ',') -cne ($expectedIds -join ',')){throw 'R3-REGISTRY: reordered IDs'}
 if((Get-R3NormalizedSha256 $registryBytes) -cne $registryNormalizedSha256){throw 'R3-REGISTRY: registry bytes differ from the pinned version'}
+if($registryVersion -eq 3){
+  $rosterProp=$registry.PSObject.Properties['pinRosters']
+  if($null -eq $rosterProp){throw 'R3-REGISTRY: v3 pin rosters absent'}
+  $rosterKeys=@($rosterProp.Value.PSObject.Properties|ForEach-Object {$_.Name})
+  $harnessKeys=@($registry.harnessKeys.PSObject.Properties|ForEach-Object {$_.Name})
+  if(($rosterKeys -join ',') -cne ($harnessKeys -join ',')){throw 'R3-REGISTRY: v3 pin roster keys differ from harness keys'}
+  foreach($control in $registry.controls){
+    $roster=$rosterProp.Value.PSObject.Properties[[string]$control.harness]
+    if($null -eq $roster){throw ('R3-REGISTRY: no pin roster for '+$control.id)}
+    $kinds=$roster.Value.PSObject.Properties['identityKinds']
+    if($null -ne $kinds){
+      $baseRows=@($roster.Value.rows)
+      foreach($kind in $kinds.Value.PSObject.Properties){
+        $kindIndex=0
+        if(-not [int]::TryParse($kind.Name,[ref]$kindIndex) -or $kindIndex -lt 0 -or $kindIndex -ge $baseRows.Count -or [string]$kind.Value -cne 'git-sha1'){
+          throw ('R3-REGISTRY: invalid identity kind '+$kind.Name+' for '+$control.harness)
+        }
+      }
+    }
+    $stage=[string](Get-R4Field $control.expect 'pinStage')
+    if([string]::IsNullOrWhiteSpace($stage)){$stage='complete'}
+    if($null -eq $roster.Value.stages.PSObject.Properties[$stage]){throw ('R3-REGISTRY: unknown pin stage '+$stage+' for '+$control.id)}
+  }
+}
 $available=@($registry.controls|Where-Object {@($_.profiles) -ccontains $Profile})
 if($PSBoundParameters.ContainsKey('OnlyControl')){
   if($null -eq $OnlyControl -or $OnlyControl.Count -eq 0){throw 'R3-SELECTOR: explicitly empty selector'}
@@ -538,10 +565,16 @@ if($LASTEXITCODE){throw 'git commit failed'}
         $cleanupStrings=@(@($fin.cleanupErrors)|Where-Object {$_ -is [string]})
         if($null -ne $cleanupWanted){$structural.cleanupEmpty=Test-R3Groups @($cleanupWanted) $cleanupStrings}
         else{$structural.cleanupEmpty=($cleanupStrings.Count -eq 0)}
-        # LIFE-1-R4: every pin captured before the failure is re-verified, the
-        # captured count equals entryPinCount and, where the registry states it,
-        # the independent count captured before an injected setup failure.
-        $coverage=Test-R4PinCoverage $fin (Get-R4Field $expect 'capturedPins') ($isP -or [string](Get-R4Field $expect 'pins') -ceq 'all-verified')
+        # V1: v3 checks the independent ordered harness roster and named capture
+        # stage for every control. v1/v2 keep their historical count predicate.
+        $pinRoster=$null;$pinStage=$null;$legacyCaptured=Get-R4Field $expect 'capturedPins'
+        if($registryVersion -eq 3){
+          $pinRoster=$registry.pinRosters.PSObject.Properties[[string]$control.harness].Value
+          $pinStage=[string](Get-R4Field $expect 'pinStage')
+          if([string]::IsNullOrWhiteSpace($pinStage)){$pinStage='complete'}
+          $legacyCaptured=$null
+        }
+        $coverage=Test-R4PinCoverage $fin $legacyCaptured ($isP -or [string](Get-R4Field $expect 'pins') -ceq 'all-verified') $pinRoster $pinStage
         $structural.pinsVerified=$coverage.ok
         $structural.pinCoverage=$coverage.reason
       }

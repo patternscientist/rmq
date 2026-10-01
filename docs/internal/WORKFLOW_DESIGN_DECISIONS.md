@@ -15717,3 +15717,149 @@ bit. Retain existing round-trip, clean-tree, overwrite, tamper and traversal
 controls. The final real ZIP also receives an independent Git-blob/manifest
 comparison and the advertised unpacked smoke commands. No release tag, push or
 publication is involved.
+
+
+## WDD-20261001-V1-EVIDENCE-01 - Version exact lifecycle pin rosters and type the Git identity
+
+Date: 2026-10-01. Status: V1-EVIDENCE worker decision; coordinator acceptance pending.
+
+Context. The R4 pin predicate treated every non-null `entrySha256` as captured
+and compared only receipt-derived counts. A coordinated dropped row could
+therefore agree with its own count, empty/non-hex values counted, and the same
+legacy field represented both file SHA-256 and K2's `git rev-parse HEAD`
+identity. The 60 historical IDs and mappings must remain unchanged, and the R3
+v1 and R4 v2 registries must remain replayable.
+
+Decision. Add a pinned v3 registry with the same ordered 60 controls and an
+independently written ordered roster for each of the nine harnesses. Each
+control names a capture stage; the production failure-control runner passes
+that roster and stage to `Test-R4PinCoverage`. File captures require exactly 64
+hexadecimal SHA-256 digits. Under the coordinator-approved amendment, the K2
+roster types only index 16, literal path `git:HEAD`, as a 40-hex Git SHA-1.
+Historical v1/v2 callers have no type metadata, so only that same literal
+pseudo-path retains the 40-hex rule; every other legacy row remains a 64-hex
+file hash. Keep versions 1 and 2 pinned and accepted by their existing schema,
+hash and ID lists.
+
+Controls. `repair-r4/aux_controls.ps1` and the V1 focused runner check intact
+rosters, a missing capture, coordinated count, empty and non-hex file hashes,
+wrong order, typed Git40 acceptance, typed Git64 rejection, file40 rejection,
+legacy Git40 acceptance, and legacy file40 rejection. Registry mutations and
+selector probes check exact 60-ID loading. This decision covers
+`repair-r4/predicates.ps1`, `repair-r4/aux_controls.ps1`,
+`repair-r4/FAILURE_CONTROL_REGISTRY.json`, and
+`repair-r3/failure_controls.ps1`.
+
+Alternatives rejected. Copying `entryPinCount` into the registry would repeat
+the source under test. Requiring 64 hex for the Git commit would misclassify a
+Git SHA-1 as a file digest. Allowing arbitrary 40-hex paths would weaken file
+identity validation.
+
+Consequences. The predicate now proves exact ordered path, capture-stage and
+identity-width coverage for v3 while preserving historical registry semantics.
+The final 60-control pair is deliberately pending at the source checkpoint.
+
+
+## WDD-20261001-V1-EVIDENCE-02 - Separate native dependency entry and final pin labels
+
+Date: 2026-10-01. Status: V1-EVIDENCE worker decision; coordinator acceptance pending.
+
+Context. `dependency_controls.ps1` exposed entry snapshots under plain `pins`
+and `oldSummary`, although its finalization already re-read the same files.
+The current stream checker ignores those keys, while the dormant R2 parser
+walks the plain keys as current-file pins.
+
+Decision. Preserve entry snapshots additively under `entryPins` and
+`entryOldSummary`. Construct plain `pins` and `oldSummary` from the exact final
+reads used for `finalization.pinChecks`, adding an explicit `state`; represent
+an unreadable final with null bytes/hash and `state=unreadable-final`. The V1
+focused runner copies the exact 11-node closure, mutates only the copied
+`lean.exe` after entry capture, verifies the entry/final distinction and
+failure verdict, and restores the copied bytes in `finally`.
+
+Alternatives rejected. Renaming or deleting the plain keys would break dormant
+historical readers. Mutating the installed toolchain would violate fixture
+ownership. Treating source generation or cached reports as a test would not
+exercise the changed producer.
+
+Consequences. Intact runs remain compatible; changed final state can no longer
+be presented under an unqualified key as the entry value. This decision covers
+`lifecycle-native-p0/repair-r1/dependency_controls.ps1` and the EH2 portion of
+`docs/internal/v1/evidence/evidence_hardening_controls.ps1`.
+
+
+## WDD-20261001-V1-EVIDENCE-03 - Make registry and component identity failures durable after trusted argument parsing
+
+Date: 2026-10-01. Status: V1-EVIDENCE worker decision; coordinator acceptance pending.
+
+Context. R1 `run_controls.ps1` and `finalizer_control.ps1` validated registry
+and component identities before creating an owned evidence root. Moving all
+validation after root creation would change legitimate exact-selector and
+`SourceVariant` argument rejection. Parsing an untrusted drifted mapping before
+root creation also created a subtler escape: syntactically valid `{}` or a
+changed mapping could be dereferenced before a durable record existed.
+
+Decision. Validate runtime, explicit empty arguments, and hard-coded known case
+names before root creation. A pre-root mapping may decide an exact selector or
+`SourceVariant` only after its raw or CRLF-to-LF-normalized SHA-256 equals the
+canonical pinned identity and its expected shape holds. Save missing, parse,
+shape and identity errors, create the validated owned `.lake` root, then throw
+the saved error inside the existing `try/finally`. Freshly read active
+registry and component failures also remain inside that durable boundary.
+`ProbeOnly` retains its documented no-evidence command behavior. Normalize
+text identity only for pinned repository text; raw captured pins remain raw.
+
+Controls. On both shells the focused runner uses a valid known selector with a
+missing frozen registry and with syntactically valid `{}` drift, plus active
+registry and component missing/drift. The finalizer receives missing and `{}`
+registry inputs plus helper missing/drift. Each ordinary path exits nonzero and
+writes exactly one failing child record; an identity-verified canonical
+`SourceVariant` mismatch still rejects before creating a root. The exact
+12-case `registry_controls.ps1` suite passes on both shells.
+
+Alternatives rejected. Selecting from any parseable drifted mapping would let
+untrusted bytes control pre-root behavior. Duplicating the case registry in a
+new adapter would create another identity surface when the pinned text can be
+updated compatibly. Treating the parent record as sufficient would leave the
+assigned child-durability property unmet.
+
+Consequences. Registry/component failures are durable on the supported V1
+path without changing legitimate canonical argument semantics. This decision
+covers `repair-r1/run_controls.ps1`, `repair-r1/finalizer_control.ps1`,
+`repair-r1/registry_controls.ps1`, and the EH3 focused controls.
+
+
+## WDD-20261001-V1-EVIDENCE-04 - Classify historical readers and commit a source-bound evidence checkpoint
+
+Date: 2026-10-01. Status: V1-EVIDENCE worker decision; coordinator acceptance pending.
+
+Context. R1/R2 collectors read the obsolete `sources` key and require frozen
+commits, host paths, evidence roots and executable identities. Native dormant
+parsers read plain dependency pin labels. Editing those round-pinned scripts or
+calling their cached outputs current would erase their historical meaning. The
+coordinator authorized a two-commit order so stable source can integrate while
+the final 60-control pair runs separately; the checkpoint must state what is
+still pending.
+
+Decision. Add `HISTORICAL_VERIFIERS.md` with exact old-key and source anchors,
+frozen prerequisites, current-consumer trace, output hashes and gate non-use.
+Commit exact focused and registry aggregate copies with a command ledger that
+classifies them as fixture host/runtime evidence and records superseded runs
+without relabelling them. Update `V1_EVIDENCE_MATRIX.md` only in evidence and
+worker-disposition cells, plus the explicit coordinator-approved identity-type
+amendment; retain the frozen requirement text byte-for-byte. Leave the final
+60-control pair, candidate auxiliary run and final policy checks open at this
+checkpoint.
+
+Alternatives rejected. Renaming `sources` to `entrySources` in historical
+collectors would still fail their freeze/root/executable requirements and
+would create a misleading new product. Omitting aggregate copies would leave
+only ignored `.lake` paths. Marking the source checkpoint complete would
+conflate a stable implementation with final execution evidence.
+
+Consequences. The checkpoint is independently reviewable and safe to
+integrate as source, while acceptance remains with the coordinator. This
+decision covers `docs/internal/extensions/lifecycle1/HISTORICAL_VERIFIERS.md`,
+`docs/internal/v1/V1_EVIDENCE_MATRIX.md`,
+`docs/internal/v1/evidence/evidence_hardening_controls.ps1`, the four committed
+checkpoint aggregates, and `docs/internal/v1/evidence/COMMAND_LOG.md`.

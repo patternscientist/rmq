@@ -1,7 +1,7 @@
 {
-  "schema": "life1-r4-failure-controls-v2",
-  "version": 2,
-  "baseRef": "d27ffa341f4ed8ceccc46817455eb26c73b319a1",
+  "schema": "life1-v1-evidence-failure-controls-v3",
+  "version": 3,
+  "baseRef": "ee44f04a561f2194b3713f071c26b6faf9ba7fab",
   "harnessKeys": {
     "RC": "docs/internal/extensions/lifecycle1/repair-r1/run_controls.ps1",
     "FC": "docs/internal/extensions/lifecycle1/repair-r1/finalizer_control.ps1",
@@ -12,6 +12,189 @@
     "IC": "docs/internal/extensions/lifecycle-native-p0/repair-r1/integrity_controls.ps1",
     "DP": "docs/internal/extensions/lifecycle-native-p0/repair-r1/dependency_controls.ps1",
     "HS": "docs/internal/extensions/lifecycle-native-p0/repair-r2/harness_stream_controls.ps1"
+  },
+  "pinRosters": {
+    "RC": {
+      "rows": [
+        "scripts/lifecycle_validator.ps1",
+        "scripts/lifecycle_validator_environment.ps1",
+        "scripts/lifecycle_dependency_replay.ps1",
+        "scripts/owned_process_tree.ps1",
+        "scripts/lifecycle_dependency_cases.json",
+        ".lake/build/bin/rmq_lifecycle_validate.exe",
+        "docs/internal/extensions/lifecycle1/repair-r1/run_controls.ps1",
+        "docs/internal/extensions/lifecycle1/repair-r1/runtime_profile.ps1",
+        "docs/internal/extensions/lifecycle1/repair-r1/selector_child.ps1",
+        "docs/internal/extensions/lifecycle1/repair-r1/dependency_child.ps1",
+        "docs/internal/extensions/lifecycle1/repair-r1/deadline_control.ps1",
+        "docs/internal/extensions/lifecycle1/repair-r1/finalizer_control.ps1"
+      ],
+      "stages": {
+        "complete": { "capturedIndexes": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
+        "setup-exe-missing": { "capturedIndexes": [0, 1, 2, 3, 4] }
+      }
+    },
+    "FC": {
+      "rows": [
+        "suffix:/docs/internal/extensions/lifecycle1/repair-r1/finalizer_cases.json",
+        "suffix:/docs/internal/extensions/lifecycle1/repair-r1/finalizer_control.ps1",
+        "suffix:/scripts/owned_process_tree.ps1",
+        "suffix:/scripts/lifecycle_dependency_replay.ps1"
+      ],
+      "stages": {
+        "complete": { "capturedIndexes": [0, 1, 2, 3] },
+        "setup-helper-missing": { "capturedIndexes": [0, 1] }
+      }
+    },
+    "K1": {
+      "rows": [
+        "scripts/lifecycle_validator.ps1",
+        "scripts/lifecycle_validator_environment.ps1",
+        "scripts/lifecycle_dependency_replay.ps1",
+        "scripts/owned_process_tree.ps1",
+        "scripts/lifecycle_dependency_cases.json",
+        "RMQ/Validation/PackedLifecycle.lean",
+        "RMQ/Validation/LifecycleContract.lean",
+        "scripts/lifecycle_provenance_contract.lean",
+        "lean-toolchain",
+        "lakefile.toml",
+        ".lake/build/bin/rmq_lifecycle_validate.exe"
+      ],
+      "stages": {
+        "complete": { "capturedIndexes": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] },
+        "setup-helper-missing": { "capturedIndexes": [0, 1, 2, 4, 5, 6, 7, 8, 9] }
+      }
+    },
+    "K2": {
+      "rows": [
+        "scripts/lifecycle_validator.ps1",
+        "scripts/lifecycle_validator_environment.ps1",
+        "scripts/lifecycle_dependency_replay.ps1",
+        "scripts/owned_process_tree.ps1",
+        "scripts/lifecycle_dependency_cases.json",
+        "RMQ/Validation/PackedLifecycle.lean",
+        "RMQ/Validation/LifecycleContract.lean",
+        "scripts/lifecycle_provenance_contract.lean",
+        "lean-toolchain",
+        "lakefile.toml",
+        ".lake/build/bin/rmq_lifecycle_validate.exe",
+        "suffix:/docs/internal/extensions/lifecycle1/repair-r2/run_check.ps1",
+        "suffix:/r3-spec.json",
+        "regex:(?i)^[a-z]:/.+/(?:pwsh|powershell)\\.exe$",
+        "regex:(?i)^[a-z]:/.+/(?:pwsh|powershell)\\.exe$",
+        "suffix:/r3-stage.ps1",
+        "git:HEAD"
+      ],
+      "identityKinds": {
+        "16": "git-sha1"
+      },
+      "stages": {
+        "complete": { "capturedIndexes": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16] },
+        "setup-helper-missing": {
+          "rows": [
+            "scripts/lifecycle_validator.ps1",
+            "scripts/lifecycle_validator_environment.ps1",
+            "scripts/lifecycle_dependency_replay.ps1",
+            "scripts/owned_process_tree.ps1",
+            "scripts/lifecycle_dependency_cases.json",
+            "RMQ/Validation/PackedLifecycle.lean",
+            "RMQ/Validation/LifecycleContract.lean",
+            "scripts/lifecycle_provenance_contract.lean",
+            "lean-toolchain",
+            "lakefile.toml",
+            ".lake/build/bin/rmq_lifecycle_validate.exe"
+          ],
+          "capturedIndexes": []
+        }
+      }
+    },
+    "DC": {
+      "rows": [
+        "suffix:/scripts/lifecycle_dependency_replay.ps1",
+        "suffix:/scripts/lifecycle_dependency_cases.json"
+      ],
+      "stages": {
+        "complete": { "capturedIndexes": [0, 1] },
+        "setup-production-missing": { "capturedIndexes": [] }
+      }
+    },
+    "LV": {
+      "rows": [
+        "lakefile.toml",
+        "RMQ/Validation/PackedLifecycle.lean",
+        "scripts/lifecycle_validator.ps1",
+        "scripts/lifecycle_validator_environment.ps1",
+        "scripts/owned_process_tree.ps1",
+        "RMQ/Core/WordRAM/Lifecycle/Executable.lean",
+        "RMQ/Core/WordRAM/Lifecycle/Controls.lean",
+        "RMQ/Core/WordRAM/Lifecycle/ArrayRun.lean",
+        "RMQ/Core/WordRAM/Lifecycle/Machine.lean",
+        "RMQ/Core/WordRAM/Lifecycle/Program.lean",
+        "RMQ/Core/WordRAM/Lifecycle/Service.lean",
+        ".lake/build/bin/rmq_lifecycle_validate.exe"
+      ],
+      "stages": {
+        "complete": { "capturedIndexes": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
+        "setup-service-missing": { "capturedIndexes": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11] },
+        "setup-exe-missing": { "capturedIndexes": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
+      }
+    },
+    "IC": {
+      "rows": [
+        "scripts/packed_native_lifecycle_storage_replay.ps1",
+        "scripts/packed_native_lifecycle_integrity_check.ps1",
+        "scripts/owned_process_tree.ps1",
+        "scripts/packed_native_lifecycle_stream_check.ps1",
+        "native/packed-rmq/tests/lifecycle_storage_probe.c",
+        "lean-toolchain",
+        "docs/internal/extensions/lifecycle-native-p0/REGISTRY.json"
+      ],
+      "stages": {
+        "complete": { "capturedIndexes": [0, 1, 2, 3, 4, 5, 6] },
+        "setup-probe-missing": { "capturedIndexes": [0, 1, 2, 3] }
+      }
+    },
+    "DP": {
+      "rows": [
+        "suffix:/leanprover--lean4---v4.22.0/bin/lean.exe",
+        "suffix:/leanprover--lean4---v4.22.0/bin/leanc.exe",
+        "suffix:/leanprover--lean4---v4.22.0/bin/clang.exe",
+        "suffix:/leanprover--lean4---v4.22.0/bin/ld.lld.exe",
+        "suffix:/leanprover--lean4---v4.22.0/bin/libleanshared.dll",
+        "suffix:/leanprover--lean4---v4.22.0/bin/libInit_shared.dll",
+        "suffix:/leanprover--lean4---v4.22.0/bin/libclang-cpp.dll",
+        "suffix:/leanprover--lean4---v4.22.0/bin/libLLVM-19.dll",
+        "suffix:/leanprover--lean4---v4.22.0/bin/libc++.dll",
+        "suffix:/leanprover--lean4---v4.22.0/bin/zlib1.dll",
+        "suffix:/leanprover--lean4---v4.22.0/bin/libleanshared_1.dll",
+        "suffix:/docs/internal/extensions/lifecycle-native-p0/RESULTS.json",
+        "regex:(?i)^[a-z]:/.+/\\.lake/lifecycle-native-p0/runs/[0-9a-f]{32}/SUMMARY\\.json$"
+      ],
+      "stages": {
+        "complete": { "capturedIndexes": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] },
+        "setup-results-missing": {
+          "rows": ["suffix:/docs/internal/extensions/lifecycle-native-p0/RESULTS.json"],
+          "capturedIndexes": []
+        }
+      }
+    },
+    "HS": {
+      "rows": [
+        "docs/internal/extensions/lifecycle-native-p0/repair-r2/HARNESS_STREAM_REGISTRY.json",
+        "docs/internal/extensions/lifecycle-native-p0/repair-r1/integrity_controls.ps1",
+        "scripts/packed_native_lifecycle_storage_replay.ps1",
+        "scripts/packed_native_lifecycle_integrity_check.ps1",
+        "scripts/owned_process_tree.ps1",
+        "scripts/packed_native_lifecycle_stream_check.ps1",
+        "native/packed-rmq/tests/lifecycle_storage_probe.c",
+        "lean-toolchain",
+        "docs/internal/extensions/lifecycle-native-p0/REGISTRY.json"
+      ],
+      "stages": {
+        "complete": { "capturedIndexes": [0, 1, 2, 3, 4, 5, 6, 7, 8] },
+        "setup-probe-missing": { "capturedIndexes": [0, 1, 2, 3, 4, 5] }
+      }
+    }
   },
   "shapes": {
     "P": "intact; the harness succeeds with no integrity difference",
@@ -29,7 +212,7 @@
     "L": "a labelled entry pin changes; entry values appear only under entry* keys and the plain key holds the post-run pin",
     "G": "a git double fails or hangs during finalization; the owned git call records exit, stderr or timeout as an integrity error"
   },
-  "textSemantics": "Missing-file witnesses use the substring find, common to the .NET and PowerShell 5.1/7 not-found messages. Each stage/integrity entry is a list of groups; every group must be matched by one string value of the durable result (all substrings of the group inside that single value). Values under a pinChecks property are excluded. stageValue is an alternative stage witness: a property with that name and numeric value anywhere in the durable result. R4 fields: expect.verdict is the exact finalization.verdict; expect.exitCode the exact process exit; expect.values exact typed values (repair-r4/predicates.ps1 Test-R4Values); expect.cleanup groups over the durable values and, structurally, over finalization.cleanupErrors; expect.labels entry-label predicates (Test-R4Labels); expect.durableAbsent/stderr/absentFiles/stdoutAbsent the durable-write-failure surface; expect.capturedPins the independent count of pins captured before the injected setup failure (Test-R4PinCoverage); expect.pins=all-verified requires every captured pin verified. Control fields: faultTarget and removePath override the recipe target/remove path; gitDouble prepends the R4 git double to PATH. baseExpectation timeout means the base harness does not finish before the control deadline.",
+  "textSemantics": "Missing-file witnesses use the substring find, common to the .NET and PowerShell 5.1/7 not-found messages. Each stage/integrity entry is a list of groups; every group must be matched by one string value of the durable result (all substrings of the group inside that single value). Values under a pinChecks property are excluded. stageValue is an alternative stage witness: a property with that name and numeric value anywhere in the durable result. V1 fields: pinRosters independently specify each harness's ordered pinCheck identities and expected captured indexes by expect.pinStage; controls without pinStage use complete. Exact rules are case-sensitive repository-relative paths, suffix rules normalize slash direction and compare case-insensitively, and regex rules are anchored identities for host-specific absolute paths. Historical expect.capturedPins values are retained as v2 metadata but v3 coverage is roster-driven. R4 fields: expect.verdict is the exact finalization.verdict; expect.exitCode the exact process exit; expect.values exact typed values (repair-r4/predicates.ps1 Test-R4Values); expect.cleanup groups over the durable values and, structurally, over finalization.cleanupErrors; expect.labels entry-label predicates (Test-R4Labels); expect.durableAbsent/stderr/absentFiles/stdoutAbsent the durable-write-failure surface; expect.pins=all-verified requires every captured pin verified. Control fields: faultTarget and removePath override the recipe target/remove path; gitDouble prepends the R4 git double to PATH. baseExpectation timeout means the base harness does not finish before the control deadline.",
   "controls": [
     {
       "id": "RC-P",
@@ -130,13 +313,14 @@
         "exit": "nonzero",
         "stage": [
           [
-            "rmq_lifecycle_validate.exe",
-            "find"
-          ]
-        ],
-        "stageValue": null,
-        "integrity": null,
-        "capturedPins": 5
+          "rmq_lifecycle_validate.exe",
+          "find"
+        ]
+      ],
+      "stageValue": null,
+      "integrity": null,
+      "capturedPins": 5,
+      "pinStage": "setup-exe-missing"
       },
       "baseExpectation": "accept",
       "rationale": "A pinned file is missing at snapshot time (setup failure).",
@@ -272,13 +456,14 @@
         "exit": "nonzero",
         "stage": [
           [
-            "owned_process_tree.ps1",
-            "find"
-          ]
-        ],
-        "stageValue": null,
-        "integrity": null,
-        "capturedPins": 2
+          "owned_process_tree.ps1",
+          "find"
+        ]
+      ],
+      "stageValue": null,
+      "integrity": null,
+      "capturedPins": 2,
+      "pinStage": "setup-helper-missing"
       },
       "baseExpectation": "accept",
       "rationale": "A pinned file is missing at snapshot time (setup failure).",
@@ -418,13 +603,14 @@
         "exit": "nonzero",
         "stage": [
           [
-            "owned_process_tree.ps1",
-            "not recognized"
-          ]
-        ],
-        "stageValue": null,
-        "integrity": null,
-        "capturedPins": 9
+          "owned_process_tree.ps1",
+          "not recognized"
+        ]
+      ],
+      "stageValue": null,
+      "integrity": null,
+      "capturedPins": 9,
+      "pinStage": "setup-helper-missing"
       },
       "baseExpectation": "accept",
       "rationale": "A pinned file is missing at snapshot time (setup failure).",
@@ -595,13 +781,14 @@
         "exit": "nonzero",
         "stage": [
           [
-            "owned_process_tree.ps1",
-            "not recognized"
-          ]
-        ],
-        "stageValue": null,
-        "integrity": null,
-        "capturedPins": 0
+          "owned_process_tree.ps1",
+          "not recognized"
+        ]
+      ],
+      "stageValue": null,
+      "integrity": null,
+      "capturedPins": 0,
+      "pinStage": "setup-helper-missing"
       },
       "baseExpectation": "accept",
       "rationale": "A pinned file is missing at snapshot time (setup failure).",
@@ -740,13 +927,14 @@
         "exit": "nonzero",
         "stage": [
           [
-            "lifecycle_dependency_replay.ps1",
-            "find"
-          ]
-        ],
-        "stageValue": null,
-        "integrity": null,
-        "capturedPins": 0
+          "lifecycle_dependency_replay.ps1",
+          "find"
+        ]
+      ],
+      "stageValue": null,
+      "integrity": null,
+      "capturedPins": 0,
+      "pinStage": "setup-production-missing"
       },
       "baseExpectation": "accept",
       "rationale": "A pinned file is missing at snapshot time (setup failure).",
@@ -883,13 +1071,14 @@
         "exit": "nonzero",
         "stage": [
           [
-            "Service.lean",
-            "find"
-          ]
-        ],
-        "stageValue": null,
-        "integrity": null,
-        "capturedPins": 11
+          "Service.lean",
+          "find"
+        ]
+      ],
+      "stageValue": null,
+      "integrity": null,
+      "capturedPins": 11,
+      "pinStage": "setup-service-missing"
       },
       "baseExpectation": "accept",
       "rationale": "A pinned file is missing at snapshot time (setup failure).",
@@ -1033,13 +1222,14 @@
         "exit": "nonzero",
         "stage": [
           [
-            "lifecycle_storage_probe.c",
-            "missing file"
-          ]
-        ],
-        "stageValue": null,
-        "integrity": null,
-        "capturedPins": 4
+          "lifecycle_storage_probe.c",
+          "missing file"
+        ]
+      ],
+      "stageValue": null,
+      "integrity": null,
+      "capturedPins": 4,
+      "pinStage": "setup-probe-missing"
       },
       "baseExpectation": "accept",
       "rationale": "A pinned file is missing at snapshot time (setup failure).",
@@ -1180,13 +1370,14 @@
         "exit": "nonzero",
         "stage": [
           [
-            "RESULTS.json",
-            "missing file"
-          ]
-        ],
-        "stageValue": null,
-        "integrity": null,
-        "capturedPins": 0
+          "RESULTS.json",
+          "missing file"
+        ]
+      ],
+      "stageValue": null,
+      "integrity": null,
+      "capturedPins": 0,
+      "pinStage": "setup-results-missing"
       },
       "baseExpectation": "accept",
       "rationale": "A pinned file is missing at snapshot time (setup failure).",
@@ -1330,7 +1521,8 @@
         ],
         "stageValue": null,
         "integrity": null,
-        "capturedPins": 6
+      "capturedPins": 6,
+      "pinStage": "setup-probe-missing"
       },
       "baseExpectation": "accept",
       "rationale": "A pinned file is missing at snapshot time (setup failure).",
@@ -1688,12 +1880,13 @@
         "exit": "nonzero",
         "stage": [
           [
-            "Missing rmq_lifecycle_validate.exe"
-          ]
-        ],
-        "stageValue": null,
-        "integrity": null,
-        "capturedPins": 11
+          "Missing rmq_lifecycle_validate.exe"
+        ]
+      ],
+      "stageValue": null,
+      "integrity": null,
+      "capturedPins": 11,
+      "pinStage": "setup-exe-missing"
       },
       "baseExpectation": "reject",
       "rationale": "The pinned validator executable is missing: the repaired validator records the unchanged diagnostic in RESULT.json with the other 11 identity pins re-verified (audit P3-3); d27ffa34 throws before its log root.",
