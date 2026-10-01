@@ -2180,3 +2180,24 @@ objects in each conclusion, the complete-capacity summands, and why removing a
 capstone field or weakening the store-agreement premise breaks these clients.
 The source tour and evidence record distinguish those checks from native
 compiler, allocation and FFI assumptions.
+
+
+### V1 source-review follow-up — 2026-10-01
+
+Six additional historical rank/select lemmas now delegate to their exact
+generic counterparts, preserving binder modes, assumptions and theorem names.
+The second unused private lower-bound wrapper is removed; its canonical public
+theorem remains. FAMILY_SUMMARY removes the private inventory entries for both
+deleted helpers. These are proof ownership and documentation changes, not new
+RMQ guarantees.
+
+The optional metadata-prefix cleanup was assessed without changing machine
+code. `Packed/Allocation.lean` already names `metadataWordCount := 174` and
+proves `metadata_length`; the live read/setup/safety chain spells the same
+literal in several checked propositions and instructions. Replacing those
+throughout `Setup`, `PhysicalRead`, `ReadInterface`, `QueryProof`, safety modules
+and the capstone would expand this bounded proof-maintenance patch into a
+machine representation refactor. No wrong offset or failed connection was
+found, so V1 retains those checked literals. Their duplication remains a future
+maintenance concern; no performance or proof-quality improvement is asserted
+from leaving them unchanged.

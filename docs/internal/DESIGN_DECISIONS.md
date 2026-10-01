@@ -13653,3 +13653,17 @@ historical binder or argument order and confirm the direct delegation and its
 downstream client fail to elaborate, then separately verify that source search
 continues to distinguish the canonical lower-bound theorem from private
 inventory.
+
+## DD-20261001-V1-PROOF-INVENTORY — Finish private-helper inventory cleanup
+
+Date: 2026-10-01. Status: candidate integration.
+
+Remove the stale EncodingLowerBound inventory token for the private erase
+helper already deleted by the initial proof leaf. The second proof leaf removes
+the other unused private wrapper's token; retain both canonical LowerBound
+facts. State two private-helper deletions in the paper/source relationship and
+record the actual metadata-prefix assessment in DIGESTION_LOG. The existing
+`metadataWordCount`/`metadata_length` API already constrains the 174-word prefix;
+changing repeated literals across the read/setup/safety/program chain is a
+separate representation refactor with no demonstrated V1 correctness benefit.
+No computational definition, theorem type or cost constant changes here.

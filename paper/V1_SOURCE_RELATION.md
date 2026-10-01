@@ -18,7 +18,7 @@ that narrow paper closure. The declaration-check script adds the three packed
 query names required by the already present paper row; this repairs its coverage.
 
 The V1 proof maintenance additionally reuses existing generic rank/select lemmas,
-removes an unused private helper, and names an exact trace-bind decomposition.
+removes two unused private helpers, and names an exact trace-bind decomposition.
 The public theorem signatures, machine definitions and cost constants remain
 unchanged. The checked client examples consume those existing statements.
 Candidate validation must run the paper checker, declaration inventory, public

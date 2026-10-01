@@ -3374,8 +3374,7 @@ completeness.
   `mem_nodeProducts`, `nodup_nodeProducts`,
   `nodup_flatMap_of_nodup_disjoint`, `mem_splitShapeProducts`,
   `splitShapeProducts_nodup`, `fullCode_eq_of_tail_eq_of_pos`.
-- `RMQ/Core/EncodingLowerBound.lean`: `mem_erase_of_ne_of_mem`,
-  `rightSpine`, `rightSpine_shapeOfSize`,
+- `RMQ/Core/EncodingLowerBound.lean`: `rightSpine`, `rightSpine_shapeOfSize`,
   `shapeOfSize_size`,
   `remyPositions_length`, `remyLeaves_length`, `remyInsert_size`,
   `remyNewLeaf_mem`, `remyRemoveMarkedLeaf_insert`,
