@@ -363,9 +363,42 @@ foreach ($c in $constants) {
 if ($SelfTest) {
   Info '--- self-test: can this guard actually fail? ---'
   $stf = 0
+  $selfTestIds = @{}
   function ST([string]$n, [bool]$ok) {
+    if ($script:selfTestIds.ContainsKey($n)) { $ok = $false }
+    $script:selfTestIds[$n] = $true
     if ($ok) { Info "  SELFTEST PASS $n" } else { Write-Host "CONST-SYNC: SELFTEST FAIL $n"; $script:stf = $script:stf + 1 }
   }
+  # Independent consumer roster: deleting a required surface must not delete
+  # its own test silently. Keep this list separate from the production table.
+  $expectedV1Surfaces = @(
+    '210:docs/V1_GUIDE.md',
+    '210:docs/V1_CLIENTS.md',
+    '427:docs/V1_GUIDE.md',
+    '837572:README.md',
+    '837572:artifact/CLAIMS.md',
+    '837572:docs/PAPER_THEOREM_MAP.md',
+    '837572:docs/V1_GUIDE.md'
+  )
+  $observedV1Surfaces = @(
+    foreach ($c in $constants) {
+      foreach ($entry in $c.surfaces) {
+        if ($c.expected -eq '837572' -or $entry.path -match '^docs/V1_') {
+          $c.expected + ':' + $entry.path
+        }
+      }
+    }
+  )
+  function Test-V1SurfaceRegistry([string[]]$Observed) {
+    return $Observed.Count -eq 7 -and
+      @($Observed | Group-Object | Where-Object Count -ne 1).Count -eq 0 -and
+      ($Observed -join "`n") -ceq ($expectedV1Surfaces -join "`n")
+  }
+  ST 'v1-exact-new-surface-registry' (Test-V1SurfaceRegistry $observedV1Surfaces)
+  ST 'v1-surface-deletion-control-rejected' `
+    (-not (Test-V1SurfaceRegistry @($observedV1Surfaces | Where-Object { $_ -ne '837572:docs/V1_GUIDE.md' })))
+  ST 'v1-surface-duplication-control-rejected' `
+    (-not (Test-V1SurfaceRegistry @($observedV1Surfaces + '837572:docs/V1_GUIDE.md')))
   # extractor really reads Lean, and would see a changed value
   ST 'extracts 210 from Lean' ((Get-LeanValue $constants[0].leanFile $constants[0].leanPat) -eq '210')
   ST 'extracts 427 from Lean' ((Get-LeanValue $constants[1].leanFile $constants[1].leanPat) -eq '427')

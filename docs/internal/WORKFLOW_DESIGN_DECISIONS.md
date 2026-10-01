@@ -16001,3 +16001,25 @@ statements while preserving trace ticks, probes, primitive transitions and
 runtime as separate categories. Finite fixtures do not cover arbitrary prose
 outside the declared claim shapes. The scripts, policy and new guard matrix
 are the owned change; final two-shell evidence remains to be collected.
+
+## WDD-20261001-V1-GUARDS-02 - Pin independent constant consumers before final replay
+
+Date: 2026-10-01. Status: worker repair; coordinator acceptance pending.
+
+Context. Source review found that removing a new constant surface from the
+production table would also remove its generated self-tests. The current
+table was complete, but its own enumeration could not reject that deletion.
+
+Decision. Pin the seven new constant/surface pairs independently inside the
+existing self-test, check exact order and uniqueness, and run deletion and
+duplication controls against that same registry predicate. Reject duplicate
+self-test IDs. Preserve the production surface predicate and all earlier
+controls. The final two-shell runs bind to this strengthened source revision.
+
+Alternatives rejected. A test-count assertion alone can retain the count while
+substituting a different consumer. A roster derived from the production table
+repeats the deletion blind spot.
+
+Consequences. The new consumer obligations survive omission from the generated
+test loop. This closes the independent-roster concern without changing the
+claim category, source constants, original matrices or runtime evidence scope.
