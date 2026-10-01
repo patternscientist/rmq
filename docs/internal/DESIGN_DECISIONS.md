@@ -13667,3 +13667,16 @@ record the actual metadata-prefix assessment in DIGESTION_LOG. The existing
 changing repeated literals across the read/setup/safety/program chain is a
 separate representation refactor with no demonstrated V1 correctness benefit.
 No computational definition, theorem type or cost constant changes here.
+
+## DD-20261001-V1-ARCHIVE-MODES — Pin source ZIP permissions
+
+Date: 2026-10-01. Status: packaging repair.
+
+Independent inspection found that Git archive's default tar.umask yields
+0664/0775 and can vary with local Git configuration. Pass a command-local
+tar.umask=0022 when generating the tar input, so the source ZIP records canonical
+0644/0755 Git file modes. A regression fixture changes tar.umask between two
+builds of the same commit, requires identical ZIP bytes, and checks a tracked
+executable separately from ordinary source. No user Git configuration changes;
+the override applies only to this archive command. This is packaging integrity,
+not a Lean proof or executable-performance claim.

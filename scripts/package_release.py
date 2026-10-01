@@ -59,7 +59,8 @@ def create(repo, destination):
         raise ValueError('Commit or account for working-tree changes before packaging')
     commit = git(repo, 'rev-parse', 'HEAD').decode().strip()
     # git archive fixes content to this exact object and excludes all local caches.
-    archived = git(repo, 'archive', '--format=tar', commit)
+    # Pin its permission mask so local Git configuration cannot change ZIP modes.
+    archived = git(repo, '-c', 'tar.umask=0022', 'archive', '--format=tar', commit)
     payloads = {}
     modes = {}
     with tarfile.open(fileobj=io.BytesIO(archived), mode='r:') as tree:

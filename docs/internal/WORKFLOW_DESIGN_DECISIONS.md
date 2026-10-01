@@ -15706,3 +15706,14 @@ Consequences. The follow-up appends one commit after
 acceptance authority, and reports only CANDIDATE_COMPLETE when every appended
 row closes. The coordinator still owns integration, native/package gates,
 fresh blind audit, and V1 acceptance.
+
+## WDD-20261001-V1-ARCHIVE-MODES — Test host-configuration independence
+
+Date: 2026-10-01. Status: packaging repair.
+
+Add one bounded disposable-repository control to test_package_release.py for
+archive permission-mask independence and preservation of the Git executable
+bit. Retain existing round-trip, clean-tree, overwrite, tamper and traversal
+controls. The final real ZIP also receives an independent Git-blob/manifest
+comparison and the advertised unpacked smoke commands. No release tag, push or
+publication is involved.

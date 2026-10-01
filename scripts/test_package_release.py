@@ -51,6 +51,22 @@ class PackageTests(unittest.TestCase):
         self.assertEqual(set(first['files']), {'README.md','lakefile.toml','CITATION.cff','lean-toolchain'})
         self.assertEqual(package.verify(self.archive)['version'], '1.0.0-rc.1')
 
+    def test_git_tar_mask_cannot_change_bundle_or_executable_modes(self):
+        (self.repo/'run.sh').write_text('#!/bin/sh\nexit 0\n')
+        self.git('add', 'run.sh')
+        self.git('update-index', '--chmod=+x', 'run.sh')
+        self.git('-c', 'user.name=RMQ packaging fixture', '-c',
+                 'user.email=fixture@example.invalid', 'commit', '-qm', 'executable')
+        self.git('config', 'tar.umask', '0002')
+        package.create(self.repo, self.archive)
+        self.git('config', 'tar.umask', '0077')
+        second = self.root/'different-config.zip'
+        package.create(self.repo, second)
+        self.assertEqual(self.archive.read_bytes(), second.read_bytes())
+        with zipfile.ZipFile(self.archive) as bundle:
+            self.assertEqual(bundle.getinfo('README.md').external_attr >> 16, 0o100644)
+            self.assertEqual(bundle.getinfo('run.sh').external_attr >> 16, 0o100755)
+
     def test_dirty_tree_and_overwrite_are_rejected(self):
         package.create(self.repo, self.archive)
         with self.assertRaises(FileExistsError):
