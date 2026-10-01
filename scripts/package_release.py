@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import io
 import json
+import re
 from pathlib import Path, PurePosixPath
 import subprocess
 import tarfile
@@ -74,12 +75,17 @@ def create(repo, destination):
                 raise ValueError('Reserved manifest path is already tracked')
             payloads[name] = tree.extractfile(member).read()
             modes[name] = member.mode
-    import re
+    required = ('lakefile.toml', 'CITATION.cff', 'lean-toolchain')
+    missing = [name for name in required if name not in payloads]
+    if missing:
+        raise ValueError('Missing tracked package metadata: ' + ', '.join(missing))
     match = re.search(r'^version\s*=\s*"([^"]+)"', payloads['lakefile.toml'].decode(), re.M)
     if match is None:
         raise ValueError('Missing package version')
     version = match.group(1)
-    if f'version: {version}' not in payloads['CITATION.cff'].decode():
+    citation_versions = re.findall(r'^version:[ \t]*([^\r\n]*?)[ \t]*\r?$',
+                                   payloads['CITATION.cff'].decode(), re.M)
+    if citation_versions != [version]:
         raise ValueError('CITATION.cff and lakefile.toml versions differ')
     manifest = {
         'schema': 'rmq-source-bundle/1', 'commit': commit, 'version': version,
@@ -114,7 +120,8 @@ def main():
     manifest = verify(archive) if args.verify else create(args.repo, archive)
     print(json.dumps({'archive': str(archive.resolve()), 'sha256': digest(archive.read_bytes()),
                       'commit': manifest['commit'], 'version': manifest['version'],
-                      'files': len(manifest['files']), 'verified': True}, indent=2))
+                      'files': len(manifest['files']), 'verified': True,
+                      'verification': 'manifest consistency; claimed commit is not authenticated'}, indent=2))
 
 
 if __name__ == '__main__':

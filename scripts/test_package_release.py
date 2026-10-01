@@ -92,6 +92,39 @@ class PackageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'file set differs'):
             package.verify(extra)
 
+    def test_citation_version_mismatch_is_rejected_before_output(self):
+        (self.repo/'CITATION.cff').write_text('version: 0.0.0\n')
+        self.git('add', 'CITATION.cff')
+        self.git('-c', 'user.name=RMQ packaging fixture', '-c',
+                 'user.email=fixture@example.invalid', 'commit', '-qm', 'wrong citation')
+        with self.assertRaisesRegex(ValueError, 'CITATION.cff and lakefile.toml versions differ'):
+            package.create(self.repo, self.archive)
+        self.assertFalse(self.archive.exists())
+
+    def test_citation_version_prefix_is_rejected(self):
+        (self.repo/'CITATION.cff').write_text('version: 1.0.0-rc.10\n')
+        self.git('add', 'CITATION.cff')
+        self.git('-c', 'user.name=RMQ packaging fixture', '-c',
+                 'user.email=fixture@example.invalid', 'commit', '-qm', 'longer citation version')
+        with self.assertRaisesRegex(ValueError, 'CITATION.cff and lakefile.toml versions differ'):
+            package.create(self.repo, self.archive)
+        self.assertFalse(self.archive.exists())
+
+    def test_toolchain_metadata_mismatch_is_rejected(self):
+        package.create(self.repo, self.archive)
+        with zipfile.ZipFile(self.archive) as original:
+            entries = {n:original.read(n) for n in original.namelist()}
+        manifest = json.loads(entries[package.MANIFEST])
+        # Keep every file and its digest intact; corrupt only the metadata.
+        manifest['lean_toolchain'] = 'leanprover/lean4:v0.0.0'
+        entries[package.MANIFEST] = json.dumps(manifest).encode()
+        altered = self.root/'wrong-toolchain.zip'
+        with zipfile.ZipFile(altered, 'w') as output:
+            for name, data in entries.items():
+                output.writestr(name, data)
+        with self.assertRaisesRegex(ValueError, 'Toolchain mismatch'):
+            package.verify(altered)
+
     def test_unsafe_archive_path_is_rejected(self):
         package.create(self.repo, self.archive)
         with zipfile.ZipFile(self.archive, 'a') as output:

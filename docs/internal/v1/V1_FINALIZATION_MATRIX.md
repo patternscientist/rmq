@@ -50,3 +50,17 @@ The first current native attempt passed the 16-case lifecycle validator but
 failed before compilation because Git converted the frozen contract to CRLF.
 Its Git blob still matched the frozen hash. The failed receipt remains evidence;
 the repair changes checkout attributes, not any historical file or predicate.
+
+## Packaging review amendment
+
+| ID | Requirement and actual consumer | Planned evidence | State |
+| --- | --- | --- | --- |
+| REVIEW-PACKAGE-METADATA | Reject citation version mismatch, including a longer version with the expected prefix, and an inconsistent toolchain field with otherwise intact file hashes. Preserve clean exact-Git packaging. | Eight packaging tests; independent archive/Git comparison. | Staged tests PASS; integrated checks pending |
+| REVIEW-PACKAGE-CI | Make cheap packaging and native checkout-byte regressions automatic in a separate Windows/Linux CI job, preserving the existing heavy gate and explicitly local EH profiles. State internal manifest consistency separately from commit authentication. | Source review, local Windows/Linux tests, metadata output and reader prose. Hosted CI execution is not claimed. | Implemented; local checks pending |
+
+The complete independent source reports are preserved at
+`../audit_reports/v1-447751d203a4-fresh.md` and
+`../audit_reports/v1-447751d203a4-claude.md`. The latter's requested preservation
+path is kept verbatim inside its report; the separate Claude filename avoids
+overwriting the other independent report. Review dispositions and current
+execution results remain separate from these original source-stage reports.

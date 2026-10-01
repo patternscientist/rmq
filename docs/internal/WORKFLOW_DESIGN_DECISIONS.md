@@ -15891,3 +15891,44 @@ Consequences. This is checkout reproducibility, not a Lean proof or runtime
 correctness change. The source ZIP remains Git-derived; its advertised path is
 the Lean smoke build, while the native supplement uses a Windows Git checkout.
 This entry covers .gitattributes and the appended REVIEW-NATIVE-CHECKOUT row.
+
+## WDD-20261001-V1-PACKAGE-REVIEW - Test metadata integrity and automate cheap artifact checks
+
+Date: 2026-10-01. Status: implementation decision; final delivery pending.
+
+Context. Claude's source review distinguished manifest consistency from an
+authenticated Git commit and identified missing version/toolchain negative
+controls. A coordinator fixture also demonstrated that substring comparison
+accepted citation version 1.0.0-rc.10 for package version 1.0.0-rc.1. The current
+native replay exposed a separate checkout-byte problem fixed in the preceding
+commit without changing any frozen content or predicate.
+
+Decision. Require exactly one complete citation version value equal to the
+package version. Add mismatched/prefix version and inconsistent toolchain
+metadata fixtures. Move re to module imports and report missing tracked metadata
+with ValueError. State in CLI output and reader prose that --verify authenticates
+neither the claimed commit nor theorem correctness. The actual V1 archive gets
+an independent Git blob, mode and file-set comparison plus an external hash.
+
+Add test_native_checkout.py: fresh Git fixtures materialize the five actual
+inputs under core.autocrlf true/false/input, compare their production frozen
+identities, and reproduce failure when either required LF/CRLF rule is missing.
+Add a small Windows/Linux source-artifact-checks CI job for both Python suites,
+separate from the existing long Lean gate. These local tests do not imply the
+new hosted job has run. Preserve the heavy EH campaigns' separately recorded
+commands and host-bound scope.
+
+Preserve both original independent reports under distinct exact-target names.
+Do not rewrite their pending states, findings, source identities or command
+limitations. Record checkout regression results as their own artifact.
+
+Alternatives rejected. Checking only a manifest commit string would not bind
+content to that commit. Changing a generic count or removing a metadata guard
+would miss the demonstrated prefix error. Adding the long historical EH suite
+to ordinary CI would silently change prerequisites and verification scope.
+
+Consequences. This commit changes packaging/CI/documentation only. It adds no
+Lean theorem, proof assumption, model-cost or native correctness claim. Covered
+paths: package_release.py, test_package_release.py, test_native_checkout.py,
+.github/workflows/ci.yml, ARTIFACT_REPRODUCIBILITY.md, V1 matrix, two source
+audit reports and V1_CHECKOUT_REGRESSION.json.

@@ -26,7 +26,18 @@ The ZIP contains exact Git-derived source plus `RMQ-SOURCE-MANIFEST.json` with
 the commit, version, toolchain and each file's SHA256 digest. The command also
 prints the archive digest, rejects a dirty tree and refuses to overwrite an
 existing bundle. It does not publish, push or create a tag. Hash verification
-establishes integrity against the recorded manifest, not proof correctness.
+establishes internal consistency against the recorded manifest. The manifest's
+commit field is self-reported: `--verify` does not authenticate that commit or
+compare archive files with a repository. Bind a distributed bundle to a reviewed
+candidate by recording its archive SHA256 through a trusted channel and comparing
+its file set, Git blob identities and modes with the expected commit. A consistently
+rewritten archive and manifest can pass `--verify`; neither check proves theorem
+correctness. The V1 delivery record includes the independent repository comparison.
+
+The cheap packaging regressions run with `python scripts/test_package_release.py`.
+CI runs them and the native checkout-byte regression on both Windows and Linux,
+separately from the long Lean gate. The historical EH campaigns remain separate
+manual evidence controls with exact commands in `internal/v1/evidence/COMMAND_LOG.md`.
 
 After unpacking, the Lean smoke path in [V1_GUIDE.md](V1_GUIDE.md) works without
 Git metadata. The full mutation campaigns below require a clean repository and

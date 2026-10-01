@@ -13680,3 +13680,27 @@ builds of the same commit, requires identical ZIP bytes, and checks a tracked
 executable separately from ordinary source. No user Git configuration changes;
 the override applies only to this archive command. This is packaging integrity,
 not a Lean proof or executable-performance claim.
+
+## DD-20261001-V1-PACKAGE-BOUNDARY - State manifest and source identity separately
+
+Date: 2026-10-01. Status: V1 reader/artifact boundary; final delivery pending.
+
+Context. A self-contained ZIP manifest can verify its own file hashes without
+authenticating its claimed Git commit. The source reader must distinguish those
+properties from kernel-checked theorem correctness. Citation metadata also needs
+a complete version comparison, not a matching prefix.
+
+Decision. ARTIFACT_REPRODUCIBILITY.md states the exact manifest-consistency
+guarantee, requires independent file-set/blob/mode comparison and a trusted
+archive digest to bind a delivered artifact to its expected source, and points
+to automatic cheap packaging/checkout tests. Local Windows tests passed eight
+packaging cases and three checkout tests (three Git settings plus two missing-rule
+controls). The new hosted job is configured, not reported as executed.
+
+Alternatives rejected. Treating the manifest commit string as authentication
+would accept a consistently rewritten package. Treating packaging checks as
+formal theorem verification would cross an explicit trust boundary.
+
+Consequences. No Lean statement, proof, import, model cost, payload accounting
+or runtime assumption changes. WDD-20261001-V1-PACKAGE-REVIEW records the actual
+script/CI choices; this entry governs the public artifact claim.
