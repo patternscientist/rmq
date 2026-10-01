@@ -33,7 +33,9 @@ these examples evaluates the large packed machine, uses `native_decide`, or
 treats an implementation result as its own oracle.
 
 The number `210` belongs to the earlier paper query's charged-trace `Costed`
-model.  The packed theorem separately bounds actual primitive transitions by
+model. Each trace event is an attempted payload-word read, failures included;
+controller dispatch, arithmetic, branching, decoding and the validity guard
+are outside that event vocabulary. The packed theorem separately bounds actual primitive transitions by
 its fixed program budget and accounts for data, encoded code, and scratch in
 its complete bit-capacity theorem.  Neither statement measures compiler or
 build wall-clock performance, nor preprocessing time.

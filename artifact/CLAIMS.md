@@ -6,8 +6,9 @@
 `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds` through
 `RMQPaper`. For every ordinary list, one numeric allocation (`buildMemory`) and
 one closed loop-free program of 837,572 primitive instructions give exact
-leftmost answers for every valid half-open range, the rejection packet `0`
-with no memory reads for representable invalid ranges, one logarithmic word
+leftmost answers for every valid half-open range (encoded by the run as
+`index + 1`), the rejection packet `0` with no memory reads for representable
+invalid ranges, one logarithmic word
 width for every stored word, operand and prefix state, and complete
 data/code/scratch capacity `2n + o(n)`. For every representable endpoint pair
 the run halts within at most 837,572 steps, which is the program length; the

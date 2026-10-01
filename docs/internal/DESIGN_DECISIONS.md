@@ -13576,3 +13576,14 @@ acceptance. Keep the required Lean trust checks separate. Replace the stale
 paper-closure count by the exact 262-module V1-base inventory and label the
 generic tool-build procedure as an outline rather than a tested upstream-tip
 recipe. No production source or trust assumption changes.
+
+## DD-20261001-V1-READER-FOLLOWUP — Make each cost guide self-contained
+
+Date: 2026-10-01. Status: source-review follow-up.
+
+The Claude correction review confirmed the bounded client repairs and identified
+two remaining reader ambiguities. State index+1 packet encoding beside packet0
+in the claims introduction. State the attempted payload-word read vocabulary
+and excluded controller work beside the classic client's trace-length theorem.
+These repeat the existing source-backed boundaries where readers need them;
+they change no theorem, number, claim domain or verification requirement.
