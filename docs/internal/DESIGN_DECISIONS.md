@@ -13563,3 +13563,16 @@ bound is merely structural. Replacing its fuel with a fresh existential would
 depart from the frozen object contract. Keep convenient value/cost projections
 without presenting them as independent correctness facts. Public prose also
 names the three control words already included in complete packed capacity.
+
+## DD-20261001-V1-ADVISORY-STATUS — Expose the actual checker failure
+
+Date: 2026-10-01. Status: documentation synchronization.
+
+The independent-check guide previously said no export or checker run existed.
+The scoped V1 attempt makes that statement stale. Link the exact advisory JSON
+and state the failed omega auxiliary proof, tool revisions, exporter API patch
+and limited selected-theorem scope. Do not infer a kernel defect or independent
+acceptance. Keep the required Lean trust checks separate. Replace the stale
+paper-closure count by the exact 262-module V1-base inventory and label the
+generic tool-build procedure as an outline rather than a tested upstream-tip
+recipe. No production source or trust assumption changes.

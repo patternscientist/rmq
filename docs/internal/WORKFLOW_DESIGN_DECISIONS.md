@@ -15648,3 +15648,15 @@ Require a focused client build now and the frozen integrated aggregate checks
 after both remaining leaves finish. Source review records the rejected fuel
 reparameterization explicitly. No replay registry, selector, deadline,
 acceptance authority or publication policy changes.
+
+## WDD-20261001-V1-ADVISORY-STATUS — Add the linked reader to reconciliation
+
+Date: 2026-10-01. Status: documentation synchronization.
+
+Add `docs/INDEPENDENT_CHECK.md` to the additional inspected paths in the V1
+reader inventory and synchronize it with the already committed failed advisory
+trial. Historical source inventories and old verification reports remain
+unchanged. The current guide names its actual limited run and avoids converting
+a failed advisory check into a success or a required Lean-gate failure. The
+inventory continues to distinguish the 18 registered current-fact paths from
+additional linked readers. No scanner policy or gate exemption changes.

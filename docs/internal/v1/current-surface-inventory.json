@@ -31,7 +31,8 @@
     "RMQ/Headlines/Lifecycle.lean",
     "paper/README.md",
     "paper/rmq.tex",
-    "paper/THEOREM_LEDGER.md"
+    "paper/THEOREM_LEDGER.md",
+    "docs/INDEPENDENT_CHECK.md"
   ],
   "searched_terms": "(?i)lifecycle|preprocess|construct|candidate|not yet accepted|provisional|pending|837.?572|160.?25[37]|1.?100.?000.?000|0\\.1\\.0|3849ecbb",
   "expected_repair_paths": [
