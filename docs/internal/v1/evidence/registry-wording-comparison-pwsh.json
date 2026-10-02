@@ -1,0 +1,29 @@
+{
+  "schema": "v1-evidence-registry-wording-transfer-v2",
+  "classification": "Structural comparison only; not a semantic replay.",
+  "generator": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\v1-registry-wording2-compare.ps1",
+    "sha256": "05deecda397ba6a4f8df04bca859d07b17004623da260909131b52cd63b42da1"
+  },
+  "runner": {
+    "path": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+    "psVersion": "7.6.5"
+  },
+  "old": {
+    "rawSha256": "9bf8d0ac1406e67233601c42cb1c4a57a0b28212365b72712393f3a4c66c6e51",
+    "normalizedSha256": "6b4734e9cbd36955636452f9b3b93089062481de52b2cf1e9bdd37e50d17db5d",
+    "guardMeaning": "Each W control proves that a failed durable write exits nonzero and emits no success marker; it has no finalization receipt and therefore no applicable pin-coverage verdict.",
+    "shapeW": "the durable result path is a directory, so the durable write fails; the run exits nonzero with no success marker"
+  },
+  "new": {
+    "rawSha256": "06166cbc87e94008c10c0d92b98a13364f41700771e3c118a67e58d0d01e4339",
+    "normalizedSha256": "218a41449d9da04f816b385bf488c1957baa05b73457d841278d78f6ae1547f1",
+    "guardMeaning": "Each W control requires a nonzero exit, an absent durable receipt, and its declared case-specific diagnostics; only LV-W also declares stdoutAbsent. No W control has a finalization receipt, so pin coverage is not applicable.",
+    "shapeW": "the durable result path is a directory, so the durable write fails; each case exits nonzero with no durable result and its declared stderr; LV-W additionally requires no PASS.json and no LIFE1-VALIDATOR PASS stdout marker"
+  },
+  "removedForComparison": [
+    "receiptSemantics.guardMeaning",
+    "shapes.W"
+  ],
+  "sameAfterRemoval": true
+}

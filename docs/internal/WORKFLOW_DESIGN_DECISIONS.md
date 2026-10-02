@@ -16271,3 +16271,54 @@ Consequences. The final registry describes all three W controls precisely while
 preserving every ID, profile, fault, expectation, ordering and 57+3 partition.
 The complete 60-case evidence remains bound to `a8f1c512`; final wording is
 covered by its own bounded commit-bound transfer.
+
+
+## WDD-20261001-V1-EVIDENCE-08 - Commit source-bound final evidence without restamping campaigns
+
+Date: 2026-10-01. Status: V1-EVIDENCE worker decision; coordinator acceptance pending.
+
+Context. Exact-path source checkpoint
+`a8f1c512e9a5d3d57abae6cd9b988978246af768` has corrected focused 52-case,
+auxiliary 46-case and production 60-case passing aggregates under both shell
+profiles. Final wording checkpoint
+`c79beae0d99519719d2a83882e6dd369bc29026e` has commit-bound loader probes and
+clean-worktree three-guard passing aggregates under both profiles. Raw
+aggregates live under ignored `.lake` roots and are too large or too transient
+to serve as the only review surface. Regenerating them at a later commit would
+erase their actual source identities.
+
+Decision. Commit deterministic compact projections for both auxiliary, both
+complete-registry and both final wording-transfer aggregates. Each projection
+declares that it is derived record generation rather than a new test, embeds
+the raw aggregate path, byte count and SHA-256, and preserves the source ref,
+counts, failures, decisive per-case facts and finalization. Record exact raw
+and compact identities and commands in `COMMAND_LOG.md`; close the evidence
+cells of `V1_EVIDENCE_MATRIX.md` without altering any frozen second-column
+requirement. Keep focused and registry aggregates already committed at their
+observed identities. Also commit the two shell-specific parsed registry
+comparison receipts. Preserve intermediate wording runs as superseded
+observations rather than relabelling them.
+
+Controls. A task-owned compact generator with SHA-256
+`9e9021ea621dd062017ca3856e62493eb48cbaea638ceeadfccf7e566d5d1881`
+projects the six raw files. A separate verifier with SHA-256
+`393ba7ed6ca849fc83a8aa3e9d5c62bfeabf57961a495d1cb4a52639f1ab7189`
+passes under PowerShell 7 and Windows PowerShell 5.1 for those projections and
+the two registry-comparison receipts. It checks raw identity,
+source ref, exact counts, zero failures, error-free finalization, outer pins,
+clean before/after state, all 57 applicable verified receipt controls and the
+three false/null no-receipt controls, or the targeted 0+3 partition. These are
+receipt checks, not re-executions of semantic controls.
+
+Alternatives rejected. Copying the full raw aggregates into Git would obscure
+review in large repetitive process records. Recording only summary counts
+would lose anti-vacuity fields and source identity. Re-running the full60 pair
+after a prose-only registry change would misstate the campaign lineage and add
+cost without exercising changed semantics.
+
+Consequences. Reviewers can trace every final claim to an exact raw aggregate
+and commit while keeping campaign, source and wording identities separate.
+The worker may report candidate completion after final per-commit/range,
+claim-scan, hygiene, exact-scope and clean-state checks pass. Coordinator
+integration, aggregate Lean/build gates and V1 acceptance remain outside this
+leaf.

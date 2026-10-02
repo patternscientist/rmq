@@ -1,0 +1,306 @@
+{
+  "schema": "v1-evidence-compact-full60-v1",
+  "classification": "Derived compact receipt only; projection from the named raw aggregate, not a new test execution.",
+  "generator": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\v1-compact-receipts.ps1",
+    "sha256": "9e9021ea621dd062017ca3856e62493eb48cbaea638ceeadfccf7e566d5d1881"
+  },
+  "sourceAggregate": {
+    "path": ".lake/v1-evidence/wording-transfer-final-clean-wguards-pwsh-c79beae0/RESULT.json",
+    "bytes": 28210,
+    "sha256": "bb40dcc51d02ce9b9cd7402f3b38a3454a70138055d54df4a5ee4dd87dcb6962"
+  },
+  "mode": "candidate",
+  "harnessRef": "c79beae0d99519719d2a83882e6dd369bc29026e",
+  "harnessSha": "c79beae0d99519719d2a83882e6dd369bc29026e",
+  "profile": "pwsh",
+  "registryVersion": 3,
+  "registryPath": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\docs\\internal\\extensions\\lifecycle1\\repair-r4\\FAILURE_CONTROL_REGISTRY.json",
+  "registryNormalizedSha256": "218a41449d9da04f816b385bf488c1957baa05b73457d841278d78f6ae1547f1",
+  "baseRef": "ee44f04a561f2194b3713f071c26b6faf9ba7fab",
+  "shell": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+  "runnerShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+  "startedUtc": "2026-10-02T00:56:58.203607Z",
+  "finishedUtc": "2026-10-02T00:58:16.1965048Z",
+  "expectedCount": 3,
+  "executedCount": 3,
+  "passedCount": 3,
+  "worktreeStateBefore": "c79beae0d99519719d2a83882e6dd369bc29026e\n--",
+  "worktreeStateAfter": "c79beae0d99519719d2a83882e6dd369bc29026e\n--",
+  "selected": [
+    "K1-W",
+    "K2-W",
+    "LV-W"
+  ],
+  "failedIds": [],
+  "pinCoverage": {
+    "receiptBearingCount": 0,
+    "guardedNoReceiptCount": 3,
+    "guardedNoReceiptIds": [
+      "K1-W",
+      "K2-W",
+      "LV-W"
+    ],
+    "meaning": "No-receipt guards validate failed durable writes; pin coverage is inapplicable for those controls."
+  },
+  "controls": [
+    {
+      "id": "K1-W",
+      "harness": "K1",
+      "shape": "W",
+      "fault": "block-durable",
+      "profile": "pwsh",
+      "deadlineSeconds": 180,
+      "harnessSha256": "395bfff8570f0762742cb61a4caedf4f9060a18388ab0135d243a7d14a8a6580",
+      "expected": "accept-all-predicates",
+      "verdict": "PASS",
+      "coreAll": true,
+      "structuralAll": true,
+      "predicateOutcome": true,
+      "trustedPinContext": {
+        "fixtureRoot": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\wording-transfer-final-clean-wguards-pwsh-c79beae0\\controls\\K1-W\\root",
+        "childShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+        "hostShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+        "toolchainBin": null,
+        "historicalSummary": null,
+        "historicalSummarySource": null
+      },
+      "core": {
+        "launchCompleted": true,
+        "exitClass": true,
+        "durablePresent": false,
+        "durableAsExpected": true,
+        "stageRecorded": true,
+        "integrityRecorded": true,
+        "cleanupRecorded": true,
+        "verdictAsExpected": true,
+        "values": null,
+        "labels": null,
+        "stderrAsExpected": true,
+        "absentFiles": true,
+        "stdoutWithoutSuccess": true
+      },
+      "structural": {
+        "applicable": false,
+        "reason": "no durable result by construction (durable-write failure)",
+        "finalizationPresent": true,
+        "verdictMatches": true,
+        "stageFieldMatches": true,
+        "integrityFieldMatches": true,
+        "cleanupEmpty": true,
+        "pinCoverageApplicable": false,
+        "pinsVerified": null,
+        "pinCoverage": "not applicable: guarded durable-write failure has no finalization receipt"
+      },
+      "restoration": {
+        "restored": [],
+        "removed": [],
+        "errors": [],
+        "verified": true,
+        "gitClean": true,
+        "gitState": "a0d75faf2dca76ba78f7ef6322b3c0701f49f68f\n--"
+      }
+    },
+    {
+      "id": "K2-W",
+      "harness": "K2",
+      "shape": "W",
+      "fault": "block-durable",
+      "profile": "pwsh",
+      "deadlineSeconds": 180,
+      "harnessSha256": "f3ae2e4aea800c2f6cb094a3a74ca4fb380b9bf3aa8f61f8e79ae2717b0184cc",
+      "expected": "accept-all-predicates",
+      "verdict": "PASS",
+      "coreAll": true,
+      "structuralAll": true,
+      "predicateOutcome": true,
+      "trustedPinContext": {
+        "fixtureRoot": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\wording-transfer-final-clean-wguards-pwsh-c79beae0\\controls\\K2-W\\root",
+        "childShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+        "hostShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+        "toolchainBin": null,
+        "historicalSummary": null,
+        "historicalSummarySource": null
+      },
+      "core": {
+        "launchCompleted": true,
+        "exitClass": true,
+        "durablePresent": false,
+        "durableAsExpected": true,
+        "stageRecorded": true,
+        "integrityRecorded": true,
+        "cleanupRecorded": true,
+        "verdictAsExpected": true,
+        "values": null,
+        "labels": null,
+        "stderrAsExpected": true,
+        "absentFiles": true,
+        "stdoutWithoutSuccess": true
+      },
+      "structural": {
+        "applicable": false,
+        "reason": "no durable result by construction (durable-write failure)",
+        "finalizationPresent": true,
+        "verdictMatches": true,
+        "stageFieldMatches": true,
+        "integrityFieldMatches": true,
+        "cleanupEmpty": true,
+        "pinCoverageApplicable": false,
+        "pinsVerified": null,
+        "pinCoverage": "not applicable: guarded durable-write failure has no finalization receipt"
+      },
+      "restoration": {
+        "restored": [],
+        "removed": [],
+        "errors": [],
+        "verified": true,
+        "gitClean": true,
+        "gitState": "346938b2e480b279a91a434554dd07c218ee4465\n--"
+      }
+    },
+    {
+      "id": "LV-W",
+      "harness": "LV",
+      "shape": "W",
+      "fault": "block-durable",
+      "profile": "pwsh",
+      "deadlineSeconds": 180,
+      "harnessSha256": "8135040dfb712cb81dd083db8f4b58d42e333bc196db3770f2b5c28e228f0cb3",
+      "expected": "accept-all-predicates",
+      "verdict": "PASS",
+      "coreAll": true,
+      "structuralAll": true,
+      "predicateOutcome": true,
+      "trustedPinContext": {
+        "fixtureRoot": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\wording-transfer-final-clean-wguards-pwsh-c79beae0\\controls\\LV-W\\root",
+        "childShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+        "hostShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+        "toolchainBin": null,
+        "historicalSummary": null,
+        "historicalSummarySource": null
+      },
+      "core": {
+        "launchCompleted": true,
+        "exitClass": true,
+        "durablePresent": false,
+        "durableAsExpected": true,
+        "stageRecorded": true,
+        "integrityRecorded": true,
+        "cleanupRecorded": true,
+        "verdictAsExpected": true,
+        "values": null,
+        "labels": null,
+        "stderrAsExpected": true,
+        "absentFiles": true,
+        "stdoutWithoutSuccess": true
+      },
+      "structural": {
+        "applicable": false,
+        "reason": "no durable result by construction (durable-write failure)",
+        "finalizationPresent": true,
+        "verdictMatches": true,
+        "stageFieldMatches": true,
+        "integrityFieldMatches": true,
+        "cleanupEmpty": true,
+        "pinCoverageApplicable": false,
+        "pinsVerified": null,
+        "pinCoverage": "not applicable: guarded durable-write failure has no finalization receipt"
+      },
+      "restoration": {
+        "restored": [],
+        "removed": [],
+        "errors": [],
+        "verified": true,
+        "gitClean": true,
+        "gitState": "9b5e746fd06d7c48295e50e7e54d5f7a1cb7bee5\n--"
+      }
+    }
+  ],
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "pass",
+    "stageError": null,
+    "integrityErrors": [],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r3/FAILURE_CONTROL_REGISTRY.json",
+        "entrySha256": "df2e9d7bd484b84cae2b3b3d5cf875ba0ffbb00f922944db181de637127f692e",
+        "finalSha256": "df2e9d7bd484b84cae2b3b3d5cf875ba0ffbb00f922944db181de637127f692e",
+        "status": "verified"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r3/failure_controls.ps1",
+        "entrySha256": "e46b1c9e8b99f54db90003ac49af75e54426c625780b4229eb6e7f38a120597e",
+        "finalSha256": "e46b1c9e8b99f54db90003ac49af75e54426c625780b4229eb6e7f38a120597e",
+        "status": "verified"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r3/doubles/fault_function.ps1",
+        "entrySha256": "fa05c149d1c4943079fede70d7696ff20874778ff539fa4f5cac740cd6caeaab",
+        "finalSha256": "fa05c149d1c4943079fede70d7696ff20874778ff539fa4f5cac740cd6caeaab",
+        "status": "verified"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r3/doubles/control_child.ps1",
+        "entrySha256": "262c797ff6e7896859cc902d02b03e8045bda1875783509d78fd4983df54b589",
+        "finalSha256": "262c797ff6e7896859cc902d02b03e8045bda1875783509d78fd4983df54b589",
+        "status": "verified"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r3/doubles/stage.ps1",
+        "entrySha256": "e2b18ed6a710daa6be8b3639355152f4ff2d45c456a31abc0a1447a7d83a56c0",
+        "finalSha256": "e2b18ed6a710daa6be8b3639355152f4ff2d45c456a31abc0a1447a7d83a56c0",
+        "status": "verified"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r3/doubles/dependency_replay.ps1",
+        "entrySha256": "471d505ec820882b3cb89b4f27a93cf5aae2e7aa75093036855175648e116dcd",
+        "finalSha256": "471d505ec820882b3cb89b4f27a93cf5aae2e7aa75093036855175648e116dcd",
+        "status": "verified"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r3/doubles/stream_capture_override.ps1",
+        "entrySha256": "3f921e2c29b629de698d6816a1601c36c319b98783f9cddc5077cdee5a0789ea",
+        "finalSha256": "3f921e2c29b629de698d6816a1601c36c319b98783f9cddc5077cdee5a0789ea",
+        "status": "verified"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r3/doubles/complete_integrity_override.ps1",
+        "entrySha256": "1c717cced6ae27c590d34b25a7ba34fe43eabb26ff77342ee0baa65eebf12f7c",
+        "finalSha256": "1c717cced6ae27c590d34b25a7ba34fe43eabb26ff77342ee0baa65eebf12f7c",
+        "status": "verified"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r3/doubles/validator_double.cs",
+        "entrySha256": "0db66740c1d7707a5ca932f0cd1acb05dcf5621b1e72f7322092262d3c5fe879",
+        "finalSha256": "0db66740c1d7707a5ca932f0cd1acb05dcf5621b1e72f7322092262d3c5fe879",
+        "status": "verified"
+      },
+      {
+        "path": "scripts/owned_process_tree.ps1",
+        "entrySha256": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+        "finalSha256": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+        "status": "verified"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r4/predicates.ps1",
+        "entrySha256": "31df2b17f0465f74f370c40c4888b75fce15df5e3a474d0af3ada25d86c01091",
+        "finalSha256": "31df2b17f0465f74f370c40c4888b75fce15df5e3a474d0af3ada25d86c01091",
+        "status": "verified"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r4/doubles/git_double.cs",
+        "entrySha256": "350e7d4404107f62d33463e584d2aa8018158a2596aa3b95d442d93f51f60588",
+        "finalSha256": "350e7d4404107f62d33463e584d2aa8018158a2596aa3b95d442d93f51f60588",
+        "status": "verified"
+      },
+      {
+        "path": "docs/internal/extensions/lifecycle1/repair-r4/FAILURE_CONTROL_REGISTRY.json",
+        "entrySha256": "06166cbc87e94008c10c0d92b98a13364f41700771e3c118a67e58d0d01e4339",
+        "finalSha256": "06166cbc87e94008c10c0d92b98a13364f41700771e3c118a67e58d0d01e4339",
+        "status": "verified"
+      }
+    ]
+  }
+}
