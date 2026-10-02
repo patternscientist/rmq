@@ -39,7 +39,8 @@ The integrated paper frontier already contains:
   reproduction documents.
 
 The earlier geometry/activation coupling was closed by the uniform route
-recorded in U1-U3 below. The current task is V1 finalization: proof maintenance,
+recorded in U1-U3 below. V1 finalization is recorded in
+`v1/V1_COORDINATOR_ACCEPTANCE.md`: proof maintenance,
 checked downstream clients, current claim/paper alignment, lifecycle evidence
 reconciliation, integrated verification and an unpublished source bundle. The
 accepted primitive-query theorem remains the baseline; additive lifecycle and

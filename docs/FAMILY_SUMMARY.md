@@ -1,5 +1,12 @@
 # RMQ Family Summary
 
+V1 current status (2026-10-01): the additive continuous lifecycle model is
+accepted for this local research release candidate. See the
+[coordinator record](internal/v1/V1_COORDINATOR_ACCEPTANCE.md) for source
+identities, evidence composition and native boundaries. Dated sections below
+retain their historical checkpoint statuses; native campaign acceptance is
+separate from this formal-model decision.
+
 For the V1 reader path and comparison of query and construction models, see
 [the V1 guide](V1_GUIDE.md). The additive lifecycle surface is scoped separately in
 [the claims packet](../artifact/CLAIMS.md); preprocessing exclusions below describe the

@@ -1,0 +1,44 @@
+# (V1-COMPOSITION) Review of the completed verification composition — CLAUDE / V1-COMPOSITION
+
+**Coordinator acceptance is still required.** `Status: CANDIDATE_COMPLETE` covers only this bounded review; no pending execution is promoted to PASS.
+
+**Limitation.** Read/Glob/Grep only. **NOT_RUN by me:** `project_skill_preflight.ps1`, prompt preflight, every `git`/hash command, `finalize_candidate_docs.py`, `final_candidate_checks.ps1`, `final_archive_smoke.ps1`, `build_evidence_bundle.py`, `write_final_delivery.py`, `run_linux_reference_repairs.py`, `export_linux_receipts.py`, `lake`, the aggregate and the running topology baseline/regression. §Context items (aggregate 22295 s EXIT=1, 17/20, the three failures, the running Linux replacements) are **supplied observations**. Items marked *(source)* are my own reading of the pinned snapshots and the tree at `250e5932`. I did not wait for pending execution; I distinguish conditional implementation correctness from actual completion.
+
+## Findings
+
+**1 — P2. `paper-current` is invoked more weakly than the registration it replaces.** `final_candidate_checks.ps1:32` runs `paper/check_paper.ps1` with no `-SelfTest`, whereas the failed aggregate registration passes `SelfTest` (`scripts/gate.ps1:461`) and the Linux replacement run uses `-SelfTest` (`run_linux_reference_repairs.py:17`). So the post-closure run of this replaced checker omits its own self-verification, i.e. "the checker ran" is no longer distinguishable from "the checker is still able to fail". *Remedy:* append `'-SelfTest'` to line 32. *(source)*
+
+**2 — P2. The third failed registration has no post-closure run.** `scripts/paper_topology_lint_regression.ps1` is one of the three replaced checkers and, per §Context, its two positive cases *inherit the repository baseline error* — so it consumes current paper/topology prose. `finalize_candidate_docs.py` then appends or rewrites tracked text in ten files after `250e5932` (`:106,108-111,203,208-246,248,266,293,296-357,405`). `final_candidate_checks.ps1:29` runs `paper_topology_lint.ps1` but never the regression, so the only passing evidence for it predates the documentation closure, and a baseline perturbation could flip a positive case while the plain lint still passes. *Remedy (one line):* `Run 'topology-regression' $shell @('-NoProfile','-File','scripts/paper_topology_lint_regression.ps1')`. *(source)*
+
+**3 — P3. One report write lacks the pre-existence guard its siblings have.** `finalize_candidate_docs.py:15-16` pre-asserts non-existence for three audit reports and `:107-108` re-asserts per file, but `:110` writes `docs/internal/audit_reports/v1-final-composition-review.md` with a bare `write_bytes`. *Remedy:* add that filename to the `:15` tuple.
+
+**4 — P3, note only.** `run_linux_reference_repairs.py:12` copies `.lake` from the completed 447 tree and justifies it in prose at `:15` ("formal sources unchanged") without checking it; the premise is in fact enforced downstream at `finalize_candidate_docs.py:71`. The check exists, so this is not a defect — the repair record is simply not self-sufficient. No change requested if that run has already executed.
+
+**No statement implies aggregate PASS** *(source, exact strings checked)*: index `'aggregateExit':1,'aggregateStatus':'FAIL',...20,...17` (`:97`); acceptance row "**exit 1** … This aggregate remains failed" (`:141`); `V1_GUIDE` "completed with exit 1 … 17 of 20 registered checks passed, while three documentary checks failed and subsequently passed on the repaired source" (`:254-256`); matrix amendment "neither the original nor a final-HEAD aggregate is claimed to pass" (`:339-340`); V1-08 cell "447 Linux aggregate remains FAIL: 17/20" (`:305`); WDD "Record the failed aggregate" (`:382`); binder `verificationComposition` "remains FAIL (17/20) … no passing whole aggregate at either source is claimed" (`write_final_delivery.py:71`).
+
+**My four prior findings are closed** *(source)*: hard-coded 94.102 replaced by `win['elapsedSeconds']` with success/commit/exit/log-hash assertions (`:46-50,143,259`); all anchor edits now guarded — `identity_value` asserts a unique key match (`:21-24`), roadmap via `replace_once` (`:293`), both matrix cell replaces assert `count==1` (`:322`), header `count==3` (`:325`, which I verified matches lines 11/45/56 of the matrix, and all three tables legitimately hold actual evidence after rewrite); header renamed to "Evidence obtained" with the Git-history pointer at `b4842333` (`:326,348-350`); one-shot closure guards and comment added (`:10-16`).
+
+## Per-ID result
+
+| ID | Result |
+| --- | --- |
+| **DELIVERY-ORDER** | **Met, with 1–2.** Generator requires `EXIT=1` (`:25`), `COMMIT==FINAL_COMMIT` (`:26`), a single empty final-status block (`:27-28`), the literal aggregate-log digest `dafd25a8…` (`:31`), `GATE COVERAGE: 20 of 20` **and** `GATE FAIL: 3 check(s) failed.` in the log (`:33-34`), and a replacement record that is success, commit-bound, clean, with the **exact ordered name list** `['paper','topology','topology-regression']` and per-check exit 0 + log-hash match (`:36-41`), plus unchanged `paper`/topology-script/client-matrix inputs since the repair commit (`:42-44`). Binder refuses before final checks/archive/smoke and re-asserts FAIL 17/20 (`write_final_delivery.py:24-36`). No self-reference: delivery JSON written outside both ZIPs. |
+| **DELIVERY-CLAIMS** | **Met.** Component composition is stated, not disguised; `records` re-pinned by the binder (`:41-43`) so no log can be edited post hoc; limits list retains native/nanoda/CI/wall-time separation (`:73`); the generated acceptance text is explicitly future text gated on the assertions above. |
+| **DELIVERY-IDENTITY** | **Met (comparator out of scope).** Independent blob/mode/path and extracted-hash flags consumed as hard gates (`:54`; binder `:27-28`); warm final smoke disclosed and input-gated (unchanged from my prior review); evidence ZIP scope and path mapping unchanged. `verify_and_unpack_source.py` is not in my hashed set — unreviewed by me. |
+| **DELIVERY-READABILITY** | **Met.** Matrix header/cell mismatch closed; the FAIL is carried into every public surface I read rather than softened. |
+| **INV-CATEGORY-SEPARATION** | **Held.** No new theorem, performance, heap, FFI or library promise; `replacedFailedCheckers` names the three documentary checks and keeps them distinct from the six heavy formal campaigns. |
+| **REPLAY-EXACT-REGISTRY / -SELECTOR-NONVACUITY / -SUBPROCESS-DEADLINE** | **Preserved.** Replacement gating is by exact ordered check names and log digests, not counts; the aggregate log's own coverage and failure-count strings are pinned; timings come from receipts with the 8674.82-second mislabel retained and corrected (`:103,160-163`). |
+
+**Is the composition justified?** Yes, conditionally *(source deduction)*: the three failures are documentary (citations, a wildcard parsed as an alias, and two baseline-inheriting positives), the finalizer proves no `.lean`/toolchain/lakefile/lake-manifest delta since the aggregate (`:71`) and no native-relevant delta since `d7` (`:74`), and all three failed checks have passing replacement runs at the repair commit with unchanged consumed inputs. The uncovered consumer is exactly finding 2 (plus the weakened invocation in 1). I do **not** require re-running any unchanged heavy campaign.
+
+## Proof-digestion note
+
+The acceptance record's formal paragraphs (`:120-130,177-184`) still match what I verified at source in earlier rungs: eight historical `RMQ.SuccinctSelect` lemmas delegate to `RMQ.GenericSelect` with identical propositions, binder modes and hypothesis order; two unused private wrappers removed; one `private`, non-`simp`, `rfl`-provable full-`TraceResult` decomposition consumed at exactly two reviewer sites; the clients derive halting, exact leftmost answers, complete eventual capacity and supplied-store reuse from actual capstone fields rather than inserting an answer premise. None of the composition repair touches Lean source, so the formal scope statement is unchanged by this round.
+
+## Remaining delivery gates
+
+1. The running Linux topology baseline + full 16-case regression must **actually finish successfully**; `linux-reference-repairs-250e5932.json` must exist with `success` and the three ordered checks.
+2. Apply findings 1–3, then run the finalizer and commit.
+3. `final_candidate_checks.ps1` passes at the delivered commit — with `-SelfTest` on the paper check and the added topology-regression stage.
+4. `final_archive_smoke.ps1`: real archive, independent Git comparison, unpacked smoke, post-smoke hash equality.
+5. `build_evidence_bundle.py`, then `write_final_delivery.py` binding commit/archive/PDF/bundle externally.

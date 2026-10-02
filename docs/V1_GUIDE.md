@@ -116,4 +116,21 @@ Formal image codecs, encoded-code backing and byte-limb refinements are proved;
 general compiler correctness, C/Rust FFI discipline and allocator realization
 remain assumptions. Logical retained capacity does not bound native RSS or
 copying time. Lifecycle evidence status and current follow-ups are recorded in
-the claims packet; merging alone is not acceptance.
+the claims packet and [V1 acceptance record](internal/v1/V1_COORDINATOR_ACCEPTANCE.md).
+The formal-model decision and finite native replay retain separate scopes.
+
+### Observed verification times
+
+On the recorded Windows host, a cold extraction with no Git metadata or build
+cache completed `lake build RMQPaper RMQExamples.V1Clients` in
+1343.045 seconds (22.4 minutes). The full Linux
+reproduction under Ubuntu24.04/WSL completed with exit 1 in 22295 seconds
+(6.19 hours): 17 of 20 registered checks passed, while three
+documentary checks failed and subsequently passed on the repaired source.
+That run used an existing build cache and shared the host
+with other verification work. A Windows full build plus public roots took
+94.102 seconds with a seeded cache. These are observed wall times, not deadlines
+or RMQ performance measurements. Cold caches, hardware and concurrent work can
+change them substantially. Exact commits, tool identities and logs are indexed
+in [V1 verification](internal/v1/V1_VERIFICATION_INDEX.json); the final delivered
+archive also receives its own recorded smoke check.

@@ -16339,3 +16339,30 @@ regression on a clean repaired source; retain the original aggregate failure.
 Any later coordinator acceptance must explicitly compose successful original
 components with passing replacement checks and unchanged-input evidence. It
 must not claim a passing original aggregate or a full final-HEAD aggregate.
+
+## WDD-20261001-V1-LOCAL-DELIVERY - Compose exact-input evidence and final artifacts
+
+Date: 2026-10-01. Status: source qualification recorded; delivery instance gated.
+
+Preserve source audits and correction reviews verbatim. Record the failed
+aggregate at its actual447 source, its17 passing registered components and
+passing replacements for its three failed checks at250e5932. Record the
+native campaign at d7, EH campaigns at a8,
+wording-only targeted transfer at its own source, guard checks and exact-blob
+packaging at their tested commits. Compare consumed inputs before transferring
+results. Changed policy/constants receive actual production controls; final
+prose receives strict claim, constant, topology, paper and design checks.
+
+The first actual source archive was rejected by an independent Git-blob check
+despite its internally consistent manifest. Direct blob packaging and the new
+attribute discriminator repair this concrete fault. The replacement passed
+independent contents/modes/file-set/extraction checks and a cold Git-free smoke.
+The delivered final instance receives a separate comparison and smoke record.
+
+The external delivery JSON binds final commit, source archive, PDF and evidence
+bundle after creation. It is not embedded recursively in the archive it hashes.
+Original dirty work is preserved. No push, tag, PR, release or hosted CI result
+is implied by local qualification. The finalization matrix keeps frozen texts
+and links actual evidence; no historical failed or incomplete record is renamed
+as a current pass. General future compressor identity is outside the tested
+reproducibility profile.

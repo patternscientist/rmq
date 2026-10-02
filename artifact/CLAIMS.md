@@ -53,11 +53,13 @@ Logical ownership and capacity do not prove a native allocator, compiler, C
 pointer discipline or Rust FFI implementation correct. The
 [native supplement](../native/packed-rmq/README.md) retains those assumptions.
 
-Source is merged; V1 coordinator certification and the exact-candidate audit
-remain pending. The source/evidence transfer inventory and four tooling repairs
-are tracked in [the V1 matrix](../docs/internal/v1/V1_FINALIZATION_MATRIX.md).
-This status does not alter the accepted query theorem above. The aggregate gate
-now explicitly builds `RMQ.Validation.LifecycleContract`, the controls and
+Status: accepted for the stated V1 mathematical model, with the source lineage,
+resolved audit findings and exact-input verification in the
+[coordinator record](../docs/internal/v1/V1_COORDINATOR_ACCEPTANCE.md).
+The [V1 matrix](../docs/internal/v1/V1_FINALIZATION_MATRIX.md) records the
+finalization requirements; the delivered instance has its own external hash
+receipt. This status does not alter the accepted query theorem above. The
+aggregate gate now explicitly builds `RMQ.Validation.LifecycleContract`, the controls and
 provenance modules, checks `scripts/lifecycle_provenance_contract.lean`, and
 checks the standard-axiom whitelist through `scripts/lifecycle_inventory.lean`.
 Native operational replays and historical harness campaigns are separate evidence.

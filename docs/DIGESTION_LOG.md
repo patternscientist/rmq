@@ -2201,3 +2201,29 @@ machine representation refactor. No wrong offset or failed connection was
 found, so V1 retains those checked literals. Their duplication remains a future
 maintenance concern; no performance or proof-quality improvement is asserted
 from leaving them unchanged.
+
+### V1 local candidate closure — 2026-10-01
+
+The final artifact preserves the reference semantics and public propositions.
+Eight historical rank/select lemmas share canonical generic proofs, two unused
+private wrappers are removed, and both reviewer proof sites consume one named
+complete-result decomposition. Universal clients make the packed run's halting,
+answer and complete eventual capacity useful through the public interface;
+supplied-store clients retain the actual read-agreement premise.
+
+Independent review located the remaining defects in evidence and packaging:
+plausible path labels were insufficient without trusted parent context; a final
+"verified" hash must satisfy its status-specific relation; and a self-consistent
+ZIP manifest did not ensure Git blob identity when archive conversion occurred.
+Each now has a concrete discriminator and a repaired actual consumer. The
+independent real-archive check was essential: it rejected a bundle whose own
+manifest was green. The accepted boundary is the specified model and source
+artifact, with separately scoped native observations and explicit tool/runtime
+assumptions. The failed advisory independent-checker attempt remains failed.
+
+The skeptical next questions concern model suitability and efficient native
+realization, not an unstated claim that large constants are practical or that a
+finite test proves the all-size theorem. Those remain distinct future work.
+The exact closure and source-stage results are in
+`internal/v1/V1_COORDINATOR_ACCEPTANCE.md`; final delivered file identities and
+current-tree checks are in the external `RMQ-V1-DELIVERY.json`.

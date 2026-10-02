@@ -56,7 +56,7 @@ and the [machine review packet](docs/WORD_RAM_REVIEW_PACKET.md). The fixed
 code/register term can dominate moderate inputs; its lower-order bound is
 asymptotic, not a practical memory recommendation.
 
-**Continuous lifecycle (merged; coordinator acceptance still open).** A
+**Continuous lifecycle (accepted for V1's stated model).** A
 separate fixed program per input model joins the builder body, metadata and
 request transfer, retirement and a first query into one continuous run, then
 serves further requests from the retained owner. Construction through query
@@ -68,9 +68,9 @@ retained numeric capacity is at most `2*n + retainedRho n` bits with `retainedRh
 proved `o(n)`, which is a different quantity from the peak construction
 workspace. Alias `RMQ.Headlines.succinctRMQContinuousLifecycle`, reachable from
 `import RMQ` but deliberately not from `RMQPaper`. The source, its independent
-frozen client propositions and its integration audits are in place; acceptance
-remains open pending the V1 evidence reconciliation, so this is not presented
-as an accepted result beside the packed query above.
+frozen client propositions, source audits and reconciled verification support
+the [V1 coordinator acceptance](docs/internal/v1/V1_COORDINATOR_ACCEPTANCE.md).
+Native compiled operation has separate finite evidence and assumptions.
 
 Also checked, outside the paper root: RMQ/LCA reductions over rose trees, Euler
 tours, Cartesian trees and balanced parentheses; a standalone rank/select spoke

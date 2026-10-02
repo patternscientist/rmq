@@ -13736,3 +13736,20 @@ instead of a documentary wildcard that the topology checker parsed as a
 nonexistent declaration. Frozen requirement cells remain unchanged.
 The affected checkers must pass on the repaired source before acceptance;
 the original aggregate failure remains evidence and is never relabeled.
+
+## DD-20261001-V1-LOCAL-ACCEPTANCE - Accept the bounded V1 formal artifact
+
+Date: 2026-10-01. Status: local candidate qualification; publication separate.
+
+The integrated proof-maintenance delta and universal clients preserve the
+reference semantics, public propositions and model boundaries. Exact source
+lineage, completed kernel/gate evidence, independent source audits and repaired
+evidence consumers support the additive lifecycle model's V1 inclusion. Record
+formal acceptance separately from the finite native supplement and advisory
+independent-checker failure. Synchronize the current README/claims/family entry
+point and measured reproduction guide while retaining dated historical statuses.
+
+No new theorem, performance bound, native heap claim or stable-library promise
+is introduced. V1_COORDINATOR_ACCEPTANCE and the final external delivery receipt
+identify source qualification and actual deliverables without self-referential
+hashes. Final text checks and final bundle verification follow this closure.

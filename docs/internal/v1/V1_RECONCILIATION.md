@@ -3,7 +3,9 @@
 This record separates source identity, prior verification, current verification
 and coordinator acceptance. It was opened on 2026-10-01 at the implementation
 base `ee44f04a561f2194b3713f071c26b6faf9ba7fab`. Current verification and the
-independent release audit remain obligations of `V1_FINALIZATION_MATRIX.md`.
+independent release audit are discharged by `V1_COORDINATOR_ACCEPTANCE.md`
+and its exact-input evidence index. The delivered instance is recorded separately
+in the external delivery receipt.
 
 ## Exact source lineage
 

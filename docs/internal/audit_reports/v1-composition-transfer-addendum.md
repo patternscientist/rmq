@@ -1,0 +1,23 @@
+**CANDIDATE_COMPLETE — narrow transfer addendum complete. Coordinator acceptance remains required.**
+
+No additional heavy rerun or uncovered changed-input checker was identified for `6eb2ba6f4630b706a7d9cb028f04919a39984f81` → `250e5932c94d1995a7fd8b0a290c5320d114accf`. This is conditional support for component composition, not acceptance of pending checks.
+
+1. **The original aggregate remains failed.** I read its raw identity and narrowly inspected its log. The identity records source/final commit `447751d203a4e5d02f15680731226a56fd8894a3`, `EXIT=1`, `ELAPSED_SECONDS=22295`, and empty final Git status. Independently computed log SHA-256:
+
+   `dafd25a80a5751fbbf2926e12842ebc1995ad2ad74d31e9307df7d690bd9b94c`
+
+   Log lines 31923–31928 record all twenty registrations invoked and exactly three failures: paper checker, topology baseline, topology regression. Its passing components may be individually attributed to this execution; the aggregate cannot be relabelled PASS.
+
+2. **The six heavy campaigns’ consumed source inputs remain unchanged.** An exact path/mode/blob inventory comparison of 949 entries covering formal roots, scripts, build configuration, PRE artifacts and packed-query artifacts returned zero differences. The separate diff over every tracked Lean file was also empty. The complete changed-path list introduces no changes to the six campaigns’ additional matrices, helpers, selectors, expected diagnostics or deadlines. Combined with the prior `447751d…` → `6eb2ba6…` dependency review, the completed heavy results remain transferable under their recorded runtime/cache assumptions. Historical HEAD, clean-state and timing observations retain their original attribution.
+
+3. **The changed documentary inputs have appropriate replacement/current consumers.** The four navigation repairs in `paper/THEOREM_LEDGER.md:425,446` retain the historical mathematical commit pins and declaration identities; the distinction is stated at `:33–38`. `paper/check_paper.ps1:417–467` checks declaration-set correspondence, and `:552–569` invokes citation validation. Thus these repairs do not require another execution of the unchanged hard-coded `ledger_decl_check.lean`.
+
+   The client matrix replaces a documentary wildcard with three actual alias names (`V1_CLIENT_MATRIX.md:22`). Topology scans that matrix and other tracked text (`paper_topology_lint.ps1:619–689`). Successful replacement **paper SelfTest, topology baseline and full topology regression** are therefore required. The source-stage helper snapshot requires their exact ordered identities, zero exits, matching log hashes and clean source identity (`finalize_candidate_docs.py:35–44`). The replacement aggregate file was absent when inspected; I do not promote the supplied partial passes or running regression to completed evidence.
+
+4. **The intervening EH amendment preserves executable control semantics.** An independent in-memory comparison found the registry identical after removing precisely two descriptive fields: `receiptSemantics.guardMeaning` and `shapes.W`. The runner changes only its corresponding registry digest (`failure_controls.ps1:45`). The compact targeted receipts select exactly `K1-W`, `K2-W`, `LV-W` on each profile and correctly classify all three as no-receipt guards. They remain derived summaries of the named executions, not new tests. The existing final text/topology checks cover the added reports and receipts.
+
+The pending final-check snapshot covers current paper, topology, claim, tag, constant, design, hygiene and whitespace consumers (`final_candidate_checks.ps1:25–38`). This matters because the failed reproduction stopped at its gate invocation (`reproduce_artifact.sh:80`), before that driver’s later hygiene and whitespace stages. The supplied `6eb2ba6…` design-regression pass remains applicable: its CI/script inputs have not changed in this delta. Final archive binding and smoke remain separate delivery gates.
+
+**Verification performed:** actual no-role project preflight PASS, pinned Git inventories/diffs, source/receipt reads, registry comparison and raw aggregate-log hashing. **Builds, replacement checks, campaigns and final checks: NOT_RUN by me.** No edits or process changes.
+
+Conceptually, the repair replaces three failed documentary checks while preserving the successful formal experiments. Live assumptions remain receipt validity, recorded runtime/cache conditions and actual completion of replacement/final checks. The skeptical question is: **Does the final record preserve the failed aggregate and independently establish every replacement and delivered-instance result?**
