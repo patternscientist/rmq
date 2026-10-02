@@ -16231,3 +16231,43 @@ Consequences. Registry prose matches the three frozen W guards while their IDs,
 profiles, faults, expectations, order and 57+3 partition stay unchanged. Final
 evidence remains coordinator-reviewed and must identify which checks ran at
 the source checkpoint and which checks transferred the wording-only commit.
+
+
+## WDD-20261001-V1-EVIDENCE-07 - Complete the no-receipt wording correction
+
+Date: 2026-10-01. Status: V1-EVIDENCE worker decision; coordinator acceptance pending.
+
+Context. After the first metadata checkpoint, independent receipt review found
+the same success-marker overstatement in the registry's generic `shapes.W`
+description. The actual K1-W and K2-W case expectations require nonzero exit,
+absent durable receipt and their exact stderr. LV-W alone also declares absent
+`PASS.json` and absent `LIFE1-VALIDATOR PASS` stdout. The first wording-transfer
+targeted runs remain accurate observations at checkpoint `196b47a3`, but they
+cannot bind the final registry wording identity.
+
+Decision. Change only `shapes.W` to describe the common durable-write failure,
+nonzero/absent-result/stderr contract and LV-W's additional PASS-artifact and
+stdout checks. Update the v3 normalized registry SHA-256 from
+`3a42563c43e8d035073a6451342e05fa1548ef0487113cbf3f2dc0618785784d` to
+`218a41449d9da04f816b385bf488c1957baa05b73457d841278d78f6ae1547f1`;
+the final worktree raw SHA-256 is
+`06166cbc87e94008c10c0d92b98a13364f41700771e3c118a67e58d0d01e4339`.
+Compare the original source-checkpoint registry with this final registry under
+both PowerShell editions after removing exactly
+`receiptSemantics.guardMeaning` and `shapes.W`; require every remaining parsed
+field, including all cases and expectations, to be identical.
+
+Controls. Commit the final wording identity, then repeat full `-ProbeOnly` and
+the exact `K1-W,K2-W,LV-W` subset under both target profiles. Retain the
+intermediate checkpoint and receipts as superseded-by-wording observations;
+only the final targeted pair transfers the metadata-only correction.
+
+Alternatives rejected. Leaving `shapes.W` broad would contradict the corrected
+partition prose. Rewriting K1-W/K2-W expectations to add stdout guards would
+change campaign semantics. Relabelling the intermediate receipts as final
+would lose their exact registry identity.
+
+Consequences. The final registry describes all three W controls precisely while
+preserving every ID, profile, fault, expectation, ordering and 57+3 partition.
+The complete 60-case evidence remains bound to `a8f1c512`; final wording is
+covered by its own bounded commit-bound transfer.

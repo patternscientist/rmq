@@ -216,7 +216,7 @@
     "R": "an owned carrier is left dirty while the stage fails; the carrier check still runs",
     "F": "the child stage fails (exit 7) with every pin intact; the durable verdict is fail",
     "T": "the child stage outlives a real short owned deadline; the durable verdict is fail and the helper records the timeout",
-    "W": "the durable result path is a directory, so the durable write fails; the run exits nonzero with no success marker",
+    "W": "the durable result path is a directory, so the durable write fails; each case exits nonzero with no durable result and its declared stderr; LV-W additionally requires no PASS.json and no LIFE1-VALIDATOR PASS stdout marker",
     "U": "an exception is raised inside cleanup/restoration (not the integrity step) while the stage fails; stage, cleanup and integrity results are all recorded",
     "E": "the pinned validator executable is missing; the check runs inside the evidence region and the durable result records it",
     "L": "a labelled entry pin changes; entry values appear only under entry* keys and the plain key holds the post-run pin",

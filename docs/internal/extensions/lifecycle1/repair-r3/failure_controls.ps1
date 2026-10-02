@@ -42,7 +42,7 @@ $registryVersions=@{
   2=@{schema='life1-r4-failure-controls-v2';sha='cf5ef090543773ef0a4fa473164e56633fabeef140301aad737bb2a7a3226dbc'
     base='d27ffa341f4ed8ceccc46817455eb26c73b319a1'
     ids=$r3Ids+@('K1-F','K2-F','K1-T','K2-T','K1-W','K2-W','LV-W','IC-U','LV-E','IC-L','HS-L','K2-G','HS-G')}
-  3=@{schema='life1-v1-evidence-failure-controls-v3';sha='3a42563c43e8d035073a6451342e05fa1548ef0487113cbf3f2dc0618785784d'
+  3=@{schema='life1-v1-evidence-failure-controls-v3';sha='218a41449d9da04f816b385bf488c1957baa05b73457d841278d78f6ae1547f1'
     base='ee44f04a561f2194b3713f071c26b6faf9ba7fab'
     ids=$r3Ids+@('K1-F','K2-F','K1-T','K2-T','K1-W','K2-W','LV-W','IC-U','LV-E','IC-L','HS-L','K2-G','HS-G')}
 }
