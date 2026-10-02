@@ -16168,3 +16168,21 @@ and executable archive-mode assertion unchanged. This is a test-fixture repair,
 not a packager behavior change. The failed Linux log remains in the evidence
 bundle. The separate bounded EH source-audit report is preserved verbatim;
 its remaining campaign obligations are not declared accepted by this commit.
+
+## WDD-20261001-V1-EXACT-BLOB-PACKAGING - Bypass archive attribute conversions
+
+Date: 2026-10-01. Status: correction implementation; independent bundle rerun required.
+
+The first real source ZIP at d7182869 was internally consistent, but the
+independent Git-blob comparison rejected .agents/skills/rmq-audit-prompt/SKILL.md:
+Git stored 7621 bytes and git archive emitted 7761 after CRLF conversion.
+The failed ZIP and checker output remain diagnostic evidence, not a deliverable.
+
+Read the exact recursive tree and cat-file --batch blobs at the frozen commit,
+preserving only ordinary/executable blob modes. Check batch object IDs, types,
+length framing and complete consumption; retain path, reserved-name, clean-tree,
+metadata, overwrite and manifest checks. This bypasses both checkout conversions
+and export-ignore/export-subst attributes. A discriminating fixture now combines
+CRLF attributes, both autocrlf settings, export-ignore and export-subst and compares
+every member and mode with Git objects. Git archive remains unsuitable for the
+promised exact-blob bundle. No formal or native source is changed.

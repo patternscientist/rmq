@@ -68,6 +68,35 @@ class PackageTests(unittest.TestCase):
             self.assertEqual(bundle.getinfo('README.md').external_attr >> 16, 0o100644)
             self.assertEqual(bundle.getinfo('run.sh').external_attr >> 16, 0o100755)
 
+    def test_checkout_and_export_attributes_cannot_change_blob_bundle(self):
+        (self.repo/'.gitattributes').write_bytes(
+            b'*.txt text eol=crlf\nhidden.txt export-ignore\nsubst.txt export-subst\n')
+        (self.repo/'lines.txt').write_bytes(b'first\nsecond\n')
+        (self.repo/'hidden.txt').write_bytes(b'include this tracked file\n')
+        (self.repo/'subst.txt').write_bytes(b'$Format:%H$\n')
+        self.git('add', '.')
+        self.git('-c', 'user.name=RMQ packaging fixture', '-c',
+                 'user.email=fixture@example.invalid', 'commit', '-qm', 'attributes')
+        self.git('config', 'core.autocrlf', 'true')
+        package.create(self.repo, self.archive)
+        self.git('config', 'core.autocrlf', 'false')
+        second = self.root/'without-autocrlf.zip'
+        package.create(self.repo, second)
+        self.assertEqual(self.archive.read_bytes(), second.read_bytes())
+        expected = self.git('ls-tree', '-rz', 'HEAD').split(b'\0')
+        with zipfile.ZipFile(self.archive) as bundle:
+            tracked = {}
+            for record in expected:
+                if not record:
+                    continue
+                metadata, name = record.split(b'\t', 1)
+                mode, kind, oid = metadata.decode().split()
+                self.assertEqual(kind, 'blob')
+                tracked[name.decode()] = oid
+                self.assertEqual(bundle.read(name.decode()), self.git('cat-file', 'blob', oid))
+                self.assertEqual(bundle.getinfo(name.decode()).external_attr >> 16, int(mode, 8))
+            self.assertEqual(set(bundle.namelist()), set(tracked) | {package.MANIFEST})
+
     def test_dirty_tree_and_overwrite_are_rejected(self):
         package.create(self.repo, self.archive)
         with self.assertRaises(FileExistsError):

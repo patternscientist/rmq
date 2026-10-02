@@ -3,12 +3,10 @@
 
 import argparse
 import hashlib
-import io
 import json
 import re
 from pathlib import Path, PurePosixPath
 import subprocess
-import tarfile
 import zipfile
 
 MANIFEST = 'RMQ-SOURCE-MANIFEST.json'
@@ -59,22 +57,41 @@ def create(repo, destination):
     if git(repo, 'status', '--porcelain').strip():
         raise ValueError('Commit or account for working-tree changes before packaging')
     commit = git(repo, 'rev-parse', 'HEAD').decode().strip()
-    # git archive fixes content to this exact object and excludes all local caches.
-    # Pin its permission mask so local Git configuration cannot change ZIP modes.
-    archived = git(repo, '-c', 'tar.umask=0022', 'archive', '--format=tar', commit)
+    # Read objects directly. git archive can apply checkout conversions and
+    # export attributes; neither belongs in an exact-blob source bundle.
+    entries = []
+    for record in git(repo, 'ls-tree', '-rz', commit).split(b'\0'):
+        if not record:
+            continue
+        metadata, raw_name = record.split(b'\t', 1)
+        mode, kind, oid = metadata.decode('ascii').split()
+        name = safe_name(raw_name.decode('utf-8'))
+        if kind != 'blob' or mode not in ('100644', '100755'):
+            raise ValueError(f'Unsupported Git tree entry: {name}')
+        if name == MANIFEST:
+            raise ValueError('Reserved manifest path is already tracked')
+        entries.append((name, mode, oid))
+    objects = subprocess.check_output(
+        ['git', '-C', str(repo), 'cat-file', '--batch'],
+        input=''.join(oid + '\n' for _, _, oid in entries).encode('ascii'))
     payloads = {}
     modes = {}
-    with tarfile.open(fileobj=io.BytesIO(archived), mode='r:') as tree:
-        for member in tree:
-            if member.isdir():
-                continue
-            if not member.isfile():
-                raise ValueError(f'Unsupported Git archive entry: {member.name}')
-            name = safe_name(member.name)
-            if name == MANIFEST:
-                raise ValueError('Reserved manifest path is already tracked')
-            payloads[name] = tree.extractfile(member).read()
-            modes[name] = member.mode
+    offset = 0
+    for name, mode, oid in entries:
+        end = objects.index(b'\n', offset)
+        actual_oid, kind, raw_size = objects[offset:end].decode('ascii').split()
+        if actual_oid != oid or kind != 'blob':
+            raise ValueError(f'Unexpected Git object response: {name}')
+        size = int(raw_size)
+        start = end + 1
+        end = start + size
+        if size < 0 or end >= len(objects) or objects[end:end + 1] != b'\n':
+            raise ValueError(f'Truncated Git object response: {name}')
+        payloads[name] = objects[start:end]
+        modes[name] = int(mode, 8) & 0o777
+        offset = end + 1
+    if offset != len(objects):
+        raise ValueError('Trailing Git object response bytes')
     required = ('lakefile.toml', 'CITATION.cff', 'lean-toolchain')
     missing = [name for name in required if name not in payloads]
     if missing:
