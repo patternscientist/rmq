@@ -204,7 +204,7 @@
   "receiptSemantics": {
     "receiptBearingControlCount": 57,
     "guardedNoReceiptControlIds": ["K1-W", "K2-W", "LV-W"],
-    "guardMeaning": "Each W control proves that a failed durable write exits nonzero and emits no success marker; it has no finalization receipt and therefore no applicable pin-coverage verdict."
+    "guardMeaning": "Each W control requires a nonzero exit, an absent durable receipt, and its declared case-specific diagnostics; only LV-W also declares stdoutAbsent. No W control has a finalization receipt, so pin coverage is not applicable."
   },
   "shapes": {
     "P": "intact; the harness succeeds with no integrity difference",

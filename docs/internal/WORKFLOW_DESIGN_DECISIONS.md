@@ -16186,3 +16186,48 @@ and export-ignore/export-subst attributes. A discriminating fixture now combines
 CRLF attributes, both autocrlf settings, export-ignore and export-subst and compares
 every member and mode with Git objects. Git archive remains unsuitable for the
 promised exact-blob bundle. No formal or native source is changed.
+
+
+## WDD-20261001-V1-EVIDENCE-06 - Correct no-receipt guard metadata without changing its cases
+
+Date: 2026-10-01. Status: V1-EVIDENCE worker decision; coordinator acceptance pending.
+
+Context. The v3 registry correctly partitions 57 receipt-bearing controls from
+the three no-receipt durable-write guards, but its explanatory `guardMeaning`
+said every W control emits no success marker. `K1-W` and `K2-W` require a
+nonzero exit, absent durable receipt and their exact stderr diagnostic; only
+`LV-W` additionally declares `stdoutAbsent`. This was a metadata wording error,
+not a case-mapping or execution-semantics defect. The completed source-bound
+60-control campaigns therefore remain evidence for exact checkpoint
+`a8f1c512e9a5d3d57abae6cd9b988978246af768`, rather than being relabelled as
+runs of this wording-only commit.
+
+Decision. Replace only `receiptSemantics.guardMeaning` with wording that states
+the common nonzero/absent-receipt/case-specific-diagnostic contract and names
+`LV-W` as the sole `stdoutAbsent` declaration. Update the runner's pinned v3
+normalized registry SHA-256 from
+`6b4734e9cbd36955636452f9b3b93089062481de52b2cf1e9bdd37e50d17db5d` to
+`3a42563c43e8d035073a6451342e05fa1548ef0487113cbf3f2dc0618785784d`.
+The old/new raw registry SHA-256 values are respectively
+`9bf8d0ac1406e67233601c42cb1c4a57a0b28212365b72712393f3a4c66c6e51` and
+`97337310afa1a3a5fd66f6b8f6d444e308621e3ef05755d746e5613d17067688`.
+A strict parsed-object comparison removes only
+`receiptSemantics.guardMeaning` and requires the remaining registries to be
+identical.
+
+Controls. After this checkpoint is committed, run `-ProbeOnly` and exactly
+`K1-W,K2-W,LV-W` under both target profiles at the commit identity. Preserve
+the earlier complete-run hashes and record these bounded checks as evidence
+transfer for the metadata-only amendment; they do not stand in for another
+complete 60-control replay.
+
+Alternatives rejected. Keeping the broad success-marker statement would
+misdescribe two existing cases. Changing the case expectations would turn a
+documentation correction into a semantic campaign change. Calling the earlier
+60-control aggregates products of a later commit would erase their source
+identity.
+
+Consequences. Registry prose matches the three frozen W guards while their IDs,
+profiles, faults, expectations, order and 57+3 partition stay unchanged. Final
+evidence remains coordinator-reviewed and must identify which checks ran at
+the source checkpoint and which checks transferred the wording-only commit.
