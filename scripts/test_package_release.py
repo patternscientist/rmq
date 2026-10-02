@@ -53,6 +53,7 @@ class PackageTests(unittest.TestCase):
 
     def test_git_tar_mask_cannot_change_bundle_or_executable_modes(self):
         (self.repo/'run.sh').write_text('#!/bin/sh\nexit 0\n')
+        (self.repo/'run.sh').chmod(0o755)
         self.git('add', 'run.sh')
         self.git('update-index', '--chmod=+x', 'run.sh')
         self.git('-c', 'user.name=RMQ packaging fixture', '-c',

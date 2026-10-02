@@ -16155,3 +16155,16 @@ coordinator acceptance remain separate obligations. This decision covers
 `repair-r4/predicates.ps1`, `repair-r4/FAILURE_CONTROL_REGISTRY.json`,
 `repair-r3/failure_controls.ps1`, `repair-r4/aux_controls.ps1`, the V1 focused
 controls, matrix, command ledger and historical-reader guide.
+
+## WDD-20261001-V1-LINUX-MODE-FIXTURE - Apply executable mode to the fixture file
+
+Date: 2026-10-01. Status: implementation; Linux rerun pending.
+
+The first Linux package-test run passed nine tests and rejected the executable
+fixture as dirty. update-index --chmod set the staged mode but left the actual
+Unix file nonexecutable. Set the fixture file to 0755 before staging, retaining
+the explicit Git index mode for Windows. Preserve the clean-source predicate
+and executable archive-mode assertion unchanged. This is a test-fixture repair,
+not a packager behavior change. The failed Linux log remains in the evidence
+bundle. The separate bounded EH source-audit report is preserved verbatim;
+its remaining campaign obligations are not declared accepted by this commit.
