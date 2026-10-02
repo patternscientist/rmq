@@ -30,8 +30,11 @@ Status vocabulary (fixed):
   Later additive repository results are distinguished explicitly below.
 
 Worker prose, audit narratives, and rejected candidates are process
-evidence only; no row below cites them as proof. All file paths and line
-references are at the base commit.
+evidence only; no row below cites them as proof. File paths and line
+references are at the base commit except the current-checkout navigation
+pointers explicitly marked in L-LB-01 and L-LB-02. Their mathematical source
+commit pins remain historical; the citation checker resolves navigation
+pointers against the current checkout.
 
 ---
 
@@ -420,7 +423,7 @@ references are at the base commit.
 - Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack`
-  (:1878); `doubledLogSlackLower` (:1654); alias
+  (:1839); `doubledLogSlackLower` (:1615), both current-checkout navigation pointers; alias
   `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`
 - File: `RMQ/Core/EncodingLowerBound.lean`; `RMQ/Headlines/RMQ.lean`
 - Proposition: for every `n`: (a) for every `bits` and every
@@ -441,7 +444,7 @@ references are at the base commit.
 - Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound`
-  (:1840); `logSlackLower` (:1650)
+  (:1801); `logSlackLower` (:1611), both current-checkout navigation pointers
 - File: `RMQ/Core/EncodingLowerBound.lean`
 - Proposition: undoubled variant with the weaker slack: every
   `ExactRMQStateEncoding n bits` has

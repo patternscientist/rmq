@@ -13719,3 +13719,20 @@ are recorded separately from the formal proof and full historical campaign.
 
 Consequences. This public documentation change adds no theorem or runtime
 performance claim. WDD-20261001-V1-REPAIR-REVIEW records the test refinements.
+
+## DD-20261001-V1-LIVE-REFERENCES - Repair current paper navigation
+
+Date: 2026-10-01. Status: documentary repair following completed verification.
+
+The Linux reproduction at 447751d203a4e5d02f15680731226a56fd8894a3
+completed with exit 1. Four lower-bound ledger pointers had drifted by 39
+lines after proof cleanup. Update these navigation pointers and explicitly
+distinguish them from the retained historical mathematical commit pins.
+Historical worklogs and audit citations remain historical. No theorem, source
+claim, manuscript text, checker or proof is changed.
+
+The client matrix now spells out the three actual invalid-range aliases
+instead of a documentary wildcard that the topology checker parsed as a
+nonexistent declaration. Frozen requirement cells remain unchanged.
+The affected checkers must pass on the repaired source before acceptance;
+the original aggregate failure remains evidence and is never relabeled.

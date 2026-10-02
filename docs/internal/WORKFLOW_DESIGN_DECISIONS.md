@@ -16322,3 +16322,20 @@ The worker may report candidate completion after final per-commit/range,
 claim-scan, hygiene, exact-scope and clean-state checks pass. Coordinator
 integration, aggregate Lean/build gates and V1 acceptance remain outside this
 leaf.
+
+## WDD-20261001-V1-LIVE-REFERENCES - Preserve failed aggregate and repair consumers
+
+Date: 2026-10-01. Status: verification repair, not candidate acceptance.
+
+The completed 447751d203a4e5d02f15680731226a56fd8894a3 reproduction
+invoked all 20 registered checkers: 17 passed and three failed. Paper citation
+checking rejected four stale navigation pointers. Topology lint rejected a
+client-matrix wildcard, and its regression inherited that baseline failure
+in two positive controls. Correct only the documentary inputs, including the
+ledger's historical/current navigation convention. Preserve every checker and
+frozen requirement. Run the paper self-test, topology baseline and full topology
+regression on a clean repaired source; retain the original aggregate failure.
+
+Any later coordinator acceptance must explicitly compose successful original
+components with passing replacement checks and unchanged-input evidence. It
+must not claim a passing original aggregate or a full final-HEAD aggregate.
