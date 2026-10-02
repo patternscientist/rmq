@@ -42,7 +42,9 @@ manual evidence controls with exact commands in `internal/v1/evidence/COMMAND_LO
 After unpacking, the Lean smoke path in [V1_GUIDE.md](V1_GUIDE.md) works without
 Git metadata. The full mutation campaigns below require a clean repository and
 the historical Git objects they inspect. A source-only ZIP deliberately does
-not replace that Git history. To reproduce the full gate, use the repository
+not replace that Git history. It carries Git blob bytes without checkout
+line-ending conversion; the native supplement's exact-byte inputs require a real
+Git checkout with `.gitattributes` applied. To reproduce the full gate, use the repository
 checkout at the exact manifest commit; preserve the command logs and timings.
 
 ## One-Command Paper Artifact Gate

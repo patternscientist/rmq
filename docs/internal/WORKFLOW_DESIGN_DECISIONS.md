@@ -16023,3 +16023,44 @@ repeats the deletion blind spot.
 Consequences. The new consumer obligations survive omission from the generated
 test loop. This closes the independent-roster concern without changing the
 claim category, source constants, original matrices or runtime evidence scope.
+
+## WDD-20261001-V1-REPAIR-REVIEW - Close bounded packaging and checkout review notes
+
+Date: 2026-10-01. Status: correction implementation; final acceptance pending.
+
+Context. Claude accepted the source-level guide/budget repairs and bounded
+minor-finding dispositions, then requested clearer ZIP/check-out byte wording,
+missing-metadata/version-field controls, an additional source-attribute failure
+control and a clean-index check. Its complete correction report is preserved.
+
+Decision. Cover each of the five missing rules with the same production-shaped
+independent frozen-byte assertions; check clean status and diff in each fresh
+materialization. Preserve distinct negative target hashes. Add package tests
+for missing lean-toolchain and mismatched manifest version with intact hashes.
+Clarify the CRLF rule's adjacent comment, preserve Git diagnostics, and suppress
+unneeded Python bytecode. Earlier citation-prefix repair remains covered.
+
+Record native source d7d633e0 and exact six-stage receipts separately from the
+independent checker: 6559 hash identities,142 packets,23 ABI cases,four clients.
+All receipt paths and historical/source identities retain their original values.
+
+Alternatives rejected. Changing exact-byte predicates, claiming source ZIP
+bytes already obey checkout conversions, or treating internally consistent
+manifest metadata as an authenticated commit would weaken the measured property.
+Reclassifying the finite current native replay as a full historical campaign
+would overstate its deliberately selected roster.
+
+Consequences. Covered paths: .gitattributes, both Python test files, artifact
+reproduction guide, original correction report, native JSON evidence and V1
+finalization matrix. Mathematical source and all native producer scripts remain
+unchanged. General deep-path portability is an environmental residual, not a
+claimed Windows path-length theorem.
+
+Validation follow-up. The first added clean-index assertion failed because a
+checkout-index prefix reused the donor repository's index/stat context. It was
+replaced by a local no-hardlinks clone with its own index and the requested
+core.autocrlf setting before checkout. All three settings and five missing-rule
+controls then passed (2 parameterized tests, 19.404 seconds). The earlier failed
+log is retained separately. All ten package tests passed (16.973 seconds).
+These are measured local Windows results; Linux and actual source-bundle checks
+remain separate obligations.

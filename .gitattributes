@@ -34,11 +34,11 @@ scripts/packed_bitvector_validation_controls.ps1 whitespace=blank-at-eol,-blank-
 # Preserve the contract and complete matrix rows.
 docs/internal/extensions/lifecycle-native1/CONTRACT_REQUIREMENTS.json -text
 docs/internal/extensions/lifecycle-native1/ACCEPTANCE_MATRIX.frozen.md -text
-scripts/lifecycle_native_cases.json text eol=crlf
 
 # The semantic fixture registry and startup amendment use historical CRLF hashes.
 # The startup amendment compares against historical Windows raw-source hashes.
 # These two source files must retain that explicit CRLF representation even
 # when a checkout has core.autocrlf disabled. The Lean text is unchanged.
+scripts/lifecycle_native_cases.json text eol=crlf
 RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/SparseLevelWidth.lean text eol=crlf
 RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean text eol=crlf

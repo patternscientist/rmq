@@ -44,7 +44,7 @@ the integrated tree receives one final aggregate gate after edits stabilize.
 
 | ID | Requirement and actual consumer | Planned evidence | State |
 | --- | --- | --- | --- |
-| REVIEW-NATIVE-CHECKOUT | Preserve the two LF-frozen native contract/matrix files and the three historical CRLF fixture/startup representations across Git checkout settings, without weakening raw hash comparisons. | Fresh checkout fixtures with core.autocrlf true/false; exact hashes and actual native rerun. | OPEN |
+| REVIEW-NATIVE-CHECKOUT | Preserve the two LF-frozen native contract/matrix files and the three historical CRLF fixture/startup representations across Git checkout settings, without weakening raw hash comparisons. | Fresh checkout fixtures with core.autocrlf true/false/input; native replay at d7d633e0d020352757f7f5f0d139de0dfa42b5d0 and independent6559-pin/142-answer check in V1_NATIVE_REPLAY.json and V1_NATIVE_INDEPENDENT_CHECK.json. | PASS |
 
 The first current native attempt passed the 16-case lifecycle validator but
 failed before compilation because Git converted the frozen contract to CRLF.
@@ -64,3 +64,21 @@ The complete independent source reports are preserved at
 path is kept verbatim inside its report; the separate Claude filename avoids
 overwriting the other independent report. Review dispositions and current
 execution results remain separate from these original source-stage reports.
+
+## Native replay and repair-review evidence
+
+The scoped native campaign at `d7d633e0d020352757f7f5f0d139de0dfa42b5d0`
+passed the 16-case validator, fresh native build, startup, 13 fixtures in two
+modes, 23 ABI boundaries and four production C++/Rust clients. The independent
+checker verified 6559 current file/capture identities and all 142 answer packets
+against a separate integer minimum scan with leftmost ties. See the two JSON
+records above. This is finite operational evidence, not full historical
+LIFE-NATIVE-1 campaign recertification or a compiler/FFI correctness theorem.
+
+Claude's bounded correction report is preserved at
+`../audit_reports/v1-review-repairs-claude.md`. Its source-review approvals and
+pending evidence are kept intact. The later package correction rejects the
+independently demonstrated citation-prefix counterexample as well. The five
+checkout rules now all have missing-rule controls and fresh-checkout clean-index
+checks; package metadata guards include missing-file and version-field controls.
+Final local checks of this refinement are recorded by the coordinator.

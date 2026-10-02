@@ -13704,3 +13704,18 @@ formal theorem verification would cross an explicit trust boundary.
 Consequences. No Lean statement, proof, import, model cost, payload accounting
 or runtime assumption changes. WDD-20261001-V1-PACKAGE-REVIEW records the actual
 script/CI choices; this entry governs the public artifact claim.
+
+## DD-20261001-V1-ARCHIVE-CHECKOUT - Explain the native checkout representation
+
+Date: 2026-10-01. Status: reader clarification and measured scoped native evidence.
+
+Context and decision. The source ZIP contains Git blob bytes. Three native
+exact-byte inputs deliberately need CRLF materialized by .gitattributes, so the
+reader guide now explicitly requires a real Git checkout for that supplement.
+The unpacked ZIP's advertised path remains the Lean smoke build. No byte
+predicate or historical hash was weakened to make the archive appear native-ready.
+The successful scoped native campaign and independent142-answer/6559-pin check
+are recorded separately from the formal proof and full historical campaign.
+
+Consequences. This public documentation change adds no theorem or runtime
+performance claim. WDD-20261001-V1-REPAIR-REVIEW records the test refinements.

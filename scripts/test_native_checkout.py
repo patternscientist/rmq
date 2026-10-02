@@ -4,8 +4,11 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import sys
 import tempfile
 import unittest
+
+sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = 'docs/internal/extensions/lifecycle-native1/CONTRACT_REQUIREMENTS.json'
@@ -23,7 +26,10 @@ PATHS = [CONTRACT, MATRIX, CASES, *SOURCES]
 
 
 def git(repo, *args):
-    return subprocess.check_output(['git', '-C', str(repo), *args], stderr=subprocess.PIPE)
+    try:
+        return subprocess.check_output(['git', '-C', str(repo), *args], stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError as error:
+        raise RuntimeError(error.stderr.decode('utf-8', errors='replace')) from error
 
 
 def sha(data):
@@ -54,10 +60,17 @@ class CheckoutTests(unittest.TestCase):
     def checkout(self, setting, name, attributes=None):
         (self.repo / '.gitattributes').write_bytes(self.attributes if attributes is None else attributes)
         git(self.repo, '-c', 'core.autocrlf=false', 'add', '.')
+        git(self.repo, '-c', 'user.name=RMQ checkout fixture', '-c',
+            'user.email=fixture@example.invalid', 'commit', '--allow-empty', '-qm', 'checkout fixture')
         output = self.root / name
-        output.mkdir()
-        git(self.repo, '-c', 'core.autocrlf=' + setting, 'checkout-index',
-            '--all', '--prefix=' + output.as_posix() + '/')
+        # A separate clone has its own index and stat cache. checkout-index
+        # --prefix plus the donor index does not model a clean Git checkout.
+        git(self.root, 'clone', '--quiet', '--no-hardlinks', '--no-checkout',
+            str(self.repo), str(output))
+        git(output, 'config', 'core.autocrlf', setting)
+        git(output, 'checkout', '--quiet', 'HEAD', '--', '.')
+        self.assertEqual(git(output, 'status', '--porcelain').strip(), b'')
+        git(output, 'diff', '--check')
         return output
 
     def assert_frozen_inputs(self, output):
@@ -85,21 +98,19 @@ class CheckoutTests(unittest.TestCase):
             with self.subTest(autocrlf=setting):
                 self.assert_frozen_inputs(self.checkout(setting, setting))
 
-    def test_missing_lf_rule_reproduces_the_native_contract_failure(self):
-        attributes = self.attributes.replace((CONTRACT + ' -text').encode(), b'# omitted contract rule')
-        self.assertNotEqual(attributes, self.attributes)
-        output = self.checkout('true', 'bad-contract', attributes)
-        with self.assertRaises(AssertionError):
-            self.assert_frozen_inputs(output)
-        self.assertNotEqual(sha((output / CONTRACT).read_bytes()), '736ff55b84516d1b0c7e45f5dbf8193df98846ea259f0ef5b3caefbe7cd6bc5f')
-
-    def test_missing_crlf_rule_reproduces_the_fixture_registry_failure(self):
-        attributes = self.attributes.replace((CASES + ' text eol=crlf').encode(), b'# omitted fixture rule')
-        self.assertNotEqual(attributes, self.attributes)
-        output = self.checkout('false', 'bad-fixtures', attributes)
-        with self.assertRaises(AssertionError):
-            self.assert_frozen_inputs(output)
-        self.assertNotEqual(sha((output / CASES).read_bytes()), '9dc72366b51592f18dc50e52d2b799c736dc047e6166538a0a880192062985fd')
+    def test_each_missing_rule_reproduces_its_own_byte_failure(self):
+        for index, path in enumerate(PATHS):
+            with self.subTest(path=path):
+                lf = path in (CONTRACT, MATRIX)
+                suffix = ' -text' if lf else ' text eol=crlf'
+                attributes = self.attributes.replace((path + suffix).encode(), b'# omitted one rule')
+                self.assertNotEqual(attributes, self.attributes)
+                output = self.checkout('true' if lf else 'false', 'missing-' + str(index), attributes)
+                with self.assertRaises(AssertionError):
+                    self.assert_frozen_inputs(output)
+                blob = git(ROOT, 'show', 'HEAD:' + path)
+                expected = blob if lf else blob.replace(b'\r\n', b'\n').replace(b'\n', b'\r\n')
+                self.assertNotEqual(sha((output / path).read_bytes()), sha(expected))
 
 
 if __name__ == '__main__':

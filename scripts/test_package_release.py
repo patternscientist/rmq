@@ -125,6 +125,28 @@ class PackageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Toolchain mismatch'):
             package.verify(altered)
 
+    def test_missing_tracked_metadata_is_rejected_before_output(self):
+        self.git('rm', 'lean-toolchain')
+        self.git('-c', 'user.name=RMQ packaging fixture', '-c',
+                 'user.email=fixture@example.invalid', 'commit', '-qm', 'missing toolchain')
+        with self.assertRaisesRegex(ValueError, 'Missing tracked package metadata: lean-toolchain'):
+            package.create(self.repo, self.archive)
+        self.assertFalse(self.archive.exists())
+
+    def test_package_version_metadata_mismatch_is_rejected(self):
+        package.create(self.repo, self.archive)
+        with zipfile.ZipFile(self.archive) as original:
+            entries = {n:original.read(n) for n in original.namelist()}
+        manifest = json.loads(entries[package.MANIFEST])
+        manifest['version'] = '0.0.0'
+        entries[package.MANIFEST] = json.dumps(manifest).encode()
+        altered = self.root/'wrong-version.zip'
+        with zipfile.ZipFile(altered, 'w') as output:
+            for name, data in entries.items():
+                output.writestr(name, data)
+        with self.assertRaisesRegex(ValueError, 'Package version mismatch'):
+            package.verify(altered)
+
     def test_unsafe_archive_path_is_rejected(self):
         package.create(self.repo, self.archive)
         with zipfile.ZipFile(self.archive, 'a') as output:
