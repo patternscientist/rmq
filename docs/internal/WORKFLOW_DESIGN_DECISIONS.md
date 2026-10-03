@@ -16426,3 +16426,25 @@ scope limits; no formal/model theorem changes or stronger containment claim.
 Final source/report checks and newly authenticated artifacts must precede the
 protected hosted release sequence. Reusing old archive identities or rewriting
 the failed aggregate as passing would erase the distinction this record preserves.
+
+
+## WDD-20261003-V1-PACKAGE-FIXTURE - Materialize changed checkout settings
+
+Date: 2026-10-03. Status: focused CI repair under verification.
+
+PR5 Windows source-artifact job111135130003 failed at reviewed source02cb4e40:
+the packaging fixture changed core.autocrlf from true to false while retaining
+CRLF working bytes and LF committed metadata. Independent reproduction with
+an explicit global true setting and invalidated file timestamps establishes
+that the packager correctly rejects the resulting dirty tree. A cached stat
+match explains why the same test can pass without establishing clean bytes.
+The original failed job and deterministic reproduction remain release evidence.
+
+After each conversion-setting change, force checkout of the disposable fixture
+from its unchanged index, invalidate file timestamps, and assert clean status
+before bundling. Keep byte-for-byte archive equality and exact Git blob/mode/
+file-set assertions. Keep the separate dirty-source rejection case unchanged.
+Do not weaken the production clean-source guard or retry the failure as noise.
+Only the test fixture and this decision record change; no formal, production
+packager, audit repair, or workflow implementation changes. Qualify the fixture
+under both inherited autocrlf settings and preserve historical archive identities.

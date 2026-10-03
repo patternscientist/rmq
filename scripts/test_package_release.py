@@ -1,6 +1,7 @@
 """Integrity and clean-source checks for the local release bundle command."""
 import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -77,9 +78,21 @@ class PackageTests(unittest.TestCase):
         self.git('add', '.')
         self.git('-c', 'user.name=RMQ packaging fixture', '-c',
                  'user.email=fixture@example.invalid', 'commit', '-qm', 'attributes')
-        self.git('config', 'core.autocrlf', 'true')
+        def checkout_with(autocrlf):
+            self.git('config', 'core.autocrlf', autocrlf)
+            # Changing conversion settings alone can leave a genuinely dirty
+            # fixture. Materialize HEAD using the new setting before packaging.
+            self.git('checkout-index', '--all', '--force')
+            # Invalidate cached stat matches: cleanliness must follow from the
+            # checked-out bytes, not from a same-timestamp index shortcut.
+            for path in self.repo.iterdir():
+                if path.is_file():
+                    os.utime(path, (1, 1))
+            self.assertEqual(self.git('status', '--porcelain').strip(), b'')
+
+        checkout_with('true')
         package.create(self.repo, self.archive)
-        self.git('config', 'core.autocrlf', 'false')
+        checkout_with('false')
         second = self.root/'without-autocrlf.zip'
         package.create(self.repo, second)
         self.assertEqual(self.archive.read_bytes(), second.read_bytes())
