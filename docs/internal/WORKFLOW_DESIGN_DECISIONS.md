@@ -16366,3 +16366,28 @@ is implied by local qualification. The finalization matrix keeps frozen texts
 and links actual evidence; no historical failed or incomplete record is renamed
 as a current pass. General future compressor identity is outside the tested
 reproducibility profile.
+
+## WDD-20261003-V1-POLICY-COMPLETION - Require completed scanner verdicts
+
+Date: 2026-10-03. Status: repair under verification; release acceptance pending.
+
+The fresh audit of 4ded05caa68531307d0e9c827161a8611a477015 reproduced
+P2-01: expected rejection text followed by a timeout passed the negative
+policy consumer. Historical outer passes do not establish individual child
+completion; retain those records without inventing historical timeouts.
+
+Use the existing shared owned-process runner for job/process-group cleanup and
+file-based bounded output. Require normal exit1 for rejection, exit0 for
+acceptance, successful cleanup, no timeout and no output overflow. Log those
+fields for every production case. The focused regression extracts the actual
+production functions and sends a real fail-then-hang child through the verdict
+consumer, alongside positive, ordinary reject and failure-status controls.
+It runs from the full policy regression without altering its frozen case roster.
+
+Reject merely adding a sleeper runner test: the failed candidate already had
+one, but its consumer ignored the status. Reject a second process ownership
+implementation: the shared runner already supplies the required OS boundary.
+This changes verification tooling only, preserving all formal models and
+theorem statements. New source verification and independent review must precede
+updated artifact qualification, CI and release. Existing failed receipts stay
+historical and unchanged.

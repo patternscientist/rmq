@@ -9,6 +9,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "owned_process_tree.ps1")
 
 $repoRoot = [System.IO.Path]::GetFullPath((Get-Location).Path)
 $resolvedPolicyPath = [System.IO.Path]::GetFullPath($PolicyPath)
@@ -625,38 +626,6 @@ $baselineTrackedHashes = $null
 $gitStageTimeoutMs = 15000
 $scannerStageTimeoutMs = 30000
 
-function Stop-OwnedProcessTree {
-  param([System.Diagnostics.Process]$Process)
-
-  if ($null -eq $Process -or $Process.HasExited) {
-    return $true
-  }
-
-  if ($env:OS -eq "Windows_NT") {
-    $all = @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue)
-    $pending = @([int]$Process.Id)
-    $owned = @()
-    while ($pending.Count -gt 0) {
-      $parent = $pending[0]
-      $pending = @($pending | Select-Object -Skip 1)
-      $children = @($all | Where-Object { [int]$_.ParentProcessId -eq $parent })
-      foreach ($child in $children) {
-        $pending += [int]$child.ProcessId
-        $owned += [int]$child.ProcessId
-      }
-    }
-    [array]::Reverse($owned)
-    foreach ($id in @($owned + [int]$Process.Id)) {
-      Stop-Process -Id $id -Force -ErrorAction SilentlyContinue
-    }
-  } else {
-    Stop-Process -Id $Process.Id -Force -ErrorAction SilentlyContinue
-  }
-
-  $null = $Process.WaitForExit(5000)
-  return $Process.HasExited
-}
-
 function Invoke-BoundedProcess {
   param(
     [string]$FilePath,
@@ -664,62 +633,21 @@ function Invoke-BoundedProcess {
     [string]$WorkingDirectory,
     [int]$TimeoutMs
   )
-
-  if ($TimeoutMs -le 0) {
-    throw "positive subprocess deadline required"
-  }
-
-  $argumentText = @(
-    foreach ($argument in $Arguments) {
-      if ($argument -match '[\s"]') {
-        '"' + $argument.Replace('"', '\"') + '"'
-      } else {
-        $argument
-      }
-    }
-  ) -join " "
-  $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
-  $startInfo.FileName = $FilePath
-  $startInfo.Arguments = $argumentText
-  $startInfo.WorkingDirectory = $WorkingDirectory
-  $startInfo.UseShellExecute = $false
-  $startInfo.CreateNoWindow = $true
-  $startInfo.RedirectStandardOutput = $true
-  $startInfo.RedirectStandardError = $true
-  $process = $null
-  try {
-    $process = [System.Diagnostics.Process]::new()
-    $process.StartInfo = $startInfo
-    if (-not $process.Start()) {
-      throw "failed to start bounded subprocess: $FilePath"
-    }
-    $stdoutTask = $process.StandardOutput.ReadToEndAsync()
-    $stderrTask = $process.StandardError.ReadToEndAsync()
-    $completed = $process.WaitForExit($TimeoutMs)
-    $timedOut = -not $completed
-    $cleaned = $true
-    if ($timedOut) {
-      $cleaned = Stop-OwnedProcessTree -Process $process
-    } else {
-      $process.WaitForExit()
-    }
-    $stdout = $stdoutTask.GetAwaiter().GetResult()
-    $stderr = $stderrTask.GetAwaiter().GetResult()
-    $output = @(($stdout + [Environment]::NewLine + $stderr) -split "\r?\n" | Where-Object { $_ })
-    $code = if ($timedOut) { 124 } else { [int]$process.ExitCode }
-    return [PSCustomObject]@{
-      Code = $code
-      TimedOut = $timedOut
-      Cleaned = $cleaned
-      Output = @($output | ForEach-Object { [string]$_ })
-    }
-  } finally {
-    if ($null -ne $process -and -not $process.HasExited) {
-      $null = Stop-OwnedProcessTree -Process $process
-    }
-    if ($null -ne $process) {
-      $process.Dispose()
-    }
+  if ($TimeoutMs -le 0) { throw "positive subprocess deadline required" }
+  # Cleanup failure throws in the shared runner; a returned result has crossed
+  # its owned job/process-group death barrier. File redirection avoids waiting
+  # indefinitely on pipes inherited by descendants.
+  $result = Invoke-RMQOwnedBoundedProcess -FilePath $FilePath -Arguments $Arguments `
+    -WorkingDirectory $WorkingDirectory -Stage 'claim-policy-child' `
+    -DeadlineSeconds ([int][Math]::Ceiling($TimeoutMs / 1000.0)) `
+    -OutputLimitBytes 16777216 -TempRoot $absoluteFixtureRoot
+  return [PSCustomObject]@{
+    Code = $(if ($result.TimedOut) { 124 } else { $result.ExitCode })
+    TimedOut = $result.TimedOut
+    Cleaned = $true
+    OutputLimitExceeded = $result.OutputLimitExceeded
+    Ownership = $result.Ownership
+    Output = @($result.Output)
   }
 }
 
@@ -731,7 +659,7 @@ function Invoke-BoundedGit {
 
   $result = Invoke-BoundedProcess -FilePath "git" -Arguments $Arguments `
     -WorkingDirectory $WorkingDirectory -TimeoutMs $gitStageTimeoutMs
-  if ($result.TimedOut -or -not $result.Cleaned -or $result.Code -ne 0) {
+  if ($result.TimedOut -or -not $result.Cleaned -or $result.OutputLimitExceeded -or $result.Code -ne 0) {
     throw "bounded git stage failed: git $($Arguments -join ' ') (exit $($result.Code))"
   }
   return @($result.Output)
@@ -739,14 +667,16 @@ function Invoke-BoundedGit {
 
 function Test-SubprocessDeadlineControl {
   $result = Invoke-BoundedProcess -FilePath $shellPath `
-    -Arguments @("-NoLogo", "-NoProfile", "-Command", "Start-Sleep -Seconds 5") `
-    -WorkingDirectory $repoRoot -TimeoutMs 200
-  if (-not $result.TimedOut -or -not $result.Cleaned) {
-    Write-Host "CLAIM-POLICY-REGRESSION: FAIL [subprocess-deadline-sleeper-control]"
-    $script:failures += 1
-    return
+    -Arguments @('-NoLogo', '-NoProfile', '-Command', 'Start-Sleep -Seconds 5') `
+    -WorkingDirectory $repoRoot -TimeoutMs 1000
+  if (-not $result.TimedOut -or -not $result.Cleaned -or $result.OutputLimitExceeded) {
+    throw 'subprocess-deadline-sleeper-control failed'
   }
-  Write-Host "CLAIM-POLICY-REGRESSION: PASS [subprocess-deadline-sleeper-control] timeout classified and owned process cleaned"
+  Write-Host 'CLAIM-POLICY-REGRESSION: PASS [subprocess-deadline-sleeper-control] timeout classified and owned process cleaned'
+  & (Join-Path $PSScriptRoot 'claim_drift_policy_process_regression.ps1')
+  if ($LASTEXITCODE -ne 0) {
+    throw "policy process/verdict regression failed: $LASTEXITCODE"
+  }
 }
 
 function Get-TrackedGitStatus {
@@ -897,11 +827,17 @@ function Test-FinalVerdict {
   $escapedTermId = [regex]::Escape($TermId)
   $termFailed = [bool]($result.Output -match "CLAIM-DRIFT\[$escapedTermId\].*\[fail\]")
   $termAllowed = [bool]($result.Output -match "CLAIM-DRIFT\[$escapedTermId\].*\[allowed\]")
+  Write-Host ("CLAIM-POLICY-PROCESS: " + ([ordered]@{
+    Id = $Id; Code = $result.Code; TimedOut = $result.TimedOut
+    Cleaned = $result.Cleaned; OutputLimitExceeded = $result.OutputLimitExceeded
+    Ownership = $result.Ownership
+  } | ConvertTo-Json -Compress))
+  $completed = -not $result.TimedOut -and $result.Cleaned -and -not $result.OutputLimitExceeded
   if ($Reject) {
-    $passed = ($result.Code -ne 0) -and $termFailed
+    $passed = $completed -and ($result.Code -eq 1) -and $termFailed
     $expected = "REJECT"
   } else {
-    $passed = $result.Code -eq 0
+    $passed = $completed -and ($result.Code -eq 0)
     if ($RequireAllowed) {
       $passed = $passed -and $termAllowed
     }
@@ -1095,11 +1031,20 @@ The historical global positions 0 and 12 were distinct.
     }
   }
 } finally {
-  if ([System.IO.Directory]::Exists($absoluteFixtureRoot)) {
-    [System.IO.Directory]::Delete($absoluteFixtureRoot, $true)
+  $ownedTempParent = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\', '/')
+  $ownedRoot = [IO.Path]::GetFullPath($absoluteFixtureRoot)
+  if ([IO.Path]::GetDirectoryName($ownedRoot) -ne $ownedTempParent -or
+      [IO.Path]::GetFileName($ownedRoot) -notmatch '^claim-drift-policy-regression-[0-9a-f]{32}$') {
+    throw 'refusing cleanup outside the owned policy fixture directory'
   }
-  if ($null -ne $baselineStatus -and $null -ne $baselineTrackedHashes) {
-    Assert-TrackedStateUnchanged -Context "final-clean-restoration"
+  try {
+    if ($null -ne $baselineStatus -and $null -ne $baselineTrackedHashes) {
+      Assert-TrackedStateUnchanged -Context "final-clean-restoration"
+    }
+  } finally {
+    if ([System.IO.Directory]::Exists($absoluteFixtureRoot)) {
+      [System.IO.Directory]::Delete($absoluteFixtureRoot, $true)
+    }
   }
 }
 
