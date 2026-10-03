@@ -25,12 +25,16 @@ Status vocabulary (fixed):
   the RC-4 round), so this clause describes a shape available to a future
   target rather than anything in the manuscript now; there is no marked
   insertion point at this commit.
-- **OPEN** -- a statement the repository does not prove and the manuscript
-  asserts only as unproved/unclaimed.
+- **OPEN** -- a statement not established by the theorem subset at the
+  manuscript pin and asserted here only as unproved/unclaimed for that subset.
+  Later additive repository results are distinguished explicitly below.
 
 Worker prose, audit narratives, and rejected candidates are process
-evidence only; no row below cites them as proof. All file paths and line
-references are at the base commit.
+evidence only; no row below cites them as proof. File paths and line
+references are at the base commit except the current-checkout navigation
+pointers explicitly marked in L-LB-01 and L-LB-02. Their mathematical source
+commit pins remain historical; the citation checker resolves navigation
+pointers against the current checkout.
 
 ---
 
@@ -419,7 +423,7 @@ references are at the base commit.
 - Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack`
-  (:1878); `doubledLogSlackLower` (:1654); alias
+  (:1839); `doubledLogSlackLower` (:1615), both current-checkout navigation pointers; alias
   `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`
 - File: `RMQ/Core/EncodingLowerBound.lean`; `RMQ/Headlines/RMQ.lean`
 - Proposition: for every `n`: (a) for every `bits` and every
@@ -440,7 +444,7 @@ references are at the base commit.
 - Commit: `3849ecbb53bbedfcd679352cc68d095fa5a304c2`
 - Declaration:
   `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound`
-  (:1840); `logSlackLower` (:1650)
+  (:1801); `logSlackLower` (:1611), both current-checkout navigation pointers
 - File: `RMQ/Core/EncodingLowerBound.lean`
 - Proposition: undoubled variant with the weaker slack: every
   `ExactRMQStateEncoding n bits` has
@@ -711,9 +715,10 @@ references are at the base commit.
 
 #### L-OPEN-01
 - Status: OPEN
-- Statement: the construction's preprocessing complexity -- time and
-  workspace, in any model -- is unproved; no theorem bounds it and the
-  manuscript claims nothing about it.
+- Statement: the query theorems covered by this manuscript do not bound
+  preprocessing time or workspace. Later additive construction/lifecycle
+  theorems are outside the pinned paper subset; this row does not assert
+  their absence from the V1 repository. See `V1_SOURCE_RELATION.md`.
 - Manuscript location: Section 11, item 2.
 
 #### L-OPEN-02

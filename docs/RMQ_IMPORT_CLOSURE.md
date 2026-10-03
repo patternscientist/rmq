@@ -1,5 +1,15 @@
 # RMQ Import Closure
 
+The tables below are historical measurements, including the dated 2026-08-07
+snapshot. For the V1 base `ee44f04a561f2194b3713f071c26b6faf9ba7fab`, the
+[exact Git import inventory](internal/v1/source-closure-inventory.json) records
+262 local modules under `RMQPaper` and 368 under the union of the four named
+lifecycle roots. That inventory names every path and Git blob; the two counts
+refer to different root sets. The paper closure still excludes the unrelated
+spoke/legacy/obstruction categories described below. The V1 proof-maintenance
+delta and additional client are verified separately from these base counts;
+see the [source reconciliation](internal/v1/V1_RECONCILIATION.md).
+
 This note separates the narrow RMQ paper import root from the broader checked
 repository/testbed. The paper-facing root is:
 
@@ -89,7 +99,7 @@ The smell-audit rows used this pattern over each import closure:
 $smell = 'RankSelectPublic|BPNavigationPublic|BPNavigationRAM|UnionFind|Archive|Proposal|Legacy|Compat|Obstruction|RMQ/Impl|RMQ\.Impl'
 ```
 
-## Results
+## Historical results before the 2026-08-07 regeneration
 
 | Root / scope | Files | Lean LOC | Role | Smell audit |
 | --- | ---: | ---: | --- | --- |
@@ -112,7 +122,7 @@ into `SuccinctSelect/Obstructions.lean` now live in
 `RMQ/Core/SuccinctSelect/AsymptoticFacts.lean`, which is the active positive
 dependency used by the paper closure.
 
-## Interpretation
+## Historical 2026-08-07 regeneration and interpretation
 
 The presentation number describes the whole repository as a checked
 data-structure testbed: RMQ, lower bounds, rank/select, BP-navigation,

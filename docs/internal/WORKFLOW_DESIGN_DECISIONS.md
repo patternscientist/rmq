@@ -15461,3 +15461,990 @@ without its contracted artifact; editing it would break the handoff hash.
 
 Consequences. The branch tip carries the report whose identity matches the
 worker handoff; the delta scope is unchanged (repair-r4/** plus this append).
+
+
+## WDD-20261001-V1-COORDINATOR - Candidate packaging and lifecycle gate coverage
+
+Date: 2026-10-01. Status: implementation decision; final gate and audit pending.
+
+Trigger: V1 review found an overlong entry point, contradictory preprocessing
+and acceptance prose, provisional metadata, and lifecycle expected-type clients
+and trust inventory outside the aggregate gate. Add their existing module builds,
+the direct provenance client and the existing axiom inventory to the gate. The
+shared whitelist checker rejects nonstandard axioms; no whitelist is weakened.
+Native runtime replays remain separate and must carry their own evidence.
+
+The local-only Python packager obtains source from the exact committed Git object,
+requires a clean tree, checks package/citation versions, adds a SHA256 file
+manifest and reports the archive hash. It never creates a tag, uploads or
+publishes. Four focused tests cover reproducibility, commit identity, dirty-tree
+and overwrite rejection, tampered/extra content and unsafe names. The source
+ZIP supports the documented Lean smoke path; full mutation reproduction requires
+the Git history, and the guide states that boundary.
+
+The README's repeated constant count is intentionally reduced with its shorter
+content; the Lean-derived value and claim anchor remain checked. Stable
+requirement matrices and exact source inventories live under internal/v1.
+Frozen prior evidence is not rewritten. Transitive workflow-ledger scope for
+worker matrices was corrected before certification, a reusable scope omission
+already covered by STRICT-DESIGN-CHECK-WRITE-SCOPE-CLOSURE.
+
+
+## WDD-20261001-V1-SCAN - Restrict expensive rules to their governed inputs
+
+Date: 2026-10-01. Status: implementation decision; differential verification pending.
+
+The V1 draft scan spent more than 25 minutes in ripgrep's multiline PQ1
+attribution regex across all docs, including historical JSON receipts. Its
+production classifier unconditionally allowed every result outside the exact
+current-fact registry. The new source-identity inventory made that unnecessary
+search larger. Enumerate files with ripgrep's own ignore/hidden/path semantics,
+then apply the existing normalized current-fact path regex before those scoped
+terms run. Other terms, predicates, allowances and required attributions stay
+unchanged. An enumeration error fails; an empty scoped set never reads stdin.
+
+The exhaustive diagnostic mode, ShowAllowed, retains the original scan inputs.
+Default summary counts now describe the actually searched inputs, rather than
+including out-of-scope matches that are hidden anyway. Historical recorded
+counts are not updated. Compare the old and new production policy regression,
+run the scanner self-test on both PowerShell families, and independently review
+the selection logic before acceptance. No pattern, registry or allowance is
+weakened to improve runtime.
+
+Claude's source review found that the production policy regression deliberately
+passes ShowAllowed for allowance witnesses, so its original 130 fixtures did
+not cover the optimized path. Four additional ordered context fixtures now
+exercise default relative/absolute rejection, a clean current surface, and an
+empty current-surface set. Both negative fixtures require the named fail line,
+not merely a nonzero exit. Existing allowance witnesses remain unchanged.
+The scanner explicitly reports an empty scope and documents the changed hit
+count consumer and exclusion-self-test scope. Duplicate overlapping roots retain
+the original behavior. Old and new diagnostic regressions both passed all
+88 reject, 42 accept and 16 original context fixtures before this extension;
+scanner self-tests passed in Windows PowerShell and PowerShell 7. Final extended
+regression and strict design checks are recorded with the integration evidence.
+
+The extended Windows PowerShell regression passed 88 reject, 42 accept and
+20 ordered contexts. A second Claude review led to one more context using a
+directory root with two governed files and one ungoverned file. Enumeration
+counts now provide a direct fast-path witness, and the empty-scope fixture
+requires its diagnostic. Positive exit-0 controls are not claimed as coverage
+witnesses. The final 21-context registry is part of the integrated full gate.
+
+
+## WDD-20261001-V1-CLIENT - Classify the checked-client matrix as workflow evidence
+
+Date: 2026-10-01. Status: implementation candidate; coordinator acceptance and
+the V1 integrated audit remain required.
+
+Context. The V1 checked-client leaf adds one downstream Lean example module,
+its `RMQExamples` import, a goal-to-declaration guide, a proof/design decision,
+and `docs/internal/v1/V1_CLIENT_MATRIX.md`. The strict design classifier treats
+that new internal matrix path as workflow-sensitive. A sibling proof worker
+reproduced the resulting strict failure, and the coordinator explicitly amended
+this leaf's scope to include this one workflow-decision entry.
+
+Decision. Record the matrix as frozen workflow evidence for the checked-client
+leaf. It binds the verbatim requirements to exact intended theorem types,
+object-composition chains, anti-vacuity challenges, and a command ledger before
+implementation. The Lean module remains examples-only and imports a single
+headline surface; it changes no public declaration. The matrix may record
+implementation evidence and statuses after the freeze, while its requirements
+change only under an explicit coordinator amendment such as this scope repair.
+
+Transitive scope closure is: `RMQExamples/V1Clients.lean` is consumed by
+`RMQExamples.lean`; `docs/V1_CLIENTS.md` maps the client goals to exact checked
+declarations; `DD-20261001-V1-CLIENT` records the model-separation design; and
+the V1 client matrix records the acceptance/evidence chain. This WDD exists only
+because that matrix is workflow-sensitive. It does not expand the Lean API,
+claim an exhaustive mutation campaign, or alter the V1 release process.
+
+Alternatives rejected were moving the matrix outside the classified evidence
+tree, weakening the strict classifier, or leaving the workflow decision
+implicit. Those choices would respectively evade the governed artifact role,
+broaden policy for an examples leaf, or keep the branch uncertifiable. Existing
+workflow entries remain byte-identical; this append is the sole amended-path
+change.
+
+Consequences. The final strict design check must run with exact base
+`ee44f04a561f2194b3713f071c26b6faf9ba7fab`. This leaf can report only a
+candidate to the coordinator; integration, aggregate verification, fresh audit,
+and any V1 release decision remain separate.
+
+
+## WDD-20261001-V1-PROOF - Register the governed proof-acceptance matrix
+
+Date: 2026-10-01. Status: coordinator-approved scope correction; candidate
+verification pending.
+
+Context. The V1 proof-maintenance contract requires
+`docs/internal/v1/V1_PROOF_MATRIX.md` to freeze exact proof obligations,
+consumer chains, inherited invariants, and verification commands before Lean
+edits. The first strict design check correctly classified that new path as
+workflow/process-sensitive and required a workflow decision in addition to the
+Lean design decision `DD-20261001-V1-PROOF`. The original worker write scope
+owned the matrix and `DESIGN_DECISIONS.md`, but not this file. The coordinator
+therefore amended the contract explicitly and only for this entry.
+
+Decision. Keep the matrix at its required path and record this transitive scope
+effect. The matrix governs one proof-cleanup leaf: historical rank/select
+theorems delegate to existing generic facts without changing their types, one
+unused private lower-bound helper is removed, and two interior-simulation
+unfolding sites consume one private full-`TraceResult` decomposition. The
+matrix may update evidence and status as checks run; its requirements remain
+frozen except for an explicit coordinator-approved amendment such as this
+scope correction.
+
+Alternatives rejected. Moving the matrix outside `docs/internal/v1` would
+violate the frozen contract. Ignoring the strict failure, disabling strict
+mode, weakening the path classifier, or silently editing an unowned workflow
+file would bypass the repository's process boundary. A broad workflow-policy
+rewrite is unnecessary because no harness, replay registry, automation,
+permission rule, or acceptance authority changes.
+
+Consequences. The proof worker owns this single append and records `AMEND-01`
+in the matrix. `scripts/design_decision_check.ps1 -Strict -Base
+ee44f04a561f2194b3713f071c26b6faf9ba7fab` must pass on the final candidate.
+Coordinator integration, independent reconstruction, and V1 acceptance remain
+separate.
+
+## WDD-20261001-V1-VERIFICATION — Freeze source, then record current evidence
+
+Date: 2026-10-01. Status: verification plan.
+
+The private integration candidate receives one full Linux reproduction using
+the committed advertised script, plus a Windows Lean build/trust check and a
+fresh scoped Windows native supplement. The latter comprises the full 16-case
+lifecycle executable validator, current native producer, startup, all 13 native
+fixtures in both modes, 23 ABI boundaries and four production C++/Rust clients.
+It does not recertify every historical LIFE-NATIVE-1 mutation or foreign-runtime
+conflict fixture. The separate evidence leaf replays its 60 exact failure
+controls under both Windows shell families. Record each command's exact source,
+tools, log, receipt and duration without relabeling historical outputs.
+
+The fresh source audit and verification record identify their target commits.
+Later documentation-only dispositions require report-sensitive scans; they
+do not change the identity of earlier checked source. Local Linux verification
+is explicitly distinct from a hosted CI run. The unmodified original checkout
+and all worker evidence remain available. Publication is not performed here.
+
+The advisory nanoda trial is recorded in `v1/NANODA_ADVISORY.json`, including
+tool revisions, the exporter API adaptation, executable/export hashes and the
+actual failing output. Completing the Quot package repaired an initial missing
+declaration input error; the checker then failed on an omega-generated proof in
+the unchanged reference specification. Its cause is not established here. This
+is a failed advisory check, not independent theorem acceptance or evidence of a
+Lean kernel defect. Required Lean axiom/hygiene checks remain separate.
+
+## WDD-20261001-V1-CLIENT-REVIEW — Preserve original client requirements
+
+Date: 2026-10-01. Status: candidate refinement.
+
+Append three bounded review rows to `docs/internal/v1/V1_CLIENT_MATRIX.md`
+without rewriting the original leaf requirements or relabeling its checks.
+The follow-up explains the packet encoding and fixed-fuel conjunction, adds a
+cost-equals-trace-length example, and uses directly matching existing lemmas.
+Require a focused client build now and the frozen integrated aggregate checks
+after both remaining leaves finish. Source review records the rejected fuel
+reparameterization explicitly. No replay registry, selector, deadline,
+acceptance authority or publication policy changes.
+
+## WDD-20261001-V1-ADVISORY-STATUS — Add the linked reader to reconciliation
+
+Date: 2026-10-01. Status: documentation synchronization.
+
+Add `docs/INDEPENDENT_CHECK.md` to the additional inspected paths in the V1
+reader inventory and synchronize it with the already committed failed advisory
+trial. Historical source inventories and old verification reports remain
+unchanged. The current guide names its actual limited run and avoids converting
+a failed advisory check into a success or a required Lean-gate failure. The
+inventory continues to distinguish the 18 registered current-fact paths from
+additional linked readers. No scanner policy or gate exemption changes.
+
+## WDD-20261001-V1-CLOSURE-READER — Inventory the actual audit-packet reader
+
+Date: 2026-10-01. Status: reader reconciliation.
+
+Add `docs/RMQ_IMPORT_CLOSURE.md`, linked by CODE_MAP and make_audit_packet, to
+the additional V1 inspected-reader inventory. Mark its dated tables historical
+and link the existing exact Git source inventory. The registered 18-path claim
+policy and all historical records remain unchanged. No new gate or compiler
+dependency is introduced.
+
+
+## WDD-20261001-V1-PROOF-REVIEW - Append reviewed proof-cleanup evidence
+
+Date: 2026-10-01. Status: coordinator-authorized bounded follow-up; candidate
+verification pending.
+
+Context. After the first V1 proof-cleanup candidate, coordinator source review
+identified six adjacent proof bodies and one unused private forwarding theorem.
+The returning worker was assigned the exact prior candidate commit and a
+restricted scope. The original V1 proof matrix is immutable as a record of that
+candidate, so the source-review requirements and command outcomes are appended
+in a new section rather than rewriting any earlier frozen row.
+
+Decision. Freeze REVIEW-P1, REVIEW-P2, REVIEW-P3, the three inherited
+invariants, and the two review check rows before implementation. The append
+requires exact binder/order comparison, direct generic delegation, actual
+consumer and no-consumer searches, focused and full builds, and exact-base
+policy/range checks. The coordinator clarified an ownership distinction found
+by the worker: the LowerBound.lean FAMILY_SUMMARY occurrence documents the
+canonical public theorem and remains; only the private EncodingLowerBound
+inventory occurrence follows the deleted wrapper. This correction narrows the
+review estimate without broadening write scope.
+
+Alternatives rejected. Rewriting the original closed rows would destroy their
+frozen evidence. Treating a text search hit as proof of namespace ownership
+would incorrectly remove the canonical public inventory. Skipping the second
+full build would leave downstream historical clients unverified. Expanding the
+follow-up into recursive-definition consolidation, public prose edits, replay
+work, or another reviewer-simulation edit is outside the authorized leaf.
+
+Consequences. The follow-up appends one commit after
+71a4a65336af68dabaf19265b36c7564db8c8cec, preserves all replay sources and
+acceptance authority, and reports only CANDIDATE_COMPLETE when every appended
+row closes. The coordinator still owns integration, native/package gates,
+fresh blind audit, and V1 acceptance.
+
+## WDD-20261001-V1-ARCHIVE-MODES — Test host-configuration independence
+
+Date: 2026-10-01. Status: packaging repair.
+
+Add one bounded disposable-repository control to test_package_release.py for
+archive permission-mask independence and preservation of the Git executable
+bit. Retain existing round-trip, clean-tree, overwrite, tamper and traversal
+controls. The final real ZIP also receives an independent Git-blob/manifest
+comparison and the advertised unpacked smoke commands. No release tag, push or
+publication is involved.
+
+
+## WDD-20261001-V1-EVIDENCE-01 - Version exact lifecycle pin rosters and type the Git identity
+
+Date: 2026-10-01. Status: V1-EVIDENCE worker decision; coordinator acceptance pending.
+
+Context. The R4 pin predicate treated every non-null `entrySha256` as captured
+and compared only receipt-derived counts. A coordinated dropped row could
+therefore agree with its own count, empty/non-hex values counted, and the same
+legacy field represented both file SHA-256 and K2's `git rev-parse HEAD`
+identity. The 60 historical IDs and mappings must remain unchanged, and the R3
+v1 and R4 v2 registries must remain replayable.
+
+Decision. Add a pinned v3 registry with the same ordered 60 controls and an
+independently written ordered roster for each of the nine harnesses. Each
+control names a capture stage; the production failure-control runner passes
+that roster and stage to `Test-R4PinCoverage`. File captures require exactly 64
+hexadecimal SHA-256 digits. Under the coordinator-approved amendment, the K2
+roster types only index 16, literal path `git:HEAD`, as a 40-hex Git SHA-1.
+Historical v1/v2 callers have no type metadata, so only that same literal
+pseudo-path retains the 40-hex rule; every other legacy row remains a 64-hex
+file hash. Keep versions 1 and 2 pinned and accepted by their existing schema,
+hash and ID lists.
+
+Controls. `repair-r4/aux_controls.ps1` and the V1 focused runner check intact
+rosters, a missing capture, coordinated count, empty and non-hex file hashes,
+wrong order, typed Git40 acceptance, typed Git64 rejection, file40 rejection,
+legacy Git40 acceptance, and legacy file40 rejection. Registry mutations and
+selector probes check exact 60-ID loading. This decision covers
+`repair-r4/predicates.ps1`, `repair-r4/aux_controls.ps1`,
+`repair-r4/FAILURE_CONTROL_REGISTRY.json`, and
+`repair-r3/failure_controls.ps1`.
+
+Alternatives rejected. Copying `entryPinCount` into the registry would repeat
+the source under test. Requiring 64 hex for the Git commit would misclassify a
+Git SHA-1 as a file digest. Allowing arbitrary 40-hex paths would weaken file
+identity validation.
+
+Consequences. The predicate now proves exact ordered path, capture-stage and
+identity-width coverage for v3 while preserving historical registry semantics.
+The final 60-control pair is deliberately pending at the source checkpoint.
+
+
+## WDD-20261001-V1-EVIDENCE-02 - Separate native dependency entry and final pin labels
+
+Date: 2026-10-01. Status: V1-EVIDENCE worker decision; coordinator acceptance pending.
+
+Context. `dependency_controls.ps1` exposed entry snapshots under plain `pins`
+and `oldSummary`, although its finalization already re-read the same files.
+The current stream checker ignores those keys, while the dormant R2 parser
+walks the plain keys as current-file pins.
+
+Decision. Preserve entry snapshots additively under `entryPins` and
+`entryOldSummary`. Construct plain `pins` and `oldSummary` from the exact final
+reads used for `finalization.pinChecks`, adding an explicit `state`; represent
+an unreadable final with null bytes/hash and `state=unreadable-final`. The V1
+focused runner copies the exact 11-node closure, mutates only the copied
+`lean.exe` after entry capture, verifies the entry/final distinction and
+failure verdict, and restores the copied bytes in `finally`.
+
+Alternatives rejected. Renaming or deleting the plain keys would break dormant
+historical readers. Mutating the installed toolchain would violate fixture
+ownership. Treating source generation or cached reports as a test would not
+exercise the changed producer.
+
+Consequences. Intact runs remain compatible; changed final state can no longer
+be presented under an unqualified key as the entry value. This decision covers
+`lifecycle-native-p0/repair-r1/dependency_controls.ps1` and the EH2 portion of
+`docs/internal/v1/evidence/evidence_hardening_controls.ps1`.
+
+
+## WDD-20261001-V1-EVIDENCE-03 - Make registry and component identity failures durable after trusted argument parsing
+
+Date: 2026-10-01. Status: V1-EVIDENCE worker decision; coordinator acceptance pending.
+
+Context. R1 `run_controls.ps1` and `finalizer_control.ps1` validated registry
+and component identities before creating an owned evidence root. Moving all
+validation after root creation would change legitimate exact-selector and
+`SourceVariant` argument rejection. Parsing an untrusted drifted mapping before
+root creation also created a subtler escape: syntactically valid `{}` or a
+changed mapping could be dereferenced before a durable record existed.
+
+Decision. Validate runtime, explicit empty arguments, and hard-coded known case
+names before root creation. A pre-root mapping may decide an exact selector or
+`SourceVariant` only after its raw or CRLF-to-LF-normalized SHA-256 equals the
+canonical pinned identity and its expected shape holds. Save missing, parse,
+shape and identity errors, create the validated owned `.lake` root, then throw
+the saved error inside the existing `try/finally`. Freshly read active
+registry and component failures also remain inside that durable boundary.
+`ProbeOnly` retains its documented no-evidence command behavior. Normalize
+text identity only for pinned repository text; raw captured pins remain raw.
+
+Controls. On both shells the focused runner uses a valid known selector with a
+missing frozen registry and with syntactically valid `{}` drift, plus active
+registry and component missing/drift. The finalizer receives missing and `{}`
+registry inputs plus helper missing/drift. Each ordinary path exits nonzero and
+writes exactly one failing child record; an identity-verified canonical
+`SourceVariant` mismatch still rejects before creating a root. The exact
+12-case `registry_controls.ps1` suite passes on both shells.
+
+Alternatives rejected. Selecting from any parseable drifted mapping would let
+untrusted bytes control pre-root behavior. Duplicating the case registry in a
+new adapter would create another identity surface when the pinned text can be
+updated compatibly. Treating the parent record as sufficient would leave the
+assigned child-durability property unmet.
+
+Consequences. Registry/component failures are durable on the supported V1
+path without changing legitimate canonical argument semantics. This decision
+covers `repair-r1/run_controls.ps1`, `repair-r1/finalizer_control.ps1`,
+`repair-r1/registry_controls.ps1`, and the EH3 focused controls.
+
+
+## WDD-20261001-V1-EVIDENCE-04 - Classify historical readers and commit a source-bound evidence checkpoint
+
+Date: 2026-10-01. Status: V1-EVIDENCE worker decision; coordinator acceptance pending.
+
+Context. R1/R2 collectors read the obsolete `sources` key and require frozen
+commits, host paths, evidence roots and executable identities. Native dormant
+parsers read plain dependency pin labels. Editing those round-pinned scripts or
+calling their cached outputs current would erase their historical meaning. The
+coordinator authorized a two-commit order so stable source can integrate while
+the final 60-control pair runs separately; the checkpoint must state what is
+still pending.
+
+Decision. Add `HISTORICAL_VERIFIERS.md` with exact old-key and source anchors,
+frozen prerequisites, current-consumer trace, output hashes and gate non-use.
+Commit exact focused and registry aggregate copies with a command ledger that
+classifies them as fixture host/runtime evidence and records superseded runs
+without relabelling them. Update `V1_EVIDENCE_MATRIX.md` only in evidence and
+worker-disposition cells, plus the explicit coordinator-approved identity-type
+amendment; retain the frozen requirement text byte-for-byte. Leave the final
+60-control pair, candidate auxiliary run and final policy checks open at this
+checkpoint.
+
+Alternatives rejected. Renaming `sources` to `entrySources` in historical
+collectors would still fail their freeze/root/executable requirements and
+would create a misleading new product. Omitting aggregate copies would leave
+only ignored `.lake` paths. Marking the source checkpoint complete would
+conflate a stable implementation with final execution evidence.
+
+Consequences. The checkpoint is independently reviewable and safe to
+integrate as source, while acceptance remains with the coordinator. This
+decision covers `docs/internal/extensions/lifecycle1/HISTORICAL_VERIFIERS.md`,
+`docs/internal/v1/V1_EVIDENCE_MATRIX.md`,
+`docs/internal/v1/evidence/evidence_hardening_controls.ps1`, the four committed
+checkpoint aggregates, and `docs/internal/v1/evidence/COMMAND_LOG.md`.
+
+## WDD-20261001-V1-NATIVE-CHECKOUT - Preserve frozen native byte representations
+
+Date: 2026-10-01. Status: implemented; current native replay pending.
+
+Context. The V1 native attempt at 447751d203a4 passed the lifecycle validator
+but Assert-LN1FrozenContract rejected the checkout's CRLF-converted contract.
+The exact Git blob has the required SHA256 736ff55b84516d1b0c7e45f5dbf8193df98846ea259f0ef5b3caefbe7cd6bc5f.
+The frozen matrix has the same LF requirement; the semantic fixture registry
+has a historical CRLF raw hash.
+Startup separately compares two amended source files with historical raw
+Windows CRLF hashes after removing exactly five macro_inline annotations.
+
+Decision. Pin only those two frozen data paths with -text and the fixture registry plus
+two startup source paths with text eol=crlf in .gitattributes. Restore the two data files
+from their unchanged Git blobs. Test fresh checkout materialization with both
+core.autocrlf settings, then rerun the actual unchanged byte predicates and
+native campaign. Preserve the failed attempt and exact old/new identities.
+
+Alternatives rejected. Normalizing or weakening the predicate would change its
+exact-byte guarantee. Changing frozen hashes would rewrite historical evidence.
+Requiring a global user Git setting would make reproduction depend on hidden
+host configuration. These per-path attributes leave all other files alone.
+
+Consequences. This is checkout reproducibility, not a Lean proof or runtime
+correctness change. The source ZIP remains Git-derived; its advertised path is
+the Lean smoke build, while the native supplement uses a Windows Git checkout.
+This entry covers .gitattributes and the appended REVIEW-NATIVE-CHECKOUT row.
+
+## WDD-20261001-V1-PACKAGE-REVIEW - Test metadata integrity and automate cheap artifact checks
+
+Date: 2026-10-01. Status: implementation decision; final delivery pending.
+
+Context. Claude's source review distinguished manifest consistency from an
+authenticated Git commit and identified missing version/toolchain negative
+controls. A coordinator fixture also demonstrated that substring comparison
+accepted citation version 1.0.0-rc.10 for package version 1.0.0-rc.1. The current
+native replay exposed a separate checkout-byte problem fixed in the preceding
+commit without changing any frozen content or predicate.
+
+Decision. Require exactly one complete citation version value equal to the
+package version. Add mismatched/prefix version and inconsistent toolchain
+metadata fixtures. Move re to module imports and report missing tracked metadata
+with ValueError. State in CLI output and reader prose that --verify authenticates
+neither the claimed commit nor theorem correctness. The actual V1 archive gets
+an independent Git blob, mode and file-set comparison plus an external hash.
+
+Add test_native_checkout.py: fresh Git fixtures materialize the five actual
+inputs under core.autocrlf true/false/input, compare their production frozen
+identities, and reproduce failure when either required LF/CRLF rule is missing.
+Add a small Windows/Linux source-artifact-checks CI job for both Python suites,
+separate from the existing long Lean gate. These local tests do not imply the
+new hosted job has run. Preserve the heavy EH campaigns' separately recorded
+commands and host-bound scope.
+
+Preserve both original independent reports under distinct exact-target names.
+Do not rewrite their pending states, findings, source identities or command
+limitations. Record checkout regression results as their own artifact.
+
+Alternatives rejected. Checking only a manifest commit string would not bind
+content to that commit. Changing a generic count or removing a metadata guard
+would miss the demonstrated prefix error. Adding the long historical EH suite
+to ordinary CI would silently change prerequisites and verification scope.
+
+Consequences. This commit changes packaging/CI/documentation only. It adds no
+Lean theorem, proof assumption, model-cost or native correctness claim. Covered
+paths: package_release.py, test_package_release.py, test_native_checkout.py,
+.github/workflows/ci.yml, ARTIFACT_REPRODUCIBILITY.md, V1 matrix, two source
+audit reports and V1_CHECKOUT_REGRESSION.json.
+
+
+## WDD-20261001-V1-PROOF-REVIEW-EVIDENCE - Cover the evidence-only checkpoint
+
+Date: 2026-10-01. Status: implemented workflow decision for candidate
+evidence closure.
+
+Context. The reviewed Lean source and its required focused checks were stable
+while the single full Windows build was still running. The coordinator
+authorized committing that exact source checkpoint so integration and Linux
+reproduction could overlap the remaining build, while withholding candidate
+completion until the build and every final check closed. That authorization
+changed the original one-follow-up-commit sequence into a source commit plus a
+second evidence-only commit.
+
+Decision. Keep source commit
+`ff479df6e83752f68026bc91ee9feaf520405c07` frozen. After its full build exits
+successfully, update only the appended review evidence in
+`docs/internal/v1/V1_PROOF_MATRIX.md` and this workflow record. Check the
+evidence commit independently with `design_decision_check.ps1 -Strict -Base
+HEAD^ -Head HEAD`, then check the complete assigned range from
+`71a4a65336af68dabaf19265b36c7564db8c8cec`. Preserve the original matrix
+prefix byte-for-byte and repeat the required scope, whitespace, hygiene,
+claim, and clean-status checks.
+
+Alternatives rejected. Waiting to create any source checkpoint would serialize
+independent integration and reproduction work after source review had already
+closed. Treating the matrix-only commit as covered solely by the earlier WDD
+would hide a workflow-sensitive change in a per-commit review. Amending Lean
+source after the checkpoint without a verification failure would invalidate
+the build/source identity.
+
+Consequences. The follow-up has two commits whose combined range implements
+the same bounded proof-cleanup contract. The second commit changes no Lean
+source and records evidence only after the preserved source passes the required
+full build. Coordinator integration, aggregate native/package gates, fresh
+audit, and V1 acceptance remain separate.
+
+## WDD-20261001-V1-GUARDS-01 - Extend current reader guards and synchronize the primitive budget
+
+Date: 2026-10-01. Status: worker implementation; coordinator acceptance pending.
+
+Context. The two V1 reader guides already received generic claim scanning,
+but were absent from the current-fact scope and constant rosters. The packed
+primitive budget was attribution-guarded without numeric synchronization to
+the Lean capstone. Existing frozen V1 matrices record their original contract.
+
+Decision. Explicitly amend the current registry from 18 to 20 paths by adding
+only V1_GUIDE and V1_CLIENTS. Preserve the original ordered 130 policy fixtures
+and all 21 context consumers, append two guide accept/reject pairs and update
+the independent registry pins. Extend the constant rosters with the exact
+guide occurrences, and extract the third budget from the actual capstone's
+`budgetExact` field. Use one shared whole-numeral parser and claim predicate
+for plain and comma-grouped literals, exact counts and conflicting claims.
+Malformed grouping remains a whole conflicting token. Add production-path
+controls for each new surface, both formats, surviving correct occurrences,
+added conflicts, model swaps and unrelated numeral boundaries.
+
+Alternatives rejected. A file-wide budget presence check misses corruption
+when another occurrence survives. Stripping commas in prose avoids testing
+the public format. Independent fixture-only predicates do not establish the
+production guard. Widening unrelated attribution patterns or editing Lean
+would exceed the bounded repair. The old frozen requirement text is retained.
+
+Consequences. These guards compare declared quantities with the pinned Lean
+statements while preserving trace ticks, probes, primitive transitions and
+runtime as separate categories. Finite fixtures do not cover arbitrary prose
+outside the declared claim shapes. The scripts, policy and new guard matrix
+are the owned change; final two-shell evidence remains to be collected.
+
+## WDD-20261001-V1-GUARDS-02 - Pin independent constant consumers before final replay
+
+Date: 2026-10-01. Status: worker repair; coordinator acceptance pending.
+
+Context. Source review found that removing a new constant surface from the
+production table would also remove its generated self-tests. The current
+table was complete, but its own enumeration could not reject that deletion.
+
+Decision. Pin the seven new constant/surface pairs independently inside the
+existing self-test, check exact order and uniqueness, and run deletion and
+duplication controls against that same registry predicate. Reject duplicate
+self-test IDs. Preserve the production surface predicate and all earlier
+controls. The final two-shell runs bind to this strengthened source revision.
+
+Alternatives rejected. A test-count assertion alone can retain the count while
+substituting a different consumer. A roster derived from the production table
+repeats the deletion blind spot.
+
+Consequences. The new consumer obligations survive omission from the generated
+test loop. This closes the independent-roster concern without changing the
+claim category, source constants, original matrices or runtime evidence scope.
+
+## WDD-20261001-V1-REPAIR-REVIEW - Close bounded packaging and checkout review notes
+
+Date: 2026-10-01. Status: correction implementation; final acceptance pending.
+
+Context. Claude accepted the source-level guide/budget repairs and bounded
+minor-finding dispositions, then requested clearer ZIP/check-out byte wording,
+missing-metadata/version-field controls, an additional source-attribute failure
+control and a clean-index check. Its complete correction report is preserved.
+
+Decision. Cover each of the five missing rules with the same production-shaped
+independent frozen-byte assertions; check clean status and diff in each fresh
+materialization. Preserve distinct negative target hashes. Add package tests
+for missing lean-toolchain and mismatched manifest version with intact hashes.
+Clarify the CRLF rule's adjacent comment, preserve Git diagnostics, and suppress
+unneeded Python bytecode. Earlier citation-prefix repair remains covered.
+
+Record native source d7d633e0 and exact six-stage receipts separately from the
+independent checker: 6559 hash identities,142 packets,23 ABI cases,four clients.
+All receipt paths and historical/source identities retain their original values.
+
+Alternatives rejected. Changing exact-byte predicates, claiming source ZIP
+bytes already obey checkout conversions, or treating internally consistent
+manifest metadata as an authenticated commit would weaken the measured property.
+Reclassifying the finite current native replay as a full historical campaign
+would overstate its deliberately selected roster.
+
+Consequences. Covered paths: .gitattributes, both Python test files, artifact
+reproduction guide, original correction report, native JSON evidence and V1
+finalization matrix. Mathematical source and all native producer scripts remain
+unchanged. General deep-path portability is an environmental residual, not a
+claimed Windows path-length theorem.
+
+Validation follow-up. The first added clean-index assertion failed because a
+checkout-index prefix reused the donor repository's index/stat context. It was
+replaced by a local no-hardlinks clone with its own index and the requested
+core.autocrlf setting before checkout. All three settings and five missing-rule
+controls then passed (2 parameterized tests, 19.404 seconds). The earlier failed
+log is retained separately. All ten package tests passed (16.973 seconds).
+These are measured local Windows results; Linux and actual source-bundle checks
+remain separate obligations.
+
+## WDD-20261001-V1-GUARDS-03 - Record the completed source-bound guard evidence
+
+Date: 2026-10-01. Status: worker evidence closure; coordinator acceptance pending.
+
+Context. Both supported Windows shells completed the production constant and
+policy suites at source 72c09db1f99f360ea199b62c2c3402c5c5280be9. The
+evidence needs to distinguish that unchanged source from this evidence-only
+record, retain the failed command attempt, and preserve the frozen contract.
+
+Decision. Close the guard matrix with the exact source identities, nine frozen
+requirements, shell paths/versions, command arguments, durations, output hashes,
+88 constant-control IDs and 134 policy fixture plus 21 context verdicts per shell.
+Retain the argument-binding failure and source-review roster repair. Keep raw
+stdout/stderr and structured command records under .lake/v1-guards. Certify the
+final evidence commit separately; source-bound results do not certify future
+runs. Preserve every original frozen V1 matrix and the new requirement text.
+
+Alternatives rejected. Reporting only a passing aggregate count would lose
+which negative and positive controls ran. Repeating the full production suites
+for changes confined to evidence prose would not validate a changed consumer;
+the scoped claim, design, whitespace, scope and clean-state checks apply to
+this evidence commit instead.
+
+Consequences. The worker evidence is reviewable and reproducible without a
+claim of coordinator acceptance, release or native runtime performance.
+
+
+## WDD-20261001-V1-EVIDENCE-05 - Bind current pin evidence to trusted paths and final identities
+
+Date: 2026-10-01. Status: V1-EVIDENCE worker decision; coordinator acceptance pending.
+
+Context. Independent review of the first V1 source checkpoint constructed a
+K2 receipt with the right row count, capture statuses and hashes but unrelated
+same-basename shell paths; broad suffix and basename rules accepted it. The
+predicate also accepted a captured `verified` pin with a null final identity.
+Those are production-consumer gaps even though the source producers themselves
+record the intended paths and final hashes. Follow-up review also found that
+typed identity bounds were applied to a partial stage rather than the full base
+roster, nine focused selector/registry subprocesses always used PowerShell 7
+without disclosing that fact in the WinPS aggregate, and ten EH3 negatives
+accepted any nonempty stage error.
+
+Decision. Replace broad dynamic roster rules with typed `fixture:`, `shell:`,
+`toolchain:`, and `history:` declarations. The failure-control parent resolves
+them from its independently known fixture root, selected child/host shell,
+registry-pinned toolchain directory, and the `rawSummary.path` of the pinned
+copied `RESULTS.json` input before child execution. Compare the resulting
+canonical Windows paths exactly, allowing slash/case spellings of one path but
+rejecting another root with the same leaf or suffix. Validate identity-kind
+metadata against the full base roster, then project kinds by ordered declared
+row identity onto a partial stage; K2's setup prefix may omit the valid
+base-roster `git:HEAD` row at index 16, while an index outside the base roster
+fails closed.
+
+For every captured row, require `verified` to have a well-formed final identity
+of the declared kind equal to entry, `changed` to have a well-formed different
+final identity, and `unreadable-final` to have null final identity. Uncaptured
+producer statuses retain null final identity. Hash value comparisons are
+case-insensitive, while file SHA-256 and the typed Git SHA-1 stay distinct.
+Keep the unchanged 60 IDs and semantic mappings, and state the existing
+partition explicitly: 57 controls have finalization receipts; the required
+durable output is absent for `K1-W`, `K2-W`, and `LV-W`, so their pin-coverage
+field is inapplicable rather than a positive verification.
+
+Controls. Expand focused and auxiliary predicates with every trusted-context
+class, wrong-root and same-basename substitutions, missing context, all final
+identity relations, a valid partial typed projection, and an out-of-base kind
+index. The focused runner executes shell-capable children with the selected
+shell, records actual executing shell and target profile when the production
+failure runner deliberately requires PowerShell 7, and matches each EH3
+negative to its mutation-specific error. Preserve the earlier aggregates as
+superseded observations. Commit source before ref-exported auxiliary and final
+60-case runs, then append those exact final receipts in a separate evidence
+commit with its own WDD entry.
+
+Alternatives rejected. Deriving expected paths from the receipt would make the
+receipt self-authenticating. Basename or suffix matching cannot distinguish an
+unrelated root. Rejecting a full-roster kind index merely because a legitimate
+stage projects fewer rows would break the existing K2 setup stage. Treating a
+no-receipt W guard as verified pin coverage would overstate its operational
+evidence. A generic nonempty error assertion could pass for the wrong failure.
+
+Consequences. The current production caller supplies the expected dynamic
+identities and the predicate validates exact paths, types, capture stages and
+entry/final relations. The source checkpoint remains a worker candidate;
+final both-shell focused, auxiliary and complete 60-case evidence plus
+coordinator acceptance remain separate obligations. This decision covers
+`repair-r4/predicates.ps1`, `repair-r4/FAILURE_CONTROL_REGISTRY.json`,
+`repair-r3/failure_controls.ps1`, `repair-r4/aux_controls.ps1`, the V1 focused
+controls, matrix, command ledger and historical-reader guide.
+
+## WDD-20261001-V1-LINUX-MODE-FIXTURE - Apply executable mode to the fixture file
+
+Date: 2026-10-01. Status: implementation; Linux rerun pending.
+
+The first Linux package-test run passed nine tests and rejected the executable
+fixture as dirty. update-index --chmod set the staged mode but left the actual
+Unix file nonexecutable. Set the fixture file to 0755 before staging, retaining
+the explicit Git index mode for Windows. Preserve the clean-source predicate
+and executable archive-mode assertion unchanged. This is a test-fixture repair,
+not a packager behavior change. The failed Linux log remains in the evidence
+bundle. The separate bounded EH source-audit report is preserved verbatim;
+its remaining campaign obligations are not declared accepted by this commit.
+
+## WDD-20261001-V1-EXACT-BLOB-PACKAGING - Bypass archive attribute conversions
+
+Date: 2026-10-01. Status: correction implementation; independent bundle rerun required.
+
+The first real source ZIP at d7182869 was internally consistent, but the
+independent Git-blob comparison rejected .agents/skills/rmq-audit-prompt/SKILL.md:
+Git stored 7621 bytes and git archive emitted 7761 after CRLF conversion.
+The failed ZIP and checker output remain diagnostic evidence, not a deliverable.
+
+Read the exact recursive tree and cat-file --batch blobs at the frozen commit,
+preserving only ordinary/executable blob modes. Check batch object IDs, types,
+length framing and complete consumption; retain path, reserved-name, clean-tree,
+metadata, overwrite and manifest checks. This bypasses both checkout conversions
+and export-ignore/export-subst attributes. A discriminating fixture now combines
+CRLF attributes, both autocrlf settings, export-ignore and export-subst and compares
+every member and mode with Git objects. Git archive remains unsuitable for the
+promised exact-blob bundle. No formal or native source is changed.
+
+
+## WDD-20261001-V1-EVIDENCE-06 - Correct no-receipt guard metadata without changing its cases
+
+Date: 2026-10-01. Status: V1-EVIDENCE worker decision; coordinator acceptance pending.
+
+Context. The v3 registry correctly partitions 57 receipt-bearing controls from
+the three no-receipt durable-write guards, but its explanatory `guardMeaning`
+said every W control emits no success marker. `K1-W` and `K2-W` require a
+nonzero exit, absent durable receipt and their exact stderr diagnostic; only
+`LV-W` additionally declares `stdoutAbsent`. This was a metadata wording error,
+not a case-mapping or execution-semantics defect. The completed source-bound
+60-control campaigns therefore remain evidence for exact checkpoint
+`a8f1c512e9a5d3d57abae6cd9b988978246af768`, rather than being relabelled as
+runs of this wording-only commit.
+
+Decision. Replace only `receiptSemantics.guardMeaning` with wording that states
+the common nonzero/absent-receipt/case-specific-diagnostic contract and names
+`LV-W` as the sole `stdoutAbsent` declaration. Update the runner's pinned v3
+normalized registry SHA-256 from
+`6b4734e9cbd36955636452f9b3b93089062481de52b2cf1e9bdd37e50d17db5d` to
+`3a42563c43e8d035073a6451342e05fa1548ef0487113cbf3f2dc0618785784d`.
+The old/new raw registry SHA-256 values are respectively
+`9bf8d0ac1406e67233601c42cb1c4a57a0b28212365b72712393f3a4c66c6e51` and
+`97337310afa1a3a5fd66f6b8f6d444e308621e3ef05755d746e5613d17067688`.
+A strict parsed-object comparison removes only
+`receiptSemantics.guardMeaning` and requires the remaining registries to be
+identical.
+
+Controls. After this checkpoint is committed, run `-ProbeOnly` and exactly
+`K1-W,K2-W,LV-W` under both target profiles at the commit identity. Preserve
+the earlier complete-run hashes and record these bounded checks as evidence
+transfer for the metadata-only amendment; they do not stand in for another
+complete 60-control replay.
+
+Alternatives rejected. Keeping the broad success-marker statement would
+misdescribe two existing cases. Changing the case expectations would turn a
+documentation correction into a semantic campaign change. Calling the earlier
+60-control aggregates products of a later commit would erase their source
+identity.
+
+Consequences. Registry prose matches the three frozen W guards while their IDs,
+profiles, faults, expectations, order and 57+3 partition stay unchanged. Final
+evidence remains coordinator-reviewed and must identify which checks ran at
+the source checkpoint and which checks transferred the wording-only commit.
+
+
+## WDD-20261001-V1-EVIDENCE-07 - Complete the no-receipt wording correction
+
+Date: 2026-10-01. Status: V1-EVIDENCE worker decision; coordinator acceptance pending.
+
+Context. After the first metadata checkpoint, independent receipt review found
+the same success-marker overstatement in the registry's generic `shapes.W`
+description. The actual K1-W and K2-W case expectations require nonzero exit,
+absent durable receipt and their exact stderr. LV-W alone also declares absent
+`PASS.json` and absent `LIFE1-VALIDATOR PASS` stdout. The first wording-transfer
+targeted runs remain accurate observations at checkpoint `196b47a3`, but they
+cannot bind the final registry wording identity.
+
+Decision. Change only `shapes.W` to describe the common durable-write failure,
+nonzero/absent-result/stderr contract and LV-W's additional PASS-artifact and
+stdout checks. Update the v3 normalized registry SHA-256 from
+`3a42563c43e8d035073a6451342e05fa1548ef0487113cbf3f2dc0618785784d` to
+`218a41449d9da04f816b385bf488c1957baa05b73457d841278d78f6ae1547f1`;
+the final worktree raw SHA-256 is
+`06166cbc87e94008c10c0d92b98a13364f41700771e3c118a67e58d0d01e4339`.
+Compare the original source-checkpoint registry with this final registry under
+both PowerShell editions after removing exactly
+`receiptSemantics.guardMeaning` and `shapes.W`; require every remaining parsed
+field, including all cases and expectations, to be identical.
+
+Controls. Commit the final wording identity, then repeat full `-ProbeOnly` and
+the exact `K1-W,K2-W,LV-W` subset under both target profiles. Retain the
+intermediate checkpoint and receipts as superseded-by-wording observations;
+only the final targeted pair transfers the metadata-only correction.
+
+Alternatives rejected. Leaving `shapes.W` broad would contradict the corrected
+partition prose. Rewriting K1-W/K2-W expectations to add stdout guards would
+change campaign semantics. Relabelling the intermediate receipts as final
+would lose their exact registry identity.
+
+Consequences. The final registry describes all three W controls precisely while
+preserving every ID, profile, fault, expectation, ordering and 57+3 partition.
+The complete 60-case evidence remains bound to `a8f1c512`; final wording is
+covered by its own bounded commit-bound transfer.
+
+
+## WDD-20261001-V1-EVIDENCE-08 - Commit source-bound final evidence without restamping campaigns
+
+Date: 2026-10-01. Status: V1-EVIDENCE worker decision; coordinator acceptance pending.
+
+Context. Exact-path source checkpoint
+`a8f1c512e9a5d3d57abae6cd9b988978246af768` has corrected focused 52-case,
+auxiliary 46-case and production 60-case passing aggregates under both shell
+profiles. Final wording checkpoint
+`c79beae0d99519719d2a83882e6dd369bc29026e` has commit-bound loader probes and
+clean-worktree three-guard passing aggregates under both profiles. Raw
+aggregates live under ignored `.lake` roots and are too large or too transient
+to serve as the only review surface. Regenerating them at a later commit would
+erase their actual source identities.
+
+Decision. Commit deterministic compact projections for both auxiliary, both
+complete-registry and both final wording-transfer aggregates. Each projection
+declares that it is derived record generation rather than a new test, embeds
+the raw aggregate path, byte count and SHA-256, and preserves the source ref,
+counts, failures, decisive per-case facts and finalization. Record exact raw
+and compact identities and commands in `COMMAND_LOG.md`; close the evidence
+cells of `V1_EVIDENCE_MATRIX.md` without altering any frozen second-column
+requirement. Keep focused and registry aggregates already committed at their
+observed identities. Also commit the two shell-specific parsed registry
+comparison receipts. Preserve intermediate wording runs as superseded
+observations rather than relabelling them.
+
+Controls. A task-owned compact generator with SHA-256
+`9e9021ea621dd062017ca3856e62493eb48cbaea638ceeadfccf7e566d5d1881`
+projects the six raw files. A separate verifier with SHA-256
+`393ba7ed6ca849fc83a8aa3e9d5c62bfeabf57961a495d1cb4a52639f1ab7189`
+passes under PowerShell 7 and Windows PowerShell 5.1 for those projections and
+the two registry-comparison receipts. It checks raw identity,
+source ref, exact counts, zero failures, error-free finalization, outer pins,
+clean before/after state, all 57 applicable verified receipt controls and the
+three false/null no-receipt controls, or the targeted 0+3 partition. These are
+receipt checks, not re-executions of semantic controls.
+
+Alternatives rejected. Copying the full raw aggregates into Git would obscure
+review in large repetitive process records. Recording only summary counts
+would lose anti-vacuity fields and source identity. Re-running the full60 pair
+after a prose-only registry change would misstate the campaign lineage and add
+cost without exercising changed semantics.
+
+Consequences. Reviewers can trace every final claim to an exact raw aggregate
+and commit while keeping campaign, source and wording identities separate.
+The worker may report candidate completion after final per-commit/range,
+claim-scan, hygiene, exact-scope and clean-state checks pass. Coordinator
+integration, aggregate Lean/build gates and V1 acceptance remain outside this
+leaf.
+
+## WDD-20261001-V1-LIVE-REFERENCES - Preserve failed aggregate and repair consumers
+
+Date: 2026-10-01. Status: verification repair, not candidate acceptance.
+
+The completed 447751d203a4e5d02f15680731226a56fd8894a3 reproduction
+invoked all 20 registered checkers: 17 passed and three failed. Paper citation
+checking rejected four stale navigation pointers. Topology lint rejected a
+client-matrix wildcard, and its regression inherited that baseline failure
+in two positive controls. Correct only the documentary inputs, including the
+ledger's historical/current navigation convention. Preserve every checker and
+frozen requirement. Run the paper self-test, topology baseline and full topology
+regression on a clean repaired source; retain the original aggregate failure.
+
+Any later coordinator acceptance must explicitly compose successful original
+components with passing replacement checks and unchanged-input evidence. It
+must not claim a passing original aggregate or a full final-HEAD aggregate.
+
+## WDD-20261001-V1-LOCAL-DELIVERY - Compose exact-input evidence and final artifacts
+
+Date: 2026-10-01. Status: source qualification recorded; delivery instance gated.
+
+Preserve source audits and correction reviews verbatim. Record the failed
+aggregate at its actual447 source, its17 passing registered components and
+passing replacements for its three failed checks at250e5932. Record the
+native campaign at d7, EH campaigns at a8,
+wording-only targeted transfer at its own source, guard checks and exact-blob
+packaging at their tested commits. Compare consumed inputs before transferring
+results. Changed policy/constants receive actual production controls; final
+prose receives strict claim, constant, topology, paper and design checks.
+
+The first actual source archive was rejected by an independent Git-blob check
+despite its internally consistent manifest. Direct blob packaging and the new
+attribute discriminator repair this concrete fault. The replacement passed
+independent contents/modes/file-set/extraction checks and a cold Git-free smoke.
+The delivered final instance receives a separate comparison and smoke record.
+
+The external delivery JSON binds final commit, source archive, PDF and evidence
+bundle after creation. It is not embedded recursively in the archive it hashes.
+Original dirty work is preserved. No push, tag, PR, release or hosted CI result
+is implied by local qualification. The finalization matrix keeps frozen texts
+and links actual evidence; no historical failed or incomplete record is renamed
+as a current pass. General future compressor identity is outside the tested
+reproducibility profile.
+
+## WDD-20261003-V1-POLICY-COMPLETION - Require completed scanner verdicts
+
+Date: 2026-10-03. Status: repair under verification; release acceptance pending.
+
+The fresh audit of 4ded05caa68531307d0e9c827161a8611a477015 reproduced
+P2-01: expected rejection text followed by a timeout passed the negative
+policy consumer. Historical outer passes do not establish individual child
+completion; retain those records without inventing historical timeouts.
+
+Use the existing shared owned-process runner for job/process-group cleanup and
+file-based bounded output. Require normal exit1 for rejection, exit0 for
+acceptance, successful cleanup, no timeout and no output overflow. Log those
+fields for every production case. The focused regression extracts the actual
+production functions and sends a real fail-then-hang child through the verdict
+consumer, alongside positive, ordinary reject and failure-status controls.
+It runs from the full policy regression without altering its frozen case roster.
+
+Reject merely adding a sleeper runner test: the failed candidate already had
+one, but its consumer ignored the status. Reject a second process ownership
+implementation: the shared runner already supplies the required OS boundary.
+This changes verification tooling only, preserving all formal models and
+theorem statements. New source verification and independent review must precede
+updated artifact qualification, CI and release. Existing failed receipts stay
+historical and unchanged.
+
+## WDD-20261003-V1-RELEASE-PREFLIGHT - Preserve clean gate inputs on tagging
+
+Date: 2026-10-03. Status: bounded release-path repair under verification.
+
+Coordinator inspection before publication found that release-artifact.yml still
+used a depth2 checkout and wrote reproduction output into the checkout. The
+same reproduction's existing branch workflow already fetches full history for
+retrospective commit checks and places its log in RUNNER_TEMP for clean-baseline
+checks. Apply those same inputs to the tag workflow. No checker or branch
+protection is weakened. A hyphenated version tag explicitly creates a GitHub
+prerelease; it does not silently present the current release candidate as stable.
+
+Also retain the failed POSIX process-control attempt: its five-second deadline
+expired before the required diagnostic appeared. An isolated fifteen-second
+probe reached that antecedent and verified descendant cleanup. Adopt that
+measured margin, still below the synthetic child's sixty-second sleep. This
+changes control timing only; normal scanner deadlines and verdicts stay fixed.
+The full Windows policy runs at the preceding commit remain separately pinned;
+the changed focused control must pass on its final source in all three shells.
+
+## WDD-20261003-V1-BLIND-DISPOSITION - Preserve audit objects and qualify repair
+
+Date: 2026-10-03. Status: bounded source accepted; delivery and CI gates pending.
+
+The coordinator accepts P2-01 closure atff92a2f94a97655a995ec744150ae7bab15ccb56
+after independent reproduction, exact production-case evidence and the original
+auditor's continuation. Preserve both external reports verbatim under exact
+per-path Git byte attributes; do not normalize their hashed content or rewrite
+the historical NOT_READY verdict. Append a distinct disposition/index and link
+the older acceptance records. Retain typed-producer and inherited-descendant
+scope limits; no formal/model theorem changes or stronger containment claim.
+Final source/report checks and newly authenticated artifacts must precede the
+protected hosted release sequence. Reusing old archive identities or rewriting
+the failed aggregate as passing would erase the distinction this record preserves.
+
+
+## WDD-20261003-V1-PACKAGE-FIXTURE - Materialize changed checkout settings
+
+Date: 2026-10-03. Status: focused CI repair under verification.
+
+PR5 Windows source-artifact job111135130003 failed at reviewed source02cb4e40:
+the packaging fixture changed core.autocrlf from true to false while retaining
+CRLF working bytes and LF committed metadata. Independent reproduction with
+an explicit global true setting and invalidated file timestamps establishes
+that the packager correctly rejects the resulting dirty tree. A cached stat
+match explains why the same test can pass without establishing clean bytes.
+The original failed job and deterministic reproduction remain release evidence.
+
+After each conversion-setting change, force checkout of the disposable fixture
+from its unchanged index, invalidate file timestamps, and assert clean status
+before bundling. Keep byte-for-byte archive equality and exact Git blob/mode/
+file-set assertions. Keep the separate dirty-source rejection case unchanged.
+Do not weaken the production clean-source guard or retry the failure as noise.
+Only the test fixture and this decision record change; no formal, production
+packager, audit repair, or workflow implementation changes. Qualify the fixture
+under both inherited autocrlf settings and preserve historical archive identities.

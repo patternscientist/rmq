@@ -224,7 +224,8 @@ The artifact does not claim:
 - extraction or benchmarking;
 - production serialization;
 - optimized constants;
-- preprocessing time or space bounds, for any query theorem;
+- preprocessing time or space from the query-only theorems; the separate
+  lifecycle model supplies its own construction and retained-capacity bounds;
 - attainment or tightness of any budget, including the 837,572-instruction
   budget of the accepted theorem `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`;
 - an exact or minimal dynamic read set; or

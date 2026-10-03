@@ -1,0 +1,151 @@
+{
+  "schema": "rmq-v1-current-native-v1",
+  "head": "d7d633e0d020352757f7f5f0d139de0dfa42b5d0",
+  "startedUtc": "2026-10-01T22:55:39.9933242Z",
+  "workingDirectory": "C:/Users/poin/.codex/worktrees/v1-finalization/RMQ",
+  "initialStatus": [],
+  "shell": {
+    "sha256": "362A356CE7F0940EC74F73A8FC2C990A2CC24A38A11C90BBD8ECA947110AD139",
+    "path": "C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe"
+  },
+  "scope": "16-case lifecycle validator; fresh native producer; production startup; 13 fixtures in two modes; 23 ABI boundaries; four production C++/Rust clients. Not full historical LIFE-NATIVE-1 campaign recertification.",
+  "success": true,
+  "stages": [
+    {
+      "name": "validator",
+      "script": "C:/Users/poin/.codex/worktrees/v1-finalization/RMQ/scripts/lifecycle_validator.ps1",
+      "arguments": [
+        "-Stage",
+        "full",
+        "-DeadlineSeconds",
+        "1800"
+      ],
+      "startedUtc": "2026-10-01T22:55:40.1137460Z",
+      "elapsedSeconds": 901.723951,
+      "exit": 0,
+      "log": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\native-v1-checkout-fixed\\validator.log",
+      "logSha256": "F3AA68471729F873C919766E5447A01B93F547DFE099346033C5D51289F230BF",
+      "receipt": {
+        "sha256": "FE8D0CB8AA2E0192F19F98968A3875201B832544F6F190B1FDF61A8FF671BDC5",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-finalization\\RMQ\\.lake\\lifecycle-validator\\cd2c4e712ced43d89b47474e0d801ff1\\RESULT.json"
+      }
+    },
+    {
+      "name": "native-build",
+      "script": "C:/Users/poin/.codex/worktrees/v1-finalization/RMQ/scripts/lifecycle_native_build.ps1",
+      "arguments": [
+        "-Phase",
+        "all",
+        "-LeanDeadlineSeconds",
+        "900",
+        "-LeanDeadlineRationale",
+        "V1 integrated Lean build completed; refresh native contract roots and compile current artifacts."
+      ],
+      "startedUtc": "2026-10-01T23:10:41.9186524Z",
+      "elapsedSeconds": 790.6465048,
+      "exit": 0,
+      "log": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\native-v1-checkout-fixed\\native-build.log",
+      "logSha256": "4E1315015EF1B24BFD930DB0834B4E268E7A522A4424BA5930D69E9E8BB92F99",
+      "receipt": {
+        "sha256": "5556B5900C83F3B8EC0E012EAD517519ABF756BA0E390018DE77E1F75EB960A1",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-finalization\\RMQ\\.lake\\lifecycle-native1\\runs\\build-20261001T231045097\\RESULT.json"
+      }
+    },
+    {
+      "name": "native-startup",
+      "script": "C:/Users/poin/.codex/worktrees/v1-finalization/RMQ/scripts/lifecycle_native_replay.ps1",
+      "arguments": [
+        "-Phase",
+        "Startup",
+        "-BuildReceipt",
+        "C:\\Users\\poin\\.codex\\worktrees\\v1-finalization\\RMQ\\.lake\\lifecycle-native1\\runs\\build-20261001T231045097\\RESULT.json",
+        "-Variant",
+        "production",
+        "-CaseDeadlineSeconds",
+        "120",
+        "-DeadlineRationale",
+        "V1 scoped native replay: prior complete fixture maximum 8.148 seconds; 120 seconds per child allows cold runtime and scheduling margin."
+      ],
+      "startedUtc": "2026-10-01T23:23:52.6241051Z",
+      "elapsedSeconds": 45.1445579,
+      "exit": 0,
+      "log": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\native-v1-checkout-fixed\\native-startup.log",
+      "logSha256": "531BDD5F2AE24BC82C4D75FEF40612B30914845F7D5C3CB3DE77D772D5704F2B",
+      "receipt": {
+        "sha256": "2AF32681C6489350A4E051C5E71091B144C263DAAE4451D82F14F5F9F0D15525",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-finalization\\RMQ\\.lake\\lifecycle-native1\\replay\\20261001T232357248-f6f502d8\\RESULT.json"
+      }
+    },
+    {
+      "name": "native-fixtures",
+      "script": "C:/Users/poin/.codex/worktrees/v1-finalization/RMQ/scripts/lifecycle_native_replay.ps1",
+      "arguments": [
+        "-Phase",
+        "Fixtures",
+        "-BuildReceipt",
+        "C:\\Users\\poin\\.codex\\worktrees\\v1-finalization\\RMQ\\.lake\\lifecycle-native1\\runs\\build-20261001T231045097\\RESULT.json",
+        "-Variant",
+        "production",
+        "-CaseDeadlineSeconds",
+        "120",
+        "-DeadlineRationale",
+        "V1 scoped native replay: prior complete fixture maximum 8.148 seconds; 120 seconds per child allows cold runtime and scheduling margin."
+      ],
+      "startedUtc": "2026-10-01T23:24:37.7880570Z",
+      "elapsedSeconds": 251.5466035,
+      "exit": 0,
+      "log": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\native-v1-checkout-fixed\\native-fixtures.log",
+      "logSha256": "B26BE15FD2F67BF8A978E5FC20AE0F244CFCA3E270E69B960209757E29795744",
+      "receipt": {
+        "sha256": "839503671BD6DE6F6B56996C34E9A1CB35B3446B741A742B410BED7D83735121",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-finalization\\RMQ\\.lake\\lifecycle-native1\\replay\\20261001T232442574-36f56cde\\RESULT.json"
+      }
+    },
+    {
+      "name": "native-abiboundaries",
+      "script": "C:/Users/poin/.codex/worktrees/v1-finalization/RMQ/scripts/lifecycle_native_replay.ps1",
+      "arguments": [
+        "-Phase",
+        "AbiBoundaries",
+        "-BuildReceipt",
+        "C:\\Users\\poin\\.codex\\worktrees\\v1-finalization\\RMQ\\.lake\\lifecycle-native1\\runs\\build-20261001T231045097\\RESULT.json",
+        "-Variant",
+        "production",
+        "-CaseDeadlineSeconds",
+        "120",
+        "-DeadlineRationale",
+        "V1 scoped native replay: prior complete fixture maximum 8.148 seconds; 120 seconds per child allows cold runtime and scheduling margin."
+      ],
+      "startedUtc": "2026-10-01T23:28:49.3595477Z",
+      "elapsedSeconds": 40.3848452,
+      "exit": 0,
+      "log": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\native-v1-checkout-fixed\\native-abiboundaries.log",
+      "logSha256": "D24622791A5F30CF8D2E62FBB0DA4F24C2FBF0BE3BCDCD5719725223CE7A1C0D",
+      "receipt": {
+        "sha256": "6DFE3C16AFF8E00F72988F80ED365A64B8094EC8D4611C8456776FEC393073F4",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-finalization\\RMQ\\.lake\\lifecycle-native1\\replay\\20261001T232854392-1b7c89ae\\RESULT.json"
+      }
+    },
+    {
+      "name": "production-clients",
+      "script": "C:/Users/poin/Documents/RMQ/research-duet-20261001/implementation/native_clients_current.ps1",
+      "arguments": [
+        "-BuildReceipt",
+        "C:\\Users\\poin\\.codex\\worktrees\\v1-finalization\\RMQ\\.lake\\lifecycle-native1\\runs\\build-20261001T231045097\\RESULT.json"
+      ],
+      "startedUtc": "2026-10-01T23:29:29.7648244Z",
+      "elapsedSeconds": 64.2713967,
+      "exit": 0,
+      "log": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\native-v1-checkout-fixed\\production-clients.log",
+      "logSha256": "E06EFB2B0D09F6253AD3864D80A17555C950A6634919D3B4DE69EA9A49551398",
+      "receipt": {
+        "sha256": "EFCF34F280D60A202EC41FEF5829388A3C27398C412A2CB131308FA3285C74F8",
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-finalization\\RMQ\\.lake\\lifecycle-native1\\clients\\20261001T232934912-8ceff27c\\RESULT.json"
+      }
+    }
+  ],
+  "failure": null,
+  "completedUtc": "2026-10-01T23:30:34.0770259Z",
+  "finalHead": "d7d633e0d020352757f7f5f0d139de0dfa42b5d0",
+  "finalStatus": []
+}

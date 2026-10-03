@@ -86,7 +86,9 @@ accepted theorem `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`, which charg
 every primitive instruction of a distinct numeric-memory execution within a
 fixed loop-free budget. The replay campaign, both-host aggregate gates and
 independent audit passed; coordinator acceptance closes the revised E1/PQ1
-node. Serialized-payload querying and preprocessing remain separate targets.
+node. Serialized-payload querying remains separate. The merged lifecycle model
+now supplies a construction-to-reusable-query theorem with its own model
+boundaries; V1 evidence reconciliation is recorded in the release matrix.
 
 Dependency order: A -> B -> (C, D). C can progress in parallel with A/B when it
 is pure extraction/generalization. D-LCA depends on the A/B cost/refinement

@@ -1,0 +1,617 @@
+{
+  "schema": "rmq-v1-eh-receipt-integrity/1",
+  "sourceCommit": "a8f1c512e9a5d3d57abae6cd9b988978246af768",
+  "success": true,
+  "scope": "Independent exact aggregate/durable hashes, ordered source rosters, declared outcomes, shell context, process ownership, and restoration records. Does not independently re-execute every production predicate or establish cryptographic attestation.",
+  "runs": [
+    {
+      "file": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-aux-pwsh-a8f1c512\\RESULT.json",
+      "sha256": "e0fb1081e7218f977c352dc8b094a05366ad11e1fee92ee67bcfdf63d06450d4",
+      "bytes": 26491,
+      "count": 46,
+      "runnerShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "profile": null,
+      "finalizationPins": 2
+    },
+    {
+      "file": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-aux-winps-a8f1c512\\RESULT.json",
+      "sha256": "a19f7c8639e8407f764836a7df35f1e7b73b1d9c85cb7be67f4275c06e7ce935",
+      "bytes": 42831,
+      "count": 46,
+      "runnerShell": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "profile": null,
+      "finalizationPins": 2
+    },
+    {
+      "file": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\RESULT.json",
+      "sha256": "75792302864c807eb73748e01700fc8efeee039cd93021b42403c48a58702eb7",
+      "bytes": 419625,
+      "count": 60,
+      "runnerShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "profile": "pwsh",
+      "finalizationPins": 13
+    },
+    {
+      "file": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\RESULT.json",
+      "sha256": "4e420d51215ee2b4b359e655e0d20ffb98b8effc4a6dfd0cdee37b68ce338f2f",
+      "bytes": 430305,
+      "count": 60,
+      "runnerShell": "C:\\Users\\poin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "profile": "winps",
+      "finalizationPins": 13
+    }
+  ],
+  "durableChildReceipts": [
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\RC-P\\root\\.lake\\r3-evidence\\summary.json",
+      "bytes": 9554,
+      "sha256": "7b44a410f6433f2696cf19e747c5678b9415a51b27954aac2cdf7ece407c5819"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\RC-C\\root\\.lake\\r3-evidence\\summary.json",
+      "bytes": 9730,
+      "sha256": "fd87568285b73625b713efc1f1131b944998ff92751c0fcb5bb827d7b36a4459"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\RC-Q\\root\\.lake\\r3-evidence\\summary.json",
+      "bytes": 9472,
+      "sha256": "71727d94283089720fb95d076d7cd683868a9130b0daa3612e555afc07a5b572"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\RC-S\\root\\.lake\\r3-evidence\\summary.json",
+      "bytes": 4732,
+      "sha256": "fa12f68f8400509c32f07ea00955e651e1cb5de7f327dca45ad0c00677f7b268"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\RC-M\\root\\.lake\\r3-evidence\\summary.json",
+      "bytes": 9753,
+      "sha256": "d26107c6bc7005995e6faadbf03f9e2c4264683c47a200df72f2ac3925abff51"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\FC-P\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-f479a85b51374bd585f47f1ac8143856\\result.json",
+      "bytes": 13833,
+      "sha256": "a27347b7dfdb8e0b8d784033597191bf26d28a7205a9860eaa1c59f2a10ea645"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\FC-C\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-a6b9368be4494fc4ba0464e6f090e64e\\result.json",
+      "bytes": 13900,
+      "sha256": "0753a9455cf0cd6b7bed57d9c8300fdbe992e00fc1cdb7a8483c37e7e911946b"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\FC-Q\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-9dedc888ff9b4ba3a40a4d9c091bcf9e\\result.json",
+      "bytes": 8671,
+      "sha256": "303b58a0ed0ef418f7e9662d01490d84948632b39091be23bb7d8dc972c41a4f"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\FC-S\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-bbc798be761c4393bf671b7a43606197\\result.json",
+      "bytes": 3172,
+      "sha256": "12dacf7651079f1542515c1424f5451f70612c7bebe16078fe44baab7ebb3a65"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\FC-M\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-dddf4f3698cc4b41acf05bf5acf3edc0\\result.json",
+      "bytes": 8881,
+      "sha256": "581a734fea6bfbd513a8c4b84d4260cd9c1a91ef2e191cccd09933fa38cd0a61"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\K1-P\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+      "bytes": 5870,
+      "sha256": "c24cce383a31d241ff0c3994e94875cb1bc98ff4dd50e3793b888c3637e8861a"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\K1-C\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+      "bytes": 5932,
+      "sha256": "5493731bfcd7cbe9144f87b3dc140cea288cd211d21543facd84b4e92c84ec3f"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\K1-Q\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+      "bytes": 6010,
+      "sha256": "416ffa586266cca03c5689eafce41c464a7ede101f9b32e20873028e06ebdc28"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\K1-S\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+      "bytes": 5694,
+      "sha256": "08a787a33d3c640f03cb055386d0e7065d0458b751ee98ac244994363513878f"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\K1-M\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+      "bytes": 6135,
+      "sha256": "e7e148a52d81ae50930e89f41c1ded5c01018d345438559d67b90a35bed84323"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\K1-X\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+      "bytes": 5541,
+      "sha256": "0874b371a0eeee7d9fb9d6964a95eae446ef06f55b13761eaabbc2581d7b6ff5"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\K2-P\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+      "bytes": 9615,
+      "sha256": "1c3f532e9471a27ec59be88b57708a49a73b38a8c7ad2da852251806444b1f00"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\K2-C\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+      "bytes": 9677,
+      "sha256": "05dcad9ecc4dc03423437784a1ad21715d9a6a306503130d5307c5cbf72bfc52"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\K2-Q\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+      "bytes": 9756,
+      "sha256": "218ee5623da96ebc172e943efcfe7d27746bf4930ead005aab158e89df382a4d"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\K2-S\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+      "bytes": 3579,
+      "sha256": "a4ebbfb0e0760192ae9563edf535e5e7665fedaa1e4e3ace54f02e216ce35401"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\K2-M\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+      "bytes": 9881,
+      "sha256": "7c8a198bc05730a9e2a4566102d170aa39cf6f316e5f5ac2736321fe92e6ae9e"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\DC-P\\root\\.lake\\r3-evidence\\receipt.json",
+      "bytes": 2535,
+      "sha256": "0c57a13824f799dc25409f58d197b00263ed37363bc65dfba672aae77e56f436"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\DC-C\\root\\.lake\\r3-evidence\\receipt.json",
+      "bytes": 2585,
+      "sha256": "65f0cc1f32f9ed1a16ee8bd8f15f0ae2b9cea1855327b5d72e5e6240c594d833"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\DC-Q\\root\\.lake\\r3-evidence\\receipt.json",
+      "bytes": 1544,
+      "sha256": "cfd401a7d943fb26e7ef679c8a75c65949a3a6f3310da6181e246befa3855ae9"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\DC-S\\root\\.lake\\r3-evidence\\receipt.json",
+      "bytes": 1344,
+      "sha256": "65cd0754a467602c1112e3e0f212b8a8ec9ca236d276e1ce49177f1bbe67d39c"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\DC-M\\root\\.lake\\r3-evidence\\receipt.json",
+      "bytes": 1703,
+      "sha256": "ef3283e692c034357fe93915135ea882e7919856ed8324de950ca9f59ea3b2b1"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\LV-P\\root\\.lake\\lifecycle-validator\\da61317f133342239748bbc0ef85c36f\\RESULT.json",
+      "bytes": 4064,
+      "sha256": "23a13a69973f7d121560e9d09b4466b678b89c10616bf8a7fa69e84a6d1252fd"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\LV-C\\root\\.lake\\lifecycle-validator\\5d8956d869554bbdacf8cee2ee93c673\\RESULT.json",
+      "bytes": 4125,
+      "sha256": "5f747713007d0477f2b3fef0bebc42a124c8d43912349fab7851a94f95354ffe"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\LV-Q\\root\\.lake\\lifecycle-validator\\6b96c56e55dd45539a03f9513d47b854\\RESULT.json",
+      "bytes": 4149,
+      "sha256": "91f3a75c765852119b7d8173074b60810ba8d69836e4bbe76cd528ef92979eaf"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\LV-S\\root\\.lake\\lifecycle-validator\\2367ff5e4313416c8f3139228573b640\\RESULT.json",
+      "bytes": 4233,
+      "sha256": "597abebc8bed972a8e4d9e2abe1d4cab620bc7a3021ae6617e6663beac003b46"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\LV-M\\root\\.lake\\lifecycle-validator\\034e77aa7ca94549bc4b463903e53fcf\\RESULT.json",
+      "bytes": 4274,
+      "sha256": "4acf781a9ef2059e7dc3bbccfe72bfe202f39240ffd8bb34d58370f7fbbd566b"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\IC-P\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 12692,
+      "sha256": "68993679aee0500e84592c922ebe4e5474aedb55991a4d81cbcc75136e624125"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\IC-C\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 12928,
+      "sha256": "18c316dc591b4856beae91df060e93036e6b4ddd9a97a2bed0545f2bfb8d83f4"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\IC-Q\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 4294,
+      "sha256": "c982b199f7fc822f083bd5b3f53e4cef465cb8acf6c9d0c8840c6b17b957578d"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\IC-S\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 3870,
+      "sha256": "7a32beb3793e766e884d8b58c6304e4cc8845eb800b80395d44185e35c948ce7"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\IC-M\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 4232,
+      "sha256": "943b0b4886fa61fbce28f26a96356eb923090e4848981f7bd87aa6b6e3862461"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\DP-P\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 45482,
+      "sha256": "ace2ae130aa8791060b25fe51d88a9b8864f6d184d52701ff037ea51f47f199a"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\DP-C\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 45729,
+      "sha256": "f99427b5315f73ebfce3eeb704837d4922b7dc74e7632fd4213ea836514f6a41"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\DP-Q\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 43546,
+      "sha256": "98fdf319281c0445da99596b9757723ea6cea17d3719495afbb0824938e28779"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\DP-S\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 1048,
+      "sha256": "1a6cfb712a4b591e206cef5cdbc95a80aac51e2104600dbd0628578d3e9d61c7"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\DP-M\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 43484,
+      "sha256": "05c3d521edb7d2f12037ffd9f9451c4dfb13cf63f3686813077c937db74f0e36"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\HS-P\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 11648,
+      "sha256": "c1392dd082201441bdb5d4d9d8fd4522900fd9a2a25768eefca0a4cabc8a3cd9"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\HS-C\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 11847,
+      "sha256": "1965eacf9fd42291d87e0ba9d7173e77295a02e6b498bf81f7221bd98ee9a530"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\HS-Q\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 5499,
+      "sha256": "2279c227892856b8c9a62436ceef7e1b93893bf9740f330b20945a72aaaa85b6"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\HS-S\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 5096,
+      "sha256": "a1cfdfec37ebab71bc3099b79a9d96e7c7ecded8014048835ff1a9d46ef5f0d8"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\HS-M\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 5437,
+      "sha256": "c7942651bcb1d72f79f7a19c5f8394a00ccfd6c302101f95f0765113f4425d24"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\HS-R\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 7045,
+      "sha256": "ce27f1e5989629310d53dbb76a807c36cb73eee5e96ff5be86d4efd83d5d126a"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\K1-F\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+      "bytes": 5948,
+      "sha256": "7af9002aa953e2c2da0c7ea7d372186c7ae5a0bf30a58d885ee7948b801db32c"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\K2-F\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+      "bytes": 9693,
+      "sha256": "a73a8207440df243e0f051beb6b8e6f657558a958d835abe185a3abcf70d354d"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\K1-T\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+      "bytes": 5895,
+      "sha256": "23208e1cd272907919171399485fa520b8398454391f32662b1a093a7787ee75"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\K2-T\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+      "bytes": 9640,
+      "sha256": "4f5f4799ea2a2ad1ddf45140d82ca48f4b8119db71df92511ada5e1ef2e1bd33"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\IC-U\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 4774,
+      "sha256": "1e26b11d52e0c918c952fcfef6b7836ce2587bb31b265640c7d0bb5fb07d2da8"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\LV-E\\root\\.lake\\lifecycle-validator\\45836c314ad240538adc15526c090685\\RESULT.json",
+      "bytes": 4024,
+      "sha256": "80cc5cca00417d7ecf797338a9eaed9764e3f7c57f638dd6acda7b8f7a2a3e3b"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\IC-L\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 12965,
+      "sha256": "00988b04bc8152db4d5fa81d5c2f0ca993d8951e9dbd7c3b438412aa5ad2250b"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\HS-L\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 11915,
+      "sha256": "37afafc69186c0fb75366f081b0b027a1ea59491b96ac22308cf9d8fa9c36e19"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\K2-G\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+      "bytes": 9816,
+      "sha256": "b005354646427a02a461d49ce11a83e9d120dc9553f2785624e2060711a514f0"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-pwsh-a8f1c512\\controls\\HS-G\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 7502,
+      "sha256": "ba5e150fb51830396cd8b5db4df8812d15c3b2741bd3bd08ee8c5a08c94897d2"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\RC-P\\root\\.lake\\r3-evidence\\summary.json",
+      "bytes": 17116,
+      "sha256": "25169eba9be0122bb7bcf72149950392b3398912ff7d47bee735118f1395ba50"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\RC-C\\root\\.lake\\r3-evidence\\summary.json",
+      "bytes": 17370,
+      "sha256": "460efd05274325aec004ec42b6eb0257b79279397880669b1e3164cf056b5653"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\RC-Q\\root\\.lake\\r3-evidence\\summary.json",
+      "bytes": 17009,
+      "sha256": "a6d6c34c4a4ee430d33e4cad2567abc7c209a55d34c61b822777eaea8d7ac07a"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\RC-S\\root\\.lake\\r3-evidence\\summary.json",
+      "bytes": 8256,
+      "sha256": "0817967d60094a267448555eb3a9a68649fca7e919f28f56bf5eb3faf0670205"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\RC-M\\root\\.lake\\r3-evidence\\summary.json",
+      "bytes": 17358,
+      "sha256": "f90ba4ce12a67d3f0436ebb1a3851ad772e5668c2101f5b5103b42d9bcb484f7"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\FC-P\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-3baf8492b25f40e29128741c32eae757\\result.json",
+      "bytes": 22454,
+      "sha256": "ae295495556f9508f2ad6e6570578e0ee3f7ef716219e5775a59935dc469afea"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\FC-C\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-126f44103f9744da9ac2739414f79039\\result.json",
+      "bytes": 22552,
+      "sha256": "3a21bbe944ce56cc24e182dc55be73969127b4efb54b04c37ec972e09e38c3b9"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\FC-Q\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-73a356e52e284c52b8f3d0cbc75bb1da\\result.json",
+      "bytes": 12855,
+      "sha256": "6993a68943c70dac84b9c8bfdc76429b68e4394ce5e71fa1b471ce7933770b87"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\FC-S\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-1491a7fc68974898ad47d0a8ca75ca55\\result.json",
+      "bytes": 4886,
+      "sha256": "7884d079bb1887fc348df30468ac509aeafc51fe9aff489b3e413a723d7b2568"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\FC-M\\root\\.lake\\r3-evidence\\F01_INTACT_SUCCESS-e9e387c1f654497dac95b5a1f9aa6167\\result.json",
+      "bytes": 13076,
+      "sha256": "d53f5c5b3a7520e9a2b8f33995f549dd53fd7b23c24d4a1af26a343bdfd92812"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\K1-P\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+      "bytes": 9697,
+      "sha256": "c5190284d526a0abb26e4765662b14e7c97b48afaaa50670b241b6e6207c7dee"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\K1-C\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+      "bytes": 9794,
+      "sha256": "9edd4a913dbef401071f2ec51793e1bcfd44e99bc71d3151756a5996e43def1b"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\K1-Q\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+      "bytes": 9871,
+      "sha256": "8cb933e840aa3283932c40c4d683de62049ee59618e7b5138398be4f0f64c444"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\K1-S\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+      "bytes": 9134,
+      "sha256": "6f336a07b0bc09e2eb00a2af65f66251faa4522ba8058f8f5403eeb1fd34acd8"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\K1-M\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+      "bytes": 10030,
+      "sha256": "12ec3bb12deca290bfb80784d0086c2fcf3eb5be41d62fe1c186b2f301e5f5e1"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\K1-X\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+      "bytes": 8973,
+      "sha256": "0b9b579cee9f131aaefcf4bbe7c96520f2ee38cb1bf628024d313d0449b49ad2"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\K2-P\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+      "bytes": 16459,
+      "sha256": "ce77f3ea2db7a30a516d73426f2a78b4d12483ebbbc389f1b952ec728b6a5582"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\K2-C\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+      "bytes": 16557,
+      "sha256": "40728e8b7bc703d7c58b24a430709cf4420f15da59a30290276c102da2de2f3b"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\K2-Q\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+      "bytes": 16635,
+      "sha256": "d3e131970afa6eafacb2b41b51091b6d1420aae53b0c6b8b59c53958c39673aa"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\K2-S\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+      "bytes": 6860,
+      "sha256": "7b5b1df490b69ffd578d18030693efc0aa758e7b30bf90520d2ec353814688b7"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\K2-M\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+      "bytes": 16794,
+      "sha256": "66253fcf3a07d251510216b79eb9a4ef89c9c388c9099b218f4348997eba8afc"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\DC-P\\root\\.lake\\r3-evidence\\receipt.json",
+      "bytes": 3642,
+      "sha256": "ad678229e51429430137e9f36fa38e4b47b58b4647aa5d0b297a726949ea3f48"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\DC-C\\root\\.lake\\r3-evidence\\receipt.json",
+      "bytes": 3727,
+      "sha256": "94841583af0df6ca1fbc93a195df880ff3f4f00b52fb560f63b1072952b91f3a"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\DC-Q\\root\\.lake\\r3-evidence\\receipt.json",
+      "bytes": 2391,
+      "sha256": "5df073e96441454970331b00e14ca3713ac88d09b2f017843ca048734cacd6b3"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\DC-S\\root\\.lake\\r3-evidence\\receipt.json",
+      "bytes": 2190,
+      "sha256": "af0fce2076f00e01773289c46affaa6003d3062ab1283a1168c7747e9f30f249"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\DC-M\\root\\.lake\\r3-evidence\\receipt.json",
+      "bytes": 2584,
+      "sha256": "1600ccb98a7c36a00c883e78813aca70a4ad7fae00814630744167f37d8d5ae4"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\LV-P\\root\\.lake\\lifecycle-validator\\4d2d85cfc44148e6a1b4c7f73d9d5689\\RESULT.json",
+      "bytes": 7220,
+      "sha256": "25fd91eaf0413686d0377dd87a6560e155615c2023a51851edae5c32653a7988"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\LV-C\\root\\.lake\\lifecycle-validator\\de733d26d2544c1b953ec105871f70bf\\RESULT.json",
+      "bytes": 7316,
+      "sha256": "8d1918c80cd9d5394a0f4bdcf552e2aaa6b145354dec5058901affad3d8a5f72"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\LV-Q\\root\\.lake\\lifecycle-validator\\9962db27a8334cc881f7bce4233e4ea7\\RESULT.json",
+      "bytes": 7340,
+      "sha256": "20b90796f59fa4ae082002cd3b6f4226c597ff527457281c04262bd870b8f65a"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\LV-S\\root\\.lake\\lifecycle-validator\\89bb0511af984ff296d62b9447bddf48\\RESULT.json",
+      "bytes": 7423,
+      "sha256": "813af7be7252f75fdbc8003b912c6d147f3a42ad3cf61072e51e0ab2fa126cf1"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\LV-M\\root\\.lake\\lifecycle-validator\\2e10422896374141a60345476cb6c433\\RESULT.json",
+      "bytes": 7499,
+      "sha256": "19d1af6468e31959d4e38147a71c9eb9c4f344707d188d8a9386a7b9a1a690e9"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\IC-P\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 21370,
+      "sha256": "8923e4705fc57b365b17b1a8056fdb2c9e9abd43077058419f3d8d57386918c1"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\IC-C\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 21685,
+      "sha256": "eb5646dbf98cd6676eeda5c7c00e5ce3107b4f679de834b24f8ea533af7fdaa1"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\IC-Q\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 6925,
+      "sha256": "2799a39867b7b13fa5f602fca09c1f7cf91ebef0d47c106e785b779928bdeee4"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\IC-S\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 6423,
+      "sha256": "35da1c4fdcb24d7f6d955750eb441c98f3bea13d1fcc089937df70cc7f5d00cd"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\IC-M\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 6863,
+      "sha256": "982c61699417b3e42b4013ca1f5e471455d7033b5c5cf2f9158300d88719b3ad"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\DP-P\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 77533,
+      "sha256": "a3c30808c0036a09d0102a6ca5322cb236b288d38f578115ab04f5da0c1e6a98"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\DP-C\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 77816,
+      "sha256": "02ab6993d299ea1ba1f12e4bc06d4b8ceb93a3a4ccccb78e6346cbdf9b498fec"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\DP-Q\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 73421,
+      "sha256": "3083a0b28d63c98790e832c8460e9b95b8140c7cd73a8f71e48805c2f4409f0c"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\DP-S\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 1722,
+      "sha256": "b3c86e5836c406f1497e58648ceb7b2bb56c5e6ef5da17ea9e6f70f02eeb51cf"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\DP-M\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 73359,
+      "sha256": "ae1ff2dc4697fed690d2e401bc0892ba41ef05ef98ed96d0d03ea03551a7fb3e"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\HS-P\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 19234,
+      "sha256": "8a79c6f15074a70900274bc3946b044d2f4327d64b764ee9fd7fde6a1f3fe491"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\HS-C\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 19469,
+      "sha256": "befa9b6ccb896e3a7a9e1f66e5939024782f827f8d219d890547bde0f8c46f7f"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\HS-Q\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 8656,
+      "sha256": "9574a28b65612464ee0ae33553d110f5b158fa61a54df6fe98e56d41054d2ed6"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\HS-S\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 8218,
+      "sha256": "fb6bcf7a811eda0561273d6327e68447d8dbf927f3eb511641054fa8fccf89a4"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\HS-M\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 8594,
+      "sha256": "ae3e6ee98d706674dc36e6e9500fefa4eedb6f7dafd18dbca8a1e3020bd9d787"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\HS-R\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 11712,
+      "sha256": "f42f5fd93b6121c43074cb21fca43cfa827cbfe062f10c2c9baed8f4cafbe41f"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\K1-F\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+      "bytes": 9773,
+      "sha256": "a7a6fa8ab8f2eb97503315449c1fa6dc77281e0dd4c9da9943f6873476595487"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\K2-F\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+      "bytes": 16537,
+      "sha256": "a3a0f95e3861dce02a67e21eb69454a3dd18e46ea4252816670156e0d7abb5f8"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\K1-T\\root\\.lake\\repair-r1\\checks\\r3-control\\result.json",
+      "bytes": 9736,
+      "sha256": "40b925b8e8c56468f5062d54921c94dca3b843a1870a4ae291daf794be58df9f"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\K2-T\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+      "bytes": 16499,
+      "sha256": "c4237953f373e46805c4e1e326303debe65c14d0e373423ce05deab6fa5d5836"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\IC-U\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 7651,
+      "sha256": "03a5471384fdf72bec6b4356996b37ef8f5b1ab5b2b8b44490ae57b16b64fdfa"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\LV-E\\root\\.lake\\lifecycle-validator\\e78a26564272449793581e9a2282a6af\\RESULT.json",
+      "bytes": 7180,
+      "sha256": "cf4858248103107964b632882a2382eeee5fc932753d525e28cb913b2e369a26"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\IC-L\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 21731,
+      "sha256": "d495dd562c5b19bc2de184177dc3e4f2494708761c440046f8cb9a521694c01f"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\HS-L\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 19547,
+      "sha256": "bc37052bdd1b47c1f89d37328a066600da00e0c7791fca9fece7d9bf1fc98b7c"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\K2-G\\root\\.lake\\repair-r2\\checks\\r3-control\\result.json",
+      "bytes": 16655,
+      "sha256": "f627a88d257cbcea9607a679d3115bfd327b0b8cdf664f45118659904e5eb5b5"
+    },
+    {
+      "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\.lake\\v1-evidence\\identity-full60-winps-a8f1c512\\controls\\HS-G\\root\\.lake\\r3-out\\RESULTS.json",
+      "bytes": 12212,
+      "sha256": "3d1d5bc3939e610f99ad810271e62c7d0692b95e6dc6400111605377650f5148"
+    }
+  ],
+  "durableChildReceiptCount": 114
+}

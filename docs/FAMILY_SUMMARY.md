@@ -1,5 +1,17 @@
 # RMQ Family Summary
 
+V1 current status (2026-10-01): the additive continuous lifecycle model is
+accepted for this local research release candidate. See the
+[coordinator record](internal/v1/V1_COORDINATOR_ACCEPTANCE.md) for source
+identities, evidence composition and native boundaries. Dated sections below
+retain their historical checkpoint statuses; native campaign acceptance is
+separate from this formal-model decision.
+
+For the V1 reader path and comparison of query and construction models, see
+[the V1 guide](V1_GUIDE.md). The additive lifecycle surface is scoped separately in
+[the claims packet](../artifact/CLAIMS.md); preprocessing exclusions below describe the
+query-only results, not an absence of construction theorems from the repository.
+
 ## Canonical All-Size Charged-Trace Cost
 
 The current theorem gives a term-by-term bound on the canonical payload-backed
@@ -3369,9 +3381,8 @@ completeness.
   `mem_nodeProducts`, `nodup_nodeProducts`,
   `nodup_flatMap_of_nodup_disjoint`, `mem_splitShapeProducts`,
   `splitShapeProducts_nodup`, `fullCode_eq_of_tail_eq_of_pos`.
-- `RMQ/Core/EncodingLowerBound.lean`: `mem_erase_of_ne_of_mem`,
-  `rightSpine`, `rightSpine_shapeOfSize`,
-  `shapeOfSize_size`, `two_pow_sub_le_of_le_mul_pow`,
+- `RMQ/Core/EncodingLowerBound.lean`: `rightSpine`, `rightSpine_shapeOfSize`,
+  `shapeOfSize_size`,
   `remyPositions_length`, `remyLeaves_length`, `remyInsert_size`,
   `remyNewLeaf_mem`, `remyRemoveMarkedLeaf_insert`,
   `nodup_map_injective`, `nodup_flatMap_of_nodup_disjoint`,
@@ -3425,6 +3436,15 @@ completeness.
    `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` with its committed replay
    and independent audit evidence. A path-sensitive step bound and a
    preprocessing bound in the same machine are separate, unstarted targets.
+
+## Dated extension campaign checkpoints
+
+The entries below preserve the status at each named campaign checkpoint. They
+are not a current release-acceptance ledger. For V1 scope, source-transfer
+evidence and verification status use `artifact/CLAIMS.md` and
+`docs/internal/v1/V1_FINALIZATION_MATRIX.md`. In particular, the earlier
+construction author-phase entry is superseded by the later builder and
+continuous lifecycle interfaces present in the current source.
 
 ## BV-1 candidate: generic physical bitvector operations
 
@@ -3698,7 +3718,7 @@ external alias freedom. Input materialization precedes the modeled run.
 The additive `RMQ/Headlines/Lifecycle.lean` import exposes this candidate.
 The broad `RMQ.Headlines` barrel also exposes that existing headline so
 documentary identifiers resolve through the repository import contract.
-This private candidate addition leaves the narrow `RMQPaper` surface unchanged.
+This merged additive interface leaves the narrow `RMQPaper` surface unchanged.
 Native ownership review, aggregate certification, a fresh blind audit and
 coordinator acceptance remain campaign requirements.
 

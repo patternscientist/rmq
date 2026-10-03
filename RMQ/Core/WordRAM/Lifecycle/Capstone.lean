@@ -5,7 +5,7 @@ import RMQ.Core.WordRAM.Lifecycle.CodeFetch
 
 /-! # Continuous succinct construction and reusable charged queries
 
-This candidate interface concerns the numeric primitive model and its finite
+This interface concerns the numeric primitive model and its finite
 container refinement. Input materialization precedes execution. Comparison
 keys are separately counted arbitrary integers. Logical owned sizes are not
 native allocator capacity or external alias claims.

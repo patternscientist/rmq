@@ -28,6 +28,9 @@ function Hash-ControlBytes([byte[]]$bytes) {
   finally {$algorithm.Dispose()}
 }
 function Hash-ControlFile([string]$path) {return Hash-ControlBytes ([IO.File]::ReadAllBytes($path))}
+function Hash-ControlNormalizedText([byte[]]$bytes) {
+  return Hash-ControlBytes ($utf8.GetBytes($utf8.GetString($bytes).Replace("`r`n","`n")))
+}
 function Write-ControlJson([string]$path,[object]$value) {
   [IO.File]::WriteAllText($path,($value|ConvertTo-Json -Depth 40),$utf8)
 }
@@ -55,19 +58,31 @@ function Assert-ExactLines([object[]]$actual,[object[]]$expected,[string]$channe
 $root=[IO.Path]::GetFullPath($RepositoryRoot)
 $shellPath=(Resolve-Path -LiteralPath $Shell -ErrorAction Stop).Path
 $registryPath=Join-Path $PSScriptRoot 'finalizer_cases.json'
-$registryBytes=[IO.File]::ReadAllBytes($registryPath)
-$registry=$utf8.GetString($registryBytes)|ConvertFrom-Json
-Assert-Control ((Hash-ControlBytes $registryBytes) -ceq $registryHash) 'frozen registry bytes differ'
-Assert-Control ($registry.version -eq 1 -and @($registry.cases).Count -eq $expectedIds.Count) 'exact registry count differs'
-for($i=0;$i -lt $expectedIds.Count;$i++){
-  Assert-Control ($registry.cases[$i].id -ceq $expectedIds[$i]) 'missing, duplicate, unknown or reordered registry ID'
+$knownCase=@($expectedIds|Where-Object {$_ -ceq $Case})
+Assert-Control (-not [string]::IsNullOrWhiteSpace($Case) -and $knownCase.Count -eq 1) 'one exact known Case is required'
+# Preserve the historical pre-root SourceVariant rejection only when the
+# mapping has the exact canonical identity and shape. Missing, malformed or
+# structurally valid drift is handled by the fresh post-root durable read.
+$preRegistry=$null;$preRegistryTrusted=$false
+try {
+  $preRegistryBytes=[IO.File]::ReadAllBytes($registryPath)
+  if((Hash-ControlBytes $preRegistryBytes) -ceq $registryHash -or (Hash-ControlNormalizedText $preRegistryBytes) -ceq $registryHash){
+    $preRegistry=$utf8.GetString($preRegistryBytes)|ConvertFrom-Json
+    $preRegistryTrusted=($preRegistry.version -eq 1 -and @($preRegistry.cases).Count -eq $expectedIds.Count)
+    if($preRegistryTrusted){
+      for($i=0;$i -lt $expectedIds.Count;$i++){
+        if($preRegistry.cases[$i].id -cne $expectedIds[$i]){$preRegistryTrusted=$false;break}
+      }
+    }
+  }
+}catch{$preRegistry=$null;$preRegistryTrusted=$false}
+if($preRegistryTrusted){
+  $preSelected=@($preRegistry.cases|Where-Object {$_.id -ceq $Case})
+  Assert-Control ($preSelected.Count -eq 1) 'one exact known Case is required'
+  if($PSBoundParameters.ContainsKey('SourceVariant')){
+    Assert-Control ($SourceVariant -ceq $preSelected[0].sourceVariant) 'source variant differs from frozen case mapping'
+  }else{$SourceVariant=$preSelected[0].sourceVariant}
 }
-$selected=@($registry.cases|Where-Object {$_.id -ceq $Case})
-Assert-Control (-not [string]::IsNullOrWhiteSpace($Case) -and $selected.Count -eq 1) 'one exact known Case is required'
-$test=$selected[0]
-if($PSBoundParameters.ContainsKey('SourceVariant')){
-  Assert-Control ($SourceVariant -ceq $test.sourceVariant) 'source variant differs from frozen case mapping'
-}else{$SourceVariant=$test.sourceVariant}
 $helper=Join-Path $root 'scripts/owned_process_tree.ps1'
 $production=Join-Path $root $productionRelative
 $evidenceParent=Assert-OwnedDescendant $EvidenceRoot (Join-Path $root '.lake')
@@ -87,9 +102,24 @@ $pinChecks=[Collections.Generic.List[object]]::new()
 $entryPins=[ordered]@{}
 $durableFailed=$false
 $pinLabels=[ordered]@{}
-$pinLabels[$registryPath]='frozen registry';$entryPins[$registryPath]=Hash-ControlBytes $registryBytes
+$registryBytes=$null;$registry=$null;$selected=@();$test=$null
+$pinLabels[$registryPath]='frozen registry'
 $pinLabels[$PSCommandPath]='harness';$pinLabels[$helper]='protected helper';$pinLabels[$production]='production script'
 try {
+$registryBytes=[IO.File]::ReadAllBytes($registryPath)
+$entryPins[$registryPath]=Hash-ControlBytes $registryBytes
+$registry=$utf8.GetString($registryBytes)|ConvertFrom-Json
+Assert-Control ($entryPins[$registryPath] -ceq $registryHash -or (Hash-ControlNormalizedText $registryBytes) -ceq $registryHash) 'frozen registry bytes differ'
+Assert-Control ($registry.version -eq 1 -and @($registry.cases).Count -eq $expectedIds.Count) 'exact registry count differs'
+for($i=0;$i -lt $expectedIds.Count;$i++){
+  Assert-Control ($registry.cases[$i].id -ceq $expectedIds[$i]) 'missing, duplicate, unknown or reordered registry ID'
+}
+$selected=@($registry.cases|Where-Object {$_.id -ceq $Case})
+Assert-Control (-not [string]::IsNullOrWhiteSpace($Case) -and $selected.Count -eq 1) 'one exact known Case is required'
+$test=$selected[0]
+if($PSBoundParameters.ContainsKey('SourceVariant')){
+  Assert-Control ($SourceVariant -ceq $test.sourceVariant) 'source variant differs from frozen case mapping'
+}else{$SourceVariant=$test.sourceVariant}
 $entryPins[$PSCommandPath]=Hash-ControlFile $PSCommandPath
 $entryPins[$helper]=Hash-ControlFile $helper
 Assert-Control ($entryPins[$helper] -ceq $helperHash) 'protected owned-process helper hash differs'

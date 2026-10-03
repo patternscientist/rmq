@@ -1,5 +1,10 @@
 # Current Project Digestion: Canonical Succinct RMQ Publication Story
 
+For the V1 reader path and comparison of query and construction models, see
+[the V1 guide](../V1_GUIDE.md). The additive lifecycle surface is scoped separately in
+[the claims packet](../../artifact/CLAIMS.md); preprocessing exclusions below describe the
+query-only results, not an absence of construction theorems from the repository.
+
 **Status.** This is the sole current public project digestion. It describes the
 publication-facing RMQ theorem surface. Dated digests are source-history
 artifacts, not competing current summaries. When
@@ -120,8 +125,8 @@ also does not prove:
 Those remain true of the charged-trace theorem, and they do not weaken the
 checked statement inside its explicit model. Charging every controller
 operation is now addressed separately, for a different execution, by the
-accepted construction in the next section; serialized-payload querying and preprocessing
-remain open for both.
+accepted construction in the next section. Neither query theorem includes
+preprocessing; the additive lifecycle model now supplies that separate route.
 
 ## The Separate Accepted Primitive Machine
 
@@ -198,7 +203,8 @@ they have in mind; whether the uncharged outer word-domain check hides work
 charged); how large `n` must be before the code and scratch term is genuinely
 lower order; whether the typed client really fails when any certificate field
 is weakened, which the committed replay campaign is meant to show; and
-whether preprocessing, unbounded here, can be brought into the same machine.
+how the separate lifecycle construction and reusable-query theorem connects
+to this query-only interface and its distinct execution model.
 
 ## Publication Topology
 

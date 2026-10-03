@@ -40,7 +40,7 @@ $failures = 0
 function Fail([string]$m) { Write-Host "CONST-SYNC: FAIL: $m"; $script:failures = $script:failures + 1 }
 function Info([string]$m) { Write-Host "CONST-SYNC: $m" }
 
-# The two current constants. `expected` is the pin: it must be updated in the
+# The three current constants. `expected` is the pin: it must be updated in the
 # same change that moves the proof, which is the point.
 $constants = @(
   @{
@@ -65,8 +65,8 @@ $constants = @(
     # PAPER_THEOREM_MAP and PAPER_CLAIM_CORRESPONDENCE without moving these
     # pins, which is why the gate stage failed before this change.
     surfaces = @(
-      # 9 -> 11: TL;DR contrast sentence (PQ1 export) and Model Scope sentence.
-      @{ path = 'README.md';                          count = 11; anchors = @('charged-trace cap is `{VALUE}`') },
+      # V1 landing-page condensation: 1 deliberate statements of the same bound.
+      @{ path = 'README.md';                          count = 1; anchors = @('charged-trace cap is `{VALUE}`') },
       # 10 -> 13: PQ1 section contrast, Scope bullet and Non-Claims bullet.
       @{ path = 'artifact/CLAIMS.md';                 count = 13; anchors = @('at most\*\* `{VALUE}`') },
       # 9 -> 10: Cost Model bullet scoping the uncharged controller to `210`.
@@ -88,7 +88,11 @@ $constants = @(
          claimShapes = @('charged-trace cost at most `{VALUE}`') },
       # 7 -> 8: PQ1 scope paragraph ("the `210` trace and `427` probe bounds").
       @{ path = 'docs/FAMILY_SUMMARY.md';             count = 8;  anchors = @('`{VALUE}`');
-         claimShapes = @('charged-trace constant `{VALUE}`') }
+         claimShapes = @('charged-trace constant `{VALUE}`') },
+      @{ path = 'docs/V1_GUIDE.md';                   count = 1;
+         anchors = @('\| `{VALUE}` \| Canonical reviewer query''s charged trace \|') },
+      @{ path = 'docs/V1_CLIENTS.md';                 count = 3;
+         anchors = @('Earlier paper cost at most `{VALUE}`') }
     )
   },
   @{
@@ -107,7 +111,31 @@ $constants = @(
       # 5 -> 6: PQ1 status paragraph contrast (PQ1 export, restated).
       @{ path = 'docs/PAPER_CLAIM_CORRESPONDENCE.md'; count = 6;
          anchors = @('at most `{VALUE}` attempted aligned', 'derived numeral `{VALUE}`',
-                     '`{VALUE}` is an upper bound') }
+                     '`{VALUE}` is an upper bound') },
+      @{ path = 'docs/V1_GUIDE.md';                   count = 1;
+         anchors = @('\| `{VALUE}` \| Packed cell-probe controller \|') }
+    )
+  },
+  @{
+    name     = 'packed primitive query budget'
+    expected = '837572'
+    leanFile = 'RMQ/Core/WordRAM/Packed/Capstone.lean'
+    leanPat  = '(?m)^\s*budgetExact\s*:\s*queryBudget\s*=\s*(\d+)\s*$'
+    retired  = @()
+    # A third model: this is the capstone's primitive-transition budget,
+    # separate from trace ticks, packed probes and native runtime.
+    surfaces = @(
+      @{ path = 'README.md';                          count = 2;
+         anchors = @('closed loop-free program of\s+{VALUE} primitive instructions',
+                     'run halts within at most {VALUE} steps') },
+      @{ path = 'artifact/CLAIMS.md';                 count = 4;
+         anchors = @('closed loop-free program of {VALUE} primitive instructions',
+                     'run halts within at most {VALUE} steps',
+                     'halt within at most {VALUE} primitive instructions') },
+      @{ path = 'docs/PAPER_THEOREM_MAP.md';          count = 2;
+         anchors = @('fixed {VALUE}-step\s+budget equal to the length of the loop-free `queryProgram`') },
+      @{ path = 'docs/V1_GUIDE.md';                   count = 1;
+         anchors = @('\| `{VALUE}` \| Fixed loop-free primitive query program on per-input `buildMemory xs`; theorem `RMQ\.Headlines\.succinctRMQFullyChargedPackedQuery`') }
     )
   }
 )
@@ -172,6 +200,21 @@ function Test-IsClaimShape([string]$anchor) {
   return (($literal -replace '[^A-Za-z_]', '').Length -ge 4)
 }
 
+# Consume each whole numeral before normalization. In particular, a comma
+# cannot truncate 837,572 to 837 or expose a trailing 210 as a trace-cap hit.
+# Invalid grouping remains a whole token and is rejected inside claim shapes.
+$numeralTokenPattern = '(?<![0-9,])[0-9]+(?:,[0-9]+)*(?![0-9]|,[0-9])'
+function ConvertTo-NumeralValue([string]$Token) {
+  if ($Token -notmatch '^(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+)$') { return $null }
+  return ($Token -replace ',', '')
+}
+
+function Get-ValuePattern([string]$Value) {
+  $grouped = [regex]::Replace($Value, '(?<=\d)(?=(?:\d{3})+$)', ',')
+  return '(?<![0-9,])(?:' + [regex]::Escape($Value) + '|' +
+    [regex]::Escape($grouped) + ')(?![0-9]|,[0-9])'
+}
+
 # All surface conditions in one place, over TEXT rather than a path, so the
 # self-test exercises this exact code against fixtures instead of restating the
 # logic. A self-test that re-implements the check can pass while the check is
@@ -187,9 +230,10 @@ function Get-SurfaceFailures {
   )
 
   $out = @()
+  $actualPattern = Get-ValuePattern $Actual
 
   foreach ($anchor in $Entry.anchors) {
-    $pat = $anchor -replace '\{VALUE\}', [regex]::Escape($Actual)
+    $pat = $anchor.Replace('{VALUE}', $actualPattern)
     if ($Text -notmatch $pat) {
       $out += ("{0}: {1} anchor /{2}/ does not carry the current value {3}" -f $ConstantName, $SurfacePath, $anchor, $Actual)
     }
@@ -225,17 +269,18 @@ function Get-SurfaceFailures {
   }
 
   foreach ($shapeSpec in $conflictShapes) {
-    $shape = $shapeSpec -replace '\{VALUE\}', '(\d+)'
+    $shape = $shapeSpec.Replace('{VALUE}', ('(?<ClaimValue>' + $numeralTokenPattern + ')'))
     # A shape matching nothing is silent non-protection. WDD-20260816-035
     # reported this hole closed and quoted an injection its own shape could not
     # match ("at most **`214`**" against a shape requiring "at most** `"), so
     # the verification never exercised the shape it claimed to verify.
-    if (-not [regex]::IsMatch($Text, ($shapeSpec -replace '\{VALUE\}', [regex]::Escape($Actual)))) {
+    if (-not [regex]::IsMatch($Text, $shapeSpec.Replace('{VALUE}', $actualPattern))) {
       $out += ("{0}: {1} declares claim shape /{2}/ but nothing in the file matches it with the current value; the shape protects nothing" -f `
         $ConstantName, $SurfacePath, $shapeSpec)
     }
     foreach ($hit in [regex]::Matches($Text, $shape)) {
-      if ($hit.Groups[1].Value -eq $Actual) { continue }
+      $claimToken = $hit.Groups['ClaimValue'].Value
+      if ((ConvertTo-NumeralValue $claimToken) -ceq $Actual) { continue }
       # A historical line may legitimately restate a superseded value.
       $lineStart = $Text.LastIndexOf("`n", [Math]::Max(0, [Math]::Min($hit.Index, $Text.Length - 1))) + 1
       $lineEnd = $Text.IndexOf("`n", $hit.Index)
@@ -243,11 +288,12 @@ function Get-SurfaceFailures {
       $line = $Text.Substring($lineStart, $lineEnd - $lineStart)
       if (Test-HistoricalContext -Line $line -At ($hit.Index - $lineStart) -Length $hit.Length) { continue }
       $out += ("{0}: {1} states a CONFLICTING value {2} in a current claim (shape /{3}/); the proved value is {4}: {5}" -f `
-        $ConstantName, $SurfacePath, $hit.Groups[1].Value, $shapeSpec, $Actual, $line.Trim())
+        $ConstantName, $SurfacePath, $claimToken, $shapeSpec, $Actual, $line.Trim())
     }
   }
 
-  $occ = ([regex]::Matches($Text, '(?<![0-9])' + [regex]::Escape($Actual) + '(?![0-9])')).Count
+  $occ = @([regex]::Matches($Text, $numeralTokenPattern) |
+    Where-Object { (ConvertTo-NumeralValue $_.Value) -ceq $Actual }).Count
   if ($occ -ne $Entry.count) {
     $out += ("{0}: {1} states {2} {3} time(s), pinned at {4}. If the surface genuinely changed, update the pin in the same edit." -f $ConstantName, $SurfacePath, $Actual, $occ, $Entry.count)
   }
@@ -317,12 +363,47 @@ foreach ($c in $constants) {
 if ($SelfTest) {
   Info '--- self-test: can this guard actually fail? ---'
   $stf = 0
+  $selfTestIds = @{}
   function ST([string]$n, [bool]$ok) {
+    if ($script:selfTestIds.ContainsKey($n)) { $ok = $false }
+    $script:selfTestIds[$n] = $true
     if ($ok) { Info "  SELFTEST PASS $n" } else { Write-Host "CONST-SYNC: SELFTEST FAIL $n"; $script:stf = $script:stf + 1 }
   }
+  # Independent consumer roster: deleting a required surface must not delete
+  # its own test silently. Keep this list separate from the production table.
+  $expectedV1Surfaces = @(
+    '210:docs/V1_GUIDE.md',
+    '210:docs/V1_CLIENTS.md',
+    '427:docs/V1_GUIDE.md',
+    '837572:README.md',
+    '837572:artifact/CLAIMS.md',
+    '837572:docs/PAPER_THEOREM_MAP.md',
+    '837572:docs/V1_GUIDE.md'
+  )
+  $observedV1Surfaces = @(
+    foreach ($c in $constants) {
+      foreach ($entry in $c.surfaces) {
+        if ($c.expected -eq '837572' -or $entry.path -match '^docs/V1_') {
+          $c.expected + ':' + $entry.path
+        }
+      }
+    }
+  )
+  function Test-V1SurfaceRegistry([string[]]$Observed) {
+    return $Observed.Count -eq 7 -and
+      @($Observed | Group-Object | Where-Object Count -ne 1).Count -eq 0 -and
+      ($Observed -join "`n") -ceq ($expectedV1Surfaces -join "`n")
+  }
+  ST 'v1-exact-new-surface-registry' (Test-V1SurfaceRegistry $observedV1Surfaces)
+  ST 'v1-surface-deletion-control-rejected' `
+    (-not (Test-V1SurfaceRegistry @($observedV1Surfaces | Where-Object { $_ -ne '837572:docs/V1_GUIDE.md' })))
+  ST 'v1-surface-duplication-control-rejected' `
+    (-not (Test-V1SurfaceRegistry @($observedV1Surfaces + '837572:docs/V1_GUIDE.md')))
   # extractor really reads Lean, and would see a changed value
   ST 'extracts 210 from Lean' ((Get-LeanValue $constants[0].leanFile $constants[0].leanPat) -eq '210')
   ST 'extracts 427 from Lean' ((Get-LeanValue $constants[1].leanFile $constants[1].leanPat) -eq '427')
+  ST 'v1-budget-extracts-837572-from-capstone-budgetExact' `
+    ((Get-LeanValue $constants[2].leanFile $constants[2].leanPat) -ceq '837572')
   # a changed Lean value must mismatch the pin
   $fake = [regex]::Match('concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 214', $constants[0].leanPat)
   ST 'a changed Lean value is detected' ($fake.Success -and $fake.Groups[1].Value -ne $constants[0].expected)
@@ -395,6 +476,78 @@ if ($SelfTest) {
   $farRetired = "The bound is at most** ``210``.`nThe cap is 207.$pad previously.`nAlso ``210``.`nAnd ``210``.`n"
   ST 'a far marker does NOT excuse a superseded value either' `
     ((FixtureFailures $farRetired $fixtureEntry | Where-Object { $_ -match 'superseded value' }).Count -gt 0)
+
+  # New surfaces and format mutations use the production extraction and
+  # Get-SurfaceFailures predicate above. No fixture writes source or prose.
+  foreach ($c in $constants) {
+    $actual = Get-LeanValue $c.leanFile $c.leanPat
+    foreach ($entry in $c.surfaces) {
+      if ($c.expected -ne '837572' -and $entry.path -notmatch '^docs/V1_') { continue }
+      $surfaceText = [System.IO.File]::ReadAllText((Join-Path $repoRoot $entry.path))
+      $caseId = 'v1-' + $c.expected + '-' + ($entry.path -replace '[^A-Za-z0-9]', '-')
+      $intactFailures = @(Get-SurfaceFailures -Text $surfaceText -Entry $entry -Actual $actual `
+        -Retired $c.retired -ConstantName $c.name -SurfacePath $entry.path)
+      ST "$caseId-intact-accepted" ($intactFailures.Count -eq 0)
+
+      if ($c.expected -ne '837572') {
+        # Swapping trace and probe values must fail in the guide's own shape.
+        $otherModel = if ($c.expected -eq '210') { '427' } else { '210' }
+        $wrongModel = [regex]::Replace($surfaceText, (Get-ValuePattern $actual), $otherModel)
+        $wrongModelFailures = @(Get-SurfaceFailures -Text $wrongModel -Entry $entry -Actual $actual `
+          -Retired $c.retired -ConstantName $c.name -SurfacePath $entry.path)
+        ST "$caseId-other-model-rejected" `
+          (@($wrongModelFailures | Where-Object { $_ -match 'CONFLICTING' }).Count -gt 0)
+        continue
+      }
+
+      foreach ($format in @('837572', '837,572')) {
+        $formatted = [regex]::Replace($surfaceText, (Get-ValuePattern $actual), $format)
+        $formatFailures = @(Get-SurfaceFailures -Text $formatted -Entry $entry -Actual $actual `
+          -Retired $c.retired -ConstantName $c.name -SurfacePath $entry.path)
+        ST "$caseId-format-$format-accepted" ($formatFailures.Count -eq 0)
+
+        # Repeat one actual claim to give even the one-occurrence guide two
+        # legitimate budget occurrences; pin its new multiplicity explicitly.
+        $claim = [regex]::Match($formatted, $entry.anchors[0].Replace('{VALUE}', (Get-ValuePattern $actual)))
+        $repeatedEntry = $entry.Clone()
+        $repeatedEntry.count = $entry.count + 1
+        $repeated = $formatted + "`n" + $claim.Value + "`n"
+        $repeatedFailures = @(Get-SurfaceFailures -Text $repeated -Entry $repeatedEntry -Actual $actual `
+          -Retired $c.retired -ConstantName $c.name -SurfacePath $entry.path)
+        ST "$caseId-format-$format-repeat-control-accepted" ($claim.Success -and $repeatedFailures.Count -eq 0)
+        $mutator = [regex](Get-ValuePattern $actual)
+        $wrong = if ($format -eq '837572') { '837573' } else { '837,573' }
+        $mutated = $mutator.Replace($repeated, $wrong, 1)
+        $mutationFailures = @(Get-SurfaceFailures -Text $mutated -Entry $repeatedEntry -Actual $actual `
+          -Retired $c.retired -ConstantName $c.name -SurfacePath $entry.path)
+        ST "$caseId-format-$format-one-of-several-rejected" `
+          ($mutator.IsMatch($mutated) -and @($mutationFailures | Where-Object { $_ -match 'pinned at' }).Count -gt 0)
+
+        # Every correct occurrence and anchor remains intact. Only the
+        # production claim-shape conflict check can reject this addition.
+        $conflictingClaim = $mutator.Replace($claim.Value, $wrong)
+        $addedConflict = $formatted + "`n" + $conflictingClaim + "`n"
+        $addedFailures = @(Get-SurfaceFailures -Text $addedConflict -Entry $entry -Actual $actual `
+          -Retired $c.retired -ConstantName $c.name -SurfacePath $entry.path)
+        ST "$caseId-format-$format-added-conflict-rejected" `
+          (@($addedFailures | Where-Object { $_ -match 'CONFLICTING' }).Count -gt 0 -and
+           @($addedFailures | Where-Object { $_ -notmatch 'CONFLICTING' }).Count -eq 0)
+      }
+
+      # Unrelated model constants and larger numerals are not this budget.
+      $unrelated = $surfaceText + "`nOther quantities: 210, 427, 837, 572, 1,837,572, 8375720, 837,210, 837,427.`n"
+      $unrelatedFailures = @(Get-SurfaceFailures -Text $unrelated -Entry $entry -Actual $actual `
+        -Retired $c.retired -ConstantName $c.name -SurfacePath $entry.path)
+      ST "$caseId-unrelated-numerals-accepted" ($unrelatedFailures.Count -eq 0)
+      foreach ($wrongToken in @('837', '572', '210', '427', '83,7572', '837,5720')) {
+        $wrongClaim = [regex]::Replace($claim.Value, (Get-ValuePattern $actual), $wrongToken)
+        $tokenFailures = @(Get-SurfaceFailures -Text ($surfaceText + "`n" + $wrongClaim) `
+          -Entry $entry -Actual $actual -Retired $c.retired -ConstantName $c.name -SurfacePath $entry.path)
+        ST "$caseId-wrong-token-$wrongToken-rejected" `
+          (@($tokenFailures | Where-Object { $_ -match 'CONFLICTING' }).Count -gt 0)
+      }
+    }
+  }
 
   if ($stf -gt 0) { $failures = $failures + $stf }
   else { Info 'self-test: all cases pass' }

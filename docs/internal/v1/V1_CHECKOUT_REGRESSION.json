@@ -1,0 +1,41 @@
+{
+  "schema": "v1-native-checkout-regression/1",
+  "gitBase": "447751d203a4e5d02f15680731226a56fd8894a3",
+  "cases": [
+    {
+      "core.autocrlf": "true",
+      "sha256": {
+        "docs/internal/extensions/lifecycle-native1/CONTRACT_REQUIREMENTS.json": "736ff55b84516d1b0c7e45f5dbf8193df98846ea259f0ef5b3caefbe7cd6bc5f",
+        "docs/internal/extensions/lifecycle-native1/ACCEPTANCE_MATRIX.frozen.md": "05b3435261d9b531837e5879b8c6390eb7b298ce4b61dc34e425ac48f5607ea3",
+        "scripts/lifecycle_native_cases.json": "9dc72366b51592f18dc50e52d2b799c736dc047e6166538a0a880192062985fd",
+        "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/SparseLevelWidth.lean": "9902c625271049bc410b6cde11ce8212a7451cd483133d90b199e87225f87875",
+        "RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean": "e025fbcdda65df5dbeb9fe83f06f4e482f42207ed938c64f83fd1a9e12827c2e"
+      },
+      "passed": true
+    },
+    {
+      "core.autocrlf": "false",
+      "sha256": {
+        "docs/internal/extensions/lifecycle-native1/CONTRACT_REQUIREMENTS.json": "736ff55b84516d1b0c7e45f5dbf8193df98846ea259f0ef5b3caefbe7cd6bc5f",
+        "docs/internal/extensions/lifecycle-native1/ACCEPTANCE_MATRIX.frozen.md": "05b3435261d9b531837e5879b8c6390eb7b298ce4b61dc34e425ac48f5607ea3",
+        "scripts/lifecycle_native_cases.json": "9dc72366b51592f18dc50e52d2b799c736dc047e6166538a0a880192062985fd",
+        "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/SparseLevelWidth.lean": "9902c625271049bc410b6cde11ce8212a7451cd483133d90b199e87225f87875",
+        "RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean": "e025fbcdda65df5dbeb9fe83f06f4e482f42207ed938c64f83fd1a9e12827c2e"
+      },
+      "passed": true
+    },
+    {
+      "core.autocrlf": "input",
+      "sha256": {
+        "docs/internal/extensions/lifecycle-native1/CONTRACT_REQUIREMENTS.json": "736ff55b84516d1b0c7e45f5dbf8193df98846ea259f0ef5b3caefbe7cd6bc5f",
+        "docs/internal/extensions/lifecycle-native1/ACCEPTANCE_MATRIX.frozen.md": "05b3435261d9b531837e5879b8c6390eb7b298ce4b61dc34e425ac48f5607ea3",
+        "scripts/lifecycle_native_cases.json": "9dc72366b51592f18dc50e52d2b799c736dc047e6166538a0a880192062985fd",
+        "RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/SparseLevelWidth.lean": "9902c625271049bc410b6cde11ce8212a7451cd483133d90b199e87225f87875",
+        "RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean": "e025fbcdda65df5dbeb9fe83f06f4e482f42207ed938c64f83fd1a9e12827c2e"
+      },
+      "passed": true
+    }
+  ],
+  "sourceBytesChanged": false,
+  "passed": true
+}

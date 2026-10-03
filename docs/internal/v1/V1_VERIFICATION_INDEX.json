@@ -1,0 +1,222 @@
+{
+  "schema": "rmq-v1-source-stage-evidence/1",
+  "implementationCommit": "250e5932c94d1995a7fd8b0a290c5320d114accf",
+  "aggregateCommit": "447751d203a4e5d02f15680731226a56fd8894a3",
+  "nativeCommit": "d7d633e0d020352757f7f5f0d139de0dfa42b5d0",
+  "coldSourceBundleCommit": "6eb2ba6f4630b706a7d9cb028f04919a39984f81",
+  "aggregateExit": 1,
+  "aggregateStatus": "FAIL",
+  "aggregateCheckersInvoked": 20,
+  "aggregateCheckersPassed": 17,
+  "replacedFailedCheckers": [
+    "paper/check_paper.ps1",
+    "scripts/paper_topology_lint.ps1",
+    "scripts/paper_topology_lint_regression.ps1"
+  ],
+  "replacementChecksCommit": "250e5932c94d1995a7fd8b0a290c5320d114accf",
+  "replacementChecksPassed": true,
+  "leanToolchainLakeUnchangedSinceAggregate": true,
+  "deltaSinceAggregate": [
+    ".gitattributes",
+    ".github/workflows/ci.yml",
+    "docs/ARTIFACT_REPRODUCIBILITY.md",
+    "docs/internal/CLAIM_DRIFT_POLICY.json",
+    "docs/internal/DESIGN_DECISIONS.md",
+    "docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+    "docs/internal/audit_reports/v1-447751d203a4-claude.md",
+    "docs/internal/audit_reports/v1-447751d203a4-fresh.md",
+    "docs/internal/audit_reports/v1-eh-a8f1c512-repair-audit.md",
+    "docs/internal/audit_reports/v1-review-repairs-claude.md",
+    "docs/internal/extensions/lifecycle1/HISTORICAL_VERIFIERS.md",
+    "docs/internal/extensions/lifecycle1/repair-r3/failure_controls.ps1",
+    "docs/internal/extensions/lifecycle1/repair-r4/FAILURE_CONTROL_REGISTRY.json",
+    "docs/internal/extensions/lifecycle1/repair-r4/aux_controls.ps1",
+    "docs/internal/extensions/lifecycle1/repair-r4/predicates.ps1",
+    "docs/internal/v1/V1_CHECKOUT_REGRESSION.json",
+    "docs/internal/v1/V1_CLIENT_MATRIX.md",
+    "docs/internal/v1/V1_EVIDENCE_MATRIX.md",
+    "docs/internal/v1/V1_FINALIZATION_MATRIX.md",
+    "docs/internal/v1/V1_GUARD_MATRIX.md",
+    "docs/internal/v1/V1_NATIVE_INDEPENDENT_CHECK.json",
+    "docs/internal/v1/V1_NATIVE_REPLAY.json",
+    "docs/internal/v1/V1_PROOF_MATRIX.md",
+    "docs/internal/v1/evidence/COMMAND_LOG.md",
+    "docs/internal/v1/evidence/aux-pwsh-result.json",
+    "docs/internal/v1/evidence/aux-winps-result.json",
+    "docs/internal/v1/evidence/evidence_hardening_controls.ps1",
+    "docs/internal/v1/evidence/failure-controls-pwsh-result.json",
+    "docs/internal/v1/evidence/failure-controls-winps-result.json",
+    "docs/internal/v1/evidence/focused-pwsh-result.json",
+    "docs/internal/v1/evidence/focused-winps-result.json",
+    "docs/internal/v1/evidence/registry-wording-comparison-pwsh.json",
+    "docs/internal/v1/evidence/registry-wording-comparison-winps.json",
+    "docs/internal/v1/evidence/wording-transfer-wguards-pwsh-result.json",
+    "docs/internal/v1/evidence/wording-transfer-wguards-winps-result.json",
+    "paper/THEOREM_LEDGER.md",
+    "scripts/claim_drift_policy_regression.ps1",
+    "scripts/constant_sync_check.ps1",
+    "scripts/package_release.py",
+    "scripts/test_native_checkout.py",
+    "scripts/test_package_release.py"
+  ],
+  "nativeRelevantInputsUnchanged": true,
+  "deltaSinceNative": [
+    ".gitattributes",
+    ".github/workflows/ci.yml",
+    "docs/ARTIFACT_REPRODUCIBILITY.md",
+    "docs/internal/CLAIM_DRIFT_POLICY.json",
+    "docs/internal/DESIGN_DECISIONS.md",
+    "docs/internal/WORKFLOW_DESIGN_DECISIONS.md",
+    "docs/internal/audit_reports/v1-447751d203a4-claude.md",
+    "docs/internal/audit_reports/v1-447751d203a4-fresh.md",
+    "docs/internal/audit_reports/v1-eh-a8f1c512-repair-audit.md",
+    "docs/internal/audit_reports/v1-review-repairs-claude.md",
+    "docs/internal/extensions/lifecycle1/HISTORICAL_VERIFIERS.md",
+    "docs/internal/extensions/lifecycle1/repair-r3/failure_controls.ps1",
+    "docs/internal/extensions/lifecycle1/repair-r4/FAILURE_CONTROL_REGISTRY.json",
+    "docs/internal/extensions/lifecycle1/repair-r4/aux_controls.ps1",
+    "docs/internal/extensions/lifecycle1/repair-r4/predicates.ps1",
+    "docs/internal/v1/V1_CHECKOUT_REGRESSION.json",
+    "docs/internal/v1/V1_CLIENT_MATRIX.md",
+    "docs/internal/v1/V1_EVIDENCE_MATRIX.md",
+    "docs/internal/v1/V1_FINALIZATION_MATRIX.md",
+    "docs/internal/v1/V1_GUARD_MATRIX.md",
+    "docs/internal/v1/V1_NATIVE_INDEPENDENT_CHECK.json",
+    "docs/internal/v1/V1_NATIVE_REPLAY.json",
+    "docs/internal/v1/V1_PROOF_MATRIX.md",
+    "docs/internal/v1/evidence/COMMAND_LOG.md",
+    "docs/internal/v1/evidence/aux-pwsh-result.json",
+    "docs/internal/v1/evidence/aux-winps-result.json",
+    "docs/internal/v1/evidence/evidence_hardening_controls.ps1",
+    "docs/internal/v1/evidence/failure-controls-pwsh-result.json",
+    "docs/internal/v1/evidence/failure-controls-winps-result.json",
+    "docs/internal/v1/evidence/focused-pwsh-result.json",
+    "docs/internal/v1/evidence/focused-winps-result.json",
+    "docs/internal/v1/evidence/registry-wording-comparison-pwsh.json",
+    "docs/internal/v1/evidence/registry-wording-comparison-winps.json",
+    "docs/internal/v1/evidence/wording-transfer-wguards-pwsh-result.json",
+    "docs/internal/v1/evidence/wording-transfer-wguards-winps-result.json",
+    "paper/THEOREM_LEDGER.md",
+    "scripts/claim_drift_policy_regression.ps1",
+    "scripts/constant_sync_check.ps1",
+    "scripts/package_release.py",
+    "scripts/test_native_checkout.py",
+    "scripts/test_package_release.py"
+  ],
+  "linuxAggregateSeconds": 22295,
+  "coldUnpackedSmokeSeconds": 1343.044902,
+  "timeoutRationaleCorrection": "The unmodified aggregate identity says prior aggregate observation 8674.82 seconds. That historical measurement was the PRE1 builder replay, not the whole aggregate. The recorded exit and actual elapsed time establish this run outcome.",
+  "records": {
+    "linuxAggregate": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\linux-final-reproduction-447751d203a4e5d02f15680731226a56fd8894a3.identity",
+      "bytes": 1356,
+      "sha256": "bd9b8607bba78df26573d5cbbd824a535f048c7597d9b38678c8d5a80c763994"
+    },
+    "linuxAggregateLog": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\linux-final-reproduction-447751d203a4e5d02f15680731226a56fd8894a3.log",
+      "bytes": 6083753,
+      "sha256": "dafd25a80a5751fbbf2926e12842ebc1995ad2ad74d31e9307df7d690bd9b94c"
+    },
+    "linuxSelectedReceipts": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\linux-completed-receipts-index.json",
+      "bytes": 344879,
+      "sha256": "23c714053caf53ea9a1e2122178c3b528e0af73a0a8431e48918affa1d960972"
+    },
+    "linuxReferenceRepairs": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\linux-reference-repairs-250e5932.json",
+      "bytes": 1679,
+      "sha256": "2784924431f6724370a6c7371b7aecd817862470b036ff364240a76c964601af"
+    },
+    "windowsReferenceRepair": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\windows-reference-repairs-250e5932-paper.json",
+      "bytes": 213,
+      "sha256": "321c0eabb50ed92978496e4375316bb3308889837742882083d287adf9a194c4"
+    },
+    "finalCompositionReview": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\v1-final-composition-review.md",
+      "bytes": 8768,
+      "sha256": "ab58a5df479d8f6b16912a45fa323174a5f4ddbdc81f24b26cbbabbb882f63f3"
+    },
+    "finalTransferAddendum": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\v1-composition-transfer-addendum.md",
+      "bytes": 4660,
+      "sha256": "e3aca0bb3e17e521a8cb52d99ff5a437c49a450a2821a42d7373e3b91a1c7bdd"
+    },
+    "windowsBuild": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\windows-final-build-447751d203a4e5d02f15680731226a56fd8894a3.json",
+      "bytes": 1166,
+      "sha256": "499dedc3f23f9735399e3bd8c6c4fd240f59a5eec9f41a6893b25869905ab314"
+    },
+    "coldArchiveSmoke": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\source-trial-6eb2ba6f-smoke.json",
+      "bytes": 678,
+      "sha256": "0b00b58b0c00f7175703ff5f60a50c6732bdfee7133101987a6551f95e3986a6"
+    },
+    "independentArchive": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\source-trial-6eb2ba6f-independent.json",
+      "bytes": 678,
+      "sha256": "64d0a43be4cc97c95a9fe6588cecdc485a01a62a3f9e46b884e739dcad96a74a"
+    },
+    "linuxPortableChecks": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\linux-release-checks-d7182869016ec780f561626f795882059ee2c981.log",
+      "bytes": 26595,
+      "sha256": "3d96e66ec4ed31b4c46c62076f5aa2869bf8712e12e1bd0ca83115e2021cbd91"
+    },
+    "linuxPackage11": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\linux-exact-blob-checks-6eb2ba6f.log",
+      "bytes": 1765,
+      "sha256": "48598a434bd624f59bee43d60c00ecae07441fb66ac39b9eafaff959908777b3"
+    },
+    "windowsPackage11": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\package-exact-blob-windows-tests.log",
+      "bytes": 1553,
+      "sha256": "6a82c7450472aa4bd5b92b9821948f4d80415dc6ae316ba3b8231cca0e87ca0e"
+    },
+    "windowsCheckout": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\native-checkout-real-clone-tests.log",
+      "bytes": 368,
+      "sha256": "7058232c82e4c6c449c48154ce2aed5895ccff8663330f1a53ac351037557413"
+    },
+    "designRegression": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\final-design-regression-6eb2ba6f.json",
+      "bytes": 457,
+      "sha256": "7d6a976b44a5a3facfa9dc322f77bdbb53aa822e2c4b0ce8cd9618fd3c1e1136"
+    },
+    "ehIndependent": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\eh-a8-independent-receipt-check.json",
+      "bytes": 39014,
+      "sha256": "1642a9b3779769b3142b0780eb69ef7d680dceeb5e16b38f484b82475f081f7e"
+    },
+    "ehFinal": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\EH_FINAL_VERIFIED.json",
+      "bytes": 1602,
+      "sha256": "b92504f526412f83a7b833a92d4385ba8f949598762a1525dfb7a92d6489a537"
+    },
+    "ehIntegrated": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\eh-integrated-evidence-check.json",
+      "bytes": 3630,
+      "sha256": "73dd10d90a46e525341fb470d1aa3f8064fde52685727bf4e1dd5b677de0083e"
+    },
+    "nativeReplay": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\native-v1-checkout-fixed\\INDEX.json",
+      "bytes": 7514,
+      "sha256": "b71c3c478ad2076a8b2a45332fbf116616bca235b539a3652036a3bb0945f945"
+    },
+    "nativeIndependent": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\native-v1-checkout-fixed\\INDEPENDENT_CHECK.json",
+      "bytes": 1590066,
+      "sha256": "06635b6c98a904e1c39ee07a6f876cb9c1d675942666619bc3164b8624ec8e52"
+    },
+    "paperBuild": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\paper-build.log",
+      "bytes": 15723,
+      "sha256": "a2197e96efc43713b4b407bcb5ae4214dbdc17fda3ca90fbc5c944ff84465655"
+    },
+    "paperPdf": {
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\output\\rmq-v1-paper.pdf",
+      "bytes": 334186,
+      "sha256": "1391b72362fdb1694447e543e67704a5745cc1f817e971240baa3851298cdb8e"
+    }
+  },
+  "deliveryBoundary": "Final commit/archive/PDF/evidence bundle identities and final current-tree/unpacked checks are recorded in the external RMQ-V1-DELIVERY.json. Older executions retain the exact commits above."
+}

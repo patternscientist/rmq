@@ -1,5 +1,8 @@
 # Code Map
 
+Start with [the V1 guide](V1_GUIDE.md) and the
+[checked client examples](V1_CLIENTS.md) for a short route through the public APIs.
+
 This map is for readers who want to understand the repository as a formalized
 artifact without first reading the whole Lean tree. It is an orientation guide,
 not a new claim surface: theorem truth lives in Lean declarations checked by

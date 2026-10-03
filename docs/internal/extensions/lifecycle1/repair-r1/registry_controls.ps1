@@ -14,11 +14,21 @@ $runtimeProfilePath=Join-Path $PSScriptRoot 'runtime_profile.ps1'
 $runtime=Assert-LifecycleRepairRuntime $Shell $Profile
 $registryPath=Join-Path $PSScriptRoot 'registry_control_cases.json'
 $registryHash='59d2a546c64eef274e878407583b51164d0676edd98fef46b04549d6fdf44a4a'
+function Get-L1R1RegistryControlSha256([byte[]]$Bytes){
+  $algorithm=[Security.Cryptography.SHA256]::Create()
+  try{return ([BitConverter]::ToString($algorithm.ComputeHash($Bytes))).Replace('-','').ToLowerInvariant()}
+  finally{$algorithm.Dispose()}
+}
+function Test-L1R1RegistryControlTextIdentity([byte[]]$Bytes,[string]$Expected){
+  $normalized=$utf8.GetBytes($utf8.GetString($Bytes).Replace("`r`n","`n"))
+  return (Get-L1R1RegistryControlSha256 $Bytes) -ceq $Expected -or (Get-L1R1RegistryControlSha256 $normalized) -ceq $Expected
+}
 $expectedIds=@('R01_FULL_REGISTRY','R02_ONE_ID','R03_BOUND_EMPTY','R04_BOUND_WHITESPACE',
   'R05_UNKNOWN_SELECTOR','R06_MISSING_MIDDLE','R07_DUPLICATE_MIDDLE','R08_UNKNOWN_MIDDLE',
   'R09_UNUSED_EXTRA','R10_CHANGED_MAPPING','R11_WRONG_PROFILE','R12_WRONG_SUPPLIED_SHELL')
-if((Get-FileHash -LiteralPath $registryPath).Hash.ToLowerInvariant() -cne $registryHash){throw 'L1R1-REGISTRY-CONTROL: frozen control mapping identity changed'}
-$registry=$utf8.GetString([IO.File]::ReadAllBytes($registryPath))|ConvertFrom-Json
+$registryBytes=[IO.File]::ReadAllBytes($registryPath)
+if(-not (Test-L1R1RegistryControlTextIdentity $registryBytes $registryHash)){throw 'L1R1-REGISTRY-CONTROL: frozen control mapping identity changed'}
+$registry=$utf8.GetString($registryBytes)|ConvertFrom-Json
 if(@($registry.cases).Count -ne $expectedIds.Count){throw 'L1R1-REGISTRY-CONTROL: exact control count mismatch'}
 for($i=0;$i -lt $expectedIds.Count;$i++){
   if($registry.cases[$i].id -cne $expectedIds[$i]){throw 'L1R1-REGISTRY-CONTROL: exact ordered control IDs differ'}
@@ -33,7 +43,7 @@ $driver=Join-Path $PSScriptRoot $registry.driver
 $frozenPath=Join-Path $PSScriptRoot 'CONTROL_REGISTRY.frozen.json'
 $activePath=Join-Path $PSScriptRoot 'CONTROL_REGISTRY.json'
 $frozenBytes=[IO.File]::ReadAllBytes($frozenPath)
-if((Get-FileHash -LiteralPath $frozenPath).Hash.ToLowerInvariant() -cne $registry.productionRegistrySha256){throw 'L1R1-REGISTRY-CONTROL: production registry identity changed'}
+if(-not (Test-L1R1RegistryControlTextIdentity $frozenBytes $registry.productionRegistrySha256)){throw 'L1R1-REGISTRY-CONTROL: production registry identity changed'}
 if([Convert]::ToBase64String([IO.File]::ReadAllBytes($activePath)) -cne [Convert]::ToBase64String($frozenBytes)){throw 'L1R1-REGISTRY-CONTROL: actual driver registry differs from frozen bytes'}
 $frozenText=$utf8.GetString($frozenBytes)
 $frozen=$frozenText|ConvertFrom-Json

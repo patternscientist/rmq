@@ -10,6 +10,8 @@ canonical global trace with the uniform `<= 210` certificate. This root
 also exports `succinctRMQFullyChargedPackedQuery`, whose distinct
 numeric-memory primitive run has complete data/code/scratch capacity
 `2n + o(n)`, logarithmic words and the 837572-instruction bound.
+The lifecycle construction/reusable-query theorem is a separate additive
+import, `RMQ.Headlines.Lifecycle`, outside this paper root.
 The aggregate `RMQ.Headlines` barrel remains available for the full repository, including the
 explicit `RMQ.Headlines.RMQCompatibility` history module and standalone
 rank/select and BP-navigation spoke surfaces.

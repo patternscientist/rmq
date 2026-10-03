@@ -1,5 +1,10 @@
 # What Is Proved
 
+For the V1 reader path and comparison of query and construction models, see
+[the V1 guide](V1_GUIDE.md). The additive lifecycle surface is scoped separately in
+[the claims packet](../artifact/CLAIMS.md); preprocessing exclusions below describe the
+query-only results, not an absence of construction theorems from the repository.
+
 ## Canonical Reviewer Route
 
 The final all-size reviewer trace uses one positive canonical block geometry and

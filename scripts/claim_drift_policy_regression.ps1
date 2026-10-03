@@ -9,6 +9,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "owned_process_tree.ps1")
 
 $repoRoot = [System.IO.Path]::GetFullPath((Get-Location).Path)
 $resolvedPolicyPath = [System.IO.Path]::GetFullPath($PolicyPath)
@@ -26,7 +27,9 @@ if (-not (Test-Path -LiteralPath $resolvedScannerPath)) {
 
 $policyObject = Get-Content -Raw -LiteralPath $resolvedPolicyPath | ConvertFrom-Json
 $currentSurfaceRegex = [string]$policyObject.currentFactSurfacePathRegex
-$expectedCurrentSurfaceRegex = '^(?:README\.md|artifact/(?:CLAIMS|README)\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\.md|docs/digests/PROJECT_DIGESTION_CURRENT\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\.md|RMQ_FINAL_ROADMAP\.md))$'
+# V1-GUARDS explicitly amends the current registry from 18 to 20 paths;
+# V1-02's original frozen requirements retain their historical identity.
+$expectedCurrentSurfaceRegex = '^(?:README\.md|artifact/(?:CLAIMS|README)\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|V1_CLIENTS|V1_GUIDE|WORD_RAM_REVIEW_PACKET)\.md|docs/digests/PROJECT_DIGESTION_CURRENT\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\.md|RMQ_FINAL_ROADMAP\.md))$'
 if ($currentSurfaceRegex -cne $expectedCurrentSurfaceRegex) {
   Write-Host "CLAIM-POLICY-REGRESSION: FAIL [p1r1-exact-current-surface-registry] regex drift"
   exit 1
@@ -47,6 +50,8 @@ $requiredCurrentSurfaces = @(
   'docs/RELATED_WORK_AND_LIMITATIONS.md',
   'docs/ROADMAP.md',
   'docs/TRUST_AUDIT_PACKET.md',
+  'docs/V1_CLIENTS.md',
+  'docs/V1_GUIDE.md',
   'docs/WHAT_IS_PROVED.md',
   'docs/WORD_RAM_REVIEW_PACKET.md',
   'README.md'
@@ -57,7 +62,7 @@ foreach ($requiredCurrentSurface in $requiredCurrentSurfaces) {
     exit 1
   }
 }
-if ($requiredCurrentSurfaces.Count -ne 18 -or
+if ($requiredCurrentSurfaces.Count -ne 20 -or
     @($requiredCurrentSurfaces | Group-Object | Where-Object Count -ne 1).Count -ne 0) {
   Write-Host "CLAIM-POLICY-REGRESSION: FAIL [p1r1-exact-current-surface-registry] path registry drift"
   exit 1
@@ -146,7 +151,7 @@ if ($wordRamCountTerm.Count -ne 1 -or
 }
 Write-Host "CLAIM-POLICY-REGRESSION: PASS [pq1-policy-config] attribution, attachment and rescoped instruction-count terms"
 Write-Host "CLAIM-POLICY-REGRESSION: PASS [r1r2-48147cb-current-surface-registry]"
-Write-Host "CLAIM-POLICY-REGRESSION: PASS [p1r1-exact-current-surface-registry] 18 exact paths"
+Write-Host "CLAIM-POLICY-REGRESSION: PASS [p1r1-exact-current-surface-registry] 20 exact paths"
 
 $sourceManifestTerm = @($policyObject.terms | Where-Object id -eq 'typed-reviewer-source-manifest')
 if ($sourceManifestTerm.Count -ne 1 -or
@@ -343,7 +348,14 @@ $fixtures = @(
   @{ id = "pq1-budget-on-trace-alias-cross-line-rejected"; relativePath = "artifact/CLAIMS.md"; reject = $true; termId = "forbidden-pq1-charge-on-trace-or-probe-theorem"; text = "RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe gives the`n837,572 instruction budget of RMQ.Headlines.succinctRMQFullyChargedPackedQuery." },
   @{ id = "pq1-contrasted-numerals-accepted"; relativePath = "README.md"; reject = $false; termId = "forbidden-pq1-charge-on-trace-or-probe-theorem"; text = "RMQ.Headlines.succinctRMQFullyChargedPackedQuery bounds its own packed run by at most 837,572 primitive instructions; the 210 trace and 427 probe bounds are separate quantities." },
   @{ id = "wordram-count-on-trace-rejected"; relativePath = "README.md"; reject = $true; termId = "forbidden-wordram-instruction-count"; text = "The canonical query executes in 210 word-RAM instructions." },
-  @{ id = "wordram-pq1-at-most-bound-accepted"; relativePath = "README.md"; reject = $false; termId = "forbidden-wordram-instruction-count"; text = "RMQ.Headlines.succinctRMQFullyChargedPackedQuery: the packed run halts within at most 837,572 primitive instructions." }
+  @{ id = "wordram-pq1-at-most-bound-accepted"; relativePath = "README.md"; reject = $false; termId = "forbidden-wordram-instruction-count"; text = "RMQ.Headlines.succinctRMQFullyChargedPackedQuery: the packed run halts within at most 837,572 primitive instructions." },
+
+  # Each guide must reach a current-fact-scope term in the production scanner.
+  # Its negative cannot pass on a generic term or on an unscanned path.
+  @{ id = "v1-guide-current-cost-207-rejected"; relativePath = "docs/V1_GUIDE.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "The current charged-trace cap is 207." },
+  @{ id = "v1-guide-current-cost-210-accepted"; relativePath = "docs/V1_GUIDE.md"; reject = $false; termId = "forbidden-retired-current-cost-bound"; text = "The current charged-trace cap is 210." },
+  @{ id = "v1-clients-current-cost-207-rejected"; relativePath = "docs/V1_CLIENTS.md"; reject = $true; termId = "forbidden-retired-current-cost-bound"; text = "207 is the current charged-trace cap." },
+  @{ id = "v1-clients-current-cost-210-accepted"; relativePath = "docs/V1_CLIENTS.md"; reject = $false; termId = "forbidden-retired-current-cost-bound"; text = "210 is the current charged-trace cap." }
 )
 
 $expectedFixtureIds = @'
@@ -477,12 +489,21 @@ pq1-budget-on-trace-alias-cross-line-rejected
 pq1-contrasted-numerals-accepted
 wordram-count-on-trace-rejected
 wordram-pq1-at-most-bound-accepted
+v1-guide-current-cost-207-rejected
+v1-guide-current-cost-210-accepted
+v1-clients-current-cost-207-rejected
+v1-clients-current-cost-210-accepted
 '@ -split "\r?\n" | Where-Object { $_ }
 
-$expectedRejectCount = 88
-$expectedAcceptCount = 42
-$expectedContextCount = 16
+$expectedRejectCount = 90
+$expectedAcceptCount = 44
+$expectedContextCount = 21
 $expectedContextFixtureIds = @(
+  "default-current-relative-rejected",
+  "default-current-absolute-rejected",
+  "default-current-accepted",
+  "default-no-current-surface-accepted",
+  "default-current-directory-rejected",
   "policy-path-allowance",
   "matrix-marked-row-allowance",
   "absolute-windows-single-file",
@@ -605,38 +626,6 @@ $baselineTrackedHashes = $null
 $gitStageTimeoutMs = 15000
 $scannerStageTimeoutMs = 30000
 
-function Stop-OwnedProcessTree {
-  param([System.Diagnostics.Process]$Process)
-
-  if ($null -eq $Process -or $Process.HasExited) {
-    return $true
-  }
-
-  if ($env:OS -eq "Windows_NT") {
-    $all = @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue)
-    $pending = @([int]$Process.Id)
-    $owned = @()
-    while ($pending.Count -gt 0) {
-      $parent = $pending[0]
-      $pending = @($pending | Select-Object -Skip 1)
-      $children = @($all | Where-Object { [int]$_.ParentProcessId -eq $parent })
-      foreach ($child in $children) {
-        $pending += [int]$child.ProcessId
-        $owned += [int]$child.ProcessId
-      }
-    }
-    [array]::Reverse($owned)
-    foreach ($id in @($owned + [int]$Process.Id)) {
-      Stop-Process -Id $id -Force -ErrorAction SilentlyContinue
-    }
-  } else {
-    Stop-Process -Id $Process.Id -Force -ErrorAction SilentlyContinue
-  }
-
-  $null = $Process.WaitForExit(5000)
-  return $Process.HasExited
-}
-
 function Invoke-BoundedProcess {
   param(
     [string]$FilePath,
@@ -644,62 +633,21 @@ function Invoke-BoundedProcess {
     [string]$WorkingDirectory,
     [int]$TimeoutMs
   )
-
-  if ($TimeoutMs -le 0) {
-    throw "positive subprocess deadline required"
-  }
-
-  $argumentText = @(
-    foreach ($argument in $Arguments) {
-      if ($argument -match '[\s"]') {
-        '"' + $argument.Replace('"', '\"') + '"'
-      } else {
-        $argument
-      }
-    }
-  ) -join " "
-  $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
-  $startInfo.FileName = $FilePath
-  $startInfo.Arguments = $argumentText
-  $startInfo.WorkingDirectory = $WorkingDirectory
-  $startInfo.UseShellExecute = $false
-  $startInfo.CreateNoWindow = $true
-  $startInfo.RedirectStandardOutput = $true
-  $startInfo.RedirectStandardError = $true
-  $process = $null
-  try {
-    $process = [System.Diagnostics.Process]::new()
-    $process.StartInfo = $startInfo
-    if (-not $process.Start()) {
-      throw "failed to start bounded subprocess: $FilePath"
-    }
-    $stdoutTask = $process.StandardOutput.ReadToEndAsync()
-    $stderrTask = $process.StandardError.ReadToEndAsync()
-    $completed = $process.WaitForExit($TimeoutMs)
-    $timedOut = -not $completed
-    $cleaned = $true
-    if ($timedOut) {
-      $cleaned = Stop-OwnedProcessTree -Process $process
-    } else {
-      $process.WaitForExit()
-    }
-    $stdout = $stdoutTask.GetAwaiter().GetResult()
-    $stderr = $stderrTask.GetAwaiter().GetResult()
-    $output = @(($stdout + [Environment]::NewLine + $stderr) -split "\r?\n" | Where-Object { $_ })
-    $code = if ($timedOut) { 124 } else { [int]$process.ExitCode }
-    return [PSCustomObject]@{
-      Code = $code
-      TimedOut = $timedOut
-      Cleaned = $cleaned
-      Output = @($output | ForEach-Object { [string]$_ })
-    }
-  } finally {
-    if ($null -ne $process -and -not $process.HasExited) {
-      $null = Stop-OwnedProcessTree -Process $process
-    }
-    if ($null -ne $process) {
-      $process.Dispose()
-    }
+  if ($TimeoutMs -le 0) { throw "positive subprocess deadline required" }
+  # Cleanup failure throws in the shared runner; a returned result has crossed
+  # its owned job/process-group death barrier. File redirection avoids waiting
+  # indefinitely on pipes inherited by descendants.
+  $result = Invoke-RMQOwnedBoundedProcess -FilePath $FilePath -Arguments $Arguments `
+    -WorkingDirectory $WorkingDirectory -Stage 'claim-policy-child' `
+    -DeadlineSeconds ([int][Math]::Ceiling($TimeoutMs / 1000.0)) `
+    -OutputLimitBytes 16777216 -TempRoot $absoluteFixtureRoot
+  return [PSCustomObject]@{
+    Code = $(if ($result.TimedOut) { 124 } else { $result.ExitCode })
+    TimedOut = $result.TimedOut
+    Cleaned = $true
+    OutputLimitExceeded = $result.OutputLimitExceeded
+    Ownership = $result.Ownership
+    Output = @($result.Output)
   }
 }
 
@@ -711,7 +659,7 @@ function Invoke-BoundedGit {
 
   $result = Invoke-BoundedProcess -FilePath "git" -Arguments $Arguments `
     -WorkingDirectory $WorkingDirectory -TimeoutMs $gitStageTimeoutMs
-  if ($result.TimedOut -or -not $result.Cleaned -or $result.Code -ne 0) {
+  if ($result.TimedOut -or -not $result.Cleaned -or $result.OutputLimitExceeded -or $result.Code -ne 0) {
     throw "bounded git stage failed: git $($Arguments -join ' ') (exit $($result.Code))"
   }
   return @($result.Output)
@@ -719,14 +667,16 @@ function Invoke-BoundedGit {
 
 function Test-SubprocessDeadlineControl {
   $result = Invoke-BoundedProcess -FilePath $shellPath `
-    -Arguments @("-NoLogo", "-NoProfile", "-Command", "Start-Sleep -Seconds 5") `
-    -WorkingDirectory $repoRoot -TimeoutMs 200
-  if (-not $result.TimedOut -or -not $result.Cleaned) {
-    Write-Host "CLAIM-POLICY-REGRESSION: FAIL [subprocess-deadline-sleeper-control]"
-    $script:failures += 1
-    return
+    -Arguments @('-NoLogo', '-NoProfile', '-Command', 'Start-Sleep -Seconds 5') `
+    -WorkingDirectory $repoRoot -TimeoutMs 1000
+  if (-not $result.TimedOut -or -not $result.Cleaned -or $result.OutputLimitExceeded) {
+    throw 'subprocess-deadline-sleeper-control failed'
   }
-  Write-Host "CLAIM-POLICY-REGRESSION: PASS [subprocess-deadline-sleeper-control] timeout classified and owned process cleaned"
+  Write-Host 'CLAIM-POLICY-REGRESSION: PASS [subprocess-deadline-sleeper-control] timeout classified and owned process cleaned'
+  & (Join-Path $PSScriptRoot 'claim_drift_policy_process_regression.ps1')
+  if ($LASTEXITCODE -ne 0) {
+    throw "policy process/verdict regression failed: $LASTEXITCODE"
+  }
 }
 
 function Get-TrackedGitStatus {
@@ -816,10 +766,12 @@ function New-ShadowFileRoot {
 function Invoke-StrictClaimScan {
   param(
     [string]$Path,
-    [string]$WorkingDirectory = $repoRoot
+    [string]$WorkingDirectory = $repoRoot,
+    [bool]$ShowAllowed = $true
   )
 
-  # `-ShowAllowed` is REQUIRED here; it is not a debugging convenience.
+  # `-ShowAllowed` is REQUIRED for allowance witnesses; it is not merely
+  # a debugging convenience. Default-path contexts deliberately turn it off.
   #
   # On 2026-08-16 the scanner stopped printing `[allowed]` lines by default, to
   # close a contamination channel: a required strict run was emitting prior audit
@@ -832,12 +784,16 @@ function Invoke-StrictClaimScan {
   # would be a silent downgrade: each would decay into "the scanner exited 0",
   # which all 23 satisfy vacuously, and this file would go green having stopped
   # testing the thing it exists to test.
-  return Invoke-BoundedProcess -FilePath $shellPath `
-    -Arguments @(
-      "-NoLogo", "-NoProfile", "-ExecutionPolicy", "Bypass",
-      "-File", $resolvedScannerPath, "-Strict", "-ShowAllowed",
-      "-PolicyPath", $resolvedPolicyPath, "-Path", $Path
-    ) -WorkingDirectory $WorkingDirectory -TimeoutMs $scannerStageTimeoutMs
+  # Allowance witnesses keep the diagnostic mode; explicit default-path
+  # contexts below exercise the production scoped-file enumeration as well.
+  $scanArguments = @(
+    "-NoLogo", "-NoProfile", "-ExecutionPolicy", "Bypass",
+    "-File", $resolvedScannerPath, "-Strict"
+  )
+  if ($ShowAllowed) { $scanArguments += "-ShowAllowed" }
+  $scanArguments += @("-PolicyPath", $resolvedPolicyPath, "-Path", $Path)
+  return Invoke-BoundedProcess -FilePath $shellPath -Arguments $scanArguments `
+    -WorkingDirectory $WorkingDirectory -TimeoutMs $scannerStageTimeoutMs
 }
 
 function Test-FinalVerdict {
@@ -849,7 +805,9 @@ function Test-FinalVerdict {
     [string]$TermId = "forbidden-2pow128-canonical-activation",
     [string]$WorkingDirectory = $repoRoot,
     [bool]$CheckTrackedState = $false,
-    [bool]$ContextCase = $false
+    [bool]$ContextCase = $false,
+    [bool]$ShowAllowed = $true,
+    [string]$RequireOutputPattern = ""
   )
 
   if ($ContextCase) {
@@ -860,7 +818,7 @@ function Test-FinalVerdict {
     Assert-TrackedStateUnchanged -Context "before-$Id"
   }
 
-  $result = Invoke-StrictClaimScan -Path $Path -WorkingDirectory $WorkingDirectory
+  $result = Invoke-StrictClaimScan -Path $Path -WorkingDirectory $WorkingDirectory -ShowAllowed $ShowAllowed
 
   if ($CheckTrackedState) {
     Assert-TrackedStateUnchanged -Context "after-$Id"
@@ -869,15 +827,25 @@ function Test-FinalVerdict {
   $escapedTermId = [regex]::Escape($TermId)
   $termFailed = [bool]($result.Output -match "CLAIM-DRIFT\[$escapedTermId\].*\[fail\]")
   $termAllowed = [bool]($result.Output -match "CLAIM-DRIFT\[$escapedTermId\].*\[allowed\]")
+  Write-Host ("CLAIM-POLICY-PROCESS: " + ([ordered]@{
+    Id = $Id; Code = $result.Code; TimedOut = $result.TimedOut
+    Cleaned = $result.Cleaned; OutputLimitExceeded = $result.OutputLimitExceeded
+    Ownership = $result.Ownership
+  } | ConvertTo-Json -Compress))
+  $completed = -not $result.TimedOut -and $result.Cleaned -and -not $result.OutputLimitExceeded
   if ($Reject) {
-    $passed = ($result.Code -ne 0) -and $termFailed
+    $passed = $completed -and ($result.Code -eq 1) -and $termFailed
     $expected = "REJECT"
   } else {
-    $passed = $result.Code -eq 0
+    $passed = $completed -and ($result.Code -eq 0)
     if ($RequireAllowed) {
       $passed = $passed -and $termAllowed
     }
     $expected = "ACCEPT"
+  }
+
+  if ($RequireOutputPattern -ne "") {
+    $passed = $passed -and [bool]($result.Output -match $RequireOutputPattern)
   }
 
   if (-not $passed) {
@@ -951,6 +919,51 @@ try {
     }
 
     if ($OnlyCase -eq '') {
+      # These must use the production default. A missing enumeration match
+      # cannot pass either negative: Test-FinalVerdict requires the term's fail
+      # line as well as a nonzero exit. Cover relative and absolute inputs,
+      # a directory tree, an in-scope positive and an empty current-surface set.
+      # The negative term failures carry coverage; exit-0 positives control
+      # false alarms. Explicit output witnesses pin the optimized enumeration.
+      $defaultReject = New-ShadowFileRoot -RelativePath 'README.md' `
+        -Content '207 is the current charged-trace cap.'
+      Test-FinalVerdict -Id 'default-current-relative-rejected' `
+        -RequireOutputPattern '^CLAIM-DRIFT: scoped terms scanned 1 of 1 enumerated files$' `
+        -Path $defaultReject.RelativePath -WorkingDirectory $defaultReject.Root `
+        -Reject $true -TermId 'forbidden-retired-current-cost-bound' `
+        -ShowAllowed $false -CheckTrackedState $true -ContextCase $true
+      $defaultAbsolute = New-ShadowFileRoot -RelativePath 'docs/PAPER_MODEL_ADEQUACY.md' `
+        -Content 'There is no event-silent computation left on the accepted route.'
+      Test-FinalVerdict -Id 'default-current-absolute-rejected' `
+        -Path $defaultAbsolute.AbsolutePath -WorkingDirectory $defaultAbsolute.Root `
+        -Reject $true -TermId 'forbidden-unqualified-no-event-silent-computation' `
+        -ShowAllowed $false -CheckTrackedState $true -ContextCase $true
+      $defaultAccept = New-ShadowFileRoot -RelativePath 'README.md' `
+        -Content 'This guide describes the half-open RMQ contract.'
+      Test-FinalVerdict -Id 'default-current-accepted' `
+        -Path $defaultAccept.RelativePath -WorkingDirectory $defaultAccept.Root `
+        -Reject $false -ShowAllowed $false -CheckTrackedState $true -ContextCase $true
+      $defaultOutside = New-ShadowFileRoot -RelativePath 'notes.txt' `
+        -Content '207 is the current charged-trace cap.'
+      Test-FinalVerdict -Id 'default-no-current-surface-accepted' `
+        -RequireOutputPattern 'scoped terms scanned 0 files' `
+        -Path $defaultOutside.RelativePath -WorkingDirectory $defaultOutside.Root `
+        -Reject $false -ShowAllowed $false -CheckTrackedState $true -ContextCase $true
+
+      $defaultDirectory = New-ShadowFileRoot -RelativePath 'docs/WHAT_IS_PROVED.md' `
+        -Content '207 is the current charged-trace cap.'
+      [System.IO.File]::WriteAllText(
+        (Join-Path $defaultDirectory.Root 'docs/PAPER_MODEL_ADEQUACY.md'),
+        'This guide describes the model.' + [Environment]::NewLine)
+      [System.IO.File]::WriteAllText(
+        (Join-Path $defaultDirectory.Root 'docs/INTERNAL_NOTES.md'),
+        '207 is the current charged-trace cap.' + [Environment]::NewLine)
+      Test-FinalVerdict -Id 'default-current-directory-rejected' `
+        -Path 'docs' -WorkingDirectory $defaultDirectory.Root `
+        -Reject $true -TermId 'forbidden-retired-current-cost-bound' `
+        -RequireOutputPattern '^CLAIM-DRIFT: scoped terms scanned 2 of 3 enumerated files$' `
+        -ShowAllowed $false -CheckTrackedState $true -ContextCase $true
+
       Test-FinalVerdict -Id "policy-path-allowance" -Path "docs/internal/CLAIM_DRIFT_POLICY.md" -Reject $false -RequireAllowed $true -ContextCase $true
 
       $markedShadow = New-ShadowMatrixRoot -Content '| `POLICY-R3` | The canonical execution requires 2^128. |'
@@ -1018,11 +1031,20 @@ The historical global positions 0 and 12 were distinct.
     }
   }
 } finally {
-  if ([System.IO.Directory]::Exists($absoluteFixtureRoot)) {
-    [System.IO.Directory]::Delete($absoluteFixtureRoot, $true)
+  $ownedTempParent = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\', '/')
+  $ownedRoot = [IO.Path]::GetFullPath($absoluteFixtureRoot)
+  if ([IO.Path]::GetDirectoryName($ownedRoot) -ne $ownedTempParent -or
+      [IO.Path]::GetFileName($ownedRoot) -notmatch '^claim-drift-policy-regression-[0-9a-f]{32}$') {
+    throw 'refusing cleanup outside the owned policy fixture directory'
   }
-  if ($null -ne $baselineStatus -and $null -ne $baselineTrackedHashes) {
-    Assert-TrackedStateUnchanged -Context "final-clean-restoration"
+  try {
+    if ($null -ne $baselineStatus -and $null -ne $baselineTrackedHashes) {
+      Assert-TrackedStateUnchanged -Context "final-clean-restoration"
+    }
+  } finally {
+    if ([System.IO.Directory]::Exists($absoluteFixtureRoot)) {
+      [System.IO.Directory]::Delete($absoluteFixtureRoot, $true)
+    }
   }
 }
 

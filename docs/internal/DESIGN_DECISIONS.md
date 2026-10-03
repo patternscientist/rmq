@@ -13423,3 +13423,348 @@ theorem already supplies the intended declaration; no new proof architecture is
 needed. Build the actual headline target before testing its import, then require
 the unchanged linter and all topology regressions. Aggregate and independent
 blind audit remain acceptance prerequisites. There is no merge or push here.
+
+
+## DD-20261001-V1-COORDINATOR - Preserve theorem boundaries while finalizing V1
+
+Date: 2026-10-01. Status: candidate implementation, pending integrated verification.
+
+The V1 work preserves the reference half-open leftmost List Int contract, all
+public theorem types, the mathematical models and executable definitions.
+Source comments now scope preprocessing exclusions to the query-only theorem
+and describe the additive lifecycle interface without stale campaign labels.
+The paper root stays narrow; the broad root continues to expose lifecycle.
+These are comment changes, not stronger theorem statements or process acceptance.
+
+The proof and client leaves have separate DD entries. Public prose distinguishes
+logical payload bits, allocated word capacity, encoded code, proof-only fields
+and native storage. The paper keeps its historical query-theorem pin with an
+explicit source relationship, instead of moving line citations without checking
+them. Integrated builds, inventories and the later blind audit provide the
+candidate evidence; prior logs are not relabelled as new verification.
+
+## DD-20261001-V1-CLIENT - Keep checked clients model-specific and theorem-reusing
+
+Date: 2026-10-01. Status: implementation candidate; coordinator acceptance and
+the V1 integrated audit remain required.
+
+The V1 proof-maintenance examples use one downstream import,
+`RMQ.Headlines.RMQ`, but keep two existing query models in separate theorem
+families. The fully charged packed client projects primitive steps, valid-query
+halting/output, zero-based leftmost correctness, and complete data/code/scratch
+capacity from `succinctRMQFullyChargedPackedQuery`. The earlier paper client
+uses the existing named boundaries `SuccinctClassic.buildPayload_length`,
+`queryCosted_exact`, and `queryCosted_cost_le`, with the literal `210` supplied
+by `succinctRMQQueryCostEq`. A separate equality records that `queryCosted` is
+the `toCosted` projection of `queryTraceResult`. Named declarations are used
+instead of coupling a downstream proof to the conjunction layout of the larger
+paper profile.
+
+Supplied-store reuse consumes
+`listIntSuccinctRMQQueryTraceResultWithStoreEqOfOrderedReadFootprint` at its
+original arbitrary-list, arbitrary-store, arbitrary-endpoint domain. Complete
+trace equality is retained and answer/cost equality are projections, so the
+client does not reprove query semantics or substitute a sibling backend. Small
+valid and invalid examples go through specification and refinement theorems;
+they do not evaluate the large packed machine.
+
+Rejected alternatives were combining the packed primitive budget with the
+paper model's `210`, proving only retained-data capacity, adding convenience
+aliases to the public headline module, or using the unverified quality draft as
+evidence. Those choices would respectively conflate cost models, omit encoded
+code and scratch, enlarge the public API, or replace kernel checking with a
+draft. The result is an examples-only consumer plus documentation and a frozen
+acceptance matrix. It changes no declaration under `RMQ/` and makes no claim
+about preprocessing, Lean wall-clock time, V1 acceptance, or release readiness.
+
+## DD-20261001-V1-PROOF - Consolidate proof ownership without changing contracts
+
+Date: 2026-10-01. Status: implementation decision; candidate verification
+pending.
+
+The shape-free rank/select facts in `RMQ.GenericSelect` are the canonical
+mathematical proofs. The historical `RMQ.SuccinctSelect` declarations remain
+at their existing names and types, but now delegate through direct imports.
+The preserved rank proposition is, for every `target`, `bits`, and `limit`,
+`rankPrefix target (bits.take limit) (bits.take limit).length = rankPrefix
+target bits limit`. The preserved select proposition takes
+`occurrence < rankPrefix target bits limit` and returns
+`exists pos, select target bits occurrence = some pos`. This keeps
+`GenericSelect.Primitives`, the legacy `BuiltRouting.RelativeEntries` and
+`BuiltRouting.LookupDense` clients, and the construction/specification clients
+on their old surfaces while leaving one proof of each mathematical fact.
+
+The reviewer interior simulation now names the definitional decomposition of an
+active `readNat (.read ...)` reference as the full
+`WordRAM.TraceResult.bind` of the remaining read and its continuation. The
+strong-induction proof consumes that equality once for exact trace
+concatenation and again for the splice reference. Full result equality was
+chosen because `PackedReviewerComponentRun.Simulates` fixes the returned
+value, terminal state, and exact trace; a trace-length lemma would be too weak.
+The boundary remains private and has no simp attribute, so it does not broaden
+the public API or rewrite unrelated reference terms. The existing chain through
+`packedReviewerDriveInterior_state_simulates_of_length`,
+`packedReviewerDriveInterior_state_simulates`,
+`packedReviewerDriveInterior_exact_simulates`,
+`packedReviewerDriveInterior_simulates`, and the downstream LCA simulation
+keeps the same statements and objects.
+
+The unused private
+`RMQ.EncodingLowerBound.mem_erase_of_ne_of_mem` copy is removed after a
+repository source search found no consumer. Public forwarding declarations in
+that module remain unchanged. Rejected alternatives were retaining parallel
+inductive proofs, renaming or moving the historical theorems, adding a generic
+bind-length wrapper already subsumed by `WordRAM.TraceResult.bind_trace`,
+marking the private decomposition as a global simp rule, expanding a giant simp
+set at the two simulation sites, and folding the nearby LCA layout aliases into
+this maintenance patch. Those choices would preserve duplication, weaken the
+needed equality, or enlarge the change beyond the two identified coupling
+sites.
+
+The exact frozen types, consumer chains, anti-vacuity checks, and verification
+ledger are recorded in `docs/internal/v1/V1_PROOF_MATRIX.md`. This decision
+changes no computational definition, machine program, constant, premise,
+payload account, cost model, runtime claim, or measured-performance claim.
+Coordinator integration and independent acceptance remain separate V1 work.
+
+## DD-20261001-V1-INTEGRATION — Preserve checked clients and proof boundaries
+
+Date: 2026-10-01. Status: candidate integration.
+
+The proof and client leaves preserve all production computational definitions
+and theorem contracts. Integration keeps their append-only decision records
+and adds a digestion note explaining the common objects and live assumptions.
+A client comment explicitly names the three control words already included in
+its checked capacity expression; the guide labels the unit as bits. This is
+prose clarification only, with no change to that proposition or proof.
+
+The integration digest distinguishes the `TraceResult` fields (candidate and
+trace) from the consuming `PackedReviewerComponentRun.Simulates` relation,
+which additionally fixes terminal value and `done reference.value` state.
+The private equality has no separate terminal-state field. No proof changes
+were needed for this explanatory clarification.
+
+## DD-20261001-V1-CLIENT-REVIEW — State the exact client accounting fact
+
+Date: 2026-10-01. Status: candidate refinement.
+
+Fresh source review found that the projection client's docstring implied more
+than its literal equality. Keep its existing theorem and add a separate client
+of `WordRAM.TraceResult.toCosted_cost_eq_trace_length`, instantiated with the
+same guarded `SuccinctClassic.queryTraceResult`. Use the directly matching
+`SuccinctClassic.queryCost_eq` in the numeric cost calculation. The eventual
+capacity proof supplies `Nat.one_pos` directly. These changes affect examples
+only; no production definition, premise or theorem type changes.
+
+Explain that the primitive result packet is index+1, with zero reserved for
+rejection. Retain the canonical `queryBudget` run in the packed client: its
+conjunction proves halting and correctness of that run, while the isolated fuel
+bound is merely structural. Replacing its fuel with a fresh existential would
+depart from the frozen object contract. Keep convenient value/cost projections
+without presenting them as independent correctness facts. Public prose also
+names the three control words already included in complete packed capacity.
+
+## DD-20261001-V1-ADVISORY-STATUS — Expose the actual checker failure
+
+Date: 2026-10-01. Status: documentation synchronization.
+
+The independent-check guide previously said no export or checker run existed.
+The scoped V1 attempt makes that statement stale. Link the exact advisory JSON
+and state the failed omega auxiliary proof, tool revisions, exporter API patch
+and limited selected-theorem scope. Do not infer a kernel defect or independent
+acceptance. Keep the required Lean trust checks separate. Replace the stale
+paper-closure count by the exact 262-module V1-base inventory and label the
+generic tool-build procedure as an outline rather than a tested upstream-tip
+recipe. No production source or trust assumption changes.
+
+## DD-20261001-V1-READER-FOLLOWUP — Make each cost guide self-contained
+
+Date: 2026-10-01. Status: source-review follow-up.
+
+The Claude correction review confirmed the bounded client repairs and identified
+two remaining reader ambiguities. State index+1 packet encoding beside packet0
+in the claims introduction. State the attempted payload-word read vocabulary
+and excluded controller work beside the classic client's trace-length theorem.
+These repeat the existing source-backed boundaries where readers need them;
+they change no theorem, number, claim domain or verification requirement.
+
+## DD-20261001-V1-CLOSURE-READER — Label historical import measurements
+
+Date: 2026-10-01. Status: reader reconciliation.
+
+The linked import-closure note contains two old measurement tables. Preserve
+them with explicit historical headings and lead with the exact V1-base inventory:
+262 local paper modules, 368 for the specified lifecycle-root union. Inspecting
+the paper path list confirms that its stated unrelated-spoke/legacy/obstruction
+exclusions still hold. These are base counts, not a relabeled final-build result.
+The V1 proof/client delta remains a separate verification obligation. Avoid
+silently replacing historical counts or presenting a source LOC total as a
+measure of proof quality.
+
+
+## DD-20261001-V1-PROOF-REVIEW - Complete adjacent generic-select proof ownership
+
+Date: 2026-10-01. Status: implementation decision; follow-up candidate
+verification pending.
+
+Source review found six more historical RMQ.SuccinctSelect proofs whose
+propositions, implicit binders, and hypothesis order exactly match existing
+RMQ.GenericSelect theorems already imported by their modules. The preserved
+facts are: a successful select makes the rank through pos + 1 equal
+occurrence + 1; a selected position below limit places the occurrence below
+the rank prefix at limit; monotonicity of selectFrom under lo <= hi;
+monotonicity and strict monotonicity of select; and failure of select when
+the total rank is at most the occurrence. The historical declarations retain
+their names and complete theorem headers and now prove those exact propositions
+with direct by-exact RMQ.GenericSelect delegation.
+
+Existing historical consumers therefore keep the same objects and assumptions.
+They include WordExact's own sample-order arguments, BuiltRouting
+RelativeEntries/SpanBudgets/LookupDense, sparse-exception data and exactness
+modules, and WordRAM construction specifications. GenericSelect clients
+continue to consume the canonical declarations directly. No recursive
+selectPositions definition is merged, and no theorem is renamed or made
+public.
+
+The private EncodingLowerBound.two_pow_sub_le_of_le_mul_pow compatibility
+wrapper had no source consumer: repository search found only its declaration
+and forwarding body. The same spelling in LowerBound.lean is the canonical
+public theorem and has a canonical lower-bound consumer. Likewise,
+docs/FAMILY_SUMMARY.md has separate owners: its public LowerBound inventory
+entry remains, while only the private EncodingLowerBound inventory entry is
+removed with the wrapper.
+
+Rejected alternatives were a broad tactic-style sweep, changing binder order
+to make delegation convenient, merging similar recursive helper definitions,
+publishing the unused wrapper, deleting the canonical theorem or its public
+inventory entry, and editing ReviewerLogicalSimulation again. Those changes
+would enlarge the API or alter unrelated proof boundaries. This follow-up
+changes no computational definition, payload account, model cost, runtime
+behavior, theorem premise, or public claim. The appended source-review matrix
+records exact evidence; coordinator integration, native/package verification,
+and fresh independent audit remain required before V1 acceptance.
+
+Proof digestion: the historical modules now act as compatibility surfaces while
+GenericSelect owns the mathematical proofs. In plain language, callers still
+ask the same six questions and receive the same answers; only the proof source
+is shared. The live assumptions are exactly the original select equations,
+order hypotheses, and rank bound. A skeptical reader should change one
+historical binder or argument order and confirm the direct delegation and its
+downstream client fail to elaborate, then separately verify that source search
+continues to distinguish the canonical lower-bound theorem from private
+inventory.
+
+## DD-20261001-V1-PROOF-INVENTORY — Finish private-helper inventory cleanup
+
+Date: 2026-10-01. Status: candidate integration.
+
+Remove the stale EncodingLowerBound inventory token for the private erase
+helper already deleted by the initial proof leaf. The second proof leaf removes
+the other unused private wrapper's token; retain both canonical LowerBound
+facts. State two private-helper deletions in the paper/source relationship and
+record the actual metadata-prefix assessment in DIGESTION_LOG. The existing
+`metadataWordCount`/`metadata_length` API already constrains the 174-word prefix;
+changing repeated literals across the read/setup/safety/program chain is a
+separate representation refactor with no demonstrated V1 correctness benefit.
+No computational definition, theorem type or cost constant changes here.
+
+## DD-20261001-V1-ARCHIVE-MODES — Pin source ZIP permissions
+
+Date: 2026-10-01. Status: packaging repair.
+
+Independent inspection found that Git archive's default tar.umask yields
+0664/0775 and can vary with local Git configuration. Pass a command-local
+tar.umask=0022 when generating the tar input, so the source ZIP records canonical
+0644/0755 Git file modes. A regression fixture changes tar.umask between two
+builds of the same commit, requires identical ZIP bytes, and checks a tracked
+executable separately from ordinary source. No user Git configuration changes;
+the override applies only to this archive command. This is packaging integrity,
+not a Lean proof or executable-performance claim.
+
+## DD-20261001-V1-PACKAGE-BOUNDARY - State manifest and source identity separately
+
+Date: 2026-10-01. Status: V1 reader/artifact boundary; final delivery pending.
+
+Context. A self-contained ZIP manifest can verify its own file hashes without
+authenticating its claimed Git commit. The source reader must distinguish those
+properties from kernel-checked theorem correctness. Citation metadata also needs
+a complete version comparison, not a matching prefix.
+
+Decision. ARTIFACT_REPRODUCIBILITY.md states the exact manifest-consistency
+guarantee, requires independent file-set/blob/mode comparison and a trusted
+archive digest to bind a delivered artifact to its expected source, and points
+to automatic cheap packaging/checkout tests. Local Windows tests passed eight
+packaging cases and three checkout tests (three Git settings plus two missing-rule
+controls). The new hosted job is configured, not reported as executed.
+
+Alternatives rejected. Treating the manifest commit string as authentication
+would accept a consistently rewritten package. Treating packaging checks as
+formal theorem verification would cross an explicit trust boundary.
+
+Consequences. No Lean statement, proof, import, model cost, payload accounting
+or runtime assumption changes. WDD-20261001-V1-PACKAGE-REVIEW records the actual
+script/CI choices; this entry governs the public artifact claim.
+
+## DD-20261001-V1-ARCHIVE-CHECKOUT - Explain the native checkout representation
+
+Date: 2026-10-01. Status: reader clarification and measured scoped native evidence.
+
+Context and decision. The source ZIP contains Git blob bytes. Three native
+exact-byte inputs deliberately need CRLF materialized by .gitattributes, so the
+reader guide now explicitly requires a real Git checkout for that supplement.
+The unpacked ZIP's advertised path remains the Lean smoke build. No byte
+predicate or historical hash was weakened to make the archive appear native-ready.
+The successful scoped native campaign and independent142-answer/6559-pin check
+are recorded separately from the formal proof and full historical campaign.
+
+Consequences. This public documentation change adds no theorem or runtime
+performance claim. WDD-20261001-V1-REPAIR-REVIEW records the test refinements.
+
+## DD-20261001-V1-LIVE-REFERENCES - Repair current paper navigation
+
+Date: 2026-10-01. Status: documentary repair following completed verification.
+
+The Linux reproduction at 447751d203a4e5d02f15680731226a56fd8894a3
+completed with exit 1. Four lower-bound ledger pointers had drifted by 39
+lines after proof cleanup. Update these navigation pointers and explicitly
+distinguish them from the retained historical mathematical commit pins.
+Historical worklogs and audit citations remain historical. No theorem, source
+claim, manuscript text, checker or proof is changed.
+
+The client matrix now spells out the three actual invalid-range aliases
+instead of a documentary wildcard that the topology checker parsed as a
+nonexistent declaration. Frozen requirement cells remain unchanged.
+The affected checkers must pass on the repaired source before acceptance;
+the original aggregate failure remains evidence and is never relabeled.
+
+## DD-20261001-V1-LOCAL-ACCEPTANCE - Accept the bounded V1 formal artifact
+
+Date: 2026-10-01. Status: local candidate qualification; publication separate.
+
+The integrated proof-maintenance delta and universal clients preserve the
+reference semantics, public propositions and model boundaries. Exact source
+lineage, completed kernel/gate evidence, independent source audits and repaired
+evidence consumers support the additive lifecycle model's V1 inclusion. Record
+formal acceptance separately from the finite native supplement and advisory
+independent-checker failure. Synchronize the current README/claims/family entry
+point and measured reproduction guide while retaining dated historical statuses.
+
+No new theorem, performance bound, native heap claim or stable-library promise
+is introduced. V1_COORDINATOR_ACCEPTANCE and the final external delivery receipt
+identify source qualification and actual deliverables without self-referential
+hashes. Final text checks and final bundle verification follow this closure.
+
+## DD-20261003-V1-BLIND-DISPOSITION - Preserve audit objects and qualify repair
+
+Date: 2026-10-03. Status: bounded source accepted; delivery and CI gates pending.
+
+The coordinator accepts P2-01 closure atff92a2f94a97655a995ec744150ae7bab15ccb56
+after independent reproduction, exact production-case evidence and the original
+auditor's continuation. Preserve both external reports verbatim under exact
+per-path Git byte attributes; do not normalize their hashed content or rewrite
+the historical NOT_READY verdict. Append a distinct disposition/index and link
+the older acceptance records. Retain typed-producer and inherited-descendant
+scope limits; no formal/model theorem changes or stronger containment claim.
+Final source/report checks and newly authenticated artifacts must precede the
+protected hosted release sequence. Reusing old archive identities or rewriting
+the failed aggregate as passing would erase the distinction this record preserves.

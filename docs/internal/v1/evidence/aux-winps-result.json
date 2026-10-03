@@ -1,0 +1,705 @@
+{
+  "schema": "v1-evidence-compact-aux-v1",
+  "classification": "Derived compact receipt only; projection from the named raw aggregate, not a new test execution.",
+  "generator": {
+    "path": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\v1-compact-receipts.ps1",
+    "sha256": "9e9021ea621dd062017ca3856e62493eb48cbaea638ceeadfccf7e566d5d1881"
+  },
+  "sourceAggregate": {
+    "path": ".lake/v1-evidence/identity-aux-winps-a8f1c512/RESULT.json",
+    "bytes": 42831,
+    "sha256": "a19f7c8639e8407f764836a7df35f1e7b73b1d9c85cb7be67f4275c06e7ce935"
+  },
+  "harnessRef": "a8f1c512e9a5d3d57abae6cd9b988978246af768",
+  "harnessSha": "a8f1c512e9a5d3d57abae6cd9b988978246af768",
+  "expect": "candidate",
+  "runnerShell": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+  "psVersion": "5.1.26100.9444",
+  "expectedCount": 46,
+  "executedCount": 46,
+  "passedCount": 46,
+  "failedIds": [],
+  "cases": [
+    {
+      "id": "ORD-K1",
+      "passed": true,
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/run_check.ps1",
+      "blobSha256": "395bfff8570f0762742cb61a4caedf4f9060a18388ab0135d243a7d14a8a6580",
+      "observed": {
+        "ok": true,
+        "reason": "every integrity recording precedes release",
+        "blocks": [
+          {
+            "finallyLine": 52,
+            "firstReleaseLine": 70,
+            "lastIntegrityAddLine": 67,
+            "integrityAdds": 3,
+            "ok": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "ORD-K2",
+      "passed": true,
+      "path": "docs/internal/extensions/lifecycle1/repair-r2/run_check.ps1",
+      "blobSha256": "f3ae2e4aea800c2f6cb094a3a74ca4fb380b9bf3aa8f61f8e79ae2717b0184cc",
+      "observed": {
+        "ok": true,
+        "reason": "every integrity recording precedes release",
+        "blocks": [
+          {
+            "finallyLine": 87,
+            "firstReleaseLine": 122,
+            "lastIntegrityAddLine": 119,
+            "integrityAdds": 7,
+            "ok": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "ORD-RC",
+      "passed": true,
+      "path": "docs/internal/extensions/lifecycle1/repair-r1/run_controls.ps1",
+      "blobSha256": "f48e54fbd33c39f6b0d4b11dd8a4a1bdd1f711cae6eb13ebcb68ff82ae97748c",
+      "observed": {
+        "ok": true,
+        "reason": "every integrity recording precedes release",
+        "blocks": [
+          {
+            "finallyLine": 149,
+            "firstReleaseLine": 161,
+            "lastIntegrityAddLine": 157,
+            "integrityAdds": 2,
+            "ok": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "ORD-LV",
+      "passed": true,
+      "path": "scripts/lifecycle_validator.ps1",
+      "blobSha256": "8135040dfb712cb81dd083db8f4b58d42e333bc196db3770f2b5c28e228f0cb3",
+      "observed": {
+        "ok": true,
+        "reason": "every integrity recording precedes release",
+        "blocks": [
+          {
+            "finallyLine": 142,
+            "firstReleaseLine": 166,
+            "lastIntegrityAddLine": 159,
+            "integrityAdds": 2,
+            "ok": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "HR-P",
+      "passed": true,
+      "heavyRunSha256": "fc27eed3b8541cf3f0b193070a6cf789fedd246a17c41061e0e5bdb7d9405306",
+      "completedLaunch": true,
+      "successLine": true,
+      "writeFailureReported": false,
+      "resultFileWritten": true,
+      "defectShape": false,
+      "repairedShape": false,
+      "normalShape": true
+    },
+    {
+      "id": "HR-W",
+      "passed": true,
+      "heavyRunSha256": "fc27eed3b8541cf3f0b193070a6cf789fedd246a17c41061e0e5bdb7d9405306",
+      "completedLaunch": true,
+      "successLine": false,
+      "writeFailureReported": true,
+      "resultFileWritten": false,
+      "defectShape": false,
+      "repairedShape": true,
+      "normalShape": false
+    },
+    {
+      "id": "PRED-PIN-GOOD",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": true,
+      "expectedReason": "captured 3 of 5 rows, status/final identities consistent",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": true,
+        "reason": "captured 3 of 5 rows, status/final identities consistent"
+      }
+    },
+    {
+      "id": "PRED-PIN-ROSTER-GOOD",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": true,
+      "expectedReason": "captured 3 of 3 rows, all verified, exact roster stage complete",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": true,
+        "reason": "captured 3 of 3 rows, all verified, exact roster stage complete"
+      }
+    },
+    {
+      "id": "PRED-PIN-GIT-GOOD",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": true,
+      "expectedReason": "captured 1 of 1 rows, all verified, exact roster stage complete",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": true,
+        "reason": "captured 1 of 1 rows, all verified, exact roster stage complete"
+      }
+    },
+    {
+      "id": "PRED-PIN-FILE-SHA1",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "malformed captured SHA256: a",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "malformed captured SHA256: a"
+      }
+    },
+    {
+      "id": "PRED-PIN-GIT-SHA256",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "malformed captured Git SHA1: git:HEAD",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "malformed captured Git SHA1: git:HEAD"
+      }
+    },
+    {
+      "id": "PRED-PIN-LEGACY-GIT-GOOD",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": true,
+      "expectedReason": "captured 1 of 1 rows, all verified",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": true,
+        "reason": "captured 1 of 1 rows, all verified"
+      }
+    },
+    {
+      "id": "PRED-PIN-LEGACY-FILE-SHA1",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "malformed captured SHA256: a",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "malformed captured SHA256: a"
+      }
+    },
+    {
+      "id": "PRED-KIND-PROJECTION-GOOD",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": true,
+      "expectedReason": "captured 1 of 1 rows, all verified, exact roster stage partial",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": true,
+        "reason": "captured 1 of 1 rows, all verified, exact roster stage partial"
+      }
+    },
+    {
+      "id": "PRED-KIND-INDEX-OOB",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "invalid identity-kind index 1",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "invalid identity-kind index 1"
+      }
+    },
+    {
+      "id": "PRED-PATH-FIXTURE-GOOD",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": true,
+      "expectedReason": "captured 1 of 1 rows, all verified, exact roster stage complete",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": true,
+        "reason": "captured 1 of 1 rows, all verified, exact roster stage complete"
+      }
+    },
+    {
+      "id": "PRED-PATH-FIXTURE-WRONG-ROOT",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "pinCheck path at roster index 0 differs from trusted expected path: C:/wrong/v1-fixture/bin/tool.exe",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "pinCheck path at roster index 0 differs from trusted expected path: C:/wrong/v1-fixture/bin/tool.exe"
+      }
+    },
+    {
+      "id": "PRED-PATH-SHELL-ALIASES-GOOD",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": true,
+      "expectedReason": "captured 2 of 2 rows, all verified, exact roster stage complete",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": true,
+        "reason": "captured 2 of 2 rows, all verified, exact roster stage complete"
+      }
+    },
+    {
+      "id": "PRED-PATH-SHELL-SAME-BASENAME-WRONG",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "pinCheck path at roster index 0 differs from trusted expected path: C:/unrelated/shell/pwsh.exe",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "pinCheck path at roster index 0 differs from trusted expected path: C:/unrelated/shell/pwsh.exe"
+      }
+    },
+    {
+      "id": "PRED-PATH-TOOLCHAIN-GOOD",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": true,
+      "expectedReason": "captured 1 of 1 rows, all verified, exact roster stage complete",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": true,
+        "reason": "captured 1 of 1 rows, all verified, exact roster stage complete"
+      }
+    },
+    {
+      "id": "PRED-PATH-TOOLCHAIN-WRONG-ROOT",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "pinCheck path at roster index 0 differs from trusted expected path: C:/wrong/toolchain/bin/lean.exe",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "pinCheck path at roster index 0 differs from trusted expected path: C:/wrong/toolchain/bin/lean.exe"
+      }
+    },
+    {
+      "id": "PRED-PATH-HISTORY-GOOD",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": true,
+      "expectedReason": "captured 1 of 1 rows, all verified, exact roster stage complete",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": true,
+        "reason": "captured 1 of 1 rows, all verified, exact roster stage complete"
+      }
+    },
+    {
+      "id": "PRED-PATH-HISTORY-WRONG-ROOT",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "pinCheck path at roster index 0 differs from trusted expected path: C:/wrong/history/SUMMARY.json",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "pinCheck path at roster index 0 differs from trusted expected path: C:/wrong/history/SUMMARY.json"
+      }
+    },
+    {
+      "id": "PRED-PATH-CONTEXT-MISSING",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "missing trusted path context fixtureRoot for fixture:bin/tool.exe",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "missing trusted path context fixtureRoot for fixture:bin/tool.exe"
+      }
+    },
+    {
+      "id": "PRED-FINAL-VERIFIED-NULL",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "missing final identity for verified pin: a",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "missing final identity for verified pin: a"
+      }
+    },
+    {
+      "id": "PRED-FINAL-VERIFIED-EMPTY",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "malformed final SHA256 for verified pin: a",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "malformed final SHA256 for verified pin: a"
+      }
+    },
+    {
+      "id": "PRED-FINAL-VERIFIED-NONHEX",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "malformed final SHA256 for verified pin: a",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "malformed final SHA256 for verified pin: a"
+      }
+    },
+    {
+      "id": "PRED-FINAL-VERIFIED-MISMATCH",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "verified final identity differs from entry: a",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "verified final identity differs from entry: a"
+      }
+    },
+    {
+      "id": "PRED-FINAL-CHANGED-GOOD",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": true,
+      "expectedReason": "captured 1 of 1 rows, status/final identities consistent",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": true,
+        "reason": "captured 1 of 1 rows, status/final identities consistent"
+      }
+    },
+    {
+      "id": "PRED-FINAL-CHANGED-SAME",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "changed final identity equals entry: a",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "changed final identity equals entry: a"
+      }
+    },
+    {
+      "id": "PRED-FINAL-UNREADABLE-GOOD",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": true,
+      "expectedReason": "captured 1 of 1 rows, status/final identities consistent",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": true,
+        "reason": "captured 1 of 1 rows, status/final identities consistent"
+      }
+    },
+    {
+      "id": "PRED-FINAL-UNREADABLE-NONNULL",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "unreadable-final pin has a final identity: a",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "unreadable-final pin has a final identity: a"
+      }
+    },
+    {
+      "id": "PRED-PIN-DROPPED",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "captured rows 2 differ from entryPinCount 3",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "captured rows 2 differ from entryPinCount 3"
+      }
+    },
+    {
+      "id": "PRED-PIN-COORDINATED",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "pinCheck roster count 2 differs from expected 3",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "pinCheck roster count 2 differs from expected 3"
+      }
+    },
+    {
+      "id": "PRED-PIN-EMPTY",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "malformed captured SHA256: a",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "malformed captured SHA256: a"
+      }
+    },
+    {
+      "id": "PRED-PIN-NONHEX",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "malformed captured SHA256: a",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "malformed captured SHA256: a"
+      }
+    },
+    {
+      "id": "PRED-PIN-ORDER",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "pinCheck path at roster index 0 differs from trusted expected path: b",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "pinCheck path at roster index 0 differs from trusted expected path: b"
+      }
+    },
+    {
+      "id": "PRED-PIN-UNVERIFIED",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "captured pin not re-verified: c status not-captured",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "captured pin not re-verified: c status not-captured"
+      }
+    },
+    {
+      "id": "PRED-PIN-COUNT",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "captured rows 3 differ from the registry count 4",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "captured rows 3 differ from the registry count 4"
+      }
+    },
+    {
+      "id": "PRED-PIN-DUP",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": true,
+      "expectedR4": false,
+      "expectedReason": "duplicate pinCheck path a",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "duplicate pinCheck path a"
+      }
+    },
+    {
+      "id": "PRED-PIN-ALLVERIFIED",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": false,
+      "expectedR4": false,
+      "expectedReason": "captured pin not verified: b status changed",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "captured pin not verified: b status changed"
+      }
+    },
+    {
+      "id": "PRED-LABEL-GOOD",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": null,
+      "expectedR4": true,
+      "expectedReason": "labels helper consistent",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": true,
+        "reason": "labels helper consistent"
+      }
+    },
+    {
+      "id": "PRED-LABEL-ENTRY",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": null,
+      "expectedR4": false,
+      "expectedReason": "no entry label entryHelper",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "no entry label entryHelper"
+      }
+    },
+    {
+      "id": "PRED-LABEL-STALE",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": null,
+      "expectedR4": false,
+      "expectedReason": "helper is not the post-run pin",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "helper is not the post-run pin"
+      }
+    },
+    {
+      "id": "PRED-VALUE-GOOD",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": null,
+      "expectedR4": true,
+      "expectedReason": "all values present",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": true,
+        "reason": "all values present"
+      }
+    },
+    {
+      "id": "PRED-VALUE-TYPE",
+      "passed": true,
+      "predicatesAtRef": true,
+      "predicatesSha256": "051cd708c508b333f36c4b297644af4144943649ebc0b2788fe21a18ee66180c",
+      "r3PredicateAccepts": null,
+      "expectedR4": false,
+      "expectedReason": "no value TimedOut=True",
+      "reasonMatches": true,
+      "observedR4": {
+        "ok": false,
+        "reason": "no value TimedOut=True"
+      }
+    }
+  ],
+  "finalization": {
+    "schema": "life1-r3-finalization-v1",
+    "verdict": "pass",
+    "stageError": null,
+    "integrityErrors": [],
+    "cleanupErrors": [],
+    "pinChecks": [
+      {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\docs\\internal\\extensions\\lifecycle1\\repair-r4\\aux_controls.ps1",
+        "entrySha256": "22b3be235b278b10880c49d425aff826b3ce1c09027e9305a73cb69a6f25d23e",
+        "finalSha256": "22b3be235b278b10880c49d425aff826b3ce1c09027e9305a73cb69a6f25d23e",
+        "status": "verified"
+      },
+      {
+        "path": "C:\\Users\\poin\\.codex\\worktrees\\v1-evidence-hardening\\RMQ\\scripts\\owned_process_tree.ps1",
+        "entrySha256": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+        "finalSha256": "6690ad4f9e3aee9596e53e89d3d242e4be59c0a04733bc50184ae35b292ff90e",
+        "status": "verified"
+      }
+    ]
+  }
+}

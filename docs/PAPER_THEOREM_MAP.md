@@ -262,7 +262,8 @@ The public theorem map does not assert compiled Lean execution performance, comp
 correctness, full CPU semantics, production serialization, or an exact/minimal
 dynamic read-set characterization. See `docs/PAPER_MODEL_ADEQUACY.md` for the
 model-adequacy scope. For the `210` and `427` theorems it does not assert
-word-RAM query time. For no theorem does it assert preprocessing complexity
-for the succinct construction, or the attainment or minimality of `210`,
-`427`, or the 837,572-step budget of the candidate
+word-RAM query time. The query-only theorems do not assert preprocessing
+complexity; the additive lifecycle model is documented separately. No
+attainment or minimality is claimed for `210`, `427`, or the 837,572-step
+budget of the accepted
 `RMQ.Headlines.succinctRMQFullyChargedPackedQuery`.

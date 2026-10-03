@@ -350,6 +350,13 @@ if ($LASTEXITCODE -ne 0) { Fail "lake build RMQExamples failed" }
 lake build RMQ.Core.GenericSelectBPCompat
 if ($LASTEXITCODE -ne 0) { Fail "lake build RMQ.Core.GenericSelectBPCompat failed" }
 
+# V1-LIFECYCLE-CLIENT-GATE-ANCHOR
+# These independent clients are not dependencies of the broad headline itself.
+lake build RMQ.Validation.LifecycleContract RMQ.Core.WordRAM.Lifecycle.Controls RMQ.Core.WordRAM.Lifecycle.Provenance
+if ($LASTEXITCODE -ne 0) { Fail "lifecycle client/provenance build failed" }
+lake env lean scripts/lifecycle_provenance_contract.lean
+if ($LASTEXITCODE -ne 0) { Fail "lifecycle provenance expected-type client failed" }
+
 # 1b. Validation executables, DERIVED from lakefile.toml rather than hardcoded.
 # These carry `#guard`s that fire at BUILD time, so building them here catches a
 # stale fixture in the fast gate instead of only in the slow artifact-repro
@@ -386,6 +393,7 @@ RunAxiomCheck "scripts/archive_axiom_check.lean" "archive_axiom_check.lean"
 RunAxiomCheck "scripts/rank_select_axiom_check.lean" "rank_select_axiom_check.lean"
 RunAxiomCheck "scripts/bp_navigation_axiom_check.lean" "bp_navigation_axiom_check.lean"
 RunAxiomCheck "scripts/union_find_axiom_check.lean" "union_find_axiom_check.lean"
+RunAxiomCheck "scripts/lifecycle_inventory.lean" "lifecycle_inventory.lean"
 
 # 3b. Independence regression for the packed structural countdown.  The claim
 # that the `210` in `427 = 1 + 2*3 + 2*210` is not the charged-trace `210` was

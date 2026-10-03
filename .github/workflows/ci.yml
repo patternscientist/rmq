@@ -150,3 +150,19 @@ jobs:
       - name: Owned-process self-test (setsid group + descendant barrier)
         shell: pwsh
         run: ./scripts/owned_process_tree.ps1 -SelfTest
+
+  source-artifact-checks:
+    name: Source artifact checks (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Packaging integrity and checkout byte regressions
+        shell: bash
+        run: |
+          python scripts/test_package_release.py
+          python scripts/test_native_checkout.py

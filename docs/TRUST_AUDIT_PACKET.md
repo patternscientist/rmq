@@ -1,5 +1,10 @@
 # Trust Audit Packet
 
+For the V1 reader path and comparison of query and construction models, see
+[the V1 guide](V1_GUIDE.md). The additive lifecycle surface is scoped separately in
+[the claims packet](../artifact/CLAIMS.md); preprocessing exclusions below describe the
+query-only results, not an absence of construction theorems from the repository.
+
 This packet is the shortest reviewer path through the current succinct RMQ
 claim. It records the checked objects that carry the result and the boundary of
 the model. Historical route and cost chronology is kept separately in

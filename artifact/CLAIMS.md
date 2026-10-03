@@ -6,8 +6,9 @@
 `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds` through
 `RMQPaper`. For every ordinary list, one numeric allocation (`buildMemory`) and
 one closed loop-free program of 837,572 primitive instructions give exact
-leftmost answers for every valid half-open range, the rejection packet `0`
-with no memory reads for representable invalid ranges, one logarithmic word
+leftmost answers for every valid half-open range (encoded by the run as
+`index + 1`), the rejection packet `0` with no memory reads for representable
+invalid ranges, one logarithmic word
 width for every stored word, operand and prefix state, and complete
 data/code/scratch capacity `2n + o(n)`. For every representable endpoint pair
 the run halts within at most 837,572 steps, which is the program length; the
@@ -15,13 +16,53 @@ committed valid-query fixtures observe 6,003 to 16,358 steps, and no tightness
 is claimed. Unit-cost word multiplication, division, remainder, variable shifts
 and bitwise operations are model assumptions. The code and scratch term is
 lower order only asymptotically, and endpoints outside the word domain are
-rejected by an uncharged value-level check. Preprocessing time and space are
-unbounded and unclaimed, and Lean runtime is a separate quantity.
+rejected by an uncharged value-level check. This query theorem does not bound
+preprocessing time or workspace; the additive lifecycle theorem has a separate
+construction bound. Lean runtime is a separate quantity.
 Status: ACCEPTED. The theorem is kernel checked and consumed by an
 independent typed client; the committed replay campaign, the aggregate gate
 and a fresh blind source audit with its tooling correction review have passed. See
 `docs/WORD_RAM_REVIEW_PACKET.md`. The 210 trace claims below and the separate
 427 packed-probe theorem retain their original, narrower charge policies.
+
+## Additive construction and reusable-query model
+
+The merged headline `RMQ.Headlines.succinctRMQContinuousLifecycle`, outside
+`RMQPaper`, exports `PackedLifecycle.continuousConstructionQuery_holds` from
+`RMQ/Core/WordRAM/Lifecycle/Capstone.lean`. Its seven connected fields concern
+one actual construction-and-query run, its retained owner, fixed encoded code
+and query-independent word width. `InputModel.word` requires signed input fit;
+`InputModel.comparison` accepts arbitrary `List Int` using separately counted
+key storage. Both require represented endpoints. Valid ranges return the
+leftmost minimum; represented invalid ranges halt with packet zero.
+
+Construction through query entry takes at most `1100000000*(n+1)` primitive
+transitions. Every prefix owns at most `5000000*(n+1)` numeric arena cells;
+the comparison route separately owns at most `n` key cells and two key registers.
+The first service takes at most `160253` further transitions; each later
+request takes at most `160257`, adding four admission/control events. Service
+initialization and its header read are charged even for invalid requests.
+The retained numeric capacity, including code, finite register bank and control
+words, is at most `2*n + retainedRho n` bits with `retainedRho = o(n)`.
+This is distinct from peak construction workspace.
+
+Input materialization precedes this modeled execution. Indexed encoded-code
+backing is proved; the theorem does not execute a general decoder of serialized
+instructions. The array owner refines the same run and retires its key banks.
+Logical ownership and capacity do not prove a native allocator, compiler, C
+pointer discipline or Rust FFI implementation correct. The
+[native supplement](../native/packed-rmq/README.md) retains those assumptions.
+
+Status: accepted for the stated V1 mathematical model, with the source lineage,
+resolved audit findings and exact-input verification in the
+[coordinator record](../docs/internal/v1/V1_COORDINATOR_ACCEPTANCE.md).
+The [V1 matrix](../docs/internal/v1/V1_FINALIZATION_MATRIX.md) records the
+finalization requirements; the delivered instance has its own external hash
+receipt. This status does not alter the accepted query theorem above. The
+aggregate gate now explicitly builds `RMQ.Validation.LifecycleContract`, the controls and
+provenance modules, checks `scripts/lifecycle_provenance_contract.lean`, and
+checks the standard-axiom whitelist through `scripts/lifecycle_inventory.lean`.
+Native operational replays and historical harness campaigns are separate evidence.
 
 ## Canonical Reviewer Payload And Trace
 
@@ -47,7 +88,7 @@ consumer. The latter is filled only by literal field projections.
 the paper theorem consumes them together with the direct same-execution
 `nonSyntheticWeight <= 210` clause and exact ordered-read complete-result
 agreement. The route is word-addressed supplied-store execution; raw serialized
-payload querying remains S1.
+payload querying remains a separate surface.
 For every indexed read in the global trace, the checked relation retains that same global
 occurrence, its program-instruction occurrence, exact folded prefix state,
 component-local occurrence, invocation parameters, source, and offset in the
@@ -64,10 +105,11 @@ distinct obligations. Earlier event-value and
 component may-read facts remain compatibility facts only.
 The unchanged canonical execution now has the checked principled charged-trace
 cap `210 = 2*35 + (2*11 + 2*37 + 33) + 11`, and modeled cost is exactly emitted
-trace length. Payload-word reads and word-rank/select primitives are charged;
-controller dispatch, input/register access, arithmetic, branching, decoding,
-local scanning, candidate merging, trace assembly, and the validity guard are
-uncharged in this charged-trace theorem. The separate accepted theorem in the first
+trace length. Every emitted event costs one step, and this execution emits
+only payload-word reads; `wordRank` and `wordSelect` have weight in the model
+but are not emitted here. Controller dispatch, input/register access,
+arithmetic, branching, decoding, local scanning, candidate merging, trace
+assembly and the validity guard are outside this event vocabulary. The separate accepted theorem in the first
 section charges every primitive instruction of its own distinct execution
 instead. Earlier cost and dispatch theorems are documented only in
 the explicit
@@ -101,7 +143,7 @@ commands, see `../docs/PAPER_CLAIM_CORRESPONDENCE.md`.
 
 | Claim | Public theorem alias | Source theorem | Check command |
 | --- | --- | --- | --- |
-| Accepted after replay, aggregate gate and blind audit: one numeric memory and one closed loop-free primitive program answer every valid half-open query with the leftmost minimum, reject representable invalid ranges with no memory reads, halt within at most 837,572 primitive instructions, keep every word, operand and prefix state within one logarithmic width, and fit memory, literal program encoding and registers in `2n + o(n)` bits. | `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` via `RMQ.Headlines.RMQ` | `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds` | `lake build RMQPaper`, `lake env lean scripts/headline_axiom_check.lean`, and the committed replay `scripts/packed_query_replay.ps1` |
+| Accepted after replay, aggregate gate and blind audit: one numeric memory and one closed loop-free primitive program answer every valid half-open query with the leftmost minimum, reject representable invalid ranges with no memory reads, halt within at most 837,572 primitive instructions, keep every word, operand and prefix state within one logarithmic width, and fit memory, literal program encoding, registers and control words in `2n + o(n)` bits. | `RMQ.Headlines.succinctRMQFullyChargedPackedQuery` via `RMQ.Headlines.RMQ` | `RMQ.SuccinctFinal.PackedWordRAM.fullyChargedPackedQueryCapstone_holds` | `lake build RMQPaper`, `lake env lean scripts/headline_axiom_check.lean`, and the committed replay `scripts/packed_query_replay.ps1` |
 | Exact RMQ requires essentially `2*n` bits in the fixed-length payload model, with doubled Catalan slack. | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` via `RMQ.Headlines.RMQ` | `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack` | `lake build RMQPaper` and `lake env lean scripts/headline_axiom_check.lean` |
 | The canonical reviewer payload and canonical global trace form one construction-facing profile: doubled-Catalan envelopes, `2*n + o(n)` payload, exact physical erasure, direct positional physical backing for every successful read, exact RMQ answers, non-synthetic certificate weight equal to trace length and the same `Costed.cost`, and the uniform bound `210`. | `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile` via `RMQ.Headlines.RMQ` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile` | `lake build RMQPaper` and `lake env lean scripts/headline_axiom_check.lean` |
 | The ordinary `List Int` succinct RMQ surface proves `buildPayload.length <= 2*n + overhead n` with `overhead = o(n)`, rejects invalid or empty ranges, preserves the classic valid half-open leftmost contract, and supplies the final no-synthetic execution story. Exact physical erasure is separate and no padding is used. | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`, `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid` | `RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story`, `RMQ.SuccinctClassic.queryCosted_invalid` | `lake env lean scripts/headline_axiom_check.lean` and `lake env lean scripts/wordram_axiom_check.lean` |
@@ -185,7 +227,7 @@ superseded by the accepted theorem `RMQ.Headlines.succinctRMQFullyChargedPackedQ
 That accepted construction compiles a distinct loop-free primitive program over a
 densely repacked allocation, charges every executed instruction, and proves
 that its ordered loads are the physical expansion of the same logical trace.
-It is not yet accepted. Bit-addressed serialized-payload querying is deferred
-to S1, and complete preprocessing remains a separate downstream construction
-obligation. Rank/select and BP-navigation retain their own separate hardening
+Bit-addressed serialized-payload querying remains a separate surface.
+Construction is now covered by the additive lifecycle model described below,
+with its own input and runtime boundaries. Rank/select and BP-navigation retain their own separate hardening
 frontiers.

@@ -2146,3 +2146,84 @@ The next skeptical questions concern independent exact-commit reconstruction,
 coordinator acceptance and how a future native specialization can reduce the
 measured copying and initialization costs while preserving these same contracts.
 This entry records a local candidate, not coordinator acceptance.
+
+## V1 maintenance and checked clients — 2026-10-01
+
+The cleanup centralizes two existing rank/select proofs in GenericSelect while
+preserving the older theorem names and propositions. An unused private list
+lemma is gone. The reviewer simulation now names one private full-result
+decomposition at the active-read/continuation boundary; both proof sites use
+that equality. It fixes the returned candidate and the ordered events, not
+only trace length. The consuming simulation also fixes termination and final
+state through that candidate. Computation and public premises are unchanged.
+
+The new `RMQExamples.V1Clients` module imports one public headline module. Its
+packed client derives a uniform primitive-step bound, valid-query halting and
+the specified answer from the same program and built memory. It also derives
+leftmost correctness for a returned index and an eventual complete capacity of
+at most three bits per input element, counting data, encoded code, scratch
+registers and control words. The last claim instantiates the existing little-o
+residual at scale one; it is an eventual statement, not a small-input estimate.
+
+Separate clients expose the earlier paper construction's payload bound,
+exactness and modeled cost, and show how ordered supplied-store agreement
+determines an entire guarded result, its value and its cost projection. A
+duplicate-minimum example returns the leftmost index; compiled invalid-range
+examples retain the public rejection behavior. None equates the paper trace
+cost with packed primitive transitions or measured execution time.
+
+The proof leaf at `71a4a65336af68dabaf19265b36c7564db8c8cec` and client leaf at
+`61d0a5cdf1ed32a10378e3824d90b81b9c37312d` passed their full Lean builds and
+scoped checks. Their integration remains subject to the V1 candidate's final
+verification and independent audit. A skeptical reader should check the exact
+objects in each conclusion, the complete-capacity summands, and why removing a
+capstone field or weakening the store-agreement premise breaks these clients.
+The source tour and evidence record distinguish those checks from native
+compiler, allocation and FFI assumptions.
+
+
+### V1 source-review follow-up — 2026-10-01
+
+Six additional historical rank/select lemmas now delegate to their exact
+generic counterparts, preserving binder modes, assumptions and theorem names.
+The second unused private lower-bound wrapper is removed; its canonical public
+theorem remains. FAMILY_SUMMARY removes the private inventory entries for both
+deleted helpers. These are proof ownership and documentation changes, not new
+RMQ guarantees.
+
+The optional metadata-prefix cleanup was assessed without changing machine
+code. `Packed/Allocation.lean` already names `metadataWordCount := 174` and
+proves `metadata_length`; the live read/setup/safety chain spells the same
+literal in several checked propositions and instructions. Replacing those
+throughout `Setup`, `PhysicalRead`, `ReadInterface`, `QueryProof`, safety modules
+and the capstone would expand this bounded proof-maintenance patch into a
+machine representation refactor. No wrong offset or failed connection was
+found, so V1 retains those checked literals. Their duplication remains a future
+maintenance concern; no performance or proof-quality improvement is asserted
+from leaving them unchanged.
+
+### V1 local candidate closure — 2026-10-01
+
+The final artifact preserves the reference semantics and public propositions.
+Eight historical rank/select lemmas share canonical generic proofs, two unused
+private wrappers are removed, and both reviewer proof sites consume one named
+complete-result decomposition. Universal clients make the packed run's halting,
+answer and complete eventual capacity useful through the public interface;
+supplied-store clients retain the actual read-agreement premise.
+
+Independent review located the remaining defects in evidence and packaging:
+plausible path labels were insufficient without trusted parent context; a final
+"verified" hash must satisfy its status-specific relation; and a self-consistent
+ZIP manifest did not ensure Git blob identity when archive conversion occurred.
+Each now has a concrete discriminator and a repaired actual consumer. The
+independent real-archive check was essential: it rejected a bundle whose own
+manifest was green. The accepted boundary is the specified model and source
+artifact, with separately scoped native observations and explicit tool/runtime
+assumptions. The failed advisory independent-checker attempt remains failed.
+
+The skeptical next questions concern model suitability and efficient native
+realization, not an unstated claim that large constants are practical or that a
+finite test proves the all-size theorem. Those remain distinct future work.
+The exact closure and source-stage results are in
+`internal/v1/V1_COORDINATOR_ACCEPTANCE.md`; final delivered file identities and
+current-tree checks are in the external `RMQ-V1-DELIVERY.json`.

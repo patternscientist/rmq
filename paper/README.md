@@ -1,5 +1,11 @@
 # paper/ -- RMQ manuscript and evidence substrate
 
+**V1 companion scope (2026-10-01).** This manuscript deliberately retains
+its query-theorem source pin below. [V1_SOURCE_RELATION.md](V1_SOURCE_RELATION.md)
+records the relationship to the release candidate and the additive lifecycle
+surface outside the paper root. Source-line citations remain relative to the
+paper pin; current candidate verification is a separate record.
+
 Private working draft of the RMQ manuscript, pinned to repository base
 commit `3849ecbb53bbedfcd679352cc68d095fa5a304c2`, authored on branch
 `codex/eg-cp-paper-evidence-r1` under governance

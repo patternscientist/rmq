@@ -15,7 +15,9 @@
 \usepackage{amsthm}
 \usepackage[margin=1.1in]{geometry}
 \usepackage{booktabs}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
+\setlength{\emergencystretch}{3em}
+\Urlmuskip=0mu
 
 % Ledger anchors: \ledger{<id>} ties the preceding mathematical claim to
 % its row in paper/THEOREM_LEDGER.md. The macro renders nothing; the checker
@@ -23,7 +25,12 @@
 \newcommand{\ledger}[1]{}
 
 % Lean identifiers.
-\newcommand{\leanid}[1]{\texttt{#1}}
+% Long declaration names must wrap inside the text block. Hyperref supplies
+% url; its identifier renderer preserves punctuation and allows explicit breaks.
+\makeatletter
+\g@addto@macro\UrlBreaks{\do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j\do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t\do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D\do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N\do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X\do\Y\do\Z\do\0\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9}
+\makeatother
+\newcommand{\leanid}[1]{\ifmmode\text{\ttfamily\upshape #1}\else{\def\UrlFont{\ttfamily\upshape}\nolinkurl{#1}}\fi}
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
@@ -45,10 +52,10 @@ Machine-Checked in Lean~4:\\
 Reference Semantics, a Charged-Trace Cost Model,\\
 and an Explicit Trust Boundary\thanks{Private working draft. This document
 is an internal manuscript substrate pinned to repository commit
-\texttt{3849ecbb53bbedfcd679352cc68d095fa5a304c2}. It is not a submission,
+\nolinkurl{3849ecbb53bbedfcd679352cc68d095fa5a304c2}. It is not a submission,
 not a public claim surface, and not an architecture-acceptance record.}}
 \author{RMQ repository contributors}
-\date{Draft of 2026-08-05}
+\date{V1 companion draft, 2026-10-01}
 
 \begin{document}
 \maketitle
@@ -121,7 +128,7 @@ from claims.
 \subsection{Contributions of the mechanization}\label{sec:contributions}
 
 All results below are kernel-checked Lean~4 theorems at repository commit
-\texttt{3849ecbb53bbedfcd679352cc68d095fa5a304c2}; the later audit and acceptance of the sixth are recorded separately in Section~\ref{sec:status}. The
+\nolinkurl{3849ecbb53bbedfcd679352cc68d095fa5a304c2}; the later audit and acceptance of the sixth are recorded separately in Section~\ref{sec:status}. The
 ledger (\texttt{paper/THEOREM\_LEDGER.md}) maps every claim in this draft to
 an exact declaration and source file.
 
@@ -734,7 +741,7 @@ compatibility aliases that \leanid{RMQPaper} does not import.
 \section{Reproducibility}\label{sec:repro}
 
 All claims of this draft refer to repository commit
-\texttt{3849ecbb53bbedfcd679352cc68d095fa5a304c2}. The artifact reproduction
+\nolinkurl{3849ecbb53bbedfcd679352cc68d095fa5a304c2}. The artifact reproduction
 path is:
 
 \begin{itemize}
@@ -1119,8 +1126,12 @@ row.
   multiplication model. It transfers no instruction count to the
   charged-trace bound or to Theorem~\ref{thm:packed}, and its absorption of
   program and register space is asymptotic only.\ledger{L-PQ-01}
-\item \emph{Preprocessing.} The construction's preprocessing complexity
-  (time and workspace, in any model) is unproved and unclaimed.
+\item \emph{Preprocessing scope.} The query theorems in this manuscript
+  do not bound construction time or workspace. The V1 repository also carries
+  an additive continuous-lifecycle development outside this pinned paper
+  subset; its model and evidence boundaries are documented in the artifact
+  claims packet. This item does not assert that the later repository lacks
+  construction theorems.
   \ledger{L-OPEN-01}
 \item \emph{Tightness of the constants.} $210$ is an upper cap with an
   exact reachable interior-cost witness at one component, but global

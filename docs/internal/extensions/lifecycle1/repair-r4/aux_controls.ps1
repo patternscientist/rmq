@@ -26,7 +26,6 @@ $ErrorActionPreference='Stop'
 $utf8=[Text.UTF8Encoding]::new($false,$true)
 $here=$PSScriptRoot
 $repo=[IO.Path]::GetFullPath((Join-Path $here '../../../../..'))
-if($PSVersionTable.PSVersion.Major -lt 7){throw 'R4-AUX: PowerShell 7 required'}
 $pwsh='C:/Users/poin/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe'
 $paths=[ordered]@{
   K1='docs/internal/extensions/lifecycle1/repair-r1/run_check.ps1'
@@ -37,7 +36,15 @@ $paths=[ordered]@{
   PR='docs/internal/extensions/lifecycle1/repair-r4/predicates.ps1'
 }
 $expectedIds=@('ORD-K1','ORD-K2','ORD-RC','ORD-LV','HR-P','HR-W',
-  'PRED-PIN-GOOD','PRED-PIN-DROPPED','PRED-PIN-UNVERIFIED','PRED-PIN-COUNT','PRED-PIN-DUP','PRED-PIN-ALLVERIFIED',
+  'PRED-PIN-GOOD','PRED-PIN-ROSTER-GOOD','PRED-PIN-GIT-GOOD','PRED-PIN-FILE-SHA1','PRED-PIN-GIT-SHA256',
+  'PRED-PIN-LEGACY-GIT-GOOD','PRED-PIN-LEGACY-FILE-SHA1',
+  'PRED-KIND-PROJECTION-GOOD','PRED-KIND-INDEX-OOB',
+  'PRED-PATH-FIXTURE-GOOD','PRED-PATH-FIXTURE-WRONG-ROOT','PRED-PATH-SHELL-ALIASES-GOOD','PRED-PATH-SHELL-SAME-BASENAME-WRONG',
+  'PRED-PATH-TOOLCHAIN-GOOD','PRED-PATH-TOOLCHAIN-WRONG-ROOT','PRED-PATH-HISTORY-GOOD','PRED-PATH-HISTORY-WRONG-ROOT','PRED-PATH-CONTEXT-MISSING',
+  'PRED-FINAL-VERIFIED-NULL','PRED-FINAL-VERIFIED-EMPTY','PRED-FINAL-VERIFIED-NONHEX','PRED-FINAL-VERIFIED-MISMATCH',
+  'PRED-FINAL-CHANGED-GOOD','PRED-FINAL-CHANGED-SAME','PRED-FINAL-UNREADABLE-GOOD','PRED-FINAL-UNREADABLE-NONNULL',
+  'PRED-PIN-DROPPED','PRED-PIN-COORDINATED','PRED-PIN-EMPTY','PRED-PIN-NONHEX',
+  'PRED-PIN-ORDER','PRED-PIN-UNVERIFIED','PRED-PIN-COUNT','PRED-PIN-DUP','PRED-PIN-ALLVERIFIED',
   'PRED-LABEL-GOOD','PRED-LABEL-ENTRY','PRED-LABEL-STALE','PRED-VALUE-GOOD','PRED-VALUE-TYPE')
 if([string]::IsNullOrWhiteSpace($OutputRoot)){$OutputRoot=Join-Path $repo ('.lake/life1-r4/aux-'+$Expect+'-'+[Guid]::NewGuid().ToString('N'))}
 $evidence=[IO.Path]::GetFullPath($OutputRoot)
@@ -81,9 +88,60 @@ $h1='1111111111111111111111111111111111111111111111111111111111111111'
 $h2='2222222222222222222222222222222222222222222222222222222222222222'
 $h3='3333333333333333333333333333333333333333333333333333333333333333'
 $h4='4444444444444444444444444444444444444444444444444444444444444444'
+$git40='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+$syntheticRoster=([ordered]@{rows=@('a','b','c');stages=[ordered]@{
+  complete=[ordered]@{capturedIndexes=@(0,1,2)}
+}}|ConvertTo-Json -Depth 8|ConvertFrom-Json)
+$fileRoster=([ordered]@{rows=@('a');stages=[ordered]@{complete=[ordered]@{capturedIndexes=@(0)}}}|ConvertTo-Json -Depth 8|ConvertFrom-Json)
+$gitRoster=([ordered]@{rows=@('git:HEAD');identityKinds=[ordered]@{'0'='git-sha1'};stages=[ordered]@{
+  complete=[ordered]@{capturedIndexes=@(0)}
+}}|ConvertTo-Json -Depth 8|ConvertFrom-Json)
+$projectionRoster=([ordered]@{rows=@('a','git:HEAD');identityKinds=[ordered]@{'1'='git-sha1'};stages=[ordered]@{
+  partial=[ordered]@{rows=@('a');capturedIndexes=@(0)}
+}}|ConvertTo-Json -Depth 8|ConvertFrom-Json)
+$outOfBoundsKindRoster=([ordered]@{rows=@('a');identityKinds=[ordered]@{'1'='git-sha1'};stages=[ordered]@{
+  complete=[ordered]@{capturedIndexes=@(0)}
+}}|ConvertTo-Json -Depth 8|ConvertFrom-Json)
+$fixtureRoster=([ordered]@{rows=@('fixture:bin/tool.exe');stages=[ordered]@{complete=[ordered]@{capturedIndexes=@(0)}}}|ConvertTo-Json -Depth 8|ConvertFrom-Json)
+$shellRoster=([ordered]@{rows=@('shell:child','shell:host');stages=[ordered]@{complete=[ordered]@{capturedIndexes=@(0,1)}}}|ConvertTo-Json -Depth 8|ConvertFrom-Json)
+$toolchainRoster=([ordered]@{rows=@('toolchain:lean.exe');stages=[ordered]@{complete=[ordered]@{capturedIndexes=@(0)}}}|ConvertTo-Json -Depth 8|ConvertFrom-Json)
+$historyRoster=([ordered]@{rows=@('history:raw-summary');stages=[ordered]@{complete=[ordered]@{capturedIndexes=@(0)}}}|ConvertTo-Json -Depth 8|ConvertFrom-Json)
+$fixtureContext=[pscustomobject]@{fixtureRoot='C:/trusted/v1-fixture'}
+$shellContext=[pscustomobject]@{childShell='C:/trusted/shell/pwsh.exe';hostShell='C:\trusted\shell\pwsh.exe'}
+$toolchainContext=[pscustomobject]@{toolchainBin='C:/trusted/toolchain/bin'}
+$historyContext=[pscustomobject]@{historicalSummary='C:/trusted/history/SUMMARY.json'}
 $predCases=[ordered]@{
-  'PRED-PIN-GOOD'=@{kind='pin';reason='captured 3 of 5 rows';fin=(New-R4Fin @((Row 'a' $h1 $h1 'verified'),(Row 'b' $h2 $h4 'changed'),(Row 'c' $h3 $null 'unreadable-final'),(Row 'd' $null $null 'not-captured'),(Row 'e' $null $null 'absent-verified')) 3);captured=3;all=$false;r4=$true;isP=$false}
+  'PRED-PIN-GOOD'=@{kind='pin';reason='captured 3 of 5 rows, status/final identities consistent';fin=(New-R4Fin @((Row 'a' $h1 $h1 'verified'),(Row 'b' $h2 $h4 'changed'),(Row 'c' $h3 $null 'unreadable-final'),(Row 'd' $null $null 'not-captured'),(Row 'e' $null $null 'absent-verified')) 3);captured=3;all=$false;r4=$true;isP=$false}
+  'PRED-PIN-ROSTER-GOOD'=@{kind='pin';reason='captured 3 of 3 rows, all verified, exact roster stage complete';fin=(New-R4Fin @((Row 'a' $h1 $h1 'verified'),(Row 'b' $h2 $h2 'verified'),(Row 'c' $h3 $h3 'verified')) 3);captured=$null;all=$true;roster=$syntheticRoster;stage='complete';r4=$true;isP=$true}
+  'PRED-PIN-GIT-GOOD'=@{kind='pin';reason='captured 1 of 1 rows, all verified, exact roster stage complete';fin=(New-R4Fin @((Row 'git:HEAD' $git40 $git40 'verified')) 1);captured=$null;all=$true;roster=$gitRoster;stage='complete';r4=$true;isP=$true}
+  'PRED-PIN-FILE-SHA1'=@{kind='pin';reason='malformed captured SHA256: a';fin=(New-R4Fin @((Row 'a' $git40 $git40 'verified')) 1);captured=$null;all=$true;roster=$fileRoster;stage='complete';r4=$false;isP=$false}
+  'PRED-PIN-GIT-SHA256'=@{kind='pin';reason='malformed captured Git SHA1: git:HEAD';fin=(New-R4Fin @((Row 'git:HEAD' $h1 $h1 'verified')) 1);captured=$null;all=$true;roster=$gitRoster;stage='complete';r4=$false;isP=$false}
+  'PRED-PIN-LEGACY-GIT-GOOD'=@{kind='pin';reason='captured 1 of 1 rows, all verified';fin=(New-R4Fin @((Row 'git:HEAD' $git40 $git40 'verified')) 1);captured=$null;all=$true;r4=$true;isP=$true}
+  'PRED-PIN-LEGACY-FILE-SHA1'=@{kind='pin';reason='malformed captured SHA256: a';fin=(New-R4Fin @((Row 'a' $git40 $git40 'verified')) 1);captured=$null;all=$true;r4=$false;isP=$false}
+  'PRED-KIND-PROJECTION-GOOD'=@{kind='pin';reason='captured 1 of 1 rows, all verified, exact roster stage partial';fin=(New-R4Fin @((Row 'a' $h1 $h1 'verified')) 1);captured=$null;all=$true;roster=$projectionRoster;stage='partial';r4=$true;isP=$true}
+  'PRED-KIND-INDEX-OOB'=@{kind='pin';reason='invalid identity-kind index 1';fin=(New-R4Fin @((Row 'a' $h1 $h1 'verified')) 1);captured=$null;all=$true;roster=$outOfBoundsKindRoster;stage='complete';r4=$false;isP=$false}
+  'PRED-PATH-FIXTURE-GOOD'=@{kind='pin';reason='captured 1 of 1 rows, all verified, exact roster stage complete';fin=(New-R4Fin @((Row 'C:\TRUSTED\v1-fixture\bin\tool.exe' $h1 $h1 'verified')) 1);captured=$null;all=$true;roster=$fixtureRoster;stage='complete';context=$fixtureContext;r4=$true;isP=$true}
+  'PRED-PATH-FIXTURE-WRONG-ROOT'=@{kind='pin';reason='pinCheck path at roster index 0 differs from trusted expected path: C:/wrong/v1-fixture/bin/tool.exe';fin=(New-R4Fin @((Row 'C:/wrong/v1-fixture/bin/tool.exe' $h1 $h1 'verified')) 1);captured=$null;all=$true;roster=$fixtureRoster;stage='complete';context=$fixtureContext;r4=$false;isP=$false}
+  'PRED-PATH-SHELL-ALIASES-GOOD'=@{kind='pin';reason='captured 2 of 2 rows, all verified, exact roster stage complete';fin=(New-R4Fin @((Row 'C:\TRUSTED\shell\pwsh.exe' $h1 $h1 'verified'),(Row 'C:/trusted/shell/pwsh.exe' $h1 $h1 'verified')) 2);captured=$null;all=$true;roster=$shellRoster;stage='complete';context=$shellContext;r4=$true;isP=$true}
+  'PRED-PATH-SHELL-SAME-BASENAME-WRONG'=@{kind='pin';reason='pinCheck path at roster index 0 differs from trusted expected path: C:/unrelated/shell/pwsh.exe';fin=(New-R4Fin @((Row 'C:/unrelated/shell/pwsh.exe' $h1 $h1 'verified'),(Row 'C:/trusted/shell/pwsh.exe' $h1 $h1 'verified')) 2);captured=$null;all=$true;roster=$shellRoster;stage='complete';context=$shellContext;r4=$false;isP=$false}
+  'PRED-PATH-TOOLCHAIN-GOOD'=@{kind='pin';reason='captured 1 of 1 rows, all verified, exact roster stage complete';fin=(New-R4Fin @((Row 'C:/trusted/toolchain/bin/lean.exe' $h1 $h1 'verified')) 1);captured=$null;all=$true;roster=$toolchainRoster;stage='complete';context=$toolchainContext;r4=$true;isP=$true}
+  'PRED-PATH-TOOLCHAIN-WRONG-ROOT'=@{kind='pin';reason='pinCheck path at roster index 0 differs from trusted expected path: C:/wrong/toolchain/bin/lean.exe';fin=(New-R4Fin @((Row 'C:/wrong/toolchain/bin/lean.exe' $h1 $h1 'verified')) 1);captured=$null;all=$true;roster=$toolchainRoster;stage='complete';context=$toolchainContext;r4=$false;isP=$false}
+  'PRED-PATH-HISTORY-GOOD'=@{kind='pin';reason='captured 1 of 1 rows, all verified, exact roster stage complete';fin=(New-R4Fin @((Row 'C:\TRUSTED\history\SUMMARY.json' $h1 $h1 'verified')) 1);captured=$null;all=$true;roster=$historyRoster;stage='complete';context=$historyContext;r4=$true;isP=$true}
+  'PRED-PATH-HISTORY-WRONG-ROOT'=@{kind='pin';reason='pinCheck path at roster index 0 differs from trusted expected path: C:/wrong/history/SUMMARY.json';fin=(New-R4Fin @((Row 'C:/wrong/history/SUMMARY.json' $h1 $h1 'verified')) 1);captured=$null;all=$true;roster=$historyRoster;stage='complete';context=$historyContext;r4=$false;isP=$false}
+  'PRED-PATH-CONTEXT-MISSING'=@{kind='pin';reason='missing trusted path context fixtureRoot for fixture:bin/tool.exe';fin=(New-R4Fin @((Row 'C:/trusted/v1-fixture/bin/tool.exe' $h1 $h1 'verified')) 1);captured=$null;all=$true;roster=$fixtureRoster;stage='complete';context=$null;r4=$false;isP=$false}
+  'PRED-FINAL-VERIFIED-NULL'=@{kind='pin';reason='missing final identity for verified pin: a';fin=(New-R4Fin @((Row 'a' $h1 $null 'verified')) 1);captured=$null;all=$false;r4=$false;isP=$false}
+  'PRED-FINAL-VERIFIED-EMPTY'=@{kind='pin';reason='malformed final SHA256 for verified pin: a';fin=(New-R4Fin @((Row 'a' $h1 '' 'verified')) 1);captured=$null;all=$false;r4=$false;isP=$false}
+  'PRED-FINAL-VERIFIED-NONHEX'=@{kind='pin';reason='malformed final SHA256 for verified pin: a';fin=(New-R4Fin @((Row 'a' $h1 ('g'*64) 'verified')) 1);captured=$null;all=$false;r4=$false;isP=$false}
+  'PRED-FINAL-VERIFIED-MISMATCH'=@{kind='pin';reason='verified final identity differs from entry: a';fin=(New-R4Fin @((Row 'a' $h1 $h2 'verified')) 1);captured=$null;all=$false;r4=$false;isP=$false}
+  'PRED-FINAL-CHANGED-GOOD'=@{kind='pin';reason='captured 1 of 1 rows, status/final identities consistent';fin=(New-R4Fin @((Row 'a' $h1 $h2 'changed')) 1);captured=$null;all=$false;r4=$true;isP=$false}
+  'PRED-FINAL-CHANGED-SAME'=@{kind='pin';reason='changed final identity equals entry: a';fin=(New-R4Fin @((Row 'a' $h1 $h1 'changed')) 1);captured=$null;all=$false;r4=$false;isP=$false}
+  'PRED-FINAL-UNREADABLE-GOOD'=@{kind='pin';reason='captured 1 of 1 rows, status/final identities consistent';fin=(New-R4Fin @((Row 'a' $h1 $null 'unreadable-final')) 1);captured=$null;all=$false;r4=$true;isP=$false}
+  'PRED-FINAL-UNREADABLE-NONNULL'=@{kind='pin';reason='unreadable-final pin has a final identity: a';fin=(New-R4Fin @((Row 'a' $h1 $h2 'unreadable-final')) 1);captured=$null;all=$false;r4=$false;isP=$false}
   'PRED-PIN-DROPPED'=@{kind='pin';reason='captured rows 2 differ from entryPinCount 3';fin=(New-R4Fin @((Row 'a' $h1 $h1 'verified'),(Row 'b' $h2 $h2 'verified'),(Row 'd' $null $null 'not-captured')) 3);captured=$null;all=$false;r4=$false;isP=$false}
+  'PRED-PIN-COORDINATED'=@{kind='pin';reason='pinCheck roster count 2 differs from expected 3';fin=(New-R4Fin @((Row 'a' $h1 $h1 'verified'),(Row 'b' $h2 $h2 'verified')) 2);captured=$null;all=$false;roster=$syntheticRoster;stage='complete';r4=$false;isP=$false}
+  'PRED-PIN-EMPTY'=@{kind='pin';reason='malformed captured SHA256: a';fin=(New-R4Fin @((Row 'a' '' $h1 'verified')) 1);captured=$null;all=$false;r4=$false;isP=$false}
+  'PRED-PIN-NONHEX'=@{kind='pin';reason='malformed captured SHA256: a';fin=(New-R4Fin @((Row 'a' ('g'*64) $h1 'verified')) 1);captured=$null;all=$false;r4=$false;isP=$false}
+  'PRED-PIN-ORDER'=@{kind='pin';reason='pinCheck path at roster index 0 differs from trusted expected path: b';fin=(New-R4Fin @((Row 'b' $h2 $h2 'verified'),(Row 'a' $h1 $h1 'verified'),(Row 'c' $h3 $h3 'verified')) 3);captured=$null;all=$false;roster=$syntheticRoster;stage='complete';r4=$false;isP=$false}
   'PRED-PIN-UNVERIFIED'=@{kind='pin';reason='captured pin not re-verified: c status not-captured';fin=(New-R4Fin @((Row 'a' $h1 $h1 'verified'),(Row 'b' $h2 $h2 'verified'),(Row 'c' $h3 $null 'not-captured')) 3);captured=$null;all=$false;r4=$false;isP=$false}
   'PRED-PIN-COUNT'=@{kind='pin';reason='captured rows 3 differ from the registry count 4';fin=(New-R4Fin @((Row 'a' $h1 $h1 'verified'),(Row 'b' $h2 $h2 'verified'),(Row 'c' $h3 $h3 'verified')) 3);captured=4;all=$false;r4=$false;isP=$false}
   'PRED-PIN-DUP'=@{kind='pin';reason='duplicate pinCheck path a';fin=(New-R4Fin @((Row 'a' $h1 $h1 'verified'),(Row 'a' $h1 $h1 'verified'),(Row 'b' $h2 $h2 'verified')) 3);captured=$null;all=$false;r4=$false;isP=$false}
@@ -204,7 +262,7 @@ foreach($rel in $List.Split(',')){
       continue
     }
     $o=switch -CaseSensitive ($c.kind){
-      'pin' {Test-R4PinCoverage $c.fin $c.captured ([bool]$c.all)}
+      'pin' {Test-R4PinCoverage $c.fin $c.captured ([bool]$c.all) $(if($c.ContainsKey('roster')){$c.roster}else{$null}) $(if($c.ContainsKey('stage')){$c.stage}else{$null}) $(if($c.ContainsKey('context')){$c.context}else{$null})}
       'label' {Test-R4Labels $c.doc $labels}
       'value' {Test-R4Values @($c.values) $valueWant}
     }
