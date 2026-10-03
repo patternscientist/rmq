@@ -42,3 +42,7 @@ docs/internal/extensions/lifecycle-native1/ACCEPTANCE_MATRIX.frozen.md -text
 scripts/lifecycle_native_cases.json text eol=crlf
 RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory/SparseLevelWidth.lean text eol=crlf
 RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean text eol=crlf
+
+# Preserve the two V1 external audit reports as exact recorded bytes.
+docs/internal/audit_reports/v1-blind-4ded05c.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+docs/internal/audit_reports/v1-blind-ff92a2f-continuation.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

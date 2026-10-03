@@ -1,0 +1,96 @@
+{
+  "schema": "rmq-v1-post-blind-source-disposition/1",
+  "originalCandidate": "4ded05caa68531307d0e9c827161a8611a477015",
+  "fullPolicyExecutionSource": "143fa1e5408cff0ece537129b26c7c409891d792",
+  "acceptedSource": "ff92a2f94a97655a995ec744150ae7bab15ccb56",
+  "sourceDisposition": "ACCEPTED for bounded repaired source; delivery and hosted publication gates remain separate",
+  "finding": "P2-01 closed after independent coordinator reproduction, repair and continuation audit",
+  "reports": {
+    "v1-blind-4ded05c.md": {
+      "sha256": "d19d2b027295c1de6ee0b9c0dfbdc60539dfb61b0f51878dc5d88ef3a56ccfd4",
+      "bytes": 66510,
+      "source": "REPORT.md"
+    },
+    "v1-blind-ff92a2f-continuation.md": {
+      "sha256": "91342de4ca2ac316fdfdb78ebb368f7ccd2d93e3ecabc4810f873b8d8bf11c2a",
+      "bytes": 26432,
+      "source": "REPAIR_REPORT.md"
+    }
+  },
+  "records": {
+    "coordinator-report-identity.json": {
+      "bytes": 295,
+      "sha256": "efbf60a5bc214ab6faf5e5c4d2fadb14046a88902083208bc7942586c5092bfd",
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\fresh-blind-release-20261002\\coordinator-report-identity.json"
+    },
+    "policy-full-independent-check.json": {
+      "bytes": 7514,
+      "sha256": "01914b736f13e361c8f7db31e78878bc5cdeb0efb66838869667d2eeb9cb914b",
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\fresh-blind-release-20261002\\policy-full-independent-check.json"
+    },
+    "repair-source-check.json": {
+      "bytes": 2455,
+      "sha256": "d27c0015cb0a877b7a44cc78be88297944b13094fce61d57df2b1d0ea451e25b",
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\fresh-blind-release-20261002\\repair-source-check.json"
+    },
+    "release-workflow-check.json": {
+      "bytes": 656,
+      "sha256": "7e95f107b35b93e24359763b4f24f051e84996e87bfd0c14068ed45063602792",
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\fresh-blind-release-20261002\\release-workflow-check.json"
+    },
+    "repair-audit-evidence/completion.json": {
+      "bytes": 2141,
+      "sha256": "e5a3ab8628e98c8dc5ef6dadef56f999ae4874a548b4c1646dc291f441d8bfbd",
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\fresh-blind-release-20261002\\repair-audit-evidence\\completion.json"
+    },
+    "repair-audit-evidence/registry-audit/RESULT.json": {
+      "bytes": 138561,
+      "sha256": "94be2aee7ca63e37749e2dc2196765bfae809990dd41a735b8f56f88a8c3cb6c",
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\fresh-blind-release-20261002\\repair-audit-evidence\\registry-audit\\RESULT.json"
+    },
+    "policy-full-pwsh.receipt.json": {
+      "bytes": 110946,
+      "sha256": "36a4c0c21171e3f2892c79ded9fa877cdfe125b385e45b8e590dfd6091e616b2",
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\fresh-blind-release-20261002\\policy-full-pwsh.receipt.json"
+    },
+    "policy-full-winps.receipt.json": {
+      "bytes": 110908,
+      "sha256": "40e902915233ad46b2a1179bf8b70dbe99f14ad5e6a45cf57888c99deaeb87c8",
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\fresh-blind-release-20261002\\policy-full-winps.receipt.json"
+    },
+    "process-final-pwsh.receipt.json": {
+      "bytes": 13072,
+      "sha256": "b443a87534a9ff230dcdd3c4021180efb0bd99638ce450a3945e917d22973289",
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\fresh-blind-release-20261002\\process-final-pwsh.receipt.json"
+    },
+    "process-final-winps.receipt.json": {
+      "bytes": 13034,
+      "sha256": "ba7e77519d5ea55b9c4010c3b86312289efa06587456302c89cc208b5153c835",
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\fresh-blind-release-20261002\\process-final-winps.receipt.json"
+    },
+    "process-final-posix.receipt.json": {
+      "bytes": 13134,
+      "sha256": "6b258cf1188891d48aad66a2a96aa5f190f34b22507ecaa4685042325a488051",
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\fresh-blind-release-20261002\\process-final-posix.receipt.json"
+    },
+    "build-repair-ff92.receipt.json": {
+      "bytes": 249075,
+      "sha256": "ceb266c3c76dcad3b4c3522d3b896c1bebf2ce3a890efaa167705cac6680da5a",
+      "originalPath": "C:\\Users\\poin\\Documents\\RMQ\\research-duet-20261001\\implementation\\fresh-blind-release-20261002\\build-repair-ff92.receipt.json"
+    }
+  },
+  "originalAggregateStatus": "FAIL; preserved at447751d203a4e5d02f15680731226a56fd8894a3",
+  "pending": [
+    "final documentation/source checks",
+    "new source/evidence archives and versioned delivery receipt",
+    "required hosted CI",
+    "protected merge and matching rc tag",
+    "user-selected organization placement"
+  ],
+  "limits": [
+    "Trusted process-status producer only; not validation of arbitrary deserialized objects.",
+    "Windows member-enumeration fallback and POSIX new-session escape limits remain; no universal hostile-descendant containment claimed.",
+    "Historical per-child status gaps and process chronology cannot be reconstructed.",
+    "The full143fa policy production cases transfer by exact consumed inputs; final focused helper timing has separate three-shell evidence."
+  ]
+}

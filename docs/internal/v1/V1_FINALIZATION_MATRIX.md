@@ -116,3 +116,13 @@ V1_VERIFICATION_INDEX and V1_AUDIT_DISPOSITION. Publication is outside this
 contract. The external delivery receipt binds the final commit and actual output
 files and records checks performed after this documentation closure; a bundle
 without its passing instance receipt is not the accepted delivery.
+
+## Subsequent fresh audit and repair
+
+This record's original source/evidence remains historical. The later4ded blind
+audit found P2-01 in policy timeout classification; its ff92 continuation closes
+the bounded repair with delivery/hosted follow-ups. See
+[V1_POST_BLIND_DISPOSITION.md](V1_POST_BLIND_DISPOSITION.md) for current source
+disposition and exact identities. Frozen requirement text and old receipts are
+unchanged; a new versioned external delivery receipt must bind the refreshed
+source, reports and archives before publication.

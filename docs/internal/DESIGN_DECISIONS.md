@@ -13753,3 +13753,18 @@ No new theorem, performance bound, native heap claim or stable-library promise
 is introduced. V1_COORDINATOR_ACCEPTANCE and the final external delivery receipt
 identify source qualification and actual deliverables without self-referential
 hashes. Final text checks and final bundle verification follow this closure.
+
+## DD-20261003-V1-BLIND-DISPOSITION - Preserve audit objects and qualify repair
+
+Date: 2026-10-03. Status: bounded source accepted; delivery and CI gates pending.
+
+The coordinator accepts P2-01 closure atff92a2f94a97655a995ec744150ae7bab15ccb56
+after independent reproduction, exact production-case evidence and the original
+auditor's continuation. Preserve both external reports verbatim under exact
+per-path Git byte attributes; do not normalize their hashed content or rewrite
+the historical NOT_READY verdict. Append a distinct disposition/index and link
+the older acceptance records. Retain typed-producer and inherited-descendant
+scope limits; no formal/model theorem changes or stronger containment claim.
+Final source/report checks and newly authenticated artifacts must precede the
+protected hosted release sequence. Reusing old archive identities or rewriting
+the failed aggregate as passing would erase the distinction this record preserves.

@@ -94,3 +94,13 @@ no successful independent kernel-checker run is claimed. Hosted CI for this
 unpublished candidate has not run. Local compression reproducibility is scoped
 to the exercised runtime environment. The source ZIP contains raw Git blobs;
 the native supplement requires a real checkout to apply its byte attributes.
+
+## Subsequent fresh audit and repair
+
+This record's original source/evidence remains historical. The later4ded blind
+audit found P2-01 in policy timeout classification; its ff92 continuation closes
+the bounded repair with delivery/hosted follow-ups. See
+[V1_POST_BLIND_DISPOSITION.md](V1_POST_BLIND_DISPOSITION.md) for current source
+disposition and exact identities. Frozen requirement text and old receipts are
+unchanged; a new versioned external delivery receipt must bind the refreshed
+source, reports and archives before publication.

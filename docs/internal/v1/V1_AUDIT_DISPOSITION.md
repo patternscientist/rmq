@@ -115,3 +115,13 @@ The report is retained verbatim at
 The final acceptance record and external delivery receipt identify the failed
 aggregate and passing replacements, source-only smoke, current checks and exact delivered archive. This
 disposition preserves each audit's original source identity and stated limits.
+
+## Subsequent fresh audit and repair
+
+This record's original source/evidence remains historical. The later4ded blind
+audit found P2-01 in policy timeout classification; its ff92 continuation closes
+the bounded repair with delivery/hosted follow-ups. See
+[V1_POST_BLIND_DISPOSITION.md](V1_POST_BLIND_DISPOSITION.md) for current source
+disposition and exact identities. Frozen requirement text and old receipts are
+unchanged; a new versioned external delivery receipt must bind the refreshed
+source, reports and archives before publication.
