@@ -71,7 +71,9 @@ $child = Start-Process -FilePath (Get-Process -Id $PID).Path -ArgumentList @('-N
 Write-Host 'CLAIM-DRIFT[forbidden-retired-current-cost-bound] [fail] intended'
 Start-Sleep -Seconds 60
 '@)
-  $scannerStageTimeoutMs = 5000
+  # WSL startup exceeded five seconds in the retained first attempt.
+  # Fifteen seconds reached the diagnostic and still bounded the 60s sleeper.
+  $scannerStageTimeoutMs = 15000
   # Capture the actual result while retaining the production invocation function.
   function Invoke-StrictClaimScan {
     param([string]$Path, [string]$WorkingDirectory, [bool]$ShowAllowed)

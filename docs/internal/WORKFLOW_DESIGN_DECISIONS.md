@@ -16391,3 +16391,23 @@ This changes verification tooling only, preserving all formal models and
 theorem statements. New source verification and independent review must precede
 updated artifact qualification, CI and release. Existing failed receipts stay
 historical and unchanged.
+
+## WDD-20261003-V1-RELEASE-PREFLIGHT - Preserve clean gate inputs on tagging
+
+Date: 2026-10-03. Status: bounded release-path repair under verification.
+
+Coordinator inspection before publication found that release-artifact.yml still
+used a depth2 checkout and wrote reproduction output into the checkout. The
+same reproduction's existing branch workflow already fetches full history for
+retrospective commit checks and places its log in RUNNER_TEMP for clean-baseline
+checks. Apply those same inputs to the tag workflow. No checker or branch
+protection is weakened. A hyphenated version tag explicitly creates a GitHub
+prerelease; it does not silently present the current release candidate as stable.
+
+Also retain the failed POSIX process-control attempt: its five-second deadline
+expired before the required diagnostic appeared. An isolated fifteen-second
+probe reached that antecedent and verified descendant cleanup. Adopt that
+measured margin, still below the synthetic child's sixty-second sleep. This
+changes control timing only; normal scanner deadlines and verdicts stay fixed.
+The full Windows policy runs at the preceding commit remain separately pinned;
+the changed focused control must pass on its final source in all three shells.

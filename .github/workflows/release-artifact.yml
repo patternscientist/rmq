@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
           # This workflow also runs scripts/gate.ps1, through
           # scripts/reproduce_artifact.sh, so it needs tags for the same reason
           # ci.yml does. WDD-20260816-057 said "every workflow" and fixed two.
@@ -34,7 +34,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          scripts/reproduce_artifact.sh 2>&1 | tee artifact-reproduction.log
+          scripts/reproduce_artifact.sh 2>&1 | tee "$RUNNER_TEMP/artifact-reproduction.log"
 
       - name: Prepare release attachments
         shell: bash
@@ -45,7 +45,7 @@ jobs:
             --exclude=.lake \
             --exclude=release-artifacts \
             -czf "release-artifacts/rmq-source-${GITHUB_REF_NAME}.tar.gz" .
-          cp artifact-reproduction.log release-artifacts/
+          cp "$RUNNER_TEMP/artifact-reproduction.log" release-artifacts/
           cp docs/ARTIFACT_REPRODUCIBILITY.md release-artifacts/
           cp docs/PAPER_MAIN_THEOREM.md release-artifacts/
           cp docs/PAPER_THEOREM_MAP.md release-artifacts/
@@ -59,10 +59,14 @@ jobs:
         shell: bash
         run: |
           tag="${GITHUB_REF_NAME}"
+          release_flags=()
+          if [[ "$tag" == *-* ]]; then
+            release_flags+=(--prerelease)
+          fi
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" release-artifacts/* --clobber
           else
-            gh release create "$tag" release-artifacts/* \
+            gh release create "$tag" release-artifacts/* "${release_flags[@]}" \
               --title "$tag" \
               --notes "RMQ paper artifact release. See ARTIFACT_REPRODUCIBILITY.md and artifact-reproduction.log."
           fi
